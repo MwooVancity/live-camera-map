@@ -1,0 +1,66 @@
+name: session3b-scan
+# Recon spike: supply-chain and image scan of the pinned GEV. Never fails on vulnerability counts; fails only if a SECRET is found.
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: git clone https://github.com/bilawalsidhu/gods-eye-view gev
+      - run: git -C gev checkout "$(cut -d' ' -f1 ops/upstream-base.txt)"
+      - run: node tests/immutability/check.mjs
+      - run: node --check ops/audit/scan-summary.mjs
+      - run: mkdir -p scan-out
+      - name: Build pinned image (no edits to gev/)
+        run: |
+          docker build -t gev-pinned ./gev
+          docker image inspect gev-pinned --format '{{.Id}}' | tee scan-out/image-id.txt
+          docker image inspect gev-pinned --format '{{json .RepoDigests}} {{.Created}}' | tee -a scan-out/image-id.txt
+      - name: npm audit (prod deps, from the lockfile, in a fresh clone; gev/ untouched)
+        run: |
+          git clone https://github.com/bilawalsidhu/gods-eye-view gev-audit
+          git -C gev-audit checkout "$(cut -d' ' -f1 ops/upstream-base.txt)"
+          cd gev-audit
+          npm audit --omit=dev --package-lock-only --json > ../scan-out/npm-audit.json || true
+          test -s ../scan-out/npm-audit.json
+      - name: Trivy image vulnerabilities (HIGH,CRITICAL, unfixed included)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: image
+          image-ref: gev-pinned
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          ignore-unfixed: false
+          format: json
+          output: scan-out/trivy-image.json
+          exit-code: '0'
+      - name: Trivy secret scan of the gev tree
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: gev
+          scanners: secret
+          format: json
+          output: scan-out/trivy-secrets.json
+          exit-code: '0'
+      - name: Trivy SBOM (CycloneDX) of the image
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: image
+          image-ref: gev-pinned
+          format: cyclonedx
+          output: scan-out/sbom.cdx.json
+          exit-code: '0'
+      - run: node tests/immutability/check.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: session3b-scan
+          path: scan-out/
+      - name: Summary (exits 1 only if a secret was found)
+        run: node ops/audit/scan-summary.mjs scan-out

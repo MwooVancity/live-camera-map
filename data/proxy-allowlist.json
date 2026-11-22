@@ -1,0 +1,22 @@
+{
+  "doc": "Everything not listed is denied by ops/proxy/nginx.allowlist.conf. `pattern` is matched (JS RegExp, anchored) against the raw request path + query. Keep in sync with the nginx map; tests/security/methods.mjs checks both. Probe/expect are the unverified-until-CI expectations for the allowed-route check.",
+  "defaultMethods": ["GET", "HEAD"],
+  "neverAllowed": ["/api/setup/", "/mcp", "/api/openai/", "/api/gemini/", "/api/realtime/", "/api/ghostmaps", "/api/inaturalist", "/api/news", "/@fs/", "/api/flights", "/api/vessels", "/api/celestrak", "/api/adsbdb", "/api/tomtom", "/api/launches", "/api/transit", "/api/rail"],
+  "pathCharset": "[A-Za-z0-9_@.+~=,/-]",
+  "routes": [
+    { "id": "shell", "pattern": "^/(\\?.*)?$", "probe": "/", "expect": [200], "methods": ["GET", "HEAD"] },
+    { "id": "embed", "pattern": "^/(\\?.*)?$", "probe": "/?embed=1", "expect": [200], "methods": ["GET"] },
+    { "id": "share", "pattern": "^/share/[A-Za-z0-9_-]+(\\?.*)?$", "probe": "/share/AQc", "expect": [200], "methods": ["GET"] },
+    { "id": "root-assets", "pattern": "^(/style\\.css|/logo\\.svg|/location\\.svg|/mic\\.svg|/pin\\.svg|/visual-presets\\.svg|/manifest\\.webmanifest|/quebec-cameras\\.json|/favicon\\.ico)(\\?.*)?$", "probe": "/style.css", "expect": [200], "methods": ["GET", "HEAD"] },
+    { "id": "public-dirs", "pattern": "^/(icons|models|events)/[A-Za-z0-9_@.+~=,/-]+(\\?.*)?$", "probe": "/icons/icon-32.png", "expect": [200], "methods": ["GET", "HEAD"] },
+    { "id": "vite-modules", "pattern": "^/(@vite|@id|src|node_modules|server|build)/[A-Za-z0-9_@.+~=,/-]+(\\?.*)?$", "probe": "/@vite/client", "expect": [200], "methods": ["GET", "HEAD"], "note": "dev-server source is public by design (session3-findings #2); no secret may be in the image" },
+    { "id": "src-boot", "pattern": "^/(@vite|@id|src|node_modules|server|build)/[A-Za-z0-9_@.+~=,/-]+(\\?.*)?$", "probe": "/src/main.js", "expect": [200], "methods": ["GET"] },
+    { "id": "cctv-sources", "pattern": "^/api/cctv/(sources|health)(\\?.*)?$", "probe": "/api/cctv/sources", "expect": [200], "methods": ["GET", "HEAD"], "note": "per-source licence gating (restricted/mustNotShip cameras such as fl511, nyc dot, transtar) is data-level, NOT enforced here" },
+    { "id": "cctv-health", "pattern": "^/api/cctv/(sources|health)(\\?.*)?$", "probe": "/api/cctv/health", "expect": [200], "methods": ["GET"] },
+    { "id": "weather", "pattern": "^/api/(weather|weather/manifest|weather/tile|weather/image|weather-effects|wind/manifest|wind/grid)(\\?.*)?$", "probe": "/api/weather", "expect": [200, 400, 404], "methods": ["GET", "HEAD"], "note": "weather/tile may fetch ECCC GeoMet (mustNotShip in source-permissions); confirm before launch" },
+    { "id": "weather-manifest", "pattern": "^/api/(weather|weather/manifest|weather/tile|weather/image|weather-effects|wind/manifest|wind/grid)(\\?.*)?$", "probe": "/api/weather/manifest", "expect": [200, 404], "methods": ["GET"] },
+    { "id": "wind-manifest", "pattern": "^/api/(weather|weather/manifest|weather/tile|weather/image|weather-effects|wind/manifest|wind/grid)(\\?.*)?$", "probe": "/api/wind/manifest", "expect": [200, 404], "methods": ["GET"] },
+    { "id": "library", "pattern": "^/api/library(/data/[A-Za-z0-9_-]+)?(\\?.*)?$", "probe": "/api/library", "expect": [200], "methods": ["GET", "HEAD"] },
+    { "id": "library-data", "pattern": "^/api/library(/data/[A-Za-z0-9_-]+)?(\\?.*)?$", "probe": "/api/library/data/gvp-holocene-volcanoes", "expect": [200, 404], "methods": ["GET"] }
+  ]
+}

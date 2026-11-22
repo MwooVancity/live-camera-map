@@ -1,0 +1,60 @@
+name: session3b-e2e
+# Real-browser boot test of the pinned GEV image behind the proxy, embedded cross-origin.
+on: workflow_dispatch
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: git clone https://github.com/bilawalsidhu/gods-eye-view gev
+      - run: git -C gev checkout "$(cut -d' ' -f1 ops/upstream-base.txt)"
+      - run: node tests/immutability/check.mjs
+      - name: Build pinned image (no edits to gev/)
+        run: docker build -t gev-pinned ./gev
+      - run: docker network create gevnet
+      - name: Start GEV (private) and proxy
+        run: |
+          docker run -d --name gev --network gevnet \
+            -e GEV_ALLOWED_HOSTS=map.example.test \
+            -e GEV_EMBED_FRAME_ANCESTORS=http://localhost:9000 \
+            -e GEV_KEY_SETUP_TRUSTED_PEERS=none \
+            gev-pinned
+          docker run -d --name proxy --network gevnet -p 127.0.0.1:8080:8080 \
+            -v "$PWD/ops/proxy/nginx.conf:/etc/nginx/nginx.conf:ro" nginx:1.27-alpine
+          for i in $(seq 1 60); do
+            curl -s -o /dev/null -H 'Host: map.example.test' http://127.0.0.1:8080/ && break
+            sleep 3
+          done
+          docker logs gev 2>&1 | tail -15
+      - name: Install Playwright
+        working-directory: tests/e2e
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: Boot test
+        working-directory: tests/e2e
+        env:
+          OUT_DIR: ${{ github.workspace }}/e2e-out
+        shell: bash
+        run: |
+          set -o pipefail
+          node boot.mjs 2>&1 | tee "$OUT_DIR.log"
+      - name: Logs and immutability
+        if: always()
+        run: |
+          docker logs gev > gev.log 2>&1 || true
+          docker logs proxy > proxy.log 2>&1 || true
+          node tests/immutability/check.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: session3b-e2e
+          path: |
+            e2e-out/
+            e2e-out.log
+            gev.log
+            proxy.log

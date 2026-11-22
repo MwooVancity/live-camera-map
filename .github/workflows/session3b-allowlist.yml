@@ -1,0 +1,50 @@
+name: session3b-allowlist
+# Route/method allowlist + bypass matrix: pinned GEV image (private network, port unpublished) behind nginx.allowlist.conf.
+on: workflow_dispatch
+jobs:
+  allowlist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: git clone https://github.com/bilawalsidhu/gods-eye-view gev
+      - run: git -C gev checkout "$(cut -d' ' -f1 ops/upstream-base.txt)"
+      - run: node tests/immutability/check.mjs
+      - run: node --check tests/security/methods.mjs
+      - name: Build pinned image (no edits to gev/)
+        run: docker build -t gev-pinned ./gev
+      - run: docker network create gevnet
+      - name: Start GEV (private, unpublished) and allowlist proxy
+        run: |
+          docker run -d --name gev --network gevnet \
+            -e GEV_ALLOWED_HOSTS=map.example.test \
+            -e GEV_EMBED_FRAME_ANCESTORS=https://www.example.test \
+            -e GEV_KEY_SETUP_TRUSTED_PEERS=none \
+            gev-pinned
+          docker run -d --name proxy --network gevnet -p 127.0.0.1:8080:8080 \
+            -v "$PWD/ops/proxy/nginx.allowlist.conf:/etc/nginx/nginx.conf:ro" nginx:1.27-alpine
+          docker exec proxy nginx -t
+          for i in $(seq 1 60); do
+            curl -sf -o /dev/null -H 'Host: map.example.test' http://127.0.0.1:8080/ && break
+            sleep 3
+          done
+          curl -sf -o /dev/null -H 'Host: map.example.test' http://127.0.0.1:8080/
+          docker logs gev 2>&1 | tail -15
+      - name: Allowlist and bypass matrix
+        run: node tests/security/methods.mjs http://127.0.0.1:8080 map.example.test | tee methods.txt; exit "${PIPESTATUS[0]}"
+      - name: Logs and immutability
+        if: always()
+        run: |
+          docker logs gev > gev.log 2>&1 || true
+          docker logs proxy > proxy.log 2>&1 || true
+          node tests/immutability/check.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: session3b-allowlist-results
+          path: |
+            methods.txt
+            gev.log
+            proxy.log
