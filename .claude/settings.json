@@ -1,0 +1,10 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      { "hooks": [{ "type": "command", "command": "node ops/harness/hook-prompt.mjs" }] }
+    ],
+    "PreToolUse": [
+      { "matcher": "Edit|Write|NotebookEdit|Bash", "hooks": [{ "type": "command", "command": "node ops/harness/hook-pretool.mjs" }] }
+    ]
+  }
+}

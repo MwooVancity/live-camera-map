@@ -1,0 +1,18 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SITE_NAME } from '../../config.mjs';
+import { cameras, countsBy, registryDate, sources } from '../../lib/data.mjs';
+import { regionsWithPages, isIndexable } from '../../lib/pages.mjs';
+const total = cameras.length;
+const byRegion = countsBy(cameras, 'region');
+const regions = regionsWithPages(cameras);
+const nameOf = (slug) => cameras.find((c) => c.regionSlug === slug).regionName;
+---
+<Base title={`Traffic cameras by region: ${total} cameras | ${SITE_NAME}`} description={`${total} traffic cameras across ${regions.length} region${regions.length === 1 ? '' : 's'}, each linked to the official source.`} route="/cameras/" crumbs={[{ name: 'All cameras', route: '/cameras/' }]} noindex={!isIndexable(total)}>
+  <h1>Traffic cameras by region</h1>
+  <p>{total} cameras in {regions.length} region{regions.length === 1 ? '' : 's'}. A region appears here only when we hold at least 3 cameras for it. Ontario and Alberta are not listed because we have no cameras for them yet.</p>
+  <section data-block="regions" data-source={sources[0].name} data-asof={registryDate}>
+    <ul>{regions.map((r) => <li><a href={`/cameras/${r}/`}>{nameOf(r)} traffic cameras</a> ({byRegion[r]})</li>)}</ul>
+  </section>
+  <p><a class="cta" href="/map/">Open the map</a></p>
+</Base>

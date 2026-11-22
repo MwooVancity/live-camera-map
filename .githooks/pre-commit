@@ -1,0 +1,7 @@
+#!/bin/sh
+# Commit gate: preflight, harness selftest, unit tests. gev/ immutability is checked when gev/ exists.
+set -e
+node ops/lint/preflight.mjs --offline
+node ops/harness/selftest.mjs
+node --test ops/lint/preflight.test.mjs ops/harness/harness.test.mjs tests/exclusion/exclusion.test.mjs tests/deploy/compose-lint.test.mjs
+if [ -d gev/.git ]; then node tests/immutability/check.mjs; fi

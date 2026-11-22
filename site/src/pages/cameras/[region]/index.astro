@@ -1,0 +1,26 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { SITE_NAME } from '../../../config.mjs';
+import { cameras, countsBy, registryDate, sources, loadedDistricts, failedDistricts } from '../../../lib/data.mjs';
+import { regionsWithPages, curatedCities, slugify, isIndexable, GUIDES } from '../../../lib/pages.mjs';
+
+export function getStaticPaths() {
+  return regionsWithPages(cameras).map((region) => ({ params: { region } }));
+}
+const { region } = Astro.params;
+const regionName = cameras.find((c) => c.regionSlug === region).regionName;
+const total = countsBy(cameras, 'region')[region];
+const byCity = countsBy(cameras, 'city');
+const cities = curatedCities(cameras).filter((c) => cameras.find((x) => x.city === c).regionSlug === region);
+const allCities = Object.keys(byCity).length;
+---
+<Base title={`${regionName} traffic cameras: ${total} official links | ${SITE_NAME}`} description={`${total} ${regionName} traffic cameras linked to the official source, by city, with coverage and last update date.`} route={`/cameras/${region}/`} crumbs={[{ name: 'All cameras', route: '/cameras/' }, { name: regionName, route: `/cameras/${region}/` }]} noindex={!isIndexable(total)}>
+  <h1>{regionName} traffic cameras</h1>
+  <p>{total} cameras in {allCities} named places, from Caltrans districts {loadedDistricts.join(', ')}. {failedDistricts.length > 0 ? `Districts ${failedDistricts.join(', ')} did not load in the last import, so this list is partial.` : 'All districts loaded in the last import.'}</p>
+  <section data-block="cities" data-source={sources[0].name} data-asof={registryDate}>
+    <h2>Cities with the most cameras</h2>
+    <ul class="cols">{cities.map((c) => <li><a href={`/cameras/${region}/${slugify(c)}/`}>{c} traffic cameras</a> ({byCity[c]})</li>)}</ul>
+  </section>
+  <p><a class="cta" href="/map/">Open the map</a></p>
+  <p>Guides: {GUIDES.slice(0, 3).map((g, i) => <>{i > 0 && ', '}<a href={`/guides/${g.slug}/`}>{g.title}</a></>)}.</p>
+</Base>

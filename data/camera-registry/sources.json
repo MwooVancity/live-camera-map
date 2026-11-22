@@ -1,0 +1,62 @@
+[
+ {
+  "id": "caltrans",
+  "name": "Caltrans CCTV (California DOT)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "unknown; importer is sequential with retries",
+   "docsUrl": "https://cwwp2.dot.ca.gov/documentation/cctv/cctv.htm"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Caltrans",
+  "license": "unverified",
+  "licenseUrl": null,
+  "reviewedAt": "2026-11-22"
+ },
+ {
+  "id": "ontario-511",
+  "name": "Ontario 511",
+  "status": "pending-key",
+  "api": {
+   "auth": "key",
+   "rateLimit": "unverified",
+   "docsUrl": null
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "unverified",
+  "license": "unverified",
+  "licenseUrl": null,
+  "reviewedAt": "2026-11-22"
+ },
+ {
+  "id": "alberta-511",
+  "name": "Alberta 511",
+  "status": "pending-key",
+  "api": {
+   "auth": "key",
+   "rateLimit": "unverified",
+   "docsUrl": null
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "unverified",
+  "license": "unverified",
+  "licenseUrl": null,
+  "reviewedAt": "2026-11-22"
+ }
+]

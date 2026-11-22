@@ -1,0 +1,14 @@
+{
+  "name": "nearbycams-site",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "test": "node --test tests/gate.test.mjs tests/dist.test.mjs"
+  },
+  "dependencies": {
+    "astro": "5.18.1"
+  }
+}

@@ -1,0 +1,76 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { SITE_NAME } from '../../../config.mjs';
+import { cameras, countsBy, registryDate, sources, health, loadedDistricts } from '../../../lib/data.mjs';
+import { curatedCities, slugify, isIndexable } from '../../../lib/pages.mjs';
+
+export function getStaticPaths() {
+  const out = [];
+  for (const city of curatedCities(cameras)) {
+    const region = cameras.find((c) => c.city === city).regionSlug;
+    out.push({ params: { region, city: slugify(city) }, props: { city } });
+  }
+  return out;
+}
+const { region, city: citySlug } = Astro.params;
+const { city } = Astro.props;
+const here = cameras.filter((c) => c.city === city && c.regionSlug === region);
+const regionName = here[0].regionName;
+const byCity = countsBy(cameras, 'city');
+const n = byCity[city];
+const roads = Object.entries(countsBy(here, 'road')).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+const noRoad = n - roads.reduce((s, r) => s + r[1], 0);
+const feeds = countsBy(here, 'feedType');
+const source = sources.find((s) => s.id === 'caltrans');
+
+// Related: the 4 nearest other curated cities in the same region (by average camera position).
+const centre = (list) => ({ lat: list.reduce((s, c) => s + c.lat, 0) / list.length, lon: list.reduce((s, c) => s + c.lon, 0) / list.length });
+const me = centre(here);
+const related = curatedCities(cameras).filter((c) => c !== city && cameras.find((x) => x.city === c).regionSlug === region)
+  .map((c) => { const p = centre(cameras.filter((x) => x.city === c)); return { c, d: (p.lat - me.lat) ** 2 + ((p.lon - me.lon) * Math.cos(me.lat * Math.PI / 180)) ** 2 }; })
+  .sort((a, b) => a.d - b.d).slice(0, 4).map((x) => x.c);
+
+const sorted = [...here].sort((a, b) => a.road.localeCompare(b.road) || a.direction.localeCompare(b.direction) || a.name.localeCompare(b.name));
+const hc = health?.cameras || {};
+const statusCount = { reachable: 0, stale: 0, unavailable: 0, unknown: 0 };
+if (health) for (const c of here) statusCount[hc[c.id]?.status in statusCount ? hc[c.id].status : 'unknown']++;
+const verified = here.map((c) => c.officialUrlLastVerified).filter(Boolean).sort().at(-1);
+const top = roads.slice(0, 3).map(([r, k]) => `${r} (${k})`).join(', ');
+---
+<Base title={`${city} traffic cameras: ${n} official links | ${SITE_NAME}`} description={`${n} Caltrans traffic cameras near ${city}, ${regionName}, on ${roads.length} road${roads.length === 1 ? '' : 's'}${top ? `, mostly ${top}` : ''}. Official links, last updated ${registryDate}.`} route={`/cameras/${region}/${citySlug}/`} crumbs={[{ name: 'All cameras', route: '/cameras/' }, { name: regionName, route: `/cameras/${region}/` }, { name: city, route: `/cameras/${region}/${citySlug}/` }]} noindex={!isIndexable(n)}>
+  <h1>{city} traffic cameras</h1>
+  <p>{n} Caltrans cameras are listed near {city} on {roads.length} road{roads.length === 1 ? '' : 's'}: {feeds.still || 0} still-image and {feeds.video || 0} video feeds. Each name below is a link to the official Caltrans source, not a picture. Part of <a href={`/cameras/${region}/`}>{regionName} traffic cameras</a>.</p>
+  <p><a class="cta" href="/map/">Open the map</a></p>
+
+  <section data-block="coverage" data-source={source.name} data-asof={registryDate}>
+    <h2>Roads covered</h2>
+    <ul class="cols">{roads.map(([r, k]) => <li>{r}: {k} camera{k === 1 ? '' : 's'} ({Object.entries(countsBy(here.filter((c) => c.road === r), 'direction')).sort((x, y) => y[1] - x[1] || x[0].localeCompare(y[0])).map(([d, q]) => `${q} ${d}`).join(', ') || 'no direction recorded'}).</li>)}</ul>
+    {noRoad > 0 && <p class="meta">{noRoad} camera{noRoad === 1 ? ' has' : 's have'} no road recorded.</p>}
+    <p class="meta">Source: {source.name}, districts {loadedDistricts.join(', ')}. Registry date {registryDate}. Link check by us: {verified ? `last verified ${verified}` : 'never run yet'}.</p>
+  </section>
+
+  <section data-block="health" data-source="our own camera checker" data-asof={health?.generatedAt || 'not-checked'}>
+    <h2>Camera health</h2>
+    {health
+      ? <p>Last check {health.generatedAt}: {statusCount.reachable} reachable, {statusCount.stale} stale, {statusCount.unavailable} unavailable, {statusCount.unknown} unknown. See <a href="/guides/how-to-read-last-checked-status/">how to read these statuses</a>.</p>
+      : <p>Not checked yet. We have not run our camera checker, so we do not know which of these {n} links work today. See <a href="/guides/how-to-read-last-checked-status/">how to read these statuses</a> for what the checks will report.</p>}
+  </section>
+
+  <section data-block="cameras" data-count={n} data-source={source.name} data-asof={registryDate}>
+    <h2>All {n} cameras</h2>
+    <ul>
+      {sorted.map((c) => (
+        <li><a href={c.officialUrl} rel="noopener">{c.name}</a> <span class="meta">{[c.road, c.direction, c.feedType === 'still' ? 'still image' : 'video'].filter(Boolean).join(', ')}{health ? `, ${hc[c.id]?.status || 'unknown'}` : ''}.</span></li>
+      ))}
+    </ul>
+  </section>
+
+  <h2>Nearby places</h2>
+  <ul>{related.map((c) => <li><a href={`/cameras/${region}/${slugify(c)}/`}>{c} traffic cameras</a> ({byCity[c]})</li>)}</ul>
+  <h2>Guides</h2>
+  <ul>
+    <li><a href="/guides/how-caltrans-cameras-work/">How Caltrans traffic cameras work</a></li>
+    <li><a href="/guides/how-to-read-last-checked-status/">How to read "last checked" status</a></li>
+    <li><a href="/guides/camera-link-is-dead/">What to do if a camera link is dead</a></li>
+  </ul>
+</Base>

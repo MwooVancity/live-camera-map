@@ -1,0 +1,2 @@
+// Claude Code UserPromptSubmit hook: prints Line 0 into the model's context on every request.
+console.log(`LINE 0 (CLAUDE.md, HARD): this site is an Argos Atlas KILLER from the start. For every page/block say one line "Beats Argos by: ..." or do not build it. Helpfulness + information gain over Argos first; hard rules win (licensing, gev/ immutable, security, link-out only, no copying Argos). Everything licensed for a place goes on its page (plan section 12). Every rule must be a gate in ops/harness/rules.mjs, not a note. Run: node ops/harness/selftest.mjs`);

@@ -100,4 +100,51 @@ Our version (agreed): the map is the product, a SMALL curated silo is the acquis
 - Initial HTML must contain title, count, coverage, sources, health summary and links. The map hydrates after.
 - One registry powers every count, so numbers never disagree across title, map and list.
 - Do NOT copy: 330 guides, EN/ES mirroring, 1,000+ pages, featured thumbnails (no image rights yet), "is X free" posts.
-- Expand only when Search Console shows impressions, a new source adds real coverage, or a page can be made clearly more useful. Never because more camera records exist.
+- (Superseded by section 12, owner 2026-11-22: every landing page ships maxed out from day one. Number of pages still grows only with real coverage, never because more records exist.)
+
+## 12. Page content: everything on the page (owner 2026-11-22: "put everything on the page, maxed out info gain")
+Goal: millions of views a month is the target, not a forecast (Argos's ~500k/month is unverified). The route is pages so complete that nothing else answers the question. Every city/corridor page carries ALL of the blocks below that have licensed data for that place. A block with no data is omitted, never faked. Every block shows its own source, timestamp and attribution, and hides itself if older than its limit.
+
+| Block | What it shows | Source (must be `allowed_per_doc` in `data/source-permissions.json`) | Max age |
+|---|---|---|---|
+| Cameras | Every camera, road, direction, plain link to the official source (no images) | Caltrans CWWP, later Ontario 511, Alberta 511, other states | registry date |
+| Camera health | reachable / stale / unavailable per camera, last checked, last changed, 30-day uptime per road | our own checker (GitHub Actions to R2) | 2 h |
+| Road conditions | active incidents, lane closures, chain controls, road work | Caltrans lane closure and chain control feeds, CHP incident feed; Canadian 511 equivalents | 15 min |
+| Road weather | stations on the roads: air and surface temperature, wind, visibility | Caltrans RWIS, NWS observations | 1 h |
+| Forecast and alerts | next 48 h forecast and active weather alerts for the city | NWS api.weather.gov (US public domain), ECCC for Canada only after its licence is read | 3 h |
+| Traffic signs | current message sign text on the corridors | Caltrans CMS feed | 15 min |
+| Coverage | roads and counts per road, camera density, gaps | our registry | registry date |
+| Corridor view | cameras in driving order along each highway, with the next and previous camera | registry (postmile order) | registry date |
+| Context | sunrise and sunset, local time | computed locally, no external call | live |
+| Map | the page's cameras on the GEV map, centred on the city | GEV embed `?embed=1` plus URL hash | live |
+Rules:
+- Live blocks are filled by the same Actions cron that writes `health.json` (one JSON per region on R2). The page contains a build-time snapshot in the HTML so it works without JS and is crawlable, then refreshes client-side.
+- One registry and one `countsBy` function feed every number on the page.
+- Each new feed needs: a row in `data/source-permissions.json` (allowed_per_doc with licence text and review date), a fetch script in `ops/importers/`, a fixture test, a failing-fixture test, and an entry in `data/exclusion-map.json` if it is reachable through GEV.
+- Added to the earlier cut line: Open-Meteo stays OFF until its commercial terms are read (UNVERIFIED).
+- Pages still publish only where the registry has 3+ cameras; the rest are noindex.
+- Do not copy Argos wording, layout or images. Their weakness is generic text and contradictory counts; ours is one data source per number.
+Edge cases:
+- A feed changes its JSON shape: parser fails closed, block hides, page still builds. Test: fixture with a renamed field.
+- A feed is down for a week: block hides after its max age and shows "last updated"; the page never shows old data as current. Test: stale-timestamp fixture.
+- A feed's licence turns out restrictive: flip its permission row to not allowed, the gate removes the block site-wide. Test: licensing test.
+- Two blocks disagree (camera count vs list): impossible by construction, one function. Test: count equals list length for every page.
+- 100x pages: build time and R2 file count. Measure monthly; per-region JSON, not per-page.
+
+Build order (replaces nothing in section 5; adds):
+- [ ] Block 1-2 (cameras, health) as part of Day 5/6.
+- [ ] Road conditions, signs, road weather from Caltrans (same API family, no key).
+- [ ] NWS forecast and alerts block (no key, needs a User-Agent).
+- [ ] Corridor view.
+- [ ] Ontario 511 and Alberta 511 once Mike has keys (Mike task, unchanged).
+
+## 13. Money and enforcement (owner 2026-11-22: "make more money than them", "enforce it every level")
+- Money first, inside the rules: a penalised site earns $0. Revenue comes from the same pages: display ads and affiliate links (dash cams, road-trip gear, roadside assistance) placed beside the data blocks, never inside a camera link-out. Ad slots stay OFF until each source's terms allow data beside ads (plan section 10); `revenue-slots` in `ops/harness/rules.mjs` is PENDING until a gate checks it.
+- Silo is enforced in code (`ops/harness/page-gate.mjs`): reachable from / in 3 clicks, no orphans, city -> parent, 3+ related cities, a guide, the map; hubs link every child; guides link a city.
+- Every rule lives in `ops/harness/rules.mjs` as ENFORCED (names its gate) or PENDING (a note). Check: `node ops/harness/selftest.mjs`. Layers: Claude Code hooks (`.claude/settings.json`: Line 0 every request, gev/ write block), git pre-commit (`.githooks/pre-commit`), CI (immutability, preflight, site), page gate on the built site.
+- Page gate also needs `site/PAGES.md` to carry "Beats Argos by: ..." for each indexable page.
+
+## Next
+- WAITING 2026-11-22 (workflow wen4oorz6 building registry + site): run `node ops/harness/page-gate.mjs`, fix path mismatches, commit, push, check CI.
+- Then: Caltrans road-conditions / signs / road-weather importers (section 12), NWS forecast block, corridor view.
+- OWNER: Ontario 511 and Alberta 511 keys; domain and name when going live; Open-Meteo commercial terms.

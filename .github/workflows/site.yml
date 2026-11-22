@@ -1,0 +1,27 @@
+name: site
+# Builds the Astro site from the camera registry and runs the tests over the built pages.
+on:
+  push:
+    paths:
+      - 'site/**'
+      - 'data/camera-registry/**'
+      - 'ops/importers/lib/**'
+      - '.github/workflows/site.yml'
+  workflow_dispatch:
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci
+        working-directory: site
+      - run: npm run build
+        working-directory: site
+      - run: npm test
+        working-directory: site
+      - run: node ops/harness/page-gate.mjs site/dist site/PAGES.md
+      - run: node ops/lint/preflight.mjs

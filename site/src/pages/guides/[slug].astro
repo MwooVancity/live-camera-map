@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SITE_NAME } from '../../config.mjs';
+import { cameras, countsBy, registryDate, report, loadedDistricts, failedDistricts } from '../../lib/data.mjs';
+import { GUIDES, curatedCities, slugify } from '../../lib/pages.mjs';
+import { GUIDE_BODY } from '../../lib/guides.mjs';
+
+export function getStaticPaths() {
+  return GUIDES.map((g) => ({ params: { slug: g.slug }, props: { guide: g } }));
+}
+const { guide } = Astro.props;
+const sections = GUIDE_BODY[guide.slug]({ total: cameras.length, districts: loadedDistricts, failed: failedDistricts, dropped: report.dropped || {}, date: registryDate });
+const byCity = countsBy(cameras, 'city');
+const cities = curatedCities(cameras).slice(0, 3);
+const regionOf = (city) => cameras.find((c) => c.city === city).regionSlug;
+const others = GUIDES.filter((g) => g.slug !== guide.slug);
+---
+<Base title={`${guide.title} | ${SITE_NAME}`} description={sections[0].p[0].slice(0, 155)} route={`/guides/${guide.slug}/`} crumbs={[{ name: guide.title, route: `/guides/${guide.slug}/` }]}>
+  <h1>{guide.title}</h1>
+  {sections.map((s) => (<><h2>{s.h}</h2>{s.p.map((t) => <p>{t}</p>)}</>))}
+  <p class="meta">Written {guide.date}.</p>
+  <h2>See it on a real page</h2>
+  <ul>{cities.map((c) => <li><a href={`/cameras/${regionOf(c)}/${slugify(c)}/`}>{c} traffic cameras</a> ({byCity[c]})</li>)}</ul>
+  <p><a class="cta" href="/map/">Open the map</a></p>
+  <h2>More guides</h2>
+  <ul>{others.map((g) => <li><a href={`/guides/${g.slug}/`}>{g.title}</a></li>)}</ul>
+</Base>

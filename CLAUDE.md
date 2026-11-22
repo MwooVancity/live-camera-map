@@ -2,6 +2,9 @@
 
 Read `plan.md` first. It is the source of truth for decisions, data model and build order.
 
+## Line 0: Argos Atlas killer from the very start (HARD, owner 2026-11-22)
+The point of this site is to beat argosatlas.com, not to be a smaller copy of it. For every page and feature, helpfulness to the person and information gain over Argos come before everything else except the hard rules below (licensing, `gev/` immutability, security, link-out only). Every page must answer the visitor's question better than the Argos page for the same place: all licensed data for that place on the page (plan section 12), one source and one timestamp per number, camera health Argos does not have. Before building a page or block, say one line: "Beats Argos by: ...". If it cannot be said, do not build it. Never copy Argos code, text, images or layout; the goal is to win on data, not to imitate.
+
 ## Who you are working with
 Mike is a first-time solo developer building this as a side venture. He wants complete, immediately usable deliverables, direct communication, and for you to make decisions yourself and state them in one line. Do not hedge or pile on caveats. But assume everything will break: verify before claiming anything works, and say plainly what you could not verify.
 
