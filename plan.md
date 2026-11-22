@@ -156,3 +156,9 @@ Build order (replaces nothing in section 5; adds):
 - LICENCE: Caltrans calls its portal the Commercial Wholesale Web Portal and says no charge for use, but never states commercial use outright. Rows stay flagged needsHumanReview. Mike confirms before ads.
 - LAUNCH CHECKLIST: remove staging noindex and sitemap removal (ops/staging/prepare.mjs is staging only), real domain in PUBLIC_SITE_URL, licence confirmed, ad slots gate.
 - OWNER: Ontario 511 and Alberta 511 keys; domain and name when going live; Open-Meteo commercial terms.
+
+## 14. Argos as our lead list (owner 2026-11-22)
+- Rule: every public source Argos uses is a lead. Free = candidate, paid = excluded. A candidate becomes live only after its own licence row passes the gate (quote, URL, date). Argos using it is NOT a licence.
+- Method: read their public sources/methodology page by hand (no scraping, robots.txt respected), list source names in docs/research/argos-source-leads.md, then for each: free? key needed? commercial use? attribution? -> source-permissions row -> importer -> page block.
+- Why not skip licensing: a free feed can ban commercial use, so ads would break it; the gate costs minutes per source and protects the whole site.
+- Edge cases: lead is paid or login-walled -> excluded, row says why. Lead is free but non-commercial -> row not_allowed, block never ships. Lead moved or changed terms -> review date expires in 180 days, gate disables it.
