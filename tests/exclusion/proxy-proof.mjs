@@ -18,7 +18,7 @@ function req(method, path) {
   return new Promise((res) => {
     const r = http.request({ host: u.hostname, port: u.port || 80, method, path, headers: { Host: hostHeader }, timeout: 15000 }, (resp) => {
       let body = '';
-      resp.on('data', (c) => { if (body.length < 4_000_000) body += c; });
+      resp.on('data', (c) => { if (body.length < 64_000_000) body += c; });
       resp.on('end', () => res({ status: resp.statusCode, headers: resp.headers, body }));
     });
     r.on('timeout', () => r.destroy(new Error('timeout')));
@@ -50,7 +50,7 @@ const cat = await req('GET', '/api/cctv/sources');
 if (cat.status !== 200) rec(false, `catalog      GET     ${cat.status} /api/cctv/sources did not answer 200`);
 else {
   let providers = new Map();
-  try { for (const s of JSON.parse(cat.body).sources || []) providers.set(s.provider, (providers.get(s.provider) || 0) + 1); } catch { rec(false, 'catalog       /api/cctv/sources body is not JSON (or was cut at 4 MB)'); }
+  try { for (const s of JSON.parse(cat.body).sources || []) providers.set(s.provider, (providers.get(s.provider) || 0) + 1); } catch { rec(false, 'catalog       /api/cctv/sources body is not JSON (or was cut at 64 MB)'); }
   // an empty catalog would make every "absent" check below pass for nothing
   rec(providers.size > 0, `catalog       /api/cctv/sources lists ${providers.size} providers (0 = proof is vacuous, the catalog never loaded)`);
   for (const bad of map.restrictedCctvProviders) rec(![...providers.keys()].some((p) => String(p).includes(bad)), `catalog       provider "${bad}" must be absent from /api/cctv/sources (found ${providers.get(bad) ?? 0})`);
