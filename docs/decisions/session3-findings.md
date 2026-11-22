@@ -28,5 +28,13 @@ Critical failures: 0 in every scenario (the probe's CRITICAL list). Scenario B's
 5. Must-have routes defined here (Mike may amend): app boot, camera sources and health (`/api/cctv/*`), static/library layers, weather. These returned 200 through the proxy (30 routes 200 in scenario A). Flights/vessels/satellites are licence-gated (Session 2) and are out of scope until permitted.
 6. Not yet tested: WebSocket (HMR) through the proxy, real browser boot and mobile, load at 10/25/50/100, container restart/rollback, IPv6/direct-origin on a real host, image vulnerability scan. These are Session 3B-continued and Sessions 5 and 10.
 
+## ChatGPT review of these results (2026-11-22)
+Agrees: conditional GO for staging, NOT approved for public launch. Changes adopted:
+- Proxy uses an ALLOWLIST of routes and HTTP methods; the restricted-route denylist stays as a second layer.
+- Next session tests: all methods (POST/PUT/DELETE/OPTIONS), proxy-bypass encodings (encoded paths, case, `//`, trailing slash, query), CSRF/CORS/Origin, WebSocket/HMR in a real browser, container-to-container reachability, `GEV_KEY_SETUP_TRUSTED_PEERS=none` verified after a clean restart, dependency and image vuln scan, restart and rollback.
+- GEV port stays unpublished, plus a host firewall rule.
+- Search: build it outside GEV (Astro search box + OSM-based geocoder such as Photon or Pelias, licence to be checked) and move the map with GEV's own URL hash (`#v=2&lat=..&lon=..&alt=..`, seen in `gev/scripts/qa-stories.mjs`); verify the hash is honoured in the embed.
+Disputed: ChatGPT would keep a public dev server only as "documented residual risk" for a controlled beta. Agreed for beta only.
+
 ## Verdict so far
 No kill criterion triggered. CONDITIONAL GO: continue only with (a) proxy container on private network, no published GEV port, (b) trusted peers `none` + `GEV_ALLOWED_HOSTS`, (c) proxy denylist for restricted routes, (d) no secrets in the container, (e) a browser boot and load test before any public launch.
