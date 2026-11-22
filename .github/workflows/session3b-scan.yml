@@ -28,7 +28,7 @@ jobs:
           cd gev-audit
           npm audit --omit=dev --package-lock-only --json > ../scan-out/npm-audit.json || true
           test -s ../scan-out/npm-audit.json
-      - name: Trivy (docker image): vulns, secrets, SBOM
+      - name: "Trivy via docker image (vulns, secrets, SBOM)"
         run: |
           T="docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $PWD:/w -w /w aquasec/trivy:0.58.1"
           $T image --scanners vuln --severity HIGH,CRITICAL --format json --output scan-out/trivy-image.json gev-pinned || true
