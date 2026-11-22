@@ -145,7 +145,14 @@ Build order (replaces nothing in section 5; adds):
 - Page gate also needs `site/PAGES.md` to carry "Beats Argos by: ..." for each indexable page.
 
 ## Next
-- DONE 2026-11-22: Caltrans registry (3,263 cameras, all 12 districts), Astro site (18 pages), enforcement harness, CI green (commit after c136d10).
-- IN PROGRESS: section 12 live blocks (Caltrans lane closures, chain controls, message signs, road weather; NWS forecast and alerts) with licence rows, tests, page blocks.
-- THEN: corridor view; more no-key camera sources seen in GEV catalog (DriveBC, City of Calgary, City of Toronto) after reading each licence; health.json checker + R2 cron.
+- DONE 2026-11-22: Caltrans registry (3,263 cameras), Astro site (20 pages), enforcement harness, live blocks (lane closures, chain controls, signs, road weather, NWS), CI green, noindex staging live at https://mwoovancity.github.io/live-camera-map/ (workflow staging.yml, refreshes feeds every 3 h).
+- REVIEW 2026-11-22 (Gemini + ChatGPT guest chats; neither could open sub-pages, so their page-level claims are UNVERIFIED; their Argos counts of 493 LA / 706 CA / 200k+ total are UNVERIFIED third-hand). Agreed gaps, in order:
+  1. Camera health checker (GitHub Actions): proves a camera link works (content-type, not an HTML error page), classifies still / video / operator page / unavailable / retired, keeps history for 30-day uptime. Both reviewers: a last-checked stamp alone is not proof.
+  2. Road and corridor pages (I-5, I-10, I-405, US-101): cameras in driving order, closures and signs between them; camera-to-event links (each closure/incident links to its nearest cameras). Only where data exists.
+  3. More licensed feeds on the page: CHP incidents, Caltrans speeds/travel times if CWWP offers them, USGS quakes, AirNow, CAL FIRE. Each needs a licence row first.
+  4. Count definitions on the page (what counts as a camera, active, and how a city is assigned) so numbers are never inflated.
+  5. Coverage beyond Caltrans for the same cities (city, county, port cameras) after each licence is read; Canadian sources seen in GEV catalog (DriveBC, Calgary, Toronto).
+  6. Problem-led guides (closures, chain controls, snow) instead of site-mechanics guides.
+- LICENCE: Caltrans calls its portal the Commercial Wholesale Web Portal and says no charge for use, but never states commercial use outright. Rows stay flagged needsHumanReview. Mike confirms before ads.
+- LAUNCH CHECKLIST: remove staging noindex and sitemap removal (ops/staging/prepare.mjs is staging only), real domain in PUBLIC_SITE_URL, licence confirmed, ad slots gate.
 - OWNER: Ontario 511 and Alberta 511 keys; domain and name when going live; Open-Meteo commercial terms.
