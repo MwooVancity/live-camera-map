@@ -16,6 +16,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      PUBLIC_SITE_URL: https://mwoovancity.github.io/live-camera-map
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -34,8 +36,6 @@ jobs:
       - name: Build with the staging URL
         run: npm run build
         working-directory: site
-        env:
-          PUBLIC_SITE_URL: https://mwoovancity.github.io/live-camera-map
       - run: npm test
         working-directory: site
       - run: node ops/harness/page-gate.mjs site/dist site/PAGES.md
