@@ -6,7 +6,7 @@
   "routes": [
     { "id": "shell", "pattern": "^/(\\?.*)?$", "probe": "/", "expect": [200], "methods": ["GET", "HEAD"] },
     { "id": "embed", "pattern": "^/(\\?.*)?$", "probe": "/?embed=1", "expect": [200], "methods": ["GET"] },
-    { "id": "share", "pattern": "^/share/[A-Za-z0-9_-]+(\\?.*)?$", "probe": "/share/AQc", "expect": [200], "methods": ["GET"] },
+    { "id": "share", "pattern": "^/share/[A-Za-z0-9_-]+(\\?.*)?$", "probe": "/share/AQc", "expect": [200], "methods": ["GET", "HEAD"] },
     { "id": "root-assets", "pattern": "^(/style\\.css|/logo\\.svg|/location\\.svg|/mic\\.svg|/pin\\.svg|/visual-presets\\.svg|/manifest\\.webmanifest|/quebec-cameras\\.json|/favicon\\.ico)(\\?.*)?$", "probe": "/style.css", "expect": [200], "methods": ["GET", "HEAD"] },
     { "id": "public-dirs", "pattern": "^/(icons|models|events)/[A-Za-z0-9_@.+~=,/-]+(\\?.*)?$", "probe": "/icons/icon-32.png", "expect": [200], "methods": ["GET", "HEAD"] },
     { "id": "vite-modules", "pattern": "^/(@vite|@id|src|node_modules|server|build)/[A-Za-z0-9_@.+~=,/-]+(\\?.*)?$", "probe": "/@vite/client", "expect": [200], "methods": ["GET", "HEAD"], "note": "dev-server source is public by design (session3-findings #2); no secret may be in the image" },

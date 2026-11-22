@@ -35,7 +35,7 @@ const allowedBy = (method, p) => !nonCanonical(p) && routes.some((r) => r.re.tes
 const proxyBlocked = (r) => (r.status === 403 || r.status === 404 || r.status === 400 || r.status === 405) &&
   (r.headers['x-proxy-deny'] === '1' || /PROXY_DENY|nginx/i.test(r.body) ||
     // HEAD has no body: nginx 'return 403 "text"' answers with an octet-stream type, GEV answers JSON/HTML.
-    (r.body === '' && r.status === 403 && !/json|html/i.test(r.headers['content-type'] || ''))) &&
+    (r.body === '' && (r.status === 400 || (r.status === 403 && !/json|html/i.test(r.headers['content-type'] || ''))))) &&
   !/Proxied requests|GEV/i.test(r.body);
 
 const METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'];
