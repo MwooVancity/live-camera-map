@@ -1,0 +1,64 @@
+# Public deployment: pinned GEV (built from ./gev, unchanged) behind the allowlist proxy.
+# Run from anywhere:  docker compose -f ops/deploy/docker-compose.yml up -d --build --wait
+# Config comes from ops/deploy/.env (copy .env.example). No secrets belong in this file or in that .env.
+# Rules checked by tests/deploy/compose-lint.test.mjs: gev publishes NO port, trusted peers = none, proxy exists.
+services:
+  gev:
+    build:
+      context: ../../gev
+    image: gev-pinned:${GEV_IMAGE_TAG:-current}
+    restart: unless-stopped
+    # Which restricted sources are switched off (generated from data/exclusion-map.json). No secrets in it.
+    env_file:
+      - gev-exclusion.env
+    environment:
+      # Session 3 finding 1: credential setup is open to a published port unless this is none. Never remove.
+      GEV_KEY_SETUP_TRUSTED_PEERS: none
+      GEV_ALLOWED_HOSTS: ${GEV_ALLOWED_HOSTS:?set GEV_ALLOWED_HOSTS in ops/deploy/.env}
+      GEV_EMBED_FRAME_ANCESTORS: ${GEV_EMBED_FRAME_ANCESTORS:?set GEV_EMBED_FRAME_ANCESTORS in ops/deploy/.env}
+    # NO ports: only the proxy container can reach gev:4173 over the private network.
+    expose:
+      - "4173"
+    # read_only is NOT set (documented, not tested here): GEV runs the Vite dev server, and Vite 6 writes a temp copy
+    # of vite.config.js next to it in /app on every start; the app also writes .gev-cache and .gev-logs under /app.
+    # A read-only root would very likely stop it booting. Hardening that does not need writes instead:
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4173/').then((r)=>process.exit(r.ok?0:1),()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - private
+
+  proxy:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      gev:
+        condition: service_healthy
+    volumes:
+      - ../proxy/nginx.allowlist.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      # The only published port, loopback only. A tunnel or host proxy connects here.
+      - "127.0.0.1:8080:8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+      - /var/run
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - private
+
+# Ordinary bridge, not `internal`: GEV must reach the public weather/data APIs. It still has no published port.
+networks:
+  private: {}

@@ -1,0 +1,77 @@
+name: session4-exclusion
+# Restricted-source exclusion proof. Job 1 is offline (no Docker). Job 2 starts the pinned GEV behind the allowlist proxy
+# and fails unless every restricted route/asset (data/exclusion-map.json) is blocked BY THE PROXY for all 7 HTTP methods.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'data/**'
+      - 'ops/proxy/**'
+      - 'ops/deploy/**'
+      - 'tests/exclusion/**'
+      - 'tests/security/methods.mjs'
+      - '.github/workflows/session4-exclusion.yml'
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: 'Exclusion unit test (node:test, no Docker)'
+        run: node --test tests/exclusion/exclusion.test.mjs
+  proxy-proof:
+    needs: unit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: git clone https://github.com/bilawalsidhu/gods-eye-view gev
+      - run: git -C gev checkout "$(cut -d' ' -f1 ops/upstream-base.txt)"
+      - run: node tests/immutability/check.mjs
+      - run: node --check tests/security/methods.mjs
+      - run: node --check tests/exclusion/proxy-proof.mjs
+      - name: Build pinned image (no edits to gev/)
+        run: docker build -t gev-pinned ./gev
+      - run: docker network create gevnet
+      - name: 'Start GEV (private, unpublished, restricted sources switched off) and allowlist proxy'
+        run: |
+          docker run -d --name gev --network gevnet \
+            --env-file ops/deploy/gev-exclusion.env \
+            -e GEV_ALLOWED_HOSTS=map.example.test \
+            -e GEV_EMBED_FRAME_ANCESTORS=https://www.example.test \
+            -e GEV_KEY_SETUP_TRUSTED_PEERS=none \
+            gev-pinned
+          docker run -d --name proxy --network gevnet -p 127.0.0.1:8080:8080 \
+            -v "$PWD/ops/proxy/nginx.allowlist.conf:/etc/nginx/nginx.conf:ro" nginx:1.27-alpine
+          docker exec proxy nginx -t
+          for i in $(seq 1 60); do
+            curl -sf -o /dev/null -H 'Host: map.example.test' http://127.0.0.1:8080/ && break
+            sleep 3
+          done
+          curl -sf -o /dev/null -H 'Host: map.example.test' http://127.0.0.1:8080/
+          # warm the camera catalog (loads every enabled pack from the internet once) so the proof does not hit the 15 s timeout
+          curl -s -o /dev/null --max-time 180 -H 'Host: map.example.test' http://127.0.0.1:8080/api/cctv/sources || true
+          docker logs gev 2>&1 | tail -15
+      - name: 'Every restricted route blocked by the proxy, all 7 methods'
+        run: node tests/exclusion/proxy-proof.mjs http://127.0.0.1:8080 map.example.test | tee exclusion-proof.txt; exit "${PIPESTATUS[0]}"
+      - name: 'Allowlist and bypass matrix (existing test, now with the session 4 deny rules)'
+        run: node tests/security/methods.mjs http://127.0.0.1:8080 map.example.test | tee methods.txt; exit "${PIPESTATUS[0]}"
+      - name: Logs and immutability
+        if: always()
+        run: |
+          docker logs gev > gev.log 2>&1 || true
+          docker logs proxy > proxy.log 2>&1 || true
+          node tests/immutability/check.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: session4-exclusion-results
+          path: |
+            exclusion-proof.txt
+            methods.txt
+            gev.log
+            proxy.log

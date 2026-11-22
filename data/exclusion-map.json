@@ -1,0 +1,865 @@
+{
+  "doc": "Session 4 restricted-source exclusion map. Each group lists which permission rows (data/source-permissions.json) it covers, which GEV routes/assets serve them (with file:line evidence read in gev/ at the pinned commit), the paths a visitor would try (probePaths) and how they are stopped. tests/exclusion/exclusion.test.mjs checks every non-allowed permission row is in a group and every probe path is denied by the real nginx config and by the JSON mirror; .github/workflows/session4-exclusion.yml proves the same against a running GEV.",
+  "generatedAt": "2026-11-22",
+  "gevBase": "aac6be77735f6bcad583204724a43302227abc4d",
+  "answers": {
+    "weather-tile-reaches-eccc": {
+      "answer": "NO",
+      "evidence": [
+        "gev/server/providers/weather.js:4 const BASE = https://nowcoast.noaa.gov/geoserver/observations/",
+        "gev/server/providers/weather.js:351 capabilities URL built from BASE",
+        "gev/server/providers/weather.js:546 tile/image upstream URL built from BASE",
+        "gev/server/providers/weather.js:434 only /manifest, /tile, /image exist; products are the 4 frozen PRODUCTS (:6-53), all nowCOAST"
+      ],
+      "note": "No host other than nowcoast.noaa.gov appears in weather.js. ECCC GeoMet is used only by the browser-direct air-quality layer (gev/src/layers/airQuality/source.js:8), which no allowlisted route serves."
+    },
+    "cctv-frame-media-stream-fetch": {
+      "answer": "The upstream URL registered for that camera id in the loaded catalog (source.snapshotUrl or source.url), never a client-supplied URL",
+      "evidence": [
+        "gev/server/providers/cctv.js:650 /frame/",
+        "gev/server/providers/cctv.js:671-673 upstreamCandidate = source?.snapshotUrl || source?.url",
+        "gev/server/providers/cctv.js:379 /media/ uses source?.url (live HLS/MJPEG only; stills refused just after, same handler)",
+        "gev/server/providers/cctv.js:354-359 /stream/ returns buildStreamPayload(source) (URLs and feed type)"
+      ],
+      "note": "Which cameras exist depends on the pack env flags (catalog.js:56-195). NYC, Florida, Houston, Lithuania are opt-in (default off); Austin and Caltrans always load. These three routes are NOT allowlisted, so no camera image, stream or stream URL reaches a visitor."
+    }
+  },
+  "groups": [
+    {
+      "id": "opensky",
+      "title": "OpenSky Network (restricted, non-commercial)",
+      "mechanism": "server-proxied",
+      "routes": [
+        {
+          "route": "/api/flights",
+          "evidence": "gev/server/providers/aircraft/opensky.js:494"
+        },
+        {
+          "route": "/api/flights/track",
+          "evidence": "gev/server/providers/aircraft/tracks.js:67 (upstream :85)"
+        }
+      ],
+      "probePaths": [
+        "/api/flights",
+        "/api/flights?extended=1",
+        "/api/flights/track?icao24=abc123"
+      ],
+      "proxyEnforced": true,
+      "permissionIds": [
+        "opensky-network"
+      ]
+    },
+    {
+      "id": "ghostmaps",
+      "title": "S2 Underground GhostMaps (CC BY-NC-SA)",
+      "mechanism": "server-proxied",
+      "routes": [
+        {
+          "route": "/api/ghostmaps/*",
+          "evidence": "gev/server/providers/ghostMaps.js:431"
+        }
+      ],
+      "probePaths": [
+        "/api/ghostmaps",
+        "/api/ghostmaps/catalog",
+        "/api/ghostmaps/events",
+        "/api/ghostmaps/file?path=x"
+      ],
+      "proxyEnforced": true,
+      "note": "session3 saw /api/ghostmaps/catalog answer 200 from the origin; now proxy-denied",
+      "permissionIds": [
+        "s2-underground-ghostmaps-github-com-s2underground-ghostmaps"
+      ]
+    },
+    {
+      "id": "inaturalist",
+      "title": "iNaturalist (per-record NC licences)",
+      "mechanism": "server-proxied",
+      "routes": [
+        {
+          "route": "/api/inaturalist/*",
+          "evidence": "gev/server/providers/inaturalist/observations.js:337 (upstream client.js:16,18)"
+        }
+      ],
+      "probePaths": [
+        "/api/inaturalist",
+        "/api/inaturalist/grid",
+        "/api/inaturalist/observations"
+      ],
+      "proxyEnforced": true,
+      "permissionIds": [
+        "inaturalist-api-api-inaturalist-org-v2-observations-v1-grid-z-x-y-grid-json"
+      ]
+    },
+    {
+      "id": "google-news",
+      "title": "Google News RSS (personal, non-commercial ToS)",
+      "mechanism": "server-proxied",
+      "routes": [
+        {
+          "route": "/api/news/*",
+          "evidence": "gev/server/providers/news.js:185"
+        },
+        {
+          "route": "/api/regional-brief",
+          "evidence": "gev/server/providers/regional/news.js:95 (news.google.com/rss)"
+        }
+      ],
+      "probePaths": [
+        "/api/news",
+        "/api/news/feed",
+        "/api/news/hotspots",
+        "/api/regional-brief"
+      ],
+      "proxyEnforced": true,
+      "permissionIds": [
+        "google-news-rss"
+      ]
+    },
+    {
+      "id": "fl511",
+      "title": "FL511 cameras (personal use only)",
+      "mechanism": "opt-in CCTV pack, default off",
+      "routes": [
+        {
+          "route": "/api/cctv/sources (metadata, only when CCTV_FLORIDA_ENABLED=1)",
+          "evidence": "gev/server/providers/cctv/catalog.js:179-180 envOptIn"
+        },
+        {
+          "route": "/api/cctv/frame/:id",
+          "evidence": "gev/server/providers/cctv.js:650-671 fetches source.url"
+        },
+        {
+          "route": "/api/cctv/media/:id",
+          "evidence": "gev/server/providers/cctv.js:368-379"
+        },
+        {
+          "route": "/api/cctv/stream/:id",
+          "evidence": "gev/server/providers/cctv.js:354-359"
+        },
+        {
+          "route": "/api/library/data/cctv-florida-fl511",
+          "evidence": "gev/src/library/entries/cctv-florida-fl511.json"
+        }
+      ],
+      "probePaths": [
+        "/api/cctv/frame/fl511-1",
+        "/api/cctv/media/fl511-1",
+        "/api/cctv/stream/fl511-1",
+        "/api/library/data/cctv-florida-fl511"
+      ],
+      "proxyEnforced": true,
+      "envEnforced": [
+        "CCTV_FLORIDA_ENABLED=0",
+        "GEV_LIBRARY_DISABLE"
+      ],
+      "permissionIds": [
+        "fl511-florida-dot",
+        "florida-cameras-fl511-cctv-florida-fl511-fl511-com"
+      ]
+    },
+    {
+      "id": "nyc-dot",
+      "title": "NYC DOT TMC cameras (data-sharing agreement required)",
+      "mechanism": "opt-in CCTV pack, default off",
+      "routes": [
+        {
+          "route": "/api/cctv/sources (metadata, only when CCTV_NYC_ENABLED=1)",
+          "evidence": "gev/server/providers/cctv/catalog.js:159-160 envOptIn"
+        },
+        {
+          "route": "/api/cctv/frame|media|stream/:id",
+          "evidence": "gev/server/providers/cctv.js:354-671"
+        },
+        {
+          "route": "/api/library/data/cctv-nyc-dot",
+          "evidence": "gev/src/library/entries/cctv-nyc-dot.json"
+        }
+      ],
+      "probePaths": [
+        "/api/cctv/frame/nyc-1",
+        "/api/cctv/media/nyc-1",
+        "/api/cctv/stream/nyc-1",
+        "/api/library/data/cctv-nyc-dot"
+      ],
+      "proxyEnforced": true,
+      "envEnforced": [
+        "CCTV_NYC_ENABLED=0",
+        "GEV_LIBRARY_DISABLE"
+      ],
+      "permissionIds": [
+        "nyc-dot-traffic-management-center-webcams-nyctmc-org",
+        "new-york-city-cameras-nyc-dot-tmc-cctv-nyc-dot-webcams-nyctmc-org"
+      ]
+    },
+    {
+      "id": "houston-transtar",
+      "title": "Houston TranStar cameras (no licence, copying prohibited)",
+      "mechanism": "opt-in CCTV pack, default off",
+      "routes": [
+        {
+          "route": "/api/cctv/sources (metadata, only when CCTV_HOUSTON_ENABLED=1)",
+          "evidence": "gev/server/providers/cctv/catalog.js:189-190 envOptIn"
+        },
+        {
+          "route": "/api/cctv/frame|media|stream/:id",
+          "evidence": "gev/server/providers/cctv.js:354-671"
+        }
+      ],
+      "probePaths": [
+        "/api/cctv/frame/houston-1",
+        "/api/cctv/media/houston-1",
+        "/api/cctv/stream/houston-1"
+      ],
+      "proxyEnforced": true,
+      "envEnforced": [
+        "CCTV_HOUSTON_ENABLED=0"
+      ],
+      "permissionIds": [
+        "houston-transtar-traffic-houstontranstar-org-frames-www-houstontranstar-org"
+      ]
+    },
+    {
+      "id": "gvp",
+      "title": "Smithsonian GVP volcanoes (non-commercial)",
+      "mechanism": "library dataset, fetch=proxied",
+      "routes": [
+        {
+          "route": "/api/library/data/gvp-holocene-volcanoes",
+          "evidence": "gev/src/library/entries/gvp-holocene-volcanoes.json source.fetch=proxied; gev/server/providers/library.js:97"
+        }
+      ],
+      "probePaths": [
+        "/api/library/data/gvp-holocene-volcanoes",
+        "/api/library/data/gvp-holocene-volcanoes?bbox=0,0,1,1"
+      ],
+      "proxyEnforced": true,
+      "envEnforced": [
+        "GEV_LIBRARY_DISABLE"
+      ],
+      "note": "WAS REACHABLE in session 3B: allowlist regex /api/library/data/<any id> and the probe route was this very dataset. Fixed session 4 (id allowlist).",
+      "permissionIds": [
+        "holocene-volcanoes-smithsonian-gvp-gvp-holocene-volcanoes-webservices-volcano-si"
+      ]
+    },
+    {
+      "id": "gbif",
+      "title": "GBIF occurrence density (CC BY-NC records)",
+      "mechanism": "library tiles, fetch=browser-direct (browser calls api.gbif.org itself)",
+      "routes": [
+        {
+          "route": "/api/library/tile/gbif-occurrence-density/z/x/y",
+          "evidence": "not allowlisted; entry source.fetch=browser-direct so the proxy cannot see the real traffic"
+        }
+      ],
+      "probePaths": [
+        "/api/library/tile/gbif-occurrence-density/1/1/1"
+      ],
+      "proxyEnforced": true,
+      "envEnforced": [
+        "GEV_LIBRARY_DISABLE"
+      ],
+      "gaps": [
+        "BD-1"
+      ],
+      "permissionIds": [
+        "biodiversity-records-gbif-gbif-occurrence-density-api-gbif-org"
+      ]
+    },
+    {
+      "id": "telegeography",
+      "title": "TeleGeography submarine cables (CC BY-NC-SA, mustNotShip)",
+      "mechanism": "bundled data files under /src/",
+      "routes": [
+        {
+          "route": "/src/data/local_data/telegeography_submarine_cables/*.json",
+          "evidence": "gev/src/layers/submarineCables/bundledSource.js:7,13 (fetched at runtime, not imported)"
+        }
+      ],
+      "probePaths": [
+        "/src/data/local_data/telegeography_submarine_cables/cable-geo.json",
+        "/src/data/local_data/telegeography_submarine_cables/landing-point-geo.json",
+        "/src/data/local_data/telegeography_submarine_cables/source.json"
+      ],
+      "proxyEnforced": true,
+      "note": "WAS REACHABLE in session 3B through the open /src/ prefix. Fixed session 4 (deny rule). Code-only module telegeographySubmarineCables.js stays reachable and holds no data.",
+      "permissionIds": [
+        "telegeography-submarine-cable-map-712-cables-1-917-landing-points"
+      ]
+    },
+    {
+      "id": "bhote-koshi",
+      "title": "Bhote Koshi event pack (CC BY-NC, mustNotShip)",
+      "mechanism": "bundled public assets + bundled code module",
+      "routes": [
+        {
+          "route": "/events/bhote-koshi-2026/*",
+          "evidence": "gev/src/data/bhoteKoshiEvent.js:52 EVENT_ASSET_ROOT"
+        },
+        {
+          "route": "/src/data/bhoteKoshiFloodPath.js (river centreline, 19 KB, statically imported)",
+          "evidence": "gev/src/app/constructCatalog.js:45-46 -> bhoteKoshiLocator.js:20"
+        }
+      ],
+      "probePaths": [
+        "/events/bhote-koshi-2026/event.json",
+        "/events/bhote-koshi-2026/pre.webp",
+        "/events/bhote-koshi-2026/post.webp",
+        "/events/bhote-koshi-2026/README.md",
+        "/events/x"
+      ],
+      "proxyEnforced": true,
+      "gaps": [
+        "BK-1"
+      ],
+      "note": "WAS REACHABLE in session 3B via /events/. Assets fixed; the flood-path JS module is a gap.",
+      "permissionIds": [
+        "bhote-koshi-event-pack-vantor-imagery-crops-geopera-river-centerline"
+      ]
+    },
+    {
+      "id": "bundled-unknown",
+      "title": "Bundled snapshots with unknown permission (UCS satellites, imaging sensors, CCTV ground heights)",
+      "mechanism": "bundled data files under /src/",
+      "routes": [
+        {
+          "route": "/src/data/local_data/{ucs_satellites,imaging_sensors,cctv_ground_heights}/*.json",
+          "evidence": "gev/src/data/ucsSatellites.js:17, imagingSensors.js:17 (runtime fetch); gev/server/providers/cctv/groundHeights.js:7 (disk read only)"
+        }
+      ],
+      "probePaths": [
+        "/src/data/local_data/ucs_satellites/ucs_satellites.json",
+        "/src/data/local_data/imaging_sensors/imaging_sensors.json",
+        "/src/data/local_data/cctv_ground_heights/cctv_ground_heights.json"
+      ],
+      "proxyEnforced": true,
+      "note": "Unknown = disabled. Satellite layers that need the two browser-fetched packs will fail soft (retryable loaders); not verified in a browser.",
+      "permissionIds": [
+        "ucs-satellite-database-ucs-satellite-database-5-1-2023-3-564-records-operator-ow",
+        "imaging-sensor-pack-46-earth-observation-platforms-swath-resolution",
+        "cctv-ground-heights-3-445-cameras"
+      ]
+    },
+    {
+      "id": "shinjuku",
+      "title": "Shinjuku CCTV source pack (config file)",
+      "mechanism": "server config file",
+      "routes": [
+        {
+          "route": "config/cctv_sources.shinjuku.json",
+          "evidence": "not under any allowlisted URL prefix"
+        }
+      ],
+      "probePaths": [
+        "/config/cctv_sources.shinjuku.json"
+      ],
+      "proxyEnforced": true,
+      "permissionIds": [
+        "shinjuku-cctv-source-pack"
+      ]
+    },
+    {
+      "id": "cctv-packs-not-allowed",
+      "title": "Other CCTV packs with unknown permission (Austin, Caltrans, TxDOT, TfL, WSDOT, DelDOT, King County, HK, Catalonia, Tallinn, Tarktee, Warendorf, Vegvesen, Romania, Lithuania, Ottawa, Taiwan)",
+      "mechanism": "default-on CCTV packs with env kill switches (Austin and Caltrans have none)",
+      "routes": [
+        {
+          "route": "/api/cctv/sources (metadata)",
+          "evidence": "gev/server/providers/cctv.js:297 lists every loaded pack"
+        },
+        {
+          "route": "/api/cctv/frame|media|stream/:id",
+          "evidence": "gev/server/providers/cctv.js:354-671"
+        }
+      ],
+      "probePaths": [
+        "/api/cctv/frame/austin-1",
+        "/api/cctv/media/caltrans-1",
+        "/api/cctv/stream/tfl-1"
+      ],
+      "proxyEnforced": true,
+      "envEnforced": [
+        "CCTV_*_ENABLED=0"
+      ],
+      "gaps": [
+        "CCTV-NOSWITCH"
+      ],
+      "note": "Images and streams are proxy-blocked for every pack. Metadata via /api/cctv/sources is only env-blocked.",
+      "permissionIds": [
+        "city-of-austin-open-data",
+        "txdot-its-its-txdot-gov",
+        "city-of-tallinn-ristmikud-tallinn-ee",
+        "transpordiamet-tarktee",
+        "stadt-warendorf-webcam",
+        "caltrans-cwwp2-dot-ca-gov",
+        "deldot-video-deldot-gov",
+        "tfl-open-data-jamcams",
+        "servei-catal-de-tr-nsit-ajuntament-de-barcelona-ajuntament-de-terrassa",
+        "king-county-road-services-services-arcgis-com-king-county-gis",
+        "wsdot-data-wsdot-wa-gov",
+        "hong-kong-transport-department-data-gov-hk",
+        "webcam-romania-giroc-webcamromania-ro-w4-webcamromania-ro",
+        "statens-vegvesen-catalog-ogckart-sn1-atlas-vegvesen-no-frames-kamera-atlas-vegve",
+        "lithuania-road-cameras-via-lietuva-cctv-lithuania-eismoinfo-lt"
+      ]
+    },
+    {
+      "id": "transit-bike-rail",
+      "title": "Transit, rail and bike-share feeds (all unknown or restricted: BiciMAD, Hamilton HSR, ~90 more)",
+      "mechanism": "server-proxied",
+      "routes": [
+        {
+          "route": "/api/transit/*, /api/rail/*, /api/gbfs",
+          "evidence": "gev/server/providers/transit.js, rail.js, gbfs.js"
+        }
+      ],
+      "probePaths": [
+        "/api/gbfs",
+        "/api/transit",
+        "/api/transit/vehicles",
+        "/api/transit/feeds",
+        "/api/rail",
+        "/api/rail/trains"
+      ],
+      "proxyEnforced": true,
+      "permissionIds": [
+        "gbfs-lyft-bcycle-social-bicycles-pbsc",
+        "bike-share-toronto-toronto-publicbikesystem-net",
+        "bike-ita-tembici-publicbikesystem-net-seven-brazilian-cities-santiago-and-bogot",
+        "bicimad-madrid-publicbikesystem-net",
+        "oslo-bergen-trondheim-bysykkel-urban-sharing-gbfs-urbansharing-com",
+        "kolumbus-farte-bysykkel-entur-mobility-api-entur-io-mobility-v2-gbfs",
+        "jcdecaux-cyclocity-api-cyclocity-fr",
+        "mbta-massdot-cdn-mbta-com",
+        "capmetro-data-texas-gov",
+        "metro-transit-metropolitan-council",
+        "ovapi-stichting-opengeo",
+        "entur-api-entur-io",
+        "translink-queensland-government",
+        "hsl-realtime-hsl-fi",
+        "ttc-bustime-ttc-ca",
+        "miway-miapp-ca",
+        "hamilton-hsr-opendata-hamilton-ca",
+        "durham-region-transit-drtonline-durhamregiontransit-com",
+        "guelph-transit-glphtrpcloud-com",
+        "kingston-transit-api-cityofkingston-ca",
+        "barrie-transit-myridebarrie-ca",
+        "yrt-viva-rtu-york-ca",
+        "burlington-transit-opendata-burlington-ca",
+        "metro-north-api-endpoint-mta-info-rrgtfsfeeds-s3-amazonaws-com",
+        "lirr-api-endpoint-mta-info-rrgtfsfeeds-s3-amazonaws-com",
+        "mbta-rail-cdn-mbta-com",
+        "septa-regional-rail-www3-septa-org-github-com",
+        "septa-trolleys-www3-septa-org-github-com",
+        "marc-mdotmta-gtfs-rt-s3-amazonaws-com-feeds-mta-maryland-gov",
+        "tri-rail-gtfsr-tri-rail-com-gtfs-tri-rail-com",
+        "rtd-open-data-rtd-denver-com-www-rtd-denver-com",
+        "capmetro-metrorail-data-texas-gov",
+        "metro-light-rail-svc-metrotransit-org",
+        "lynx-gtfsrealtime-ridetransit-org",
+        "grt-ion-webapps-regionofwaterloo-ca",
+        "vy-api-entur-io-storage-googleapis-com",
+        "go-ahead-api-entur-io-storage-googleapis-com",
+        "flytoget-api-entur-io-storage-googleapis-com",
+        "sj-nord-api-entur-io-storage-googleapis-com",
+        "seattle-streetcar-s3-amazonaws-com-metro-kingcounty-gov",
+        "connector-streetcar-tmgtfsprd-sorttrpcloud-com-www-go-metro-com",
+        "bordeaux-tram-bdx-mecatran-com",
+        "prague-pid-api-golemio-cz",
+        "warsaw-buses-and-trams-mkuran-pl",
+        "bordeaux-tbm-bdx-mecatran-com",
+        "pozna-buses-and-trams-ztm-poznan-pl",
+        "edmonton-transit-service-gtfs-edmonton-ca",
+        "victoria-regional-transit-bct-tmix-se",
+        "krak-w-buses-gtfs-ztp-krakow-pl",
+        "krak-w-trams-gtfs-ztp-krakow-pl",
+        "vilnius-public-transport-stops-lt",
+        "bucharest-public-transport-gtfs-tpbi-ro",
+        "rome-public-transport-romamobilita-it",
+        "turin-gtt-percorsieorari-gtt-to-it",
+        "venice-actv-buses-tpl-actv-it",
+        "venice-actv-waterbuses-tpl-actv-it",
+        "adelaide-metro-gtfs-adelaidemetro-com-au-2",
+        "marta-buses-gtfs-rt-itsmarta-com",
+        "denver-rtd-open-data-rtd-denver-com",
+        "cluj-napoca-ctp-cluj-rt-feed-gtfs-ro",
+        "ia-i-ctp-iasi-rt-feed-gtfs-ro",
+        "rzesz-w-city-transport-mpkrzeszow-pl",
+        "m-laga-emt-gtfs-emtmalaga-es",
+        "carris-lisbon-city-gateway-carris-pt",
+        "rouen-astuce-api-mrn-cityway-fr",
+        "toulon-mistral-feed-rdtpm-toulon-ratpdev-com",
+        "tours-fil-bleu-data-filbleu-fr"
+      ]
+    },
+    {
+      "id": "radio",
+      "title": "Radio Browser (unknown)",
+      "mechanism": "server-proxied",
+      "routes": [
+        {
+          "route": "/api/radio/*",
+          "evidence": "gev/server/providers/radio.js"
+        }
+      ],
+      "probePaths": [
+        "/api/radio",
+        "/api/radio/stations",
+        "/api/radio/click"
+      ],
+      "proxyEnforced": true,
+      "permissionIds": [
+        "radio-browser"
+      ]
+    },
+    {
+      "id": "live-misc",
+      "title": "Other live sources with unknown permission (NHC cyclones, Google Street View and 3D tiles, adsbdb, planespotters, AISStream, CelesTrak, Launch Library, Esri imagery, ECCC GeoMet, GDELT, Liveuamap, World News API, TomTom)",
+      "mechanism": "mixed: server-proxied (blocked at proxy) and browser-direct (Esri, ECCC AQHI, Street View; not stoppable at proxy)",
+      "routes": [
+        {
+          "route": "/api/cyclones, /api/google/*, /api/adsbdb, /api/vessels, /api/celestrak/*, /api/launches, /api/tomtom/*",
+          "evidence": "gev/data/route-inventory.json"
+        },
+        {
+          "route": "ECCC GeoMet air quality (browser-direct)",
+          "evidence": "gev/src/layers/airQuality/source.js:8"
+        }
+      ],
+      "probePaths": [
+        "/api/cyclones",
+        "/api/google/tiles-token",
+        "/api/google/text-search",
+        "/api/adsbdb",
+        "/api/vessels",
+        "/api/celestrak/active",
+        "/api/launches",
+        "/api/tomtom/status",
+        "/api/tomtom/flow"
+      ],
+      "proxyEnforced": true,
+      "gaps": [
+        "BD-1"
+      ],
+      "permissionIds": [
+        "noaa-nhc-cphc-advisories-www-nhc-noaa-gov-currentstorms-json-the-mapservices-wea",
+        "google-street-view-maps-javascript-api",
+        "google-map-tiles-api-photorealistic-3d-tiles-places-geocoding",
+        "adsbdb-api-adsbdb-com",
+        "planespotters-net-api-planespotters-net-pub-photos-hex-hex",
+        "aisstream-io",
+        "celestrak",
+        "the-space-devs-launch-library-2-v2-3",
+        "esri-world-imagery-arcgis-online-tile-service",
+        "environment-and-climate-change-canada-msc-geomet-ogc-api",
+        "news-server-gev-news-origin-optional-none-by-default",
+        "gdelt-2-0-events-and-gkg-data-gdeltproject-org-gdeltv2-no-key-used-only-without-",
+        "liveuamap-a-liveuamap-com-api-liveuamap-api-key-optional-paid-used-only-without-",
+        "world-news-api-api-worldnewsapi-com-search-news-worldnewsapi-key-optional-used-o",
+        "tomtom-traffic-api-flow-vector-tiles",
+        "gdelt-project-doc-2-0"
+      ]
+    },
+    {
+      "id": "library-tiles-not-allowed",
+      "title": "Data Library imagery/tile entries with unknown permission",
+      "mechanism": "library tiles; some proxied, many browser-direct",
+      "routes": [
+        {
+          "route": "/api/library/tile/<id>/z/x/y",
+          "evidence": "gev/src/library/proxy.js:515-530 (403 when GEV_LIBRARY_DISABLE lists the id)"
+        }
+      ],
+      "probePaths": [
+        "/api/library/tile/naip-x/1/1/1",
+        "/api/library/tile/ny-statewide-imagery/1/1/1",
+        "/api/library/index/x"
+      ],
+      "proxyEnforced": true,
+      "envEnforced": [
+        "GEV_LIBRARY_DISABLE"
+      ],
+      "gaps": [
+        "BD-1"
+      ],
+      "permissionIds": [
+        "arizona-statewide-imagery-2017-az-statewide-imagery-azgeo-az-gov",
+        "bismarck-mandan-north-dakota-aerial-photography-bismarck-mandan-nd-ndgishub-nd-g",
+        "topplusopen-basemap-bkg-bkg-topplus-open-sgx-geodatenzentrum-de",
+        "connecticut-statewide-imagery-2019-ct-statewide-imagery-cteco-uconn-edu",
+        "dakota-county-minnesota-air-photo-dakota-county-mn-gisimg-co-dakota-mn-us",
+        "delaware-statewide-imagery-2024-de-statewide-imagery-imagery-firstmap-delaware-g",
+        "eesti-ortofoto-maa-amet-ee-maa-amet-ortofoto-tiles-maaamet-ee",
+        "grand-forks-north-dakota-aerial-photography-grand-forks-nd-ndgishub-nd-gov",
+        "japan-standard-map-gsi-gsi-japan-map-cyberjapandata-gsi-go-jp",
+        "japan-aerial-photos-gsi-gsi-japan-photo-cyberjapandata-gsi-go-jp",
+        "iowa-statewide-imagery-2023-ia-statewide-imagery-ortho-gis-iastate-edu",
+        "france-aerial-photos-ign-ign-orthophotos-france-data-geopf-fr",
+        "illinois-statewide-imagery-il-statewide-imagery-data-isgs-illinois-edu",
+        "surface-water-occurrence-jrc-jrc-surface-water-storage-googleapis-com",
+        "kansas-statewide-imagery-2021-ks-statewide-imagery-services-kgs-ku-edu",
+        "lake-county-indiana-aerial-imagery-lake-county-in-tiles-arcgis-com",
+        "lawrence-kansas-aerial-photos-lawrence-ks-tiles-arcgis-com",
+        "lee-county-florida-aerial-imagery-lee-county-fl-gisimageserver-leegov-com",
+        "loudoun-county-virginia-imagery-loudoun-county-va-logis-loudoun-gov",
+        "louisville-lojic-kentucky-imagery-louisville-lojic-ky-services-lojic-org",
+        "massachusetts-statewide-imagery-ma-statewide-imagery-tiles-arcgis-com",
+        "maris-imagery-mississippi-maris-ms-tiles-arcgis-com",
+        "maryland-statewide-imagery-md-statewide-imagery-mdgeodata-md-gov",
+        "maine-statewide-imagery-me-statewide-imagery-gis-maine-gov",
+        "michigan-statewide-imagery-2024-mi-statewide-imagery-imagery-michigan-gov",
+        "mountain-village-colorado-orthoimagery-mountain-village-co-tiles-arcgis-com",
+        "mississippi-statewide-imagery-ms-statewide-imagery-tiles-arcgis-com",
+        "north-central-texas-nctcog-ortho-nctcog-tx-mapitimage-tarrantcounty-com",
+        "north-dakota-statewide-imagery-2013-nd-statewide-imagery-ndgishub-nd-gov",
+        "new-orleans-regional-planning-commission-imagery-new-orleans-rpc-la-tiles-arcgis",
+        "new-hampshire-statewide-imagery-2022-nh-statewide-imagery-nhgeodata-unh-edu",
+        "new-jersey-statewide-imagery-2015-nj-statewide-imagery-maps-nj-gov",
+        "digitale-orthophotos-nrw-dop-10-cm-nrw-dop-www-wms-nrw-de",
+        "northwest-arkansas-benton-washington-county-imagery-nwa-benton-washington-ar-til",
+        "oakland-county-michigan-ortho-imagery-oakland-county-mi-gisservices-oakgov-com",
+        "ortofotomapa-polski-gugik-pl-ortofotomapa-mapy-geoportal-gov-pl",
+        "portland-metro-rlis-oregon-aerial-photos-portland-metro-or-utility-arcgis-com",
+        "rhode-island-statewide-imagery-2019-ri-statewide-imagery-tiles-arcgis-com",
+        "switzerland-aerial-photos-swissimage-10-cm-swisstopo-swissimage-wmts-geo-admin-c",
+        "union-county-ohio-aerial-imagery-union-county-oh-www7-co-union-oh-us",
+        "virginia-statewide-imagery-va-statewide-imagery-vginmaps-vdem-virginia-gov",
+        "orthophotos-de-wallonie-wallonie-ortho-geoservices-wallonie-be",
+        "wisconsin-statewide-imagery-2020-wi-statewide-imagery-di-wisdot-img-arcgis-com",
+        "west-virginia-statewide-imagery-wv-statewide-imagery-services-wvgis-wvu-edu"
+      ]
+    },
+    {
+      "id": "library-datasets-not-allowed",
+      "title": "Data Library datasets with unknown permission (Amsterdam cameras, GDACS, IMF PortWatch x2)",
+      "mechanism": "library dataset",
+      "routes": [
+        {
+          "route": "/api/library/data/<id>",
+          "evidence": "gev/server/providers/library.js:97"
+        }
+      ],
+      "probePaths": [
+        "/api/library/data/amsterdam-traffic-cameras",
+        "/api/library/data/gdacs-disaster-alerts",
+        "/api/library/data/imf-portwatch-chokepoints",
+        "/api/library/data/imf-portwatch-disruptions"
+      ],
+      "proxyEnforced": true,
+      "envEnforced": [
+        "GEV_LIBRARY_DISABLE"
+      ],
+      "permissionIds": [
+        "amsterdam-traffic-and-anpr-camera-positions-amsterdam-traffic-cameras-api-data-a",
+        "disaster-alerts-gdacs-gdacs-disaster-alerts-www-gdacs-org",
+        "maritime-chokepoints-imf-portwatch-imf-portwatch-chokepoints-services9-arcgis-co",
+        "port-disruptions-imf-portwatch-imf-portwatch-disruptions-services9-arcgis-com"
+      ]
+    }
+  ],
+  "routeJustification": {
+    "shell": {
+      "basis": "static-boot",
+      "reason": "app shell HTML"
+    },
+    "embed": {
+      "basis": "static-boot",
+      "reason": "app shell with ?embed=1"
+    },
+    "share": {
+      "basis": "static-boot",
+      "reason": "share-link shell, no third-party data"
+    },
+    "root-assets": {
+      "basis": "static-boot",
+      "reason": "GEV public/ files: css, svg icons, manifest; quebec-cameras.json is the Québec CCTV catalog row (allowed_per_doc, DATA_SOURCES.md:421)"
+    },
+    "public-dirs": {
+      "basis": "static-boot",
+      "reason": "public/icons and public/models (ISS and Tiangong glb, fleet): GEV project files, MIT; /events removed in session 4"
+    },
+    "vite-modules": {
+      "basis": "static-boot",
+      "reason": "dev-server code the browser needs to boot; restricted data files carved out by deny; bhoteKoshiFloodPath.js is gap BK-1",
+      "knownGap": "BK-1"
+    },
+    "src-boot": {
+      "basis": "static-boot",
+      "reason": "same route as vite-modules, boot probe"
+    },
+    "cctv-sources": {
+      "basis": "enabled-source",
+      "sourceIds": [
+        "ontario-511",
+        "fintraffic-digitraffic-weathercams",
+        "drivebc-government-of-british-columbia",
+        "open-calgary-data-calgary-ca",
+        "icelandic-road-and-coastal-administration-vegager-in-irca",
+        "city-of-toronto-open-data-opendata-toronto-ca",
+        "live-traffic-nsw-transport-for-nsw",
+        "autostrada-del-brennero-a22-catalog-tourism-api-opendatahub-com-frames-www-autob",
+        "qu-bec-cctv-source-catalog-1-120-locations",
+        "world-camera-image-subset-2-230-locations"
+      ],
+      "reason": "camera metadata of the allowed_per_doc packs; unknown packs without a kill switch also appear (gap CCTV-NOSWITCH)",
+      "knownGap": "CCTV-NOSWITCH"
+    },
+    "cctv-health": {
+      "basis": "static-boot",
+      "reason": "per-camera health status of loaded cameras, no media"
+    },
+    "weather": {
+      "basis": "enabled-source",
+      "sourceIds": [
+        "noaa-nowcoast-observed-weather-nowcoast-noaa-gov-geoserver-observations-weather-",
+        "noaa-nowcoast-lightning-density-nowcoast-noaa-gov-geoserver-observations-lightni",
+        "open-meteo",
+        "noaa-gfs-wind-noaa-gfs-bdp-pds-s3-amazonaws-com",
+        "ecmwf-ifs-wind-data-ecmwf-int-forecasts-ecmwf-open-data"
+      ],
+      "reason": "tile/image -> nowCOAST only (weather.js:4); weather-effects -> Open-Meteo (regional/weather.js:16); wind -> NOAA GFS and ECMWF"
+    },
+    "weather-manifest": {
+      "basis": "enabled-source",
+      "sourceIds": [
+        "noaa-nowcoast-observed-weather-nowcoast-noaa-gov-geoserver-observations-weather-"
+      ],
+      "reason": "nowCOAST capabilities"
+    },
+    "wind-manifest": {
+      "basis": "enabled-source",
+      "sourceIds": [
+        "noaa-gfs-wind-noaa-gfs-bdp-pds-s3-amazonaws-com",
+        "ecmwf-ifs-wind-data-ecmwf-int-forecasts-ecmwf-open-data"
+      ],
+      "reason": "wind model manifest"
+    },
+    "library": {
+      "basis": "enabled-source",
+      "libraryIds": [
+        "eia-power-plants",
+        "epa-superfund-sites",
+        "epa-toxic-release-facilities",
+        "epc-england-wales",
+        "fema-usa-structures",
+        "nasa-eonet-events",
+        "noaa-tide-stations",
+        "ntad-national-bridges",
+        "nws-active-alerts",
+        "wri-global-power-plants"
+      ],
+      "reason": "catalog metadata + the 10 allowed_per_doc dataset ids"
+    },
+    "library-data": {
+      "basis": "enabled-source",
+      "libraryIds": [
+        "eia-power-plants",
+        "epa-superfund-sites",
+        "epa-toxic-release-facilities",
+        "epc-england-wales",
+        "fema-usa-structures",
+        "nasa-eonet-events",
+        "noaa-tide-stations",
+        "ntad-national-bridges",
+        "nws-active-alerts",
+        "wri-global-power-plants"
+      ],
+      "reason": "same ids"
+    }
+  },
+  "libraryDisabledIds": [
+    "amsterdam-traffic-cameras",
+    "az-statewide-imagery",
+    "bismarck-mandan-nd",
+    "bkg-topplus-open",
+    "cctv-florida-fl511",
+    "cctv-lithuania",
+    "cctv-nyc-dot",
+    "ct-statewide-imagery",
+    "dakota-county-mn",
+    "de-statewide-imagery",
+    "ee-maa-amet-ortofoto",
+    "gbif-occurrence-density",
+    "gdacs-disaster-alerts",
+    "grand-forks-nd",
+    "gsi-japan-map",
+    "gsi-japan-photo",
+    "gvp-holocene-volcanoes",
+    "ia-statewide-imagery",
+    "ign-orthophotos-france",
+    "il-statewide-imagery",
+    "imf-portwatch-chokepoints",
+    "imf-portwatch-disruptions",
+    "jrc-surface-water",
+    "ks-statewide-imagery",
+    "lake-county-in",
+    "lawrence-ks",
+    "lee-county-fl",
+    "loudoun-county-va",
+    "louisville-lojic-ky",
+    "ma-statewide-imagery",
+    "maris-ms",
+    "md-statewide-imagery",
+    "me-statewide-imagery",
+    "mi-statewide-imagery",
+    "mountain-village-co",
+    "ms-statewide-imagery",
+    "nctcog-tx",
+    "nd-statewide-imagery",
+    "new-orleans-rpc-la",
+    "nh-statewide-imagery",
+    "nj-statewide-imagery",
+    "nrw-dop",
+    "nwa-benton-washington-ar",
+    "oakland-county-mi",
+    "pl-ortofotomapa",
+    "portland-metro-or",
+    "ri-statewide-imagery",
+    "swisstopo-swissimage",
+    "union-county-oh",
+    "va-statewide-imagery",
+    "wallonie-ortho",
+    "wi-statewide-imagery",
+    "wv-statewide-imagery"
+  ],
+  "restrictedCctvProviders": [
+    "NYC DOT Traffic Management Center",
+    "FL511",
+    "Houston TranStar",
+    "Via Lietuva"
+  ],
+  "knownGaps": [
+    {
+      "id": "BK-1",
+      "status": "open",
+      "severity": "high for public launch, accepted for private beta",
+      "what": "(Review 2026-11-22: the pack is wider than one file. bhoteKoshiEvent.js (135 KB, credits Vantor CC BY-NC 4.0 at :68), bhoteKoshiLocator.js, bhoteKoshiShotPaths.js, bhoteKoshiIncidentPlaces.js, bhoteKoshiEmbeddedMedia.js and src/scenes/nepalEvidencePack.js are also served by the open /src/ prefix; whether each embeds NC data was not read line by line.) gev/src/data/bhoteKoshiFloodPath.js (river centreline, CC BY-NC, mustNotShip) is a code module the app imports statically at boot (constructCatalog.js:45-46 -> bhoteKoshiLocator.js:20). The open /src/ prefix serves it, and blocking it would break boot for every visitor.",
+      "fix": "Serve a production build with this module stubbed or tree-shaken by the build config (external to gev/), or swap in a proxy-side stub response for that one path after a real-browser boot test. Not done: cannot be verified without Docker or a browser here.",
+      "owner": "next session (build/deploy)"
+    },
+    {
+      "id": "BD-1",
+      "status": "open",
+      "severity": "medium",
+      "what": "Browser-direct sources (GBIF tiles, many imagery tile entries, ECCC AQHI at src/layers/airQuality/source.js:8, Esri imagery, Street View) are fetched by the visitor browser straight from the upstream. A reverse proxy cannot see or block that traffic. Library entries are stopped by GEV_LIBRARY_DISABLE (GEV refuses and its client does not switch an unavailable entry on, src/library/controller.js:188); the ECCC air-quality layer and Esri have no such switch found.",
+      "fix": "Add a Content-Security-Policy connect-src/img-src allowlist at the proxy (intersects with GEV own CSP) after a browser test, or confirm each layer is off by default and hide its toggle through a supported flag.",
+      "owner": "next session"
+    },
+    {
+      "id": "CCTV-NOSWITCH",
+      "status": "open",
+      "severity": "medium",
+      "what": "Austin and Caltrans camera packs (permission unknown) load with enabled: () => true (catalog.js:60-64) and have no env kill switch, so their camera metadata (name, lat/lon, sourceUrl) appears in /api/cctv/sources. Images and streams are proxy-blocked.",
+      "fix": "Filter the /api/cctv/sources JSON in a wrapper service (not nginx stock), or obtain permission, or drop the route and let the Astro registry supply the camera list.",
+      "owner": "Session 5"
+    },
+    {
+      "id": "OPENMETEO-UNVERIFIED",
+      "status": "open",
+      "severity": "low",
+      "what": "data/source-permissions.json marks Open-Meteo allowed_per_doc from the CC BY 4.0 line in DATA_SOURCES.md:62. From training knowledge (UNVERIFIED, not re-read this session) the free Open-Meteo API tier is limited to non-commercial use; commercial use needs a paid plan or self-hosting. /api/weather-effects is allowlisted on that basis.",
+      "fix": "Mike reads https://open-meteo.com/en/terms and either confirms, buys the plan, or we drop /api/weather-effects from the allowlist.",
+      "owner": "Mike"
+    }
+  ]
+}

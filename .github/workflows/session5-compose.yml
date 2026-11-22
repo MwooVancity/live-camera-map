@@ -1,0 +1,63 @@
+name: session5-compose
+# Brings up the repo's own compose file (pinned GEV + allowlist proxy), probes it, restarts gev, then rolls back to a tagged image.
+on: workflow_dispatch
+jobs:
+  compose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      COMPOSE: docker compose -f ops/deploy/docker-compose.yml
+      HOSTNAME_UNDER_TEST: map.example.test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: git clone https://github.com/bilawalsidhu/gods-eye-view gev
+      - run: git -C gev checkout "$(cut -d' ' -f1 ops/upstream-base.txt)"
+      - run: node tests/immutability/check.mjs
+      - run: node --test tests/deploy/compose-lint.test.mjs
+      - run: node ops/audit/route-inventory.mjs
+      - run: cp ops/deploy/.env.example ops/deploy/.env
+      - name: Compose up (build pinned image, wait for healthy)
+        run: $COMPOSE up -d --build --wait --wait-timeout 300
+      - name: Proof gev publishes no port
+        run: |
+          cid=$($COMPOSE ps -q gev)
+          test -n "$cid" || { echo "gev container not found"; exit 1; }
+          published=$(docker port "$cid")
+          if [ -n "$published" ]; then echo "gev has a published port: $published"; exit 1; fi
+          echo "no published port, good"
+      - name: Allowlist and bypass matrix
+        run: node tests/security/methods.mjs http://127.0.0.1:8080 "$HOSTNAME_UNDER_TEST"
+      - name: Healthcheck
+        run: node ops/monitoring/healthcheck.mjs http://127.0.0.1:8080 "$HOSTNAME_UNDER_TEST"
+      - name: Critical probe
+        run: node tests/security/probe.mjs http://127.0.0.1:8080 "$HOSTNAME_UNDER_TEST" before-restart
+      - name: Restart test (restart gev, wait, rerun critical probe and healthcheck)
+        run: |
+          $COMPOSE restart gev
+          $COMPOSE up -d --wait --wait-timeout 300
+          node tests/security/probe.mjs http://127.0.0.1:8080 "$HOSTNAME_UNDER_TEST" after-restart
+          node ops/monitoring/healthcheck.mjs http://127.0.0.1:8080 "$HOSTNAME_UNDER_TEST"
+      - name: Rollback test (tag previous image, recreate from it, rerun)
+        run: |
+          prev_id=$(docker image inspect gev-pinned:current --format '{{.Id}}')
+          docker tag gev-pinned:current gev-pinned:previous
+          GEV_IMAGE_TAG=previous $COMPOSE up -d --no-build --force-recreate --wait --wait-timeout 300
+          running=$(docker inspect "$($COMPOSE ps -q gev)" --format '{{.Image}}')
+          test "$running" = "$prev_id" || { echo "gev is not running the previous image"; exit 1; }
+          node tests/security/probe.mjs http://127.0.0.1:8080 "$HOSTNAME_UNDER_TEST" after-rollback
+          node ops/monitoring/healthcheck.mjs http://127.0.0.1:8080 "$HOSTNAME_UNDER_TEST"
+      - name: Logs and immutability
+        if: always()
+        run: |
+          $COMPOSE logs --no-color > compose.log 2>&1 || true
+          node tests/immutability/check.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: session5-results
+          path: |
+            compose.log
+            results/

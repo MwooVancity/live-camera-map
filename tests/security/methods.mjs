@@ -30,7 +30,8 @@ function req(method, path) {
 
 // What the allowlist SAYS (independent JS mirror of the nginx rules).
 const nonCanonical = (p) => !p.startsWith('/') || /^[^?]*(%|\/\/|;|\\|[^ -~]|\/\.\.?(\/|\?|$))/.test(p);
-const allowedBy = (method, p) => !nonCanonical(p) && routes.some((r) => r.re.test(p) && r.methods.includes(method));
+const deny = (allow.deny || []).map((d) => new RegExp(d.pattern)); // session 4: restricted assets beat every route
+const allowedBy = (method, p) => !nonCanonical(p) && !deny.some((re) => re.test(p)) && routes.some((r) => r.re.test(p) && r.methods.includes(method));
 
 const proxyBlocked = (r) => (r.status === 403 || r.status === 404 || r.status === 400 || r.status === 405) &&
   (r.headers['x-proxy-deny'] === '1' || /PROXY_DENY|nginx/i.test(r.body) ||
@@ -49,7 +50,10 @@ function record(kind, method, path, r, ok, why) {
 // 1) every inventory route + fixed list, every method: prediction from the JSON, behaviour from the proxy.
 const fixed = ['/api/setup/status', '/api/setup/keys', '/api/setup/anything', '/mcp', '/mcp.json', '/mcp/x', '/api/openai/chat', '/api/gemini/chat', '/api/realtime/token',
   '/api/ghostmaps/catalog', '/api/inaturalist/grid', '/api/news/feed', '/@fs/etc/passwd', '/@fs/app/.env', '/.env', '/.git/config', '/vite.config.js', '/package.json',
-  '/api/flights', '/api/vessels', '/api/celestrak/active', '/api/adsbdb', '/api/tomtom/status', '/api/geocode', '/api/does-not-exist', '/api'];
+  '/api/flights', '/api/vessels', '/api/celestrak/active', '/api/adsbdb', '/api/tomtom/status', '/api/geocode', '/api/does-not-exist', '/api',
+  // session 4: restricted assets and routes that must stay blocked (see data/exclusion-map.json)
+  ...(allow.deny || []).map((d) => d.probe), '/events/bhote-koshi-2026/event.json', '/events/x', '/api/library/data/gvp-holocene-volcanoes',
+  '/api/library/data/cctv-nyc-dot', '/api/library/tile/gbif-occurrence-density/1/1/1', '/api/cctv/frame/x', '/api/cctv/media/x', '/api/cctv/stream/x'];
 const paths = [...new Set([...inv.map((r) => r.route.replace(/\{z\}/g, '1').replace(/\{x\}/g, '1').replace(/\{y\}/g, '1').replace('...', 'x')), ...fixed])];
 for (const p of paths) {
   for (const m of METHODS) {

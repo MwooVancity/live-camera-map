@@ -7,3 +7,7 @@
 - [ ] Decide ad placement next to third-party data
 - [ ] Install Docker Desktop (needed for Session 3)
 - [ ] Re-run Gemini Deep Research after Nov 21 8:01 PM (usage limit hit; it never produced a report). Paste the report into docs/research/.
+- [ ] Pick host + domain for deployment (Session 5); set GEV_ALLOWED_HOSTS and GEV_EMBED_FRAME_ANCESTORS in ops/deploy/.env on the host
+- [ ] Cloudflare Tunnel + DNS pointing at 127.0.0.1:8080 on the host (token stays on the host, never in git)
+- [ ] After launch: set repo variable HEALTH_BASE_URL (enables .github/workflows/health.yml)
+- [ ] Run workflow session5-compose once from the Actions tab and confirm green

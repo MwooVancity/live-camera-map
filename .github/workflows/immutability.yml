@@ -14,3 +14,6 @@ jobs:
       - run: node tests/immutability/check.mjs
       - run: node --test tests/immutability/immutability.test.mjs
       - run: node --test tests/licensing/licensing.test.mjs
+      - run: node ops/lint/preflight.mjs
+      - run: node --test ops/lint/preflight.test.mjs
+      - run: node --test tests/exclusion/exclusion.test.mjs tests/deploy/compose-lint.test.mjs

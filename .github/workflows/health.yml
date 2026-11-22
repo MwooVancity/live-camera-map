@@ -1,0 +1,20 @@
+name: health
+# Public health probe. Does nothing until the repo variable HEALTH_BASE_URL is set (Mike-only, after the host exists).
+on:
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+jobs:
+  check:
+    if: ${{ vars.HEALTH_BASE_URL != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Run healthcheck
+        env:
+          HEALTH_BASE_URL: ${{ vars.HEALTH_BASE_URL }}
+        run: node ops/monitoring/healthcheck.mjs "$HEALTH_BASE_URL"
