@@ -1,0 +1,15 @@
+name: immutability
+on: [push, pull_request]
+jobs:
+  gev-immutable:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      # gev/ is a separate clone (not in this repo): re-create it at the pinned hash.
+      - run: git clone https://github.com/bilawalsidhu/gods-eye-view gev
+      - run: git -C gev checkout "$(cut -d' ' -f1 ops/upstream-base.txt)"
+      - run: node tests/immutability/check.mjs
+      - run: node --test tests/immutability/

@@ -1,0 +1,6 @@
+gev/
+node_modules/
+.env
+docs/research/
+prompts/
+ops/logs/

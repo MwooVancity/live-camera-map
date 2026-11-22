@@ -1,0 +1,36 @@
+name: gev-baseline
+# Linux run of the GEV baseline. Manual trigger (Actions tab > gev-baseline > Run workflow).
+on: workflow_dispatch
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: git clone https://github.com/bilawalsidhu/gods-eye-view gev
+      - run: git -C gev checkout "$(cut -d' ' -f1 ops/upstream-base.txt)"
+      - run: node tests/immutability/check.mjs
+      - run: npm ci
+        working-directory: gev
+      - run: npm run format:check
+        working-directory: gev
+      - run: npm run check:boundaries
+        working-directory: gev
+      - run: npm test
+        working-directory: gev
+      - run: npm run build
+        working-directory: gev
+      - run: npm run qa:stub-boot
+        working-directory: gev
+      - run: npm run qa:conformance
+        working-directory: gev
+      - run: |
+          npx vite preview --port 4173 --strictPort &
+          sleep 8
+          npm run qa:stories
+        working-directory: gev
+      - run: npm run test:perf
+        working-directory: gev
+      - run: node tests/immutability/check.mjs
