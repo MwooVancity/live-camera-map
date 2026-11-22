@@ -1,0 +1,48 @@
+name: staging
+# Public NOINDEX staging site on GitHub Pages. Refreshes live feeds, builds, tests, gates, then deploys.
+# Public repo: Actions minutes are free. Feeds refuse to overwrite good data with a failed run (importer guard).
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */3 * * *'
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test ops/staging/prepare.test.mjs
+      - name: Refresh live feeds
+        run: |
+          node ops/importers/caltrans-conditions.mjs
+          node ops/importers/nws.mjs
+      - run: npm ci
+        working-directory: site
+      - name: Build with the staging URL
+        run: npm run build
+        working-directory: site
+        env:
+          PUBLIC_SITE_URL: https://mwoovancity.github.io/live-camera-map
+      - run: npm test
+        working-directory: site
+      - run: node ops/harness/page-gate.mjs site/dist site/PAGES.md
+      - name: Make it staging (base path, noindex, no sitemap)
+        run: node ops/staging/prepare.mjs site/dist /live-camera-map
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
+      - id: deployment
+        uses: actions/deploy-pages@v4
