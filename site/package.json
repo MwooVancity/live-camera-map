@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "test": "node --test tests/gate.test.mjs tests/dist.test.mjs"
+    "test": "node --test --test-concurrency=1 tests/gate.test.mjs tests/dist.test.mjs tests/live.test.mjs"
   },
   "dependencies": {
     "astro": "5.18.1"

@@ -18,5 +18,9 @@ export const RULES = [
   { id: 'commit-gate', text: 'A commit runs preflight, harness selftest and the unit tests.', enforcedBy: ['.githooks/pre-commit'] },
   { id: 'no-near-duplicate', text: 'No two landing pages share more than 60% of their sentences.', enforcedBy: ['ops/harness/page-gate.mjs'] },
   { id: 'revenue-slots', text: 'Ad slots only after each source permits images/data beside ads (plan section 10).', enforcedBy: null },
+  { id: 'feed-fresh', text: 'A live feed block shows data only if its generatedAt is within its max age (plan section 12) and its shape is valid; a failed or partial run never replaces a good file.', enforcedBy: ['tests/conditions/conditions.test.mjs'] },
+  { id: 'feed-licence', text: 'A live feed is fetched and shown only if its row in data/source-permissions.json is enabled, quotes the licence text and gives the URL.', enforcedBy: ['tests/licensing/licensing.test.mjs', 'tests/conditions/conditions.test.mjs'] },
+  { id: 'live-block-omitted', text: 'A live page block is omitted (not shown empty) when its licence row is not enabled, its data is older than its max age at build, or no data is near the city.', enforcedBy: ['site/tests/live.test.mjs'] },
+  { id: 'block-stale', text: 'A built page block whose data-asof is older than 24 h fails the page gate unless it is registry-based (data-basis="registry").', enforcedBy: ['ops/harness/page-gate.mjs'] },
   { id: 'health-honest', text: 'A block with no or stale data hides; never shows old data as current.', enforcedBy: null },
 ];

@@ -3,6 +3,8 @@ import Base from '../../../layouts/Base.astro';
 import { SITE_NAME } from '../../../config.mjs';
 import { cameras, countsBy, registryDate, sources, health, loadedDistricts } from '../../../lib/data.mjs';
 import { curatedCities, slugify, isIndexable } from '../../../lib/pages.mjs';
+import { cityBlocks } from '../../../lib/live.mjs';
+import LiveBlock from '../../../components/LiveBlock.astro';
 
 export function getStaticPaths() {
   const out = [];
@@ -26,6 +28,7 @@ const source = sources.find((s) => s.id === 'caltrans');
 // Related: the 4 nearest other curated cities in the same region (by average camera position).
 const centre = (list) => ({ lat: list.reduce((s, c) => s + c.lat, 0) / list.length, lon: list.reduce((s, c) => s + c.lon, 0) / list.length });
 const me = centre(here);
+const live = cityBlocks({ lat: me.lat, lon: me.lon, slug: citySlug });
 const related = curatedCities(cameras).filter((c) => c !== city && cameras.find((x) => x.city === c).regionSlug === region)
   .map((c) => { const p = centre(cameras.filter((x) => x.city === c)); return { c, d: (p.lat - me.lat) ** 2 + ((p.lon - me.lon) * Math.cos(me.lat * Math.PI / 180)) ** 2 }; })
   .sort((a, b) => a.d - b.d).slice(0, 4).map((x) => x.c);
@@ -42,12 +45,14 @@ const top = roads.slice(0, 3).map(([r, k]) => `${r} (${k})`).join(', ');
   <p>{n} Caltrans cameras are listed near {city} on {roads.length} road{roads.length === 1 ? '' : 's'}: {feeds.still || 0} still-image and {feeds.video || 0} video feeds. Each name below is a link to the official Caltrans source, not a picture. Part of <a href={`/cameras/${region}/`}>{regionName} traffic cameras</a>.</p>
   <p><a class="cta" href="/map/">Open the map</a></p>
 
-  <section data-block="coverage" data-source={source.name} data-asof={registryDate}>
+  <section data-block="coverage" data-basis="registry" data-source={source.name} data-asof={registryDate}>
     <h2>Roads covered</h2>
     <ul class="cols">{roads.map(([r, k]) => <li>{r}: {k} camera{k === 1 ? '' : 's'} ({Object.entries(countsBy(here.filter((c) => c.road === r), 'direction')).sort((x, y) => y[1] - x[1] || x[0].localeCompare(y[0])).map(([d, q]) => `${q} ${d}`).join(', ') || 'no direction recorded'}).</li>)}</ul>
     {noRoad > 0 && <p class="meta">{noRoad} camera{noRoad === 1 ? ' has' : 's have'} no road recorded.</p>}
     <p class="meta">Source: {source.name}, districts {loadedDistricts.join(', ')}. Registry date {registryDate}. Link check by us: {verified ? `last verified ${verified}` : 'never run yet'}.</p>
   </section>
+
+  {live.map((b) => <LiveBlock b={b} city={city} />)}
 
   <section data-block="health" data-source="our own camera checker" data-asof={health?.generatedAt || 'not-checked'}>
     <h2>Camera health</h2>
@@ -56,7 +61,7 @@ const top = roads.slice(0, 3).map(([r, k]) => `${r} (${k})`).join(', ');
       : <p>Not checked yet. We have not run our camera checker, so we do not know which of these {n} links work today. See <a href="/guides/how-to-read-last-checked-status/">how to read these statuses</a> for what the checks will report.</p>}
   </section>
 
-  <section data-block="cameras" data-count={n} data-source={source.name} data-asof={registryDate}>
+  <section data-block="cameras" data-basis="registry" data-count={n} data-source={source.name} data-asof={registryDate}>
     <h2>All {n} cameras</h2>
     <ul>
       {sorted.map((c) => (
@@ -72,5 +77,6 @@ const top = roads.slice(0, 3).map(([r, k]) => `${r} (${k})`).join(', ');
     <li><a href="/guides/how-caltrans-cameras-work/">How Caltrans traffic cameras work</a></li>
     <li><a href="/guides/how-to-read-last-checked-status/">How to read "last checked" status</a></li>
     <li><a href="/guides/camera-link-is-dead/">What to do if a camera link is dead</a></li>
+    <li><a href="/guides/what-live-road-conditions-mean/">What the live road conditions mean</a></li>
   </ul>
 </Base>

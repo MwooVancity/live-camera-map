@@ -37,7 +37,7 @@ function site(mut = {}) {
   w('cameras', page(a('/cameras/ca/')));
   w('cameras/ca', page(cities.map((c) => a(`/cameras/ca/${c}/`)).join('')));
   const cityBody = (c) => cities.filter((o) => o !== c).map((o) => a(`/cameras/ca/${o}/`)).join('') + a('/cameras/ca/') + a('/guides/dead-links/') + a('/map/') +
-    `<section data-block="cameras" data-source="caltrans" data-asof="2026-11-22"><p>${c} has its own roads number ${c.length} and unique wording for ${c} drivers today.</p><p>Highway ${c} runs past exit ${c.length * 7} with distinct camera spacing in ${c}.</p></section>`;
+    `<section data-block="cameras" data-basis="registry" data-source="caltrans" data-asof="2026-11-22"><p>${c} has its own roads number ${c.length} and unique wording for ${c} drivers today.</p><p>Highway ${c} runs past exit ${c.length * 7} with distinct camera spacing in ${c}.</p></section>`;
   for (const c of cities) w(`cameras/ca/${c}`, mut.city ? mut.city(c, cityBody(c)) : page(cityBody(c)));
   w('guides/dead-links', page(a('/cameras/ca/la/') + '<p>What to do if a link is dead.</p>'));
   if (mut.extra) mut.extra(w);
@@ -49,6 +49,11 @@ test('good fixture passes the page gate', () => assert.deepStrictEqual(gate(site
 test('orphan page fails', () => assert.ok(gate(site({ extra: (w) => w('lonely', page('<p>hi</p>')) }), md).some((e) => /orphan/.test(e))));
 test('camera image fails link-out rule', () => assert.ok(gate(site({ city: (c, b) => page(b + '<img src="https://cwwp2.dot.ca.gov/x.jpg">') }), md).some((e) => /link-out/.test(e))));
 test('block without source or as-of fails', () => assert.ok(gate(site({ city: (c, b) => page(b + '<section data-block="weather"><p>w</p></section>') }), md).filter((e) => /no data-(source|asof)/.test(e)).length >= 2));
+const live = (asof) => `<section data-block="road-conditions" data-source="Caltrans" data-asof="${asof}"><p>Closure on the main road today.</p></section>`;
+const iso = (hAgo) => new Date(Date.now() - hAgo * 3600000).toISOString();
+test('live block with data older than 24 h at build fails the page gate', () => assert.ok(gate(site({ city: (c, b) => page(b + live(iso(30))) }), md).some((e) => /older than 24 h/.test(e))));
+test('live block with fresh data passes the page gate', () => assert.deepStrictEqual(gate(site({ city: (c, b) => page(b + live(iso(1))) }), md), []));
+test('old registry-based block is not a stale failure', () => assert.deepStrictEqual(gate(site(), md, new Date('2027-06-01')), []));
 test('city without related links fails', () => assert.ok(gate(site({ city: (c, b) => page(b.replace(/<a href="\/cameras\/ca\/(la|sf|sd|sac)\/">x<\/a>/g, '')) }), md).some((e) => /related-city/.test(e))));
 test('swapped-city-name pages fail the duplicate check', () => {
   const same = '<p>This page lists every camera along the main highways in the city today.</p><p>Each camera links to the official source and shows when it was last checked.</p>';

@@ -1,0 +1,97 @@
+{
+ "city": "San Bernardino",
+ "slug": "san-bernardino",
+ "lat": 34.1564,
+ "lon": -117.3337,
+ "cameras": 48,
+ "generatedAt": "2026-11-22T22:54:41.731Z",
+ "office": "SGX",
+ "forecastOffice": "https://api.weather.gov/offices/SGX",
+ "grid": {
+  "gridId": "SGX",
+  "gridX": 61,
+  "gridY": 78
+ },
+ "timeZone": "America/Los_Angeles",
+ "source": {
+  "name": "NOAA National Weather Service (api.weather.gov)",
+  "forecastUrl": "https://api.weather.gov/gridpoints/SGX/61,78/forecast",
+  "alertsUrl": "https://api.weather.gov/alerts/active?point=34.1564,-117.3337"
+ },
+ "forecast": {
+  "fetchedAt": "2026-11-22T22:54:41.731Z",
+  "updateTime": "2026-11-22T20:16:19+00:00",
+  "periods": [
+   {
+    "name": "This Afternoon",
+    "startTime": "2026-11-22T14:00:00-08:00",
+    "endTime": "2026-11-22T18:00:00-08:00",
+    "isDaytime": true,
+    "temperature": 64,
+    "temperatureUnit": "F",
+    "precipChance": 2,
+    "windSpeed": "0 to 5 mph",
+    "windDirection": "SW",
+    "shortForecast": "Mostly Sunny",
+    "detailedForecast": "Mostly sunny, with a high near 64. Southwest wind 0 to 5 mph."
+   },
+   {
+    "name": "Tonight",
+    "startTime": "2026-11-22T18:00:00-08:00",
+    "endTime": "2026-11-23T06:00:00-08:00",
+    "isDaytime": false,
+    "temperature": 47,
+    "temperatureUnit": "F",
+    "precipChance": 20,
+    "windSpeed": "0 to 5 mph",
+    "windDirection": "NE",
+    "shortForecast": "Slight Chance Rain Showers",
+    "detailedForecast": "A slight chance of rain showers between 10pm and 4am. Partly cloudy, with a low around 47. Northeast wind 0 to 5 mph. Chance of precipitation is 20%. New rainfall amounts less than a tenth of an inch possible."
+   },
+   {
+    "name": "Monday",
+    "startTime": "2026-11-23T06:00:00-08:00",
+    "endTime": "2026-11-23T18:00:00-08:00",
+    "isDaytime": true,
+    "temperature": 64,
+    "temperatureUnit": "F",
+    "precipChance": 3,
+    "windSpeed": "0 to 5 mph",
+    "windDirection": "SW",
+    "shortForecast": "Sunny",
+    "detailedForecast": "Sunny, with a high near 64. Southwest wind 0 to 5 mph."
+   },
+   {
+    "name": "Monday Night",
+    "startTime": "2026-11-23T18:00:00-08:00",
+    "endTime": "2026-11-24T06:00:00-08:00",
+    "isDaytime": false,
+    "temperature": 49,
+    "temperatureUnit": "F",
+    "precipChance": 0,
+    "windSpeed": "0 to 5 mph",
+    "windDirection": "N",
+    "shortForecast": "Partly Cloudy",
+    "detailedForecast": "Partly cloudy, with a low around 49. North wind 0 to 5 mph."
+   },
+   {
+    "name": "Tuesday",
+    "startTime": "2026-11-24T06:00:00-08:00",
+    "endTime": "2026-11-24T18:00:00-08:00",
+    "isDaytime": true,
+    "temperature": 69,
+    "temperatureUnit": "F",
+    "precipChance": 0,
+    "windSpeed": "0 to 5 mph",
+    "windDirection": "N",
+    "shortForecast": "Mostly Sunny",
+    "detailedForecast": "Mostly sunny, with a high near 69. North wind 0 to 5 mph."
+   }
+  ]
+ },
+ "alerts": {
+  "fetchedAt": "2026-11-22T22:54:41.731Z",
+  "updated": "2026-11-22T22:50:01+00:00",
+  "items": []
+ }
+}

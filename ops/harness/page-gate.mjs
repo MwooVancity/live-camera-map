@@ -29,7 +29,8 @@ const normalize = (href, from) => {
 };
 const textOf = (html) => html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/&[a-z#0-9]+;/gi, ' ').replace(/\s+/g, ' ').trim();
 
-export function gate(dist, pagesMd = '') {
+export const MAX_BLOCK_AGE_H = 24;
+export function gate(dist, pagesMd = '', now = new Date()) {
   const errors = [];
   const files = walk(dist);
   const pages = new Map(); // route -> {html, links:Set, noindex}
@@ -92,6 +93,13 @@ export function gate(dist, pagesMd = '') {
       const a = m[2];
       if (!/data-source=["'][^"']+["']/.test(a)) errors.push(`${route}: block ${a.match(/data-block=["']([^"']+)/)[1]} has no data-source`);
       if (!/data-asof=["'][^"']+["']/.test(a)) errors.push(`${route}: block ${a.match(/data-block=["']([^"']+)/)[1]} has no data-asof`);
+    }
+    // stale block: a data-asof older than 24 h at build is a failure unless the block is registry-based (data-basis="registry")
+    for (const m of p.html.matchAll(/<(\w+)\s([^>]*data-block=["'][^"']+["'][^>]*)>/gi)) {
+      const a = m[2];
+      if (/data-basis=["']registry["']/.test(a)) continue;
+      const t = Date.parse((a.match(/data-asof=["']([^"']+)["']/) || [])[1]);
+      if (!Number.isNaN(t) && (new Date(now).getTime() - t) / 3600000 > MAX_BLOCK_AGE_H) errors.push(`${route}: block ${a.match(/data-block=["']([^"']+)/)[1]} data is older than ${MAX_BLOCK_AGE_H} h at build`);
     }
     if (cities.includes(route) && !p.noindex && !/data-block=/.test(p.html)) errors.push(`${route}: indexable city page has no data blocks`);
   }

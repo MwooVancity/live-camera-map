@@ -11,6 +11,7 @@ export const GUIDES = [
   { slug: 'how-to-read-last-checked-status', title: 'How to read "last checked" status', date: '2026-11-22' },
   { slug: 'what-link-out-only-means', title: 'What "link-out only" means on this site', date: '2026-11-22' },
   { slug: 'how-caltrans-cameras-work', title: 'How Caltrans traffic cameras work', date: '2026-11-22' },
+  { slug: 'what-live-road-conditions-mean', title: 'What the live road conditions mean', date: '2026-11-22' },
   { slug: 'camera-link-is-dead', title: 'What to do if a camera link is dead', date: '2026-11-22' },
 ];
 

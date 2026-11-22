@@ -88,6 +88,21 @@ test('every config/cctv_sources pack on disk is accounted for', () => {
   const missing = files.filter((f) => !text.includes(f.replace('cctv_sources.', '').replace('.json', '').toLowerCase()));
   assert.deepEqual(missing, []);
 });
+// Rule `feed-licence`: every live-conditions feed has a hand-read row that quotes its licence text and URL.
+import { SOURCE_IDS } from '../../ops/importers/lib/conditions.mjs';
+for (const [feed, id] of Object.entries(SOURCE_IDS)) {
+  test(`feed-licence: ${feed} has a row (${id}) that passes the gate and quotes text and a URL`, () => {
+    const row = sources.find((s) => s.id === id);
+    assert.ok(row, `${id} missing from data/source-permissions.json`);
+    assert.equal(isEnabled(row, today), true, `${id} is not enabled by the gate`);
+    assert.match(row.licence, /"[^"]{15,}"/, 'licence must quote the source text');
+    assert.match(row.provenance + row.licence, /https:\/\//, 'row must give the URL');
+  });
+}
+test('feed-licence: flipping a feed row to unknown closes it (the importers read this same gate)', () => {
+  const row = sources.find((s) => s.id === 'caltrans-lcs');
+  assert.equal(isEnabled({ ...row, commercialStatus: 'unknown' }, today), false);
+});
 test('source doc and csv exist', () => {
   assert.ok(existsSync(resolve(root, 'docs/source-audits/source-inventory.csv')));
 });

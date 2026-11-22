@@ -1,0 +1,130 @@
+{
+ "city": "San Diego",
+ "slug": "san-diego",
+ "lat": 32.7866,
+ "lon": -117.1184,
+ "cameras": 139,
+ "generatedAt": "2026-11-22T22:54:41.731Z",
+ "office": "SGX",
+ "forecastOffice": "https://api.weather.gov/offices/SGX",
+ "grid": {
+  "gridId": "SGX",
+  "gridX": 59,
+  "gridY": 17
+ },
+ "timeZone": "America/Los_Angeles",
+ "source": {
+  "name": "NOAA National Weather Service (api.weather.gov)",
+  "forecastUrl": "https://api.weather.gov/gridpoints/SGX/59,17/forecast",
+  "alertsUrl": "https://api.weather.gov/alerts/active?point=32.7866,-117.1184"
+ },
+ "forecast": {
+  "fetchedAt": "2026-11-22T22:54:41.731Z",
+  "updateTime": "2026-11-22T20:16:19+00:00",
+  "periods": [
+   {
+    "name": "This Afternoon",
+    "startTime": "2026-11-22T14:00:00-08:00",
+    "endTime": "2026-11-22T18:00:00-08:00",
+    "isDaytime": true,
+    "temperature": 70,
+    "temperatureUnit": "F",
+    "precipChance": 7,
+    "windSpeed": "5 mph",
+    "windDirection": "W",
+    "shortForecast": "Mostly Sunny",
+    "detailedForecast": "Mostly sunny, with a high near 70. West wind around 5 mph. New rainfall amounts less than a tenth of an inch possible."
+   },
+   {
+    "name": "Tonight",
+    "startTime": "2026-11-22T18:00:00-08:00",
+    "endTime": "2026-11-23T06:00:00-08:00",
+    "isDaytime": false,
+    "temperature": 53,
+    "temperatureUnit": "F",
+    "precipChance": 43,
+    "windSpeed": "0 to 5 mph",
+    "windDirection": "E",
+    "shortForecast": "Chance Rain Showers",
+    "detailedForecast": "A chance of rain showers after 10pm. Mostly cloudy, with a low around 53. East wind 0 to 5 mph. Chance of precipitation is 40%. New rainfall amounts between a tenth and quarter of an inch possible."
+   },
+   {
+    "name": "Monday",
+    "startTime": "2026-11-23T06:00:00-08:00",
+    "endTime": "2026-11-23T18:00:00-08:00",
+    "isDaytime": true,
+    "temperature": 70,
+    "temperatureUnit": "F",
+    "precipChance": 16,
+    "windSpeed": "0 to 5 mph",
+    "windDirection": "N",
+    "shortForecast": "Slight Chance Rain Showers then Mostly Sunny",
+    "detailedForecast": "A slight chance of rain showers before 10am. Mostly sunny, with a high near 70. North wind 0 to 5 mph. Chance of precipitation is 20%. New rainfall amounts less than a tenth of an inch possible."
+   },
+   {
+    "name": "Monday Night",
+    "startTime": "2026-11-23T18:00:00-08:00",
+    "endTime": "2026-11-24T06:00:00-08:00",
+    "isDaytime": false,
+    "temperature": 51,
+    "temperatureUnit": "F",
+    "precipChance": 0,
+    "windSpeed": "5 mph",
+    "windDirection": "NE",
+    "shortForecast": "Partly Cloudy",
+    "detailedForecast": "Partly cloudy, with a low around 51. Northeast wind around 5 mph."
+   },
+   {
+    "name": "Tuesday",
+    "startTime": "2026-11-24T06:00:00-08:00",
+    "endTime": "2026-11-24T18:00:00-08:00",
+    "isDaytime": true,
+    "temperature": 73,
+    "temperatureUnit": "F",
+    "precipChance": 0,
+    "windSpeed": "0 to 10 mph",
+    "windDirection": "N",
+    "shortForecast": "Mostly Sunny",
+    "detailedForecast": "Mostly sunny, with a high near 73. North wind 0 to 10 mph."
+   }
+  ]
+ },
+ "alerts": {
+  "fetchedAt": "2026-11-22T22:54:41.731Z",
+  "updated": "2026-11-22T22:50:01+00:00",
+  "items": [
+   {
+    "id": "urn:oid:2.49.0.1.840.0.8e0b802957d4cd343f38c8ce4c1352ebce27ffb8.001.3",
+    "event": "Coastal Flood Advisory",
+    "severity": "Minor",
+    "urgency": "Expected",
+    "certainty": "Likely",
+    "status": "Actual",
+    "headline": "Coastal Flood Advisory issued November 22 at 11:40AM PST until November 24 at 4:00AM PST by NWS San Diego CA",
+    "description": "* WHAT...For the Coastal Flood Advisory, minor coastal flooding.\nFor the Coastal Flood Warning, significant coastal flooding\nexpected.\n\n* WHERE...San Diego County Coastal Areas and Orange County\nCoastal Areas.\n\n* WHEN...For the Coastal Flood Advisory, until 4 AM PST Tuesday.\nFor the Coastal Flood Warning, from 4 AM Tuesday to 1 PM PST\nFriday. Most susceptible time of flooding will be around the\ntime of the morning high tide, with peak tides trending from 7\nAM on Monday to 10 AM on Friday.\n\n* IMPACTS...Numerous roads may be closed. Low lying property\nincluding homes, businesses, and some critical infrastructure\nwill be inundated. Some shoreline erosion will occur.\n\n* ADDITIONAL DETAILS...King tides peak Tuesday through Wednesday,\nreaching 7.9-8.3 feet, likely re-breaking the all-time tidal\nrecords set back in late October. Background surf on top of the\ntides will remain around 3-5 feet through Wednesday, but an\nincoming swell Wednesday into Thursday will bring a sharp\nincrease to the surf by Thursday morning's high tide. Breaking\nwaves may reach 6-8 feet with sets up to 10 feet on west-facing\nbeaches. Surf then moderates some into Friday, but still looks\nto be around 5-8 feet.",
+    "instruction": "Take the necessary actions to protect flood-prone property. Do\nNOT drive around barricades or through flooded areas.",
+    "effective": "2026-11-22T11:40:00-08:00",
+    "expires": "2026-11-22T19:45:00-08:00",
+    "ends": "2026-11-24T04:00:00-08:00",
+    "areaDesc": "San Diego County Coastal Areas; Orange County Coastal",
+    "senderName": "NWS San Diego CA"
+   },
+   {
+    "id": "urn:oid:2.49.0.1.840.0.8e0b802957d4cd343f38c8ce4c1352ebce27ffb8.001.2",
+    "event": "Coastal Flood Warning",
+    "severity": "Severe",
+    "urgency": "Expected",
+    "certainty": "Likely",
+    "status": "Actual",
+    "headline": "Coastal Flood Warning issued November 22 at 11:40AM PST until November 27 at 1:00PM PST by NWS San Diego CA",
+    "description": "* WHAT...For the Coastal Flood Advisory, minor coastal flooding.\nFor the Coastal Flood Warning, significant coastal flooding\nexpected.\n\n* WHERE...San Diego County Coastal Areas and Orange County\nCoastal Areas.\n\n* WHEN...For the Coastal Flood Advisory, until 4 AM PST Tuesday.\nFor the Coastal Flood Warning, from 4 AM Tuesday to 1 PM PST\nFriday. Most susceptible time of flooding will be around the\ntime of the morning high tide, with peak tides trending from 7\nAM on Monday to 10 AM on Friday.\n\n* IMPACTS...Numerous roads may be closed. Low lying property\nincluding homes, businesses, and some critical infrastructure\nwill be inundated. Some shoreline erosion will occur.\n\n* ADDITIONAL DETAILS...King tides peak Tuesday through Wednesday,\nreaching 7.9-8.3 feet, likely re-breaking the all-time tidal\nrecords set back in late October. Background surf on top of the\ntides will remain around 3-5 feet through Wednesday, but an\nincoming swell Wednesday into Thursday will bring a sharp\nincrease to the surf by Thursday morning's high tide. Breaking\nwaves may reach 6-8 feet with sets up to 10 feet on west-facing\nbeaches. Surf then moderates some into Friday, but still looks\nto be around 5-8 feet.",
+    "instruction": "Take the necessary actions to protect flood-prone property. Do\nNOT drive around barricades or through flooded areas.",
+    "effective": "2026-11-22T11:40:00-08:00",
+    "expires": "2026-11-22T19:45:00-08:00",
+    "ends": "2026-11-27T13:00:00-08:00",
+    "areaDesc": "San Diego County Coastal Areas; Orange County Coastal",
+    "senderName": "NWS San Diego CA"
+   }
+  ]
+ }
+}

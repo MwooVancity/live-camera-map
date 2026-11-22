@@ -1,0 +1,97 @@
+{
+ "city": "Irvine",
+ "slug": "irvine",
+ "lat": 33.6887,
+ "lon": -117.7727,
+ "cameras": 37,
+ "generatedAt": "2026-11-22T22:54:41.731Z",
+ "office": "SGX",
+ "forecastOffice": "https://api.weather.gov/offices/SGX",
+ "grid": {
+  "gridId": "SGX",
+  "gridX": 41,
+  "gridY": 60
+ },
+ "timeZone": "America/Los_Angeles",
+ "source": {
+  "name": "NOAA National Weather Service (api.weather.gov)",
+  "forecastUrl": "https://api.weather.gov/gridpoints/SGX/41,60/forecast",
+  "alertsUrl": "https://api.weather.gov/alerts/active?point=33.6887,-117.7727"
+ },
+ "forecast": {
+  "fetchedAt": "2026-11-22T22:54:41.731Z",
+  "updateTime": "2026-11-22T20:16:19+00:00",
+  "periods": [
+   {
+    "name": "This Afternoon",
+    "startTime": "2026-11-22T14:00:00-08:00",
+    "endTime": "2026-11-22T18:00:00-08:00",
+    "isDaytime": true,
+    "temperature": 70,
+    "temperatureUnit": "F",
+    "precipChance": 14,
+    "windSpeed": "5 mph",
+    "windDirection": "W",
+    "shortForecast": "Mostly Sunny",
+    "detailedForecast": "Mostly sunny, with a high near 70. West wind around 5 mph. New rainfall amounts less than a tenth of an inch possible."
+   },
+   {
+    "name": "Tonight",
+    "startTime": "2026-11-22T18:00:00-08:00",
+    "endTime": "2026-11-23T06:00:00-08:00",
+    "isDaytime": false,
+    "temperature": 52,
+    "temperatureUnit": "F",
+    "precipChance": 39,
+    "windSpeed": "0 mph",
+    "windDirection": "",
+    "shortForecast": "Chance Rain Showers",
+    "detailedForecast": "A chance of rain showers between 10pm and 4am. Partly cloudy, with a low around 52. East wind around 0 mph. Chance of precipitation is 40%. New rainfall amounts less than a tenth of an inch possible."
+   },
+   {
+    "name": "Monday",
+    "startTime": "2026-11-23T06:00:00-08:00",
+    "endTime": "2026-11-23T18:00:00-08:00",
+    "isDaytime": true,
+    "temperature": 70,
+    "temperatureUnit": "F",
+    "precipChance": 6,
+    "windSpeed": "0 to 5 mph",
+    "windDirection": "W",
+    "shortForecast": "Sunny",
+    "detailedForecast": "Sunny, with a high near 70. West wind 0 to 5 mph."
+   },
+   {
+    "name": "Monday Night",
+    "startTime": "2026-11-23T18:00:00-08:00",
+    "endTime": "2026-11-24T06:00:00-08:00",
+    "isDaytime": false,
+    "temperature": 52,
+    "temperatureUnit": "F",
+    "precipChance": 0,
+    "windSpeed": "0 to 5 mph",
+    "windDirection": "E",
+    "shortForecast": "Mostly Cloudy",
+    "detailedForecast": "Mostly cloudy, with a low around 52. East wind 0 to 5 mph."
+   },
+   {
+    "name": "Tuesday",
+    "startTime": "2026-11-24T06:00:00-08:00",
+    "endTime": "2026-11-24T18:00:00-08:00",
+    "isDaytime": true,
+    "temperature": 74,
+    "temperatureUnit": "F",
+    "precipChance": 0,
+    "windSpeed": "0 to 5 mph",
+    "windDirection": "N",
+    "shortForecast": "Mostly Sunny",
+    "detailedForecast": "Mostly sunny, with a high near 74. North wind 0 to 5 mph."
+   }
+  ]
+ },
+ "alerts": {
+  "fetchedAt": "2026-11-22T22:54:41.731Z",
+  "updated": "2026-11-22T22:50:01+00:00",
+  "items": []
+ }
+}

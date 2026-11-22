@@ -11,3 +11,9 @@
 - [ ] Cloudflare Tunnel + DNS pointing at 127.0.0.1:8080 on the host (token stays on the host, never in git)
 - [ ] After launch: set repo variable HEALTH_BASE_URL (enables .github/workflows/health.yml)
 - [ ] Run workflow session5-compose once from the Actions tab and confirm green
+- [ ] Confirm licence: Caltrans Lane Closure feed (caltrans-lcs). Marked allowed_per_doc from "public domain" + "no charge" + "available for integration into your application" (cwwp2.dot.ca.gov, dot.ca.gov/conditions-of-use). The text never says "commercial" either way.
+- [ ] Confirm licence: Caltrans Chain Control feed (caltrans-cc), same text as above.
+- [ ] Confirm licence: Caltrans Changeable Message Sign feed (caltrans-cms), same text as above.
+- [ ] Confirm licence: Caltrans Road Weather (RWIS) feed (caltrans-rwis), same text as above; also units of the readings are not stated by Caltrans.
+- [ ] Confirm licence: NWS forecast (nws-forecast). weather.gov/disclaimer: public domain, any lawful purpose, no implied endorsement, no modified data passed off as official; API page says open data free for any purpose.
+- [ ] Confirm licence: NWS active alerts (nws-alerts), same text as above.

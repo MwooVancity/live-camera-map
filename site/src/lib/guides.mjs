@@ -1,3 +1,4 @@
+import { MAX_AGE_MIN } from '../../../ops/importers/lib/conditions.mjs';
 // Guide text. Short, factual, about how THIS site works. Numbers come in through ctx (from the registry), never typed here.
 // ctx: { total, districts: ['10',...], failed: [...], dropped: {notInService, dupLocation}, date }
 export const GUIDE_BODY = {
@@ -43,6 +44,30 @@ export const GUIDE_BODY = {
     ] },
     { h: 'What we have not measured', p: [
       'How often each camera refreshes its picture is set by Caltrans and we have not measured it. Licence terms for reuse are not confirmed, which is one more reason we link out.',
+    ] },
+  ],
+  'what-live-road-conditions-mean': () => [
+    { h: 'Where the numbers come from', p: [
+      'The road blocks on a city page come from public Caltrans feeds, and the weather blocks come from the National Weather Service. Each block names its source, links the feed page and shows the time we fetched it.',
+    ] },
+    { h: 'Lane closures', p: [
+      'Caltrans says its lane closure system reports all approved closures planned for the next 7 days, plus current lane, ramp and road closures from maintenance, construction and special events. We show only closures whose start has passed and whose end has not, so a closure planned for next week is left out.',
+    ] },
+    { h: 'Chain controls', p: [
+      'A chain control row shows the status code Caltrans reports and the description Caltrans attaches to it, word for word. We do not reword it. A city with no chain control near it shows no such list.',
+    ] },
+    { h: 'Message signs', p: [
+      'These are the words on a Caltrans changeable message sign. Caltrans describes the sign feed as updating about once a minute in some districts and every five minutes in others, but a sign can keep the same message for days, so read the time beside each message. We leave out signs that are blank.',
+    ] },
+    { h: 'Road weather stations', p: [
+      'Caltrans runs about 150 weather and visibility sensing units on the highway system, mostly in rural places, mountain passes, central valley fog areas and desert high-wind areas. Most cities have none nearby, and then the block is not shown. Caltrans does not state the units of the readings in the field description, so we show the numbers as reported and do not add units.',
+    ] },
+    { h: 'Forecast and alerts', p: [
+      'The forecast and the alerts come from the National Weather Service for the point at the middle of the city, not for each road. An alert block appears only when the Weather Service lists an active alert for that point.',
+    ] },
+    { h: 'Why a block can be missing', p: [
+      `A block is left out when its licence record is not enabled, when nothing is near the city, or when the data is older than its limit when the site is built: ${MAX_AGE_MIN.lcs} minutes for closures, chain controls and signs, ${MAX_AGE_MIN.rwis} minutes for road weather and ${MAX_AGE_MIN['nws-forecast']} minutes for the forecast and alerts. We would rather show nothing than old data presented as current.`,
+      'These feeds come with no accuracy guarantee from Caltrans, and the times Caltrans gives for signs and chain controls have no time zone, which we read as Pacific time. For a closure that affects your trip, check the official source before you drive.',
     ] },
   ],
   'camera-link-is-dead': (x) => [

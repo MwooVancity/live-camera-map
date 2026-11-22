@@ -1,0 +1,3 @@
+{"updated":"2026-11-22T22:42:16+00:00","title":"Current watches, warnings, and advisories","features":[
+{"id":"https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.TEST","properties":{"id":"urn:oid:2.49.0.1.840.0.TEST","event":"Wind Advisory","severity":"Moderate","urgency":"Expected","certainty":"Likely","status":"Actual","headline":"Wind Advisory issued November 22 at 2:00PM PST","description":"West winds 25 to 35 mph.","instruction":"Secure outdoor objects.","effective":"2026-11-22T14:00:00-08:00","expires":"2026-11-23T04:00:00-08:00","ends":"2026-11-23T04:00:00-08:00","areaDesc":"Los Angeles County Mountains","senderName":"NWS Los Angeles/Oxnard CA"}}
+]}

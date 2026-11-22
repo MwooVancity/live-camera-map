@@ -1,0 +1,34 @@
+---
+// One live-conditions block (see src/lib/live.mjs). Text only: no images, no scripts. Server-rendered at build.
+import { MAX_ROWS } from '../lib/live.mjs';
+const { b, city } = Astro.props;
+const total = b.id === 'road-conditions' ? b.lcs.length + b.cc.length : b.items.length;
+const km = (i) => `${i.km < 1 ? '<1' : Math.round(i.km)} km from ${city}`;
+const where = (i) => [i.road, i.direction, i.place || i.locationName].filter(Boolean).join(', ');
+const val = (v, label) => (v === null || v === undefined ? null : `${label} ${v}`);
+const more = (n) => (n > MAX_ROWS ? n - MAX_ROWS : 0);
+---
+<section data-block={b.id} data-source={b.source} data-asof={b.asof} data-rows={total}>
+  <h2>{b.title} ({total})</h2>
+  {b.id === 'road-conditions' && (<>
+    {b.lcs.length > 0 && <><h3>Lane closures in effect now ({b.lcs.length})</h3>
+      <ul>{b.lcs.slice(0, MAX_ROWS).map((i) => <li>{where(i)}: {i.text}{i.estimatedDelay ? `, estimated delay ${i.estimatedDelay}` : ''}. <span class="meta">{km(i)}; ends {i.endIndefinite ? 'no set end' : (i.end || 'not stated').slice(0, 16).replace('T', ' ') + ' UTC'}.</span></li>)}</ul>
+      {more(b.lcs.length) > 0 && <p class="meta">and {more(b.lcs.length)} more closures within {Math.round(Math.max(...b.lcs.map((i) => i.km)))} km.</p>}</>}
+    {b.cc.length > 0 && <><h3>Chain controls in effect ({b.cc.length})</h3>
+      <ul>{b.cc.slice(0, MAX_ROWS).map((i) => <li>{where(i)}: {i.status}. {i.text} <span class="meta">{km(i)}; status set {i.statusLocal || 'time not given'} Pacific.</span></li>)}</ul></>}
+  </>)}
+  {b.id === 'message-signs' && (
+    <ul>{b.items.slice(0, MAX_ROWS).map((i) => <li>{where(i)}: <strong>{i.text}</strong>. <span class="meta">{km(i)}; message set {i.messageLocal || 'time not given'} Pacific. A sign can keep an old message.</span></li>)}</ul>
+  )}
+  {b.id === 'road-weather' && (<>
+    <ul>{b.items.slice(0, MAX_ROWS).map((i) => <li>{where(i)}{i.locationName && i.place ? ` (${i.locationName})` : ''}: {[val(i.airTemp, 'air temperature'), val(i.surfaceTemp, 'road surface temperature'), val(i.windAvg, 'wind'), val(i.windGust, 'gust'), val(i.visibility, 'visibility'), val(i.humidity, 'humidity %')].filter(Boolean).join(', ')}. <span class="meta">{km(i)}; read {i.recordedAt.slice(0, 16).replace('T', ' ')} UTC.</span></li>)}</ul>
+    <p class="meta">Caltrans does not state the units of these readings, so we show them exactly as reported.</p>
+  </>)}
+  {b.id === 'forecast' && (
+    <ul>{b.items.map((p) => <li><strong>{p.name}:</strong> {p.shortForecast}, {p.temperature}&deg;{p.temperatureUnit}, wind {p.windDirection} {p.windSpeed}{p.precipChance !== null && p.precipChance !== undefined ? `, ${p.precipChance}% chance of precipitation` : ''}.</li>)}</ul>
+  )}
+  {b.id === 'weather-alerts' && (
+    <ul>{b.items.map((a) => <li><strong>{a.event}</strong> ({[a.severity, a.urgency].filter(Boolean).join(', ')}). {a.headline}</li>)}</ul>
+  )}
+  <p class="meta">Source: {b.link ? <a href={b.link} rel="noopener">{b.source}</a> : b.source}. {b.attribution}. Updated <time datetime={b.asof}>{b.asof.slice(0, 16).replace('T', ' ')} UTC</time>; hidden when older than {b.maxAgeMin} minutes at build. See <a href="/guides/what-live-road-conditions-mean/">what these conditions mean</a>.</p>
+</section>

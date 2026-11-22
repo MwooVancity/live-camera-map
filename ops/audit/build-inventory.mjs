@@ -7,6 +7,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { isEnabled } from '../../tests/licensing/gate.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const SRC = 'gev/DATA_SOURCES.md';
@@ -123,6 +124,12 @@ const out = rows.map((r) => {
     enabled: cls.mustNotShip ? false : enabled,
   };
 });
+
+// Hand-read rows (sources not in gev/DATA_SOURCES.md). Appended so regenerating never drops them; `enabled` comes from the gate.
+for (const m of JSON.parse(readFileSync(resolve(root, 'data/source-permissions.manual.json'), 'utf8')).sources) {
+  if (out.some((o) => o.id === m.id)) throw new Error(`manual row ${m.id} duplicates a generated id`);
+  out.push({ ...m, enabled: isEnabled(m, new Date(m.reviewedAt)) });
+}
 
 mkdirSync(resolve(root, 'docs/source-audits'), { recursive: true });
 mkdirSync(resolve(root, 'data'), { recursive: true });

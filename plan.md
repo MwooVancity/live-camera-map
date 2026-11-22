@@ -145,6 +145,7 @@ Build order (replaces nothing in section 5; adds):
 - Page gate also needs `site/PAGES.md` to carry "Beats Argos by: ..." for each indexable page.
 
 ## Next
-- WAITING 2026-11-22 (workflow wen4oorz6 building registry + site): run `node ops/harness/page-gate.mjs`, fix path mismatches, commit, push, check CI.
-- Then: Caltrans road-conditions / signs / road-weather importers (section 12), NWS forecast block, corridor view.
+- DONE 2026-11-22: Caltrans registry (3,263 cameras, all 12 districts), Astro site (18 pages), enforcement harness, CI green (commit after c136d10).
+- IN PROGRESS: section 12 live blocks (Caltrans lane closures, chain controls, message signs, road weather; NWS forecast and alerts) with licence rows, tests, page blocks.
+- THEN: corridor view; more no-key camera sources seen in GEV catalog (DriveBC, City of Calgary, City of Toronto) after reading each licence; health.json checker + R2 cron.
 - OWNER: Ontario 511 and Alberta 511 keys; domain and name when going live; Open-Meteo commercial terms.
