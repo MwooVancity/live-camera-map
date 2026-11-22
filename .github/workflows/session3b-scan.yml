@@ -29,7 +29,7 @@ jobs:
           npm audit --omit=dev --package-lock-only --json > ../scan-out/npm-audit.json || true
           test -s ../scan-out/npm-audit.json
       - name: Trivy image vulnerabilities (HIGH,CRITICAL, unfixed included)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.33.1
         with:
           scan-type: image
           image-ref: gev-pinned
@@ -40,7 +40,7 @@ jobs:
           output: scan-out/trivy-image.json
           exit-code: '0'
       - name: Trivy secret scan of the gev tree
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.33.1
         with:
           scan-type: fs
           scan-ref: gev
@@ -49,7 +49,7 @@ jobs:
           output: scan-out/trivy-secrets.json
           exit-code: '0'
       - name: Trivy SBOM (CycloneDX) of the image
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.33.1
         with:
           scan-type: image
           image-ref: gev-pinned
