@@ -1,0 +1,264 @@
+// Offline tests for the camera health checker: a local http server on 127.0.0.1, no internet.
+// Run: node --test tests/health/health.test.mjs
+import test, { before, after } from 'node:test';
+import assert from 'node:assert/strict';
+import http from 'node:http';
+import { mkdtempSync, readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { run, loadPrevious, sampleCameras } from '../../ops/health/check.mjs';
+import { classify, feedKindOf } from '../../ops/health/lib/classify.mjs';
+
+const JPEG = (extra = '') => Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.from(extra), Buffer.alloc(2500, 7)]);
+const hoursAgo = (h) => new Date(Date.now() - h * 3600000).toUTCString();
+
+let server, base, seen = [], handler;
+before(async () => {
+  server = http.createServer((req, res) => { seen.push({ method: req.method, url: req.url, range: req.headers.range, ua: req.headers['user-agent'] }); handler(req, res); });
+  await new Promise((r) => server.listen(0, '127.0.0.1', r));
+  base = `http://127.0.0.1:${server.address().port}`;
+});
+after(() => server.close());
+
+const fast = { hostDelayMs: 0, backoffMs: 5, backoffMaxMs: 20, retries: 2 };
+const cam = (i, path = `/c${i}.jpg`, sourceId = 't') => ({ id: `${sourceId}-${i}`, sourceId, officialUrl: base + path });
+const go = async (cams, o = {}) => {
+  seen = [];
+  const outDir = o.outDir || mkdtempSync(join(tmpdir(), 'health-'));
+  const r = await run({ cameras: cams, outDir, previous: o.previous || null, config: { ...fast, ...(o.config || {}) }, limit: o.limit, sample: o.sample });
+  return { ...r, outDir, rec: (i) => r.doc.cameras[cams[i].id] };
+};
+const sendJpeg = (res, headers = {}, body = JPEG()) => { res.writeHead(200, { 'Content-Type': 'image/jpeg', 'Content-Length': body.length, ...headers }); res.end(body); };
+
+test('a 200 with an HTML error body is unavailable, not reachable', async () => {
+  handler = (req, res) => { const b = '<html>Error</html>'.repeat(100); res.writeHead(200, { 'Content-Type': 'text/html', 'Content-Length': b.length }); res.end(b); };
+  const r = await go([cam(1)]);
+  assert.equal(r.rec(0).status, 'unavailable');
+  assert.equal(r.rec(0).reason, 'not-an-image');
+  assert.equal(r.rec(0).httpStatus, 200);
+});
+
+test('a 200 with a JSON error body is unavailable', async () => {
+  handler = (req, res) => { res.writeHead(200, { 'Content-Type': 'application/json', 'Content-Length': 2000 }); res.end('{}'); };
+  assert.equal((await go([cam(1)])).rec(0).status, 'unavailable');
+});
+
+test('a tiny image is unavailable (minimum size)', async () => {
+  handler = (req, res) => sendJpeg(res, {}, Buffer.from([0xff, 0xd8, 0xff, 1, 2, 3]));
+  assert.equal((await go([cam(1)])).rec(0).reason, 'too-small');
+});
+
+test('a JPEG with the right magic bytes is reachable; the wrong magic is unavailable', async () => {
+  handler = (req, res) => sendJpeg(res);
+  const ok = await go([cam(1)], { config: { magicAll: true } });
+  assert.equal(ok.rec(0).status, 'reachable');
+  assert.deepEqual(seen.map((s) => s.method), ['HEAD', 'GET']);
+  handler = (req, res) => sendJpeg(res, {}, Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47]), Buffer.alloc(2500)]));
+  const bad = await go([cam(1)], { config: { magicAll: true } });
+  assert.equal(bad.rec(0).status, 'unavailable');
+  assert.equal(bad.rec(0).reason, 'bad-signature');
+});
+
+test('stale: Last-Modified older than the stale limit; fresh one stays reachable; no Last-Modified cannot be stale', async () => {
+  handler = (req, res) => sendJpeg(res, { 'Last-Modified': hoursAgo(10) });
+  assert.equal((await go([cam(1)])).rec(0).status, 'stale');
+  handler = (req, res) => sendJpeg(res, { 'Last-Modified': hoursAgo(1) });
+  assert.equal((await go([cam(1)])).rec(0).status, 'reachable');
+  handler = (req, res) => sendJpeg(res, { 'Last-Modified': hoursAgo(10) });
+  assert.equal((await go([cam(1)], { config: { staleHours: 12 } })).rec(0).status, 'reachable');
+  handler = (req, res) => sendJpeg(res);
+  assert.equal((await go([cam(1)])).rec(0).status, 'reachable');
+});
+
+test('unchanged ETag keeps lastChanged; a changed ETag moves it; the status stays separate', async () => {
+  let etag = '"a"';
+  handler = (req, res) => sendJpeg(res, { ETag: etag });
+  const first = await go([cam(1)]);
+  assert.equal(first.rec(0).lastChanged, null, 'first run: nothing to compare with, not invented');
+  const prev1 = { cameras: { 't-1': { ...first.rec(0), lastChanged: '2026-01-01T00:00:00.000Z' } } };
+  const second = await go([cam(1)], { previous: prev1 });
+  assert.equal(second.rec(0).lastChanged, '2026-01-01T00:00:00.000Z');
+  assert.equal(second.rec(0).status, 'reachable');
+  etag = '"b"';
+  const third = await go([cam(1)], { previous: prev1 });
+  assert.ok(Date.parse(third.rec(0).lastChanged) > Date.parse('2026-01-01'));
+});
+
+test('HEAD refused (405) falls back to one ranged GET', async () => {
+  handler = (req, res) => (req.method === 'HEAD' ? (res.writeHead(405), res.end()) : (res.writeHead(206, { 'Content-Type': 'image/jpeg', 'Content-Range': 'bytes 0-1023/2504' }), res.end(JPEG().subarray(0, 1024))));
+  const r = await go([cam(1)]);
+  assert.equal(r.rec(0).status, 'reachable');
+  assert.equal(r.rec(0).contentLength, 2504, 'size read from Content-Range, not the 1 KB slice');
+  assert.deepEqual(seen.map((s) => [s.method, s.range]), [['HEAD', undefined], ['GET', 'bytes=0-1023']]);
+  assert.equal(seen[0].ua, 'NearbyCams-build');
+});
+
+test('429 then success: backs off and retries; a 429 that never clears is unknown, not unavailable', async () => {
+  let n = 0;
+  handler = (req, res) => (++n <= 2 ? (res.writeHead(429), res.end()) : sendJpeg(res));
+  const r = await go([cam(1)]);
+  assert.equal(r.rec(0).status, 'reachable');
+  assert.equal(seen.length, 3);
+  handler = (req, res) => (res.writeHead(429), res.end());
+  const t = await go([cam(1)]);
+  assert.equal(t.rec(0).status, 'unknown');
+  assert.equal(seen.length, 3, '1 try + 2 retries, then stop');
+});
+
+test('redirects: followed up to 3, a 4th hop is unavailable', async () => {
+  handler = (req, res) => {
+    const m = /^\/r(\d)\.jpg$/.exec(req.url);
+    if (m && Number(m[1]) < 5) { res.writeHead(302, { Location: `/r${Number(m[1]) + 1}.jpg` }); return res.end(); }
+    sendJpeg(res);
+  };
+  assert.equal((await go([cam(1, '/r2.jpg')])).rec(0).status, 'reachable'); // r2 -> r3 -> r4 -> r5 (3 hops)
+  assert.equal((await go([cam(1, '/r1.jpg')])).rec(0).reason, 'too-many-redirects');
+});
+
+test('circuit breaker: after 25 transport failures the rest of the source is unknown, never unavailable; run is partial', async () => {
+  handler = (req, res) => (res.writeHead(503), res.end());
+  const cams = Array.from({ length: 40 }, (_, i) => cam(i));
+  const r = await go(cams, { config: { concurrency: 1, retries: 0 } });
+  const st = cams.map((c, i) => r.rec(i).status);
+  assert.equal(st.filter((s) => s === 'unavailable').length, 25);
+  assert.equal(st.filter((s) => s === 'unknown').length, 15);
+  assert.ok(!st.slice(25).includes('unavailable'));
+  assert.equal(r.doc.perSource.t.circuitOpen, true);
+  assert.equal(seen.length, 25, 'no request after the breaker opened');
+  assert.equal(r.partial, true);
+  assert.equal(r.name, 'health.partial.json');
+  assert.ok(!existsSync(join(r.outDir, 'health.json')));
+});
+
+test('a 404 is unavailable but is not a transport failure (does not open the breaker)', async () => {
+  handler = (req, res) => (res.writeHead(404), res.end());
+  const cams = Array.from({ length: 30 }, (_, i) => cam(i));
+  const r = await go(cams, { config: { concurrency: 1 } });
+  assert.equal(Object.values(r.doc.cameras).filter((c) => c.status === 'unavailable').length, 30);
+  assert.equal(r.doc.perSource.t.circuitOpen, false);
+});
+
+test('request cap and time budget are respected', async () => {
+  handler = (req, res) => sendJpeg(res);
+  const cams = Array.from({ length: 12 }, (_, i) => cam(i));
+  const capped = await go(cams, { config: { maxRequests: 5, concurrency: 1 } });
+  assert.ok(seen.length <= 5);
+  assert.equal(capped.doc.runOk, false);
+  assert.equal(Object.values(capped.doc.cameras).filter((c) => c.reason === 'request-cap').length, 7);
+  const timed = await go(Array.from({ length: 60 }, (_, i) => cam(i)), { config: { budgetMs: 60, hostDelayMs: 30, concurrency: 2 } });
+  assert.ok(seen.length < 60, `time budget stopped the run (${seen.length} requests)`);
+  assert.equal(timed.doc.runOk, false);
+  assert.ok(Object.values(timed.doc.cameras).some((c) => c.reason === 'time-budget'));
+});
+
+test('a partial run never overwrites a good health.json', async () => {
+  handler = (req, res) => sendJpeg(res);
+  const outDir = mkdtempSync(join(tmpdir(), 'health-'));
+  const good = JSON.stringify({ generatedAt: 'GOOD', runOk: true, cameras: {} });
+  writeFileSync(join(outDir, 'health.json'), good);
+  const r = await go(Array.from({ length: 10 }, (_, i) => cam(i)), { outDir, config: { maxRequests: 3, concurrency: 1 } });
+  assert.equal(readFileSync(join(outDir, 'health.json'), 'utf8'), good);
+  assert.equal(r.name, 'health.partial.json');
+  assert.ok(existsSync(join(outDir, 'health.partial.json')));
+  const full = await go([cam(1)], { outDir });
+  assert.equal(full.name, 'health.json');
+  assert.equal(JSON.parse(readFileSync(join(outDir, 'health.json'), 'utf8')).runOk, true);
+});
+
+test('a sample or limit run writes health.sample.json only', async () => {
+  handler = (req, res) => sendJpeg(res);
+  const cams = Array.from({ length: 6 }, (_, i) => cam(i));
+  const r = await go(cams, { limit: 2 });
+  assert.equal(r.name, 'health.sample.json');
+  assert.equal(Object.keys(r.doc.cameras).length, 2);
+  assert.ok(!existsSync(join(r.outDir, 'health.json')));
+  const mixed = [...cams.slice(0, 3).map((c, i) => ({ ...c, id: `a-d01-${i}` })), ...cams.slice(3).map((c, i) => ({ ...c, id: `a-d02-${i}` }))];
+  assert.deepEqual(sampleCameras(mixed, 2).map((c) => c.id), ['a-d01-0', 'a-d02-0']);
+});
+
+test('carry-over: consecutiveFailures and lastSuccess persist across runs; success resets the count', async () => {
+  handler = (req, res) => (res.writeHead(404), res.end());
+  const prev = { cameras: { 't-1': { status: 'unavailable', consecutiveFailures: 2, lastSuccess: '2026-11-01T00:00:00.000Z', lastChanged: '2026-10-30T00:00:00.000Z', fingerprint: '"a"' } } };
+  const r = await go([cam(1)], { previous: prev });
+  assert.equal(r.rec(0).consecutiveFailures, 3);
+  assert.equal(r.rec(0).lastSuccess, '2026-11-01T00:00:00.000Z');
+  assert.equal(r.rec(0).lastChanged, '2026-10-30T00:00:00.000Z');
+  handler = (req, res) => sendJpeg(res);
+  const ok = await go([cam(1)], { previous: { cameras: { 't-1': r.rec(0) } } });
+  assert.equal(ok.rec(0).consecutiveFailures, 0);
+  assert.ok(Date.parse(ok.rec(0).lastSuccess) > Date.parse('2026-11-02'));
+  // unknown (throttled) keeps the old count instead of resetting or adding
+  handler = (req, res) => (res.writeHead(429), res.end());
+  const t = await go([cam(1)], { previous: { cameras: { 't-1': r.rec(0) } } });
+  assert.equal(t.rec(0).consecutiveFailures, 3);
+});
+
+test('previous file: missing or unusable starts fresh and says so; a good file loads', async () => {
+  const msgs = [];
+  assert.equal(await loadPrevious(join(tmpdir(), 'nope-health.json'), (m) => msgs.push(m)), null);
+  assert.match(msgs[0], /starting fresh/);
+  const d = mkdtempSync(join(tmpdir(), 'health-'));
+  writeFileSync(join(d, 'p.json'), JSON.stringify({ cameras: { a: {} } }));
+  assert.deepEqual(Object.keys((await loadPrevious(join(d, 'p.json'))).cameras), ['a']);
+  handler = (req, res) => { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ cameras: { b: {} } })); };
+  assert.deepEqual(Object.keys((await loadPrevious(`${base}/health.json`)).cameras), ['b']);
+  handler = (req, res) => (res.writeHead(404), res.end());
+  assert.equal(await loadPrevious(`${base}/health.json`, () => {}), null);
+});
+
+test('feedKind comes from the URL and the response, never guessed as video', () => {
+  assert.equal(feedKindOf('https://x/a.JPG'), 'still');
+  assert.equal(feedKindOf('https://x/a.png?x=1'), 'still');
+  assert.equal(feedKindOf('https://x/a.m3u8'), 'video');
+  assert.equal(feedKindOf('https://x/watch', 'text/html'), 'operator-page');
+  assert.equal(feedKindOf('https://x/live', 'application/vnd.apple.mpegurl'), 'video');
+  assert.equal(feedKindOf('https://x/live', null), 'unknown');
+  assert.equal(feedKindOf('not a url'), 'unknown');
+  assert.equal(classify('https://x/watch', { httpStatus: 200, contentType: 'text/html' }).status, 'unknown'); // an HTML page is never a reachable picture
+});
+
+test('no image bytes are persisted: only headers and a status survive, not even the 3-byte signature', async () => {
+  const MARK = 'SECRETPIXELS';
+  handler = (req, res) => sendJpeg(res, { ETag: '"e"', 'Last-Modified': hoursAgo(1) }, JPEG(MARK));
+  const r = await go([cam(1)], { config: { magicAll: true } });
+  assert.equal(r.rec(0).status, 'reachable');
+  const files = readdirSync(r.outDir);
+  assert.deepEqual(files, ['health.json']);
+  const text = readFileSync(join(r.outDir, 'health.json'), 'utf8');
+  assert.ok(!text.includes(MARK) && !text.includes('ffd8ff') && !/signature/i.test(text));
+  const allowed = new Set(['status', 'httpStatus', 'contentType', 'contentLength', 'lastChecked', 'lastSuccess', 'lastChanged', 'consecutiveFailures', 'feedKind', 'fingerprint', 'reason']);
+  for (const c of Object.values(r.doc.cameras)) for (const k of Object.keys(c)) assert.ok(allowed.has(k), `unexpected field ${k}`);
+});
+
+test('top level has generatedAt, runOk and a per-source summary', async () => {
+  handler = (req, res) => sendJpeg(res);
+  const r = await go([cam(1), cam(2)]);
+  assert.ok(Date.parse(r.doc.generatedAt) > 0);
+  assert.equal(r.doc.runOk, true);
+  assert.deepEqual([r.doc.perSource.t.total, r.doc.perSource.t.reachable, r.doc.perSource.t.unknown], [2, 2, 0]);
+});
+
+test('adversarial: empty body is never reachable (magic read), operator pages and bad URLs never crash or count reachable', async () => {
+  handler = (req, res) => { res.writeHead(200, { 'Content-Type': 'image/jpeg', 'Transfer-Encoding': 'chunked' }); res.end(); };
+  const e = await go([cam(1)], { config: { magicAll: true } });
+  assert.equal(e.rec(0).status, 'unavailable');
+  handler = (req, res) => { res.writeHead(200, { 'Content-Type': 'text/html', 'Content-Length': 5000 }); res.end('x'); };
+  const p = await go([cam(1, '/watch')]);
+  assert.equal(p.rec(0).status, 'unknown');
+  const b = await go([{ id: 't-9', sourceId: 't', officialUrl: 'not a url' }]);
+  assert.equal(b.rec(0).status, 'unavailable');
+});
+
+test('adversarial: a survived 429 counts toward the unknown share, so the run is partial', async () => {
+  handler = (req, res) => { res.writeHead(429, { 'Retry-After': '0' }); res.end(); };
+  const outDir = mkdtempSync(join(tmpdir(), 'health-'));
+  const r = await go(Array.from({ length: 5 }, (_, i) => cam(i)), { outDir });
+  assert.equal(r.name, 'health.partial.json');
+  assert.ok(!existsSync(join(outDir, 'health.json')));
+});
+
+test('adversarial: concurrent workers never pass the request cap', async () => {
+  handler = (req, res) => sendJpeg(res);
+  const r = await go(Array.from({ length: 40 }, (_, i) => cam(i)), { config: { maxRequests: 7, concurrency: 6, hostDelayMs: 5 } });
+  assert.ok(seen.length <= 7 && r.doc.requests <= 7, `${seen.length} requests`);
+});

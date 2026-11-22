@@ -31,6 +31,16 @@ jobs:
         run: |
           node ops/importers/caltrans-conditions.mjs
           node ops/importers/nws.mjs
+      - name: Camera health check (previous result from the deployed site, 12 min time budget)
+        timeout-minutes: 14
+        run: |
+          curl --fail --silent --show-error --location --max-time 30 -o previous-health.json "$PUBLIC_SITE_URL/health.json" || { echo "no previous health.json (first run or fetch failed): starting fresh"; rm -f previous-health.json; }
+          if [ -s previous-health.json ]; then PREV="--previous previous-health.json"; else PREV=""; fi
+          node ops/health/check.mjs $PREV --out data/health/health.json || echo "health checker crashed (exit $?): the deploy continues without a new health.json"
+          mkdir -p site/public
+          # a partial run wrote health.partial.json only: keep publishing the last good file (the pages hide it once it is over 24 h old)
+          if [ ! -f data/health/health.json ] && [ -s previous-health.json ]; then mkdir -p data/health; cp previous-health.json data/health/health.json; echo "partial run: kept the previous good health.json"; fi
+          if [ -f data/health/health.json ]; then cp data/health/health.json site/public/health.json; else echo "no health.json to publish"; fi
       - run: npm ci
         working-directory: site
       - name: Build with the staging URL

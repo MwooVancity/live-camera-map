@@ -4,12 +4,15 @@ import { SITE_NAME } from '../../config.mjs';
 import { cameras, countsBy, registryDate, report, loadedDistricts, failedDistricts } from '../../lib/data.mjs';
 import { GUIDES, curatedCities, slugify } from '../../lib/pages.mjs';
 import { GUIDE_BODY } from '../../lib/guides.mjs';
+import { loadHealth, HEALTH_MAX_AGE_H } from '../../lib/health.mjs';
 
 export function getStaticPaths() {
   return GUIDES.map((g) => ({ params: { slug: g.slug }, props: { guide: g } }));
 }
 const { guide } = Astro.props;
-const sections = GUIDE_BODY[guide.slug]({ total: cameras.length, districts: loadedDistricts, failed: failedDistricts, dropped: report.dropped || {}, date: registryDate });
+const hf = loadHealth();
+const fresh = hf && (Date.now() - Date.parse(hf.generatedAt)) / 3600000 <= HEALTH_MAX_AGE_H;
+const sections = GUIDE_BODY[guide.slug]({ healthAsof: fresh ? hf.generatedAt : null, healthTotal: fresh ? Object.keys(hf.cameras).length : 0, total: cameras.length, districts: loadedDistricts, failed: failedDistricts, dropped: report.dropped || {}, date: registryDate });
 const byCity = countsBy(cameras, 'city');
 const cities = curatedCities(cameras).slice(0, 3);
 const regionOf = (city) => cameras.find((c) => c.city === city).regionSlug;

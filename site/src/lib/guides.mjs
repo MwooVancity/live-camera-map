@@ -5,16 +5,18 @@ export const GUIDE_BODY = {
   'how-to-read-last-checked-status': (x) => [
     { h: 'Four statuses', p: [
       'Each camera gets one of four statuses from our own checker: reachable, stale, unavailable or unknown.',
-      'Reachable means the official link answered with an image or video type of content. Stale means it answered, but the picture has not changed for longer than expected. Unavailable means it failed, or answered with a web page instead of an image. Unknown means we have not checked it, or the check itself failed.',
+      'Reachable means the official link answered with an image (or a video playlist for video feeds) of a plausible size. Stale means it answered, but the last-modified time for the picture is older than 6 hours; when a server gives no last-modified time we cannot tell, and it stays reachable. Unavailable means the link failed, or answered with a web page, an error text or a file that is not a picture. Unknown means this check could not be completed, for example because the source told us to slow down or our run ran out of time, so we do not guess.',
     ] },
     { h: 'Why a 200 answer is not enough', p: [
-      'A server can say "OK" and still hand back an error page. We read the content type of the answer and treat an HTML page as a failure.',
+      'A server can say "OK" and still hand back an error page. We read the content type of the answer, the size and the first bytes of the file type, and treat an HTML or JSON page, a tiny file or a wrong file type as a failure. We do not download or keep the pictures.',
     ] },
     { h: '"Last checked" and "last changed" are different', p: [
-      'Last checked is when our checker last asked. Last changed is when the picture last looked different. A quiet road at night can give an identical picture for hours, so an unchanged picture alone is not proof of a dead camera. That is why stale is its own status and not the same as unavailable.',
+      'Last checked is when our checker last asked. Last changed is when the picture last looked different, judged only from the ETag, last-modified time or file size compared with our previous run. A quiet road at night can give an identical picture for hours, so an unchanged picture alone is not proof of a dead camera. That is why stale is its own status and not the same as unavailable.',
     ] },
     { h: 'Today', p: [
-      `The checker has not run yet, so every page says "not checked yet". We would rather say that than show a guess. The camera list itself was imported on ${x.date} and none of its ${x.total} links has been tested by us.`,
+      x.healthAsof
+        ? `The checker last ran at ${x.healthAsof.slice(0, 16).replace('T', ' ')} UTC and covers ${x.healthTotal} cameras. The statuses on a city page come from that run only. If the last run is more than 24 hours old when the site is built, the page shows no statuses at all. The camera list itself was imported on ${x.date}.`
+        : `The checker has not produced a usable result for this build, so every page says "not checked yet". We would rather say that than show a guess. The camera list itself was imported on ${x.date} and none of its ${x.total} links has been tested by us.`,
     ] },
   ],
   'what-link-out-only-means': (x) => [
@@ -80,7 +82,7 @@ export const GUIDE_BODY = {
       'Come back later. Cameras are taken out of service for maintenance and for road work.',
     ] },
     { h: 'What we do about it', p: [
-      `We drop cameras the source itself marks as out of service (${x.dropped.notInService ?? 0} in our last import). Our own checker, once it runs, will mark links reachable, stale or unavailable, so you can see a bad link before you click.`,
+      `We drop cameras the source itself marks as out of service (${x.dropped.notInService ?? 0} in our last import). Our own checker marks every link reachable, stale, unavailable or unknown, so you can often see a bad link before you click.`,
       'If the source has removed a camera, it will disappear from our list the next time we re-import its camera list.',
     ] },
   ],

@@ -1,5 +1,5 @@
 // Loads the registry (build runs from site/). Every number on every page comes from countsBy.
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { countsBy } from '../../../ops/importers/lib/registry.mjs';
 
@@ -11,8 +11,6 @@ const read = (f) => JSON.parse(readFileSync(resolve(dir, f), 'utf8'));
 export const cameras = read('cameras.json');
 export const sources = read('sources.json');
 export const report = read('import-report.json');
-// health.json does not exist yet: null means "not checked yet", shown honestly.
-export const health = existsSync(resolve(dir, 'health.json')) ? read('health.json') : null;
 
 export const registryDate = cameras.map((c) => c.lastSeen).filter(Boolean).sort().at(-1)?.slice(0, 10) ?? null;
 export const loadedDistricts = Object.entries(report.perDistrict).filter(([, v]) => v.ok).map(([d]) => d);

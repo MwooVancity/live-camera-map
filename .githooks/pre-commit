@@ -3,5 +3,5 @@
 set -e
 node ops/lint/preflight.mjs --offline
 node ops/harness/selftest.mjs
-node --test ops/lint/preflight.test.mjs ops/harness/harness.test.mjs tests/exclusion/exclusion.test.mjs tests/deploy/compose-lint.test.mjs
+node --test ops/lint/preflight.test.mjs ops/harness/harness.test.mjs tests/exclusion/exclusion.test.mjs tests/deploy/compose-lint.test.mjs tests/health/health.test.mjs
 if [ -d gev/.git ]; then node tests/immutability/check.mjs; fi

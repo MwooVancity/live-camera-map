@@ -99,7 +99,7 @@ test('road counts on a city page add up to the camera count', () => {
 });
 
 test('health is honest when health.json is missing', () => {
-  if (existsSync('../data/camera-registry/health.json')) return;
+  if (existsSync('../data/health/health.json')) return;
   for (const route of cityRoutes) assert.ok(pages.get(route).includes('Not checked yet'), `${route}: health text`);
 });
 

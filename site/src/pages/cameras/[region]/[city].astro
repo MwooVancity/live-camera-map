@@ -1,9 +1,10 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import { SITE_NAME } from '../../../config.mjs';
-import { cameras, countsBy, registryDate, sources, health, loadedDistricts } from '../../../lib/data.mjs';
+import { cameras, countsBy, registryDate, sources, loadedDistricts } from '../../../lib/data.mjs';
 import { curatedCities, slugify, isIndexable } from '../../../lib/pages.mjs';
 import { cityBlocks } from '../../../lib/live.mjs';
+import { loadHealth, cityHealth, MEANING, STATUSES } from '../../../lib/health.mjs';
 import LiveBlock from '../../../components/LiveBlock.astro';
 
 export function getStaticPaths() {
@@ -34,9 +35,8 @@ const related = curatedCities(cameras).filter((c) => c !== city && cameras.find(
   .sort((a, b) => a.d - b.d).slice(0, 4).map((x) => x.c);
 
 const sorted = [...here].sort((a, b) => a.road.localeCompare(b.road) || a.direction.localeCompare(b.direction) || a.name.localeCompare(b.name));
-const hc = health?.cameras || {};
-const statusCount = { reachable: 0, stale: 0, unavailable: 0, unknown: 0 };
-if (health) for (const c of here) statusCount[hc[c.id]?.status in statusCount ? hc[c.id].status : 'unknown']++;
+const { block: hb, reason: hReason } = cityHealth(here, loadHealth());
+const when = (iso) => iso.slice(0, 16).replace('T', ' ') + ' UTC';
 const verified = here.map((c) => c.officialUrlLastVerified).filter(Boolean).sort().at(-1);
 const top = roads.slice(0, 3).map(([r, k]) => `${r} (${k})`).join(', ');
 ---
@@ -54,18 +54,26 @@ const top = roads.slice(0, 3).map(([r, k]) => `${r} (${k})`).join(', ');
 
   {live.map((b) => <LiveBlock b={b} city={city} />)}
 
-  <section data-block="health" data-source="our own camera checker" data-asof={health?.generatedAt || 'not-checked'}>
-    <h2>Camera health</h2>
-    {health
-      ? <p>Last check {health.generatedAt}: {statusCount.reachable} reachable, {statusCount.stale} stale, {statusCount.unavailable} unavailable, {statusCount.unknown} unknown. See <a href="/guides/how-to-read-last-checked-status/">how to read these statuses</a>.</p>
-      : <p>Not checked yet. We have not run our camera checker, so we do not know which of these {n} links work today. See <a href="/guides/how-to-read-last-checked-status/">how to read these statuses</a> for what the checks will report.</p>}
-  </section>
+  {hb ? (
+    <section data-block="health" data-source="NearbyCams health checker" data-asof={hb.asof} data-count={hb.total}>
+      <h2>Camera health</h2>
+      <p>Last check {when(hb.asof)}: {hb.counts.reachable} reachable, {hb.counts.stale} stale, {hb.counts.unavailable} unavailable, {hb.counts.unknown} unknown, out of {hb.total} cameras. {STATUSES.map((s) => `${s[0].toUpperCase()}${s.slice(1)} means ${MEANING[s]}.`).join(' ')} See <a href="/guides/how-to-read-last-checked-status/">how to read these statuses</a>.</p>
+      <ul class="cols">{hb.roads.map((r) => <li>{r.road}: {r.counts.reachable} reachable, {r.counts.stale} stale, {r.counts.unavailable} unavailable, {r.counts.unknown} unknown (of {r.n}).</li>)}</ul>
+    </section>
+  ) : (
+    <section data-block="health" data-source="NearbyCams health checker" data-asof="not-checked">
+      <h2>Camera health</h2>
+      {hReason === 'stale'
+        ? <p>Not checked recently. Our last camera check is more than 24 hours old, so we show no status for these {n} links rather than an old one. See <a href="/guides/how-to-read-last-checked-status/">how to read these statuses</a>.</p>
+        : <p>Not checked yet. We have not run our camera checker, so we do not know which of these {n} links work today. See <a href="/guides/how-to-read-last-checked-status/">how to read these statuses</a> for what the checks will report.</p>}
+    </section>
+  )}
 
   <section data-block="cameras" data-basis="registry" data-count={n} data-source={source.name} data-asof={registryDate}>
     <h2>All {n} cameras</h2>
     <ul>
       {sorted.map((c) => (
-        <li><a href={c.officialUrl} rel="noopener">{c.name}</a> <span class="meta">{[c.road, c.direction, c.feedType === 'still' ? 'still image' : 'video'].filter(Boolean).join(', ')}{health ? `, ${hc[c.id]?.status || 'unknown'}` : ''}.</span></li>
+        <li><a href={c.officialUrl} rel="noopener">{c.name}</a> <span class="meta">{[c.road, c.direction, c.feedType === 'still' ? 'still image' : 'video'].filter(Boolean).join(', ')}.</span>{hb && <> <span class="meta" data-status={hb.statusOf(c.id)} title={`${MEANING[hb.statusOf(c.id)]}${hb.record(c.id)?.lastChecked ? '; last checked ' + when(hb.record(c.id).lastChecked) : ''}`}>Status: {hb.statusOf(c.id)}.</span></>}</li>
       ))}
     </ul>
   </section>

@@ -22,5 +22,6 @@ export const RULES = [
   { id: 'feed-licence', text: 'A live feed is fetched and shown only if its row in data/source-permissions.json is enabled, quotes the licence text and gives the URL.', enforcedBy: ['tests/licensing/licensing.test.mjs', 'tests/conditions/conditions.test.mjs'] },
   { id: 'live-block-omitted', text: 'A live page block is omitted (not shown empty) when its licence row is not enabled, its data is older than its max age at build, or no data is near the city.', enforcedBy: ['site/tests/live.test.mjs'] },
   { id: 'block-stale', text: 'A built page block whose data-asof is older than 24 h fails the page gate unless it is registry-based (data-basis="registry").', enforcedBy: ['ops/harness/page-gate.mjs'] },
-  { id: 'health-honest', text: 'A block with no or stale data hides; never shows old data as current.', enforcedBy: null },
+  { id: 'health-honest', text: 'The camera health block shows counts and per-camera status only from a health.json that is under 24 h old at build and valid; otherwise it shows no counts and says "not checked".', enforcedBy: ['site/tests/health.test.mjs'] },
+  { id: 'health-checker', text: 'The checker treats a 200 HTML/JSON body as unavailable, keeps lastChanged apart from status, throttles per source and host (cap, time budget, backoff, circuit breaker to unknown), never overwrites a good health.json with a partial run, and stores no image byte.', enforcedBy: ['tests/health/health.test.mjs', 'ops/health/check.mjs'] },
 ];
