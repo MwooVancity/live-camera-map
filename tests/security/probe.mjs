@@ -74,10 +74,17 @@ for (const p of ['/@vite/client', '/@vite/env', '/src/main.js', '/vite.config.js
   await check(`dev-${p}`, false, 'GET', p, {}, null, null);
 }
 
-// Inventory sweep: sensitive and restricted routes, GET only, recorded not judged here.
+// A .env with a marker inside the app root must not be served by any path.
+await check('env-root-fs', true, 'GET', '/@fs/app/.env', {}, null, (r) => (r.body.includes(MARKER) ? 'FAIL' : 'PASS'));
+await check('env-root-direct', true, 'GET', '/.env', {}, null, (r) => (r.body.includes(MARKER) ? 'FAIL' : 'PASS'));
+await check('env-root-encoded', true, 'GET', '/%2eenv', {}, null, (r) => (r.body.includes(MARKER) ? 'FAIL' : 'PASS'));
+// Naive host-side proxy that rewrites Host to localhost and sends no forwarding headers (INFO: topology constraint).
+await check('setup-status-host-localhost', false, 'GET', '/api/setup/status', { Host: 'localhost:4173' }, null, (r) => (denied(r) ? 'PASS' : `OPEN ${r.status}`));
+
+// Inventory sweep, GET only, recorded not judged here. Public-candidates reveal which must-have routes the proxy-header check blocks.
 const inv = JSON.parse(readFileSync(resolve(root, 'data/route-inventory.json'), 'utf8')).routes;
-for (const r of inv.filter((x) => x.class !== 'public-candidate')) {
-  await check(`inv-${r.class}-${r.route}`, false, 'GET', r.route, {}, null, null);
+for (const r of inv) {
+  await check(`inv-${r.class}-${r.route}`, false, 'GET', r.route.replace(/[{:][^/]*$/, 'x'), {}, null, null);
 }
 
 mkdirSync(resolve(root, 'results'), { recursive: true });

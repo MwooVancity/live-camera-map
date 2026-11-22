@@ -23,7 +23,7 @@ jobs:
             -e GEV_ALLOWED_HOSTS=map.example.test \
             -e GEV_EMBED_FRAME_ANCESTORS=https://www.example.test \
             gev-pinned
-          docker exec gev sh -c 'echo GEV_SECURITY_TEST_7f31c9 > /tmp/gev-marker.txt'
+          docker exec gev sh -c 'echo GEV_SECURITY_TEST_7f31c9 > /tmp/gev-marker.txt; echo GEV_SECURITY_TEST_7f31c9=1 > /app/.env'
           docker run -d --name proxy --network gevnet -p 127.0.0.1:8080:8080 \
             -v "$PWD/ops/proxy/nginx.conf:/etc/nginx/nginx.conf:ro" nginx:1.27-alpine
           for i in $(seq 1 60); do
@@ -41,7 +41,7 @@ jobs:
             -e GEV_ALLOWED_HOSTS=map.example.test \
             -e GEV_EMBED_FRAME_ANCESTORS=https://www.example.test \
             gev-pinned
-          docker exec gevpub sh -c 'echo GEV_SECURITY_TEST_7f31c9 > /tmp/gev-marker.txt'
+          docker exec gevpub sh -c 'echo GEV_SECURITY_TEST_7f31c9 > /tmp/gev-marker.txt; echo GEV_SECURITY_TEST_7f31c9=1 > /app/.env'
           for i in $(seq 1 60); do curl -s -o /dev/null http://127.0.0.1:4173/ && break; sleep 3; done
           node tests/security/probe.mjs http://127.0.0.1:4173 map.example.test scenarioB | tee scenarioB.txt || true
       # Scenario C: same host-published port but operator sets trusted peers to none.
@@ -53,7 +53,7 @@ jobs:
             -e GEV_EMBED_FRAME_ANCESTORS=https://www.example.test \
             -e GEV_KEY_SETUP_TRUSTED_PEERS=none \
             gev-pinned
-          docker exec gevnone sh -c 'echo GEV_SECURITY_TEST_7f31c9 > /tmp/gev-marker.txt'
+          docker exec gevnone sh -c 'echo GEV_SECURITY_TEST_7f31c9 > /tmp/gev-marker.txt; echo GEV_SECURITY_TEST_7f31c9=1 > /app/.env'
           for i in $(seq 1 60); do curl -s -o /dev/null http://127.0.0.1:4174/ && break; sleep 3; done
           node tests/security/probe.mjs http://127.0.0.1:4174 map.example.test scenarioC | tee scenarioC.txt || true
       - name: Image digest and logs
