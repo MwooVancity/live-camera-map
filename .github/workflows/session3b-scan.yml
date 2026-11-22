@@ -28,34 +28,13 @@ jobs:
           cd gev-audit
           npm audit --omit=dev --package-lock-only --json > ../scan-out/npm-audit.json || true
           test -s ../scan-out/npm-audit.json
-      - name: Trivy image vulnerabilities (HIGH,CRITICAL, unfixed included)
-        uses: aquasecurity/trivy-action@v0.33.1
-        with:
-          scan-type: image
-          image-ref: gev-pinned
-          scanners: vuln
-          severity: HIGH,CRITICAL
-          ignore-unfixed: false
-          format: json
-          output: scan-out/trivy-image.json
-          exit-code: '0'
-      - name: Trivy secret scan of the gev tree
-        uses: aquasecurity/trivy-action@v0.33.1
-        with:
-          scan-type: fs
-          scan-ref: gev
-          scanners: secret
-          format: json
-          output: scan-out/trivy-secrets.json
-          exit-code: '0'
-      - name: Trivy SBOM (CycloneDX) of the image
-        uses: aquasecurity/trivy-action@v0.33.1
-        with:
-          scan-type: image
-          image-ref: gev-pinned
-          format: cyclonedx
-          output: scan-out/sbom.cdx.json
-          exit-code: '0'
+      - name: Trivy (docker image): vulns, secrets, SBOM
+        run: |
+          T="docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $PWD:/w -w /w aquasec/trivy:0.58.1"
+          $T image --scanners vuln --severity HIGH,CRITICAL --format json --output scan-out/trivy-image.json gev-pinned || true
+          $T fs --scanners secret --format json --output scan-out/trivy-secrets.json gev || true
+          $T image --format cyclonedx --output scan-out/sbom.cdx.json gev-pinned || true
+          ls -la scan-out
       - run: node tests/immutability/check.mjs
       - uses: actions/upload-artifact@v4
         if: always()
