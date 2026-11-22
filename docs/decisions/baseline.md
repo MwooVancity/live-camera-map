@@ -22,5 +22,8 @@ Supplemental run (NOT a substitute): `node --test` with globs, with and without 
 ## 9 test:perf: FAIL, cause not proven
 Run 1: 1 fail, `longest layer CPU slice 6.809ms exceeds 4ms` (wildlifeSightings render.perf). Rerun: 2 fail (10.802ms vs 8ms; 9.874ms vs 4ms). Tests are timing budgets; likely slow/noisy Windows machine, but unproven. Thresholds not changed. Open: rerun on Linux CI to separate environment from real regression.
 
+## Linux CI result (GitHub Actions ubuntu-latest, Node 24, run 44970691034, 2026-11-22)
+All steps passed, including `npm test` (so #4 was purely a Windows ENAMETOOLONG issue) and `qa:stories`, except `npm run test:perf`: 1 of 2 fail, `longest layer CPU slice 5.088ms exceeds 4ms`. So perf fails on Linux too, on a shared runner. Still unproven whether it is runner noise or a real upstream issue; thresholds untouched. Treat test:perf as a known-flaky/unresolved baseline item; do not use it as a gate until explained.
+
 ## Immutability
 `node tests/immutability/check.mjs` exit 0. `node --test tests/immutability/immutability.test.mjs` 6/6 pass (real gev clean, control clone, deliberate edit, deletion, untracked file, wrong HEAD all caught). Note `node --test tests/immutability/` (directory form) fails on Node 24; use the file path.

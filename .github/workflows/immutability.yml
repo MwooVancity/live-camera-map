@@ -12,4 +12,4 @@ jobs:
       - run: git clone https://github.com/bilawalsidhu/gods-eye-view gev
       - run: git -C gev checkout "$(cut -d' ' -f1 ops/upstream-base.txt)"
       - run: node tests/immutability/check.mjs
-      - run: node --test tests/immutability/
+      - run: node --test tests/immutability/immutability.test.mjs
