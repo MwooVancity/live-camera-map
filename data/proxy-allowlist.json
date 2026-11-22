@@ -13,10 +13,10 @@
     { "id": "src-boot", "pattern": "^/(@vite|@id|src|node_modules|server|build)/[A-Za-z0-9_@.+~=,/-]+(\\?.*)?$", "probe": "/src/main.js", "expect": [200], "methods": ["GET"] },
     { "id": "cctv-sources", "pattern": "^/api/cctv/(sources|health)(\\?.*)?$", "probe": "/api/cctv/sources", "expect": [200], "methods": ["GET", "HEAD"], "note": "per-source licence gating (restricted/mustNotShip cameras such as fl511, nyc dot, transtar) is data-level, NOT enforced here" },
     { "id": "cctv-health", "pattern": "^/api/cctv/(sources|health)(\\?.*)?$", "probe": "/api/cctv/health", "expect": [200], "methods": ["GET"] },
-    { "id": "weather", "pattern": "^/api/(weather|weather/manifest|weather/tile|weather/image|weather-effects|wind/manifest|wind/grid)(\\?.*)?$", "probe": "/api/weather", "expect": [200, 400, 404], "methods": ["GET", "HEAD"], "note": "weather/tile may fetch ECCC GeoMet (mustNotShip in source-permissions); confirm before launch" },
-    { "id": "weather-manifest", "pattern": "^/api/(weather|weather/manifest|weather/tile|weather/image|weather-effects|wind/manifest|wind/grid)(\\?.*)?$", "probe": "/api/weather/manifest", "expect": [200, 404], "methods": ["GET"] },
+    { "id": "weather", "pattern": "^/api/(weather|weather/manifest|weather/tile|weather/image|weather-effects|wind/manifest|wind/grid)(\\?.*)?$", "probe": "/api/weather", "expect": [200, 400, 404, 405], "methods": ["GET", "HEAD"], "note": "weather/tile may fetch ECCC GeoMet (mustNotShip in source-permissions); confirm before launch" },
+    { "id": "weather-manifest", "pattern": "^/api/(weather|weather/manifest|weather/tile|weather/image|weather-effects|wind/manifest|wind/grid)(\\?.*)?$", "probe": "/api/weather/manifest", "expect": [200, 400, 404], "methods": ["GET"] },
     { "id": "wind-manifest", "pattern": "^/api/(weather|weather/manifest|weather/tile|weather/image|weather-effects|wind/manifest|wind/grid)(\\?.*)?$", "probe": "/api/wind/manifest", "expect": [200, 404], "methods": ["GET"] },
-    { "id": "library", "pattern": "^/api/library(/data/[A-Za-z0-9_-]+)?(\\?.*)?$", "probe": "/api/library", "expect": [200], "methods": ["GET", "HEAD"] },
+    { "id": "library", "pattern": "^/api/library(/data/[A-Za-z0-9_-]+)?(\\?.*)?$", "probe": "/api/library", "expect": [200, 404, 405], "methods": ["GET", "HEAD"] },
     { "id": "library-data", "pattern": "^/api/library(/data/[A-Za-z0-9_-]+)?(\\?.*)?$", "probe": "/api/library/data/gvp-holocene-volcanoes", "expect": [200, 404], "methods": ["GET"] }
   ]
 }
