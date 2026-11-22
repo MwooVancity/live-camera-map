@@ -1,0 +1,74 @@
+name: session3-deploy-spike
+# Public-deployment feasibility spike on Linux: pinned GEV image behind a proxy container, probed like a public visitor.
+on: workflow_dispatch
+jobs:
+  spike:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: git clone https://github.com/bilawalsidhu/gods-eye-view gev
+      - run: git -C gev checkout "$(cut -d' ' -f1 ops/upstream-base.txt)"
+      - run: node tests/immutability/check.mjs
+      - run: node ops/audit/route-inventory.mjs
+      - name: Build pinned image (no edits to gev/)
+        run: docker build -t gev-pinned ./gev
+      - run: docker network create gevnet
+      # Scenario A: proxy is a CONTAINER on the same network; GEV is NOT published to the host.
+      - name: Start GEV (private) and proxy
+        run: |
+          docker run -d --name gev --network gevnet \
+            -e GEV_ALLOWED_HOSTS=map.example.test \
+            -e GEV_EMBED_FRAME_ANCESTORS=https://www.example.test \
+            gev-pinned
+          docker exec gev sh -c 'echo GEV_SECURITY_TEST_7f31c9 > /tmp/gev-marker.txt'
+          docker run -d --name proxy --network gevnet -p 127.0.0.1:8080:8080 \
+            -v "$PWD/ops/proxy/nginx.conf:/etc/nginx/nginx.conf:ro" nginx:1.27-alpine
+          for i in $(seq 1 60); do
+            curl -s -o /dev/null -H 'Host: map.example.test' http://127.0.0.1:8080/ && break
+            sleep 3
+          done
+          docker logs gev 2>&1 | tail -15
+      - name: Scenario A probe (proxy container, public visitor)
+        run: node tests/security/probe.mjs http://127.0.0.1:8080 map.example.test scenarioA | tee scenarioA.txt
+      # Scenario B: GEV port published on the host (a host-side proxy or tunnel would connect like this).
+      - name: Scenario B probe (host-published port, gateway-trusted?)
+        if: always()
+        run: |
+          docker run -d --name gevpub -p 127.0.0.1:4173:4173 \
+            -e GEV_ALLOWED_HOSTS=map.example.test \
+            -e GEV_EMBED_FRAME_ANCESTORS=https://www.example.test \
+            gev-pinned
+          docker exec gevpub sh -c 'echo GEV_SECURITY_TEST_7f31c9 > /tmp/gev-marker.txt'
+          for i in $(seq 1 60); do curl -s -o /dev/null http://127.0.0.1:4173/ && break; sleep 3; done
+          node tests/security/probe.mjs http://127.0.0.1:4173 map.example.test scenarioB | tee scenarioB.txt || true
+      # Scenario C: same host-published port but operator sets trusted peers to none.
+      - name: Scenario C probe (host-published, GEV_KEY_SETUP_TRUSTED_PEERS=none)
+        if: always()
+        run: |
+          docker run -d --name gevnone -p 127.0.0.1:4174:4173 \
+            -e GEV_ALLOWED_HOSTS=map.example.test \
+            -e GEV_EMBED_FRAME_ANCESTORS=https://www.example.test \
+            -e GEV_KEY_SETUP_TRUSTED_PEERS=none \
+            gev-pinned
+          docker exec gevnone sh -c 'echo GEV_SECURITY_TEST_7f31c9 > /tmp/gev-marker.txt'
+          for i in $(seq 1 60); do curl -s -o /dev/null http://127.0.0.1:4174/ && break; sleep 3; done
+          node tests/security/probe.mjs http://127.0.0.1:4174 map.example.test scenarioC | tee scenarioC.txt || true
+      - name: Image digest and logs
+        if: always()
+        run: |
+          docker image inspect gev-pinned --format '{{.Id}}' | tee image-id.txt
+          docker logs gev > gev.log 2>&1 || true
+          node tests/immutability/check.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: session3-results
+          path: |
+            scenario*.txt
+            results/
+            image-id.txt
+            gev.log
+            data/route-inventory.json

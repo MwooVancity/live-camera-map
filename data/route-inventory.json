@@ -1,0 +1,1083 @@
+{
+  "generatedFrom": "gev/{server,scripts,src} static grep",
+  "routes": [
+    {
+      "route": "/@vite/client",
+      "class": "public-candidate",
+      "files": [
+        "scripts/qa-stub-boot.mjs"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api",
+      "class": "public-candidate",
+      "files": [
+        "server/mcp/services.js",
+        "server/standalone/api-not-found.js",
+        "scripts/qa-location-controls.mjs",
+        "scripts/qa-overlay-baseline.mjs",
+        "scripts/qa-overpass-offload.mjs"
+      ],
+      "fileCount": 6
+    },
+    {
+      "route": "/api/...",
+      "class": "public-candidate",
+      "files": [
+        "server/mcp/services.js",
+        "src/tools/services.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/acartia",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/acartia.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/acartia/sightings",
+      "class": "public-candidate",
+      "files": [
+        "src/layers/wildlifeSightings/source.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/adsbdb",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/aircraft/enrichment.js",
+        "scripts/qa-enrich-ambient.mjs",
+        "scripts/qa-focus-evidence.mjs",
+        "scripts/qa-heading-b3.mjs",
+        "scripts/qa-sprites-b5.mjs"
+      ],
+      "fileCount": 6
+    },
+    {
+      "route": "/api/adsbdb/type",
+      "class": "public-candidate",
+      "files": [
+        "scripts/qa-enrich-ambient.mjs"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/cctv",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/cctv.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/cctv/frame",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/cctv.js",
+        "scripts/qa-camera-controls.mjs",
+        "scripts/qa-cctv-v2.mjs",
+        "src/layers/cctv/sourcePolicy.js"
+      ],
+      "fileCount": 4
+    },
+    {
+      "route": "/api/cctv/health",
+      "class": "public-candidate",
+      "files": [
+        "scripts/qa-camera-controls.mjs",
+        "scripts/qa-l9-matrix.mjs",
+        "src/layers/cctv/source.js"
+      ],
+      "fileCount": 3
+    },
+    {
+      "route": "/api/cctv/media",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/cctv/stream.js",
+        "server/providers/cctv.js",
+        "src/layers/cctv/sourcePolicy.js"
+      ],
+      "fileCount": 3
+    },
+    {
+      "route": "/api/cctv/sources",
+      "class": "public-candidate",
+      "files": [
+        "scripts/qa-camera-controls.mjs",
+        "scripts/qa-l9-matrix.mjs",
+        "src/layers/cctv/source.js"
+      ],
+      "fileCount": 3
+    },
+    {
+      "route": "/api/celestrak",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/space/celestrak.js",
+        "scripts/qa-failstate-b10.mjs",
+        "scripts/track-regression.mjs",
+        "src/layers/satellites/source.js"
+      ],
+      "fileCount": 4
+    },
+    {
+      "route": "/api/celestrak-satcat",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/space/celestrak.js",
+        "scripts/track-regression.mjs",
+        "src/layers/satellites/source.js"
+      ],
+      "fileCount": 3
+    },
+    {
+      "route": "/api/celestrak/active",
+      "class": "public-candidate",
+      "files": [
+        "scripts/qa-cockpit-utility.mjs",
+        "scripts/qa-radio.mjs",
+        "src/layers/launches/source.js"
+      ],
+      "fileCount": 3
+    },
+    {
+      "route": "/api/celestrak/starlink",
+      "class": "public-candidate",
+      "files": [
+        "scripts/qa-cockpit-utility.mjs",
+        "scripts/qa-radio.mjs"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/celestrak/stations",
+      "class": "public-candidate",
+      "files": [
+        "scripts/qa-failstate-b10.mjs",
+        "scripts/qa-l9-matrix.mjs"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/chat",
+      "class": "public-candidate",
+      "files": [
+        "scripts/voice-bench/adapters/localChat.mjs"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/cyclones",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/cyclones.js",
+        "src/layers/cyclones/source.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/drone-airspace",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/droneAirspace.js",
+        "src/layers/droneAirspace/source.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/fire-perimeters",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/firePerimeters.js",
+        "scripts/qa-gnss.mjs",
+        "src/layers/perimeters/source.js"
+      ],
+      "fileCount": 3
+    },
+    {
+      "route": "/api/fire-perimeters/inciweb",
+      "class": "public-candidate",
+      "files": [
+        "scripts/qa-gnss.mjs"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/fire-perimeters/inciweb/index",
+      "class": "public-candidate",
+      "files": [
+        "src/layers/perimeters/inciweb.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/fire-perimeters/inciweb/publication",
+      "class": "public-candidate",
+      "files": [
+        "src/layers/perimeters/inciweb.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/firms",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/firms.js",
+        "scripts/qa-firms.mjs",
+        "scripts/qa-l9-matrix.mjs",
+        "src/layers/firms/source.js"
+      ],
+      "fileCount": 4
+    },
+    {
+      "route": "/api/firms/status",
+      "class": "public-candidate",
+      "files": [
+        "scripts/qa-firms.mjs",
+        "scripts/qa-l9-matrix.mjs"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/flights",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/aircraft/opensky.js",
+        "scripts/qa-cockpit-plates.mjs",
+        "scripts/qa-cockpit-utility.mjs",
+        "scripts/qa-context-arrivals.mjs",
+        "scripts/qa-emergency-squawk.mjs"
+      ],
+      "fileCount": 14
+    },
+    {
+      "route": "/api/flights/track",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/aircraft/tracks.js",
+        "scripts/qa-cockpit-plates.mjs",
+        "scripts/qa-cockpit-utility.mjs",
+        "scripts/qa-emergency-squawk.mjs",
+        "scripts/qa-enrich-ambient.mjs"
+      ],
+      "fileCount": 11
+    },
+    {
+      "route": "/api/gbfs",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/gbfs.js",
+        "scripts/qa-gbfs-names.mjs",
+        "src/layers/bikeshare/ingestion.js",
+        "src/layers/bikeshare/source.js"
+      ],
+      "fileCount": 4
+    },
+    {
+      "route": "/api/gemini/chat",
+      "class": "sensitive",
+      "files": [
+        "server/providers/gemini.js",
+        "src/voice/textProtocol.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/gemini/token",
+      "class": "sensitive",
+      "files": [
+        "server/providers/gemini.js",
+        "src/voice/geminiSession.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/geocode",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/regional/place.js",
+        "scripts/qa-location-controls.mjs",
+        "src/search/defaults.js",
+        "src/tools/places.js"
+      ],
+      "fileCount": 4
+    },
+    {
+      "route": "/api/geocode/outline",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/regional/place.js",
+        "src/sources/nominatimOutlines.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/geocode/status",
+      "class": "public-candidate",
+      "files": [
+        "src/sources/nominatimStatus.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/ghostmaps",
+      "class": "restricted",
+      "files": [
+        "server/providers/ghostMaps.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/ghostmaps/catalog",
+      "class": "restricted",
+      "files": [
+        "scripts/qa-ghostmaps.mjs",
+        "src/layers/ghostMaps/source.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/ghostmaps/events",
+      "class": "restricted",
+      "files": [
+        "src/layers/ghostMaps/source.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/ghostmaps/file",
+      "class": "restricted",
+      "files": [
+        "src/layers/ghostMaps/source.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/gnss-integrity",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/gnssIntegrity.js",
+        "scripts/qa-gnss.mjs",
+        "src/layers/gnss/source.js"
+      ],
+      "fileCount": 3
+    },
+    {
+      "route": "/api/google",
+      "class": "public-candidate",
+      "files": [
+        "src/tools/places.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/google/geocode",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/places/google.js",
+        "scripts/qa-location-controls.mjs",
+        "scripts/track-regression.mjs",
+        "src/search/defaults.js"
+      ],
+      "fileCount": 4
+    },
+    {
+      "route": "/api/google/nearby-places",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/places/google.js",
+        "scripts/qa-attribution-b12.mjs",
+        "scripts/qa-map-source-tray.mjs",
+        "scripts/track-regression.mjs",
+        "src/localRequestGate.mjs"
+      ],
+      "fileCount": 7
+    },
+    {
+      "route": "/api/google/reverse-geocode",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/places/google.js",
+        "scripts/track-regression.mjs",
+        "src/search/http.js"
+      ],
+      "fileCount": 3
+    },
+    {
+      "route": "/api/google/text-search",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/places/google.js",
+        "src/annotations/resolver.js",
+        "src/layers/installations/source.js",
+        "src/search/http.js",
+        "src/tools/places.js"
+      ],
+      "fileCount": 5
+    },
+    {
+      "route": "/api/google/tiles-token",
+      "class": "sensitive",
+      "files": [
+        "server/standalone/google-token-unavailable.js",
+        "scripts/qa-overpass-offload.mjs",
+        "scripts/qa-radio.mjs",
+        "src/maps/googleTokens.js"
+      ],
+      "fileCount": 4
+    },
+    {
+      "route": "/api/inaturalist",
+      "class": "restricted",
+      "files": [
+        "server/providers/inaturalist/observations.js",
+        "server/providers/inaturalist/proxy.fixture.mjs"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/inaturalist/grid",
+      "class": "restricted",
+      "files": [
+        "src/layers/wildlifeSightings/source.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/inaturalist/observations",
+      "class": "restricted",
+      "files": [
+        "src/layers/wildlifeSightings/source.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/iss-telemetry",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/space/issTelemetry.js",
+        "src/layers/satellites/issTelemetry.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/launches",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/space/launch-library.js",
+        "scripts/qa-cockpit-utility.mjs",
+        "scripts/qa-l9-matrix.mjs",
+        "src/layers/launches/source.js"
+      ],
+      "fileCount": 4
+    },
+    {
+      "route": "/api/library",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/library.js",
+        "src/library/proxy.js",
+        "src/library/source.js"
+      ],
+      "fileCount": 3
+    },
+    {
+      "route": "/api/library/data/gvp-holocene-volcanoes",
+      "class": "public-candidate",
+      "files": [
+        "scripts/qa-data-library.mjs"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/local-receivers/aircraft",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/local-receivers.js",
+        "src/layers/localAdsb/feeds.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/map/{z}/{x}/{y}.mvt",
+      "class": "public-candidate",
+      "files": [
+        "src/layers/streetLevel/providers/panoramax/decode.js",
+        "src/testSupport/panoramaxFixtures.mjs"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/mapillary/status",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/mapillary.js",
+        "scripts/qa-street-level.mjs",
+        "src/layers/streetLevel/providers/mapillary/source.js"
+      ],
+      "fileCount": 3
+    },
+    {
+      "route": "/api/mapillary/tiles",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/mapillary.js",
+        "src/layers/streetLevel/providers/mapillary/source.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/military",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/aircraft/adsb-lol.js",
+        "scripts/qa-cockpit-plates.mjs",
+        "scripts/qa-cockpit-utility.mjs",
+        "scripts/qa-context-arrivals.mjs",
+        "scripts/qa-emergency-squawk.mjs"
+      ],
+      "fileCount": 11
+    },
+    {
+      "route": "/api/military-installations",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/military-installations.js",
+        "server/providers/terrain.js",
+        "scripts/qa-cockpit-utility.mjs",
+        "scripts/qa-l9-matrix.mjs",
+        "scripts/track-regression.mjs"
+      ],
+      "fileCount": 7
+    },
+    {
+      "route": "/api/military/track",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/aircraft/tracks.js",
+        "scripts/qa-emergency-squawk.mjs",
+        "scripts/qa-enrich-ambient.mjs",
+        "scripts/qa-focus-evidence.mjs",
+        "scripts/qa-heading-b3.mjs"
+      ],
+      "fileCount": 7
+    },
+    {
+      "route": "/api/news",
+      "class": "restricted",
+      "files": [
+        "server/providers/news.js",
+        "src/layers/news/source.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/news/feed",
+      "class": "restricted",
+      "files": [
+        "src/layers/news/records.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/news/hotspots",
+      "class": "restricted",
+      "files": [
+        "src/layers/news/records.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/news/outline",
+      "class": "restricted",
+      "files": [
+        "src/layers/news/records.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/openai/chat",
+      "class": "sensitive",
+      "files": [
+        "server/providers/openai.js",
+        "src/voice/textProtocol.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/openai/hud-summary",
+      "class": "sensitive",
+      "files": [
+        "server/providers/openai.js",
+        "scripts/qa-attribution-b12.mjs",
+        "scripts/qa-camera-controls.mjs",
+        "scripts/qa-cockpit-plates.mjs",
+        "scripts/qa-cockpit-utility.mjs"
+      ],
+      "fileCount": 15
+    },
+    {
+      "route": "/api/osm/features",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/overpass/osmFeaturesRoute.js",
+        "src/layers/osmPlaces/model.js",
+        "src/sources/osmFeatures.js",
+        "src/voice/osmActions.js"
+      ],
+      "fileCount": 4
+    },
+    {
+      "route": "/api/overpass",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/common/same-site.js",
+        "server/providers/overpass/osmFeatures.js",
+        "server/providers/overpass.js",
+        "server/providers/terrain.js",
+        "scripts/qa-overpass-offload.mjs"
+      ],
+      "fileCount": 10
+    },
+    {
+      "route": "/api/overpass/status",
+      "class": "public-candidate",
+      "files": [
+        "scripts/qa-overpass-offload.mjs",
+        "scripts/qa-voice-routing.mjs",
+        "src/layers/osmPlaces/index.js",
+        "src/sources/nominatimStatus.js"
+      ],
+      "fileCount": 4
+    },
+    {
+      "route": "/api/radio",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/radio/catalog.js",
+        "server/providers/radio.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/radio/click",
+      "class": "public-candidate",
+      "files": [
+        "src/layers/radio/source.js",
+        "src/testSupport/radioLayerHarness.mjs"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/radio/stations",
+      "class": "public-candidate",
+      "files": [
+        "scripts/qa-l9-matrix.mjs",
+        "scripts/qa-radio.mjs",
+        "src/layers/radio/policy.js"
+      ],
+      "fileCount": 3
+    },
+    {
+      "route": "/api/rail",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/rail.js",
+        "src/data/railProxy.js",
+        "src/layers/rail/index.js",
+        "src/layers/rail/source.js",
+        "src/sources/railService.js"
+      ],
+      "fileCount": 5
+    },
+    {
+      "route": "/api/rail/feeds",
+      "class": "public-candidate",
+      "files": [
+        "src/data/railFeeds.js",
+        "src/layers/rail/source.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/rail/paths",
+      "class": "public-candidate",
+      "files": [
+        "scripts/build-rail-paths.mjs",
+        "src/data/railPaths.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/rail/schedule",
+      "class": "public-candidate",
+      "files": [
+        "scripts/build-rail-paths.mjs"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/rail/trains",
+      "class": "public-candidate",
+      "files": [
+        "src/data/railFeeds.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/rail/updates",
+      "class": "public-candidate",
+      "files": [
+        "src/data/railFeeds.js",
+        "src/data/railProxy.js",
+        "src/data/railTripUpdates.js",
+        "src/layers/rail/schedules.js"
+      ],
+      "fileCount": 4
+    },
+    {
+      "route": "/api/realtime/debug-log",
+      "class": "sensitive",
+      "files": [
+        "server/providers/openai.js",
+        "src/localRequestGate.mjs",
+        "src/voice/realtimeDiagnostics.js"
+      ],
+      "fileCount": 3
+    },
+    {
+      "route": "/api/realtime/oauth-login",
+      "class": "sensitive",
+      "files": [
+        "server/providers/openai.js",
+        "scripts/qa-voice-auth-focus.mjs",
+        "src/keySetup.js"
+      ],
+      "fileCount": 3
+    },
+    {
+      "route": "/api/realtime/oauth-status",
+      "class": "sensitive",
+      "files": [
+        "server/providers/openai.js",
+        "scripts/qa-voice-auth-focus.mjs",
+        "src/keySetup.js"
+      ],
+      "fileCount": 3
+    },
+    {
+      "route": "/api/realtime/token",
+      "class": "sensitive",
+      "files": [
+        "server/providers/openai.js",
+        "scripts/qa-l9-matrix.mjs",
+        "scripts/qa-voice-auth.mjs",
+        "scripts/voice-bench/productionConfig.mjs",
+        "src/localRequestGate.mjs"
+      ],
+      "fileCount": 7
+    },
+    {
+      "route": "/api/regional-brief",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/regional/briefing.js",
+        "src/services/requests.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/route",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/places/routes.js",
+        "src/data/routeSteps.js",
+        "src/layers/directions/index.js",
+        "src/layers/directions/source.js",
+        "src/search/http.js"
+      ],
+      "fileCount": 6
+    },
+    {
+      "route": "/api/search",
+      "class": "public-candidate",
+      "files": [
+        "scripts/fixtures/street-level/panoramax.mjs"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/setup/keys",
+      "class": "sensitive",
+      "files": [
+        "server/standalone/key-setup.js",
+        "src/keySetup.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/setup/status",
+      "class": "sensitive",
+      "files": [
+        "server/standalone/key-setup.js",
+        "scripts/qa-voice-auth-focus.mjs",
+        "src/keySetup.js"
+      ],
+      "fileCount": 3
+    },
+    {
+      "route": "/api/shipwrecks",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/shipwrecks.js",
+        "src/layers/shipwrecks/source.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/terrain/heights",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/common/same-site.js",
+        "server/providers/terrain.js",
+        "scripts/qa-camera-controls.mjs",
+        "scripts/qa-cctv-v2.mjs",
+        "scripts/qa-cockpit-utility.mjs"
+      ],
+      "fileCount": 14
+    },
+    {
+      "route": "/api/tomtom",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/traffic.js",
+        "scripts/qa-overpass-offload.mjs",
+        "src/data/tomtomTiles.js"
+      ],
+      "fileCount": 3
+    },
+    {
+      "route": "/api/tomtom/flow",
+      "class": "public-candidate",
+      "files": [
+        "scripts/qa-overpass-offload.mjs",
+        "scripts/qa-traffic-oblique.mjs",
+        "scripts/qa-traffic.mjs",
+        "scripts/traffic-fixtures.mjs",
+        "src/layers/traffic/flowSource.js"
+      ],
+      "fileCount": 5
+    },
+    {
+      "route": "/api/tomtom/flow/{z}/{x}/{y}.pbf",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/traffic.js",
+        "src/layers/traffic/flowDecode.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/tomtom/flow/12/1000/1600.pbf",
+      "class": "public-candidate",
+      "files": [
+        "scripts/qa-l9-matrix.mjs"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/tomtom/status",
+      "class": "public-candidate",
+      "files": [
+        "scripts/qa-l9-matrix.mjs",
+        "scripts/qa-overpass-offload.mjs",
+        "scripts/qa-traffic-baseline.mjs",
+        "scripts/traffic-fixtures.mjs",
+        "src/layers/traffic/flow.js"
+      ],
+      "fileCount": 8
+    },
+    {
+      "route": "/api/transit",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/transit.js",
+        "scripts/qa-transit.mjs",
+        "src/data/transitProxy.js",
+        "src/sources/transitService.js"
+      ],
+      "fileCount": 4
+    },
+    {
+      "route": "/api/transit/feeds",
+      "class": "public-candidate",
+      "files": [
+        "src/data/transitFeeds.js",
+        "src/layers/transit/source.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/transit/trail",
+      "class": "public-candidate",
+      "files": [
+        "src/sources/transitHistory.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/transit/trail/mbta",
+      "class": "public-candidate",
+      "files": [
+        "scripts/qa-transit.mjs"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/transit/vehicles",
+      "class": "public-candidate",
+      "files": [
+        "src/data/transitFeeds.js",
+        "src/layers/transit/source.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/transit/vehicles/mbta",
+      "class": "public-candidate",
+      "files": [
+        "scripts/qa-transit.mjs"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/vessels",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/vessels/ais-live.js",
+        "scripts/qa-cockpit-plates.mjs",
+        "scripts/qa-cockpit-utility.mjs",
+        "scripts/qa-failstate-b10.mjs",
+        "scripts/qa-focus-evidence.mjs"
+      ],
+      "fileCount": 13
+    },
+    {
+      "route": "/api/vessels/track",
+      "class": "public-candidate",
+      "files": [
+        "src/sources/live/standalone.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/weather",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/weather.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/weather-effects",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/regional/weather-effects.js",
+        "src/services/requests.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/weather/image",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/weather.js",
+        "src/layers/weather/source.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/weather/manifest",
+      "class": "public-candidate",
+      "files": [
+        "src/layers/weather/source.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/weather/tile",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/weather.js",
+        "src/layers/weather/source.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/api/wind",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/wind.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/wind/grid",
+      "class": "public-candidate",
+      "files": [
+        "server/providers/wind.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/api/wind/manifest",
+      "class": "public-candidate",
+      "files": [
+        "src/layers/wind/source.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/mcp",
+      "class": "sensitive",
+      "files": [
+        "server/mcp/plugin.js",
+        "src/tools/queries/panelRequest.js"
+      ],
+      "fileCount": 2
+    },
+    {
+      "route": "/mcp.json",
+      "class": "sensitive",
+      "files": [
+        "src/tools/queries/panelRequest.js"
+      ],
+      "fileCount": 1
+    },
+    {
+      "route": "/share",
+      "class": "public-candidate",
+      "files": [
+        "src/app/controls.js",
+        "src/share/viewCodec.js",
+        "src/sharelink.js",
+        "src/ui/applicationShell.js"
+      ],
+      "fileCount": 4
+    },
+    {
+      "route": "/share/AQc",
+      "class": "public-candidate",
+      "files": [
+        "src/share/shareLinkPath.js"
+      ],
+      "fileCount": 1
+    }
+  ]
+}
