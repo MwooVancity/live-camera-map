@@ -397,3 +397,19 @@ test('default build (launch switch off) is indexable and has a real sitemap', ()
   assert.match(readFileSync(join(DIST, 'robots.txt'), 'utf8'), /Allow: \//);
   assert.match(readFileSync(join(DIST, 'sitemap.xml'), 'utf8'), /<loc>/);
 });
+
+test('city filters: a city with more than 8 cameras has the filter form and one row per camera; the full list stays in the HTML', () => {
+  let withForm = 0;
+  for (const r of cityRoutes) {
+    const html = pages.get(r).html ?? pages.get(r);
+    const m = html.match(/data-block="cameras"[^>]*data-count="(\d+)"/);
+    if (!m) continue;
+    const n = Number(m[1]);
+    const block = html.slice(html.indexOf('data-block="cameras"'), html.indexOf('<h2>Nearby places'));
+    const rows = (block.match(/<li>/g) || []).length;
+    assert.equal(rows, n, `${r}: ${rows} rows for ${n} cameras (the filter only hides rows, it never removes them)`);
+    assert.equal(html.includes('<form class="filters"'), n > 8, `${r}: filter form present only above 8 cameras`);
+    if (n > 8) withForm++;
+  }
+  assert.ok(withForm > 0, 'no city page has the filter form');
+});
