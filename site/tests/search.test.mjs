@@ -167,3 +167,24 @@ test('search box and result rows are at least 44px tall (phone tap target)', () 
 test('hostile map parameters are rejected, never passed on', () => {
   for (const s of ['?lat=NaN&lon=1', '?lat=1e5&lon=1', '?lat=<script>&lon=1', '?lat=1&lon=2&z=99', '?lat=Infinity&lon=2', '?lat=0x10&lon=2', '?lat=%201&lon=2']) assert.equal(parseMapParams(s), null, s);
 });
+
+// ---- sub-folder hosting (staging on GitHub Pages): the live test in Chrome found root-relative fetches 404 under /live-camera-map/ ----
+import { withBase, cleanBase } from '../src/lib/search-ui.mjs';
+test('withBase prefixes root-relative paths only', () => {
+  assert.equal(withBase('/live-camera-map', '/cameras/'), '/live-camera-map/cameras/');
+  assert.equal(withBase('', '/cameras/'), '/cameras/');
+  assert.equal(withBase('/live-camera-map', 'https://example.org/x'), 'https://example.org/x');
+  assert.equal(withBase('/live-camera-map', '//evil.example/x'), '//evil.example/x');
+});
+test('cleanBase accepts one simple folder name and nothing else', () => {
+  assert.equal(cleanBase('/live-camera-map'), '/live-camera-map');
+  for (const bad of ['', undefined, 'live', '/a/b', 'javascript:alert(1)', '//evil.example', '/"><script>']) assert.equal(cleanBase(bad), '');
+});
+test('the loader fetches under the declared base, nothing before focus', async () => {
+  const seen = [];
+  const f = async (u) => { seen.push(u); return { ok: true, json: async () => ({ version: 1, global: { file: 'g.json' }, shards: [], rows: [] }) }; };
+  const l = createLoader(f, '/live-camera-map/search/');
+  assert.deepEqual(seen, []);
+  await l.focus().catch(() => {});
+  assert.ok(seen.length && seen.every((u) => String(u).startsWith('/live-camera-map/search/')), JSON.stringify(seen));
+});

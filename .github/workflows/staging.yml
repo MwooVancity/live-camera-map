@@ -18,6 +18,7 @@ jobs:
     timeout-minutes: 20
     env:
       PUBLIC_SITE_URL: https://mwoovancity.github.io/live-camera-map
+      PUBLIC_BASE_PATH: /live-camera-map
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
