@@ -1,8 +1,10 @@
 // Pure helpers (no Astro): page list, noindex gate, sitemap. Tested with fixtures in tests/gate.test.mjs.
 import { countsBy, roadSlug, countryOf, REGION_COUNTRY } from '../../../ops/importers/lib/registry.mjs';
 import { MIN_CAMERAS } from '../config.mjs';
+import { QC_REGIONS } from '../../../ops/importers/lib/quebec.mjs';
 
-export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+// NFKD splits an accented letter into the letter plus a combining mark; the marks are removed first, otherwise "Hämeenlinna" became "ha-meenlinna".
+export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 // The ONE place a camera-page address is built: /cameras/<country>/<region>/<city>/. A region with no country row has no address (null).
 export const countryRoute = (countrySlug) => `/cameras/${countrySlug}/`;
@@ -23,11 +25,35 @@ export const GUIDES = [
 ];
 
 // Per-region facts. cityLimit = how many curated city pages the region gets (by real coverage, each with MIN_CAMERAS or more).
-// One entry per source: the agency named on its pages, its guide, and its live-conditions feeds.
+// One entry per source region: the agency named on its pages, its guide (or null), and the region's own wording about where its
+// place, direction and links come from. ONE place for that text: region pages, city pages and the footer all read it from here, so a
+// page never describes another source's habits. listAll = the region page lists every camera (a region with no city pages).
+const sentence = (s) => s.replace(/\s+/g, ' ').trim();
+const BC_NOTE = 'gives no city field and no traffic direction';
 export const REGIONS = {
   california: { sourceId: 'caltrans', agency: 'Caltrans', cityLimit: 10, guide: 'how-caltrans-cameras-work' },
-  'british-columbia': { sourceId: 'drivebc', agency: 'DriveBC', cityLimit: 5, guide: 'how-drivebc-cameras-work' },
+  'british-columbia': {
+    sourceId: 'drivebc', agency: 'DriveBC', cityLimit: 5, guide: 'how-drivebc-cameras-work', list: 'HighwayCams list',
+    placeText: (x) => sentence(`DriveBC gives no city field, so only ${x.named} cameras have a named place (${x.places} places, taken from the camera's own name and caption); the other ${x.unnamed} are on the road list only.`),
+    cityText: (city) => sentence(`DriveBC ${BC_NOTE}: ${city} is the place named in these cameras' own names and captions, not a municipal boundary, and "facing" is the way the camera looks.`),
+    caveats: [],
+  },
+  finland: {
+    sourceId: 'digitraffic', agency: 'Fintraffic', cityLimit: 8, guide: null, credit: true, list: 'weather camera station list',
+    placeText: (x) => sentence(`Fintraffic gives no city field, so only ${x.named} cameras have a named place (${x.places} places, the second part of the station's own name, for example Inkoo in kt51_Inkoo); the other ${x.unnamed} are on the road list and the map only.`),
+    cityText: (city) => sentence(`Fintraffic gives no city field and no direction: ${city} is the place in the second part of these stations' own names, not a municipal boundary, road codes such as kt51 are the prefixes Fintraffic puts in its station names, and each link is one picture address on weathercam.digitraffic.fi that we never show.`),
+    caveats: ['Each link goes to one picture address on weathercam.digitraffic.fi (the first view of the station; a station can have several views). It is a link only, never shown here. The Fintraffic licence sentence covers its open data; it does not say whether the pictures themselves are covered.'],
+  },
+  // Quebec: the ministry's feed names 14 administrative regions; each is a region here and has no city pages (the feed has no place field).
+  ...Object.fromEntries(QC_REGIONS.map((r) => [r.slug, {
+    sourceId: 'quebec-mtmd', agency: 'MTMD Québec', cityLimit: 0, guide: null, credit: true, list: 'camera list', listAll: true,
+    placeText: (x) => sentence(`The ministry's feed has no city field and its descriptions name no reliable place, so no camera here has a named place and there are no city pages; all ${x.total} cameras are listed below.`),
+    cityText: () => '',
+    caveats: ['Each link goes to a video page on quebec511.info. That site answers automated requests with a bot-check page, so we never request those links and every camera here shows the status unknown by design, not broken. Direction is the word in the ministry\'s own description (for example "westward"); the road is read from the description only when it agrees with the feed\'s route number. The licence covers the list; it does not say whether the video is covered.'],
+  }])),
 };
+// The credit sentence for a source that asks for one (its attribution line from sources.json, without a leading "Source:").
+export const creditLine = (source) => `Credit: ${String(source.attribution).replace(/^Source:\s*/i, '')}.`;
 export const regionInfo = (slug) => REGIONS[slug] || { sourceId: null, agency: 'the official source', cityLimit: 5, guide: null };
 
 // Curated places: [{ region, city, n }]. Counted PER REGION, so the same place name in two regions never merges into one count

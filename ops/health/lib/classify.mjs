@@ -44,6 +44,8 @@ export function classify(url, o, cfg = {}, now = new Date()) {
     if (!ct.startsWith('image/')) return out('unavailable', 'not-an-image');
     if (o.contentLength !== null && o.contentLength < minBytes) return out('unavailable', 'too-small');
     if (!sigOk(feedKind, ct, o.signature)) return out('unavailable', 'bad-signature');
+    // A source that always dates a real picture (Last-Modified or ETag) and sends neither for its "Image not available" placeholder (Digitraffic).
+    if (cfg.needValidators && !o.lastModified && !o.etag) return out('unavailable', 'placeholder-no-validators');
   } else if (feedKind === 'video') {
     if (!/mpegurl/.test(ct)) return out('unavailable', 'not-a-playlist');
     if (!sigOk(feedKind, ct, o.signature)) return out('unavailable', 'bad-signature');

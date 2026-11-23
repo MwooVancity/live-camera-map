@@ -24,15 +24,16 @@ const rows = regions.map((r) => {
 const dates = rows.map((x) => x.date).filter(Boolean).sort();
 const sourceNames = rows.map((x) => x.src.name).filter(Boolean).join('; ');
 const regionWord = rows.length === 1 ? 'region' : 'regions';
+const noHub = total - rows.reduce((s, x) => s + x.n, 0); // cameras in regions with fewer than 3 cameras: counted, but no region page
 ---
 <Base title={`${name} traffic cameras: ${total} official links in ${rows.length} ${regionWord} | ${SITE_NAME}`} description={`${total} ${name} traffic cameras linked to the official source: ${rows.map((x) => `${x.regionName} (${x.n}, ${x.info.agency})`).join(', ')}.`} route={countryRoute(country)} crumbs={[{ name: 'All cameras', route: '/cameras/' }, { name, route: countryRoute(country) }]} noindex={!isIndexable(total)}>
   <h1>{name} traffic cameras</h1>
-  <p>{total} {name} traffic cameras in {rows.length} {regionWord}: {rows.map((x) => `${x.regionName} ${x.n}`).join(', ')}. Part of <a href="/cameras/">all traffic cameras</a>.</p>
+  <p>{total} {name} traffic cameras in {rows.length} {regionWord}: {rows.map((x) => `${x.regionName} ${x.n}`).join(', ')}. Part of <a href="/cameras/">all traffic cameras</a>.{noHub > 0 ? ` ${noHub} more ${noHub === 1 ? 'camera is' : 'cameras are'} in regions with fewer than 3 cameras, which get no region page.` : ''}</p>
   <section data-block="regions" data-basis="registry" data-source={sourceNames} data-asof={dates.at(-1)}>
     <h2>{name} regions and who supplies their cameras</h2>
     {rows.map((x) => (<>
       <h3><a href={regionRoute(x.r)}>{x.regionName} traffic cameras</a> ({x.n})</h3>
-      <p>{x.regionName}: {x.n} cameras on {x.roads} roads from {x.info.agency} ({x.src.name}), imported {x.date}. {x.named} of them have a named place ({x.namedPlaces} places) and {x.top.length} places have their own page. Licence on record for {x.info.agency}: {x.src.license || 'not recorded'}.</p>
+      <p>{x.regionName}: {x.n} cameras on {x.roads} roads from {x.info.agency} ({x.src.name}), imported {x.date}. {x.namedPlaces > 0 ? `${x.named} of them have a named place (${x.namedPlaces} places) and ${x.top.length} places have their own page.` : 'No camera here has a named place, so there are no city pages.'} Licence on record for {x.info.agency}: {x.src.license || 'not recorded'}.</p>
       <ul class="cols">{x.top.map((p) => <li><a href={cityRoute(x.r, p.city)}>{p.city} traffic cameras</a> ({p.n})</li>)}</ul>
     </>))}
   </section>

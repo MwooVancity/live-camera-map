@@ -78,5 +78,45 @@
   "license": "Open Government Licence - British Columbia",
   "licenseUrl": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61",
   "reviewedAt": "2026-11-22"
+ },
+ {
+  "id": "digitraffic",
+  "name": "Fintraffic Digitraffic weather cameras (Finland)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one request for the list per run; picture links are checked by the health checker at under 60 requests a minute (Digitraffic image limit without the Digitraffic-User header)",
+   "docsUrl": "https://www.digitraffic.fi/en/road-traffic/"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Source: Fintraffic / digitraffic.fi, license CC 4.0 BY",
+  "license": "Creative Commons 4.0 BY",
+  "licenseUrl": "https://www.digitraffic.fi/en/terms-of-service/",
+  "reviewedAt": "2026-11-23"
+ },
+ {
+  "id": "quebec-mtmd",
+  "name": "Camera de circulation (Ministere des Transports et de la Mobilite durable du Quebec, via Donnees Quebec)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one request for the list per run; the camera links are never requested",
+   "docsUrl": "https://www.donneesquebec.ca/recherche/dataset/camera-de-circulation"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Contains data from the Ministere des Transports et de la Mobilite durable du Quebec, Donnees Quebec, licence CC-BY 4.0",
+  "license": "Attribution (CC-BY 4.0)",
+  "licenseUrl": "https://www.donneesquebec.ca/licence/#cc-by",
+  "reviewedAt": "2026-11-23"
  }
 ]

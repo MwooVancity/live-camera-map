@@ -9,6 +9,7 @@ const titleCase = (s) => s.split(' ').map((w) => (/\d.*-|-.*\d/.test(w) || ROADI
 
 export function cleanLabel(c) {
   const name = String(c.name || '').trim();
+  if (c.sourceId === 'digitraffic') return name.replace(/_/g, ' ').replace(/\s+/g, ' ').trim(); // Fintraffic station names use underscores (kt51_Inkoo)
   if (c.sourceId && c.sourceId !== 'caltrans') return name;
   let s = name
     .replace(/^T[A-Z0-9]{2,6}\s*--\s*/, '') // Caltrans video-system code (TV138, T259E, TVH15)

@@ -1,6 +1,7 @@
 // Shared registry helpers: normalize, validate, count, safe write.
 import { writeFileSync, readFileSync, renameSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
+import { QC_REGIONS } from './quebec.mjs';
 
 export const CA_BOUNDS = { latMin: 32.3, latMax: 42.1, lonMin: -124.6, lonMax: -114.0 };
 // Optional text field (one source gives it, another does not): the source's own words for where the camera is. Text only, never a picture.
@@ -80,9 +81,12 @@ export function validateCamera(c) {
 
 // The ONE region -> country table (keyed by regionSlug). A new region needs a row here before it gets any page; a region with no row
 // is counted by region but has no country, so the site builds nothing for it (tests/registry fails if a registry region is missing).
+const CANADA = { countryCode: 'CA', countrySlug: 'canada', countryName: 'Canada' };
 export const REGION_COUNTRY = {
   california: { countryCode: 'US', countrySlug: 'united-states', countryName: 'United States' },
-  'british-columbia': { countryCode: 'CA', countrySlug: 'canada', countryName: 'Canada' },
+  'british-columbia': CANADA,
+  finland: { countryCode: 'FI', countrySlug: 'finland', countryName: 'Finland' },
+  ...Object.fromEntries(QC_REGIONS.map((r) => [r.slug, CANADA])), // Quebec: the 14 regions the ministry feed names
 };
 export const countryOf = (regionSlug) => REGION_COUNTRY[regionSlug] || null;
 

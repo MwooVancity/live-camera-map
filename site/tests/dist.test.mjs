@@ -7,14 +7,15 @@ import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { DIST, SITE_URL, CAMERA_HOSTS, readPages, titleOf, isNoindex, sitemapViolations } from './helpers.mjs';
 import { countsBy } from '../../ops/importers/lib/registry.mjs';
+import { curatedPlaces, regionInfo } from '../src/lib/pages.mjs';
 
 const pages = readPages();
 const cameras = JSON.parse(readFileSync('../data/camera-registry/cameras.json', 'utf8'));
 const cityRoutes = [...pages.keys()].filter((r) => r.split('/').filter(Boolean).length === 4 && r.startsWith('/cameras/'));
 
-test('page count is 16-45 (United States hub; California 20 + roads hub + 10 roads + guides; British Columbia hub + 5 cities + guide)', () => {
+test('page count is 16-120 (California 20 + roads hub + 10 roads + guides; British Columbia hub + 5 cities; Finland hub + region + 8 cities; Quebec 13 region hubs)', () => {
   const n = [...pages.keys()].filter((r) => r !== '/404/').length;
-  assert.ok(n >= 16 && n <= 45, `built ${n} pages`);
+  assert.ok(n >= 16 && n <= 120, `built ${n} pages`);
 });
 
 test('every page: one h1, unique title, canonical, breadcrumb JSON-LD', () => {
@@ -70,12 +71,12 @@ test('all internal links resolve to a built page', () => {
 });
 
 test('city pages: title, intro, data-count and list all equal countsBy of the page\'s own region', () => {
-  assert.equal(cityRoutes.length, 15, '10 California + 5 British Columbia');
+  assert.equal(cityRoutes.length, curatedPlaces(cameras).length, '10 California + 5 British Columbia + 8 Finland; Quebec has no city pages');
   for (const route of cityRoutes) {
     const html = pages.get(route);
     const region = route.split('/')[3];
     const byCity = countsBy(cameras.filter((c) => c.regionSlug === region), 'city'); // counted inside the region
-    const agency = region === 'california' ? 'Caltrans' : 'DriveBC';
+    const agency = regionInfo(region).agency;
     const city = html.match(/<h1>([^<]*) traffic cameras<\/h1>/)[1];
     const n = byCity[city];
     assert.ok(n >= 3, `${route}: curated city needs 3 or more cameras`);
@@ -225,14 +226,15 @@ test('levels built: 1 world hub, one country hub per country, one region hub per
   const byCountry = cb(cameras, 'country');
   assert.ok(pages.has('/cameras/'));
   assert.equal(lvl(2).length, Object.keys(byCountry).length);
-  assert.equal(lvl(3).length, Object.keys(cb(cameras, 'region')).length);
+  const hubRegions = Object.entries(cb(cameras, 'region')).filter(([, k]) => k >= 3).map(([r]) => r); // a region with fewer than 3 cameras gets no hub (Abitibi-Temiscamingue has 1)
+  assert.equal(lvl(3).length, hubRegions.length);
   for (const [country, n] of Object.entries(byCountry)) {
     const html = pages.get(`/cameras/${country}/`);
     assert.ok(html, country);
     assert.ok(titleOf(html).includes(`${n} official links`), `${country}: title count`);
     assert.ok(!isNoindex(html));
     for (const [region, c] of Object.entries(REGION_COUNTRY)) {
-      if (c.countrySlug !== country) continue;
+      if (c.countrySlug !== country || !hubRegions.includes(region)) continue;
       assert.ok(html.includes(`href="/cameras/${country}/${region}/"`), `${country} does not link ${region}`);
       assert.ok(html.includes(`${cb(cameras.filter((x) => x.regionSlug === region), 'region')[region]} cameras on `), `${country}: ${region} count in text`);
     }
@@ -267,3 +269,75 @@ test('country hubs hold their own data, not swapped names: the sources and count
   assert.ok(/Caltrans/.test(us) && !/DriveBC/.test(us));
   assert.ok(/DriveBC/.test(ca) && !/Caltrans/.test(ca));
 });
+
+// ---- world sources: Finland (Fintraffic) and Quebec (MTMD), added 2026-11-23 ----
+const body = (route) => pages.get(route).replace(/<footer[\s\S]*<\/footer>/, ''); // the footer names every source on every page
+const finlandRoutes = [...pages.keys()].filter((r) => r.startsWith('/cameras/finland/'));
+const quebecRoutes = [...pages.keys()].filter((r) => /^\/cameras\/canada\/(?!british-columbia\/)[a-z-]+\/$/.test(r));
+test('Finland pages: world hub, country, region, 8 city pages; they name Fintraffic and never another source', () => {
+  assert.equal(finlandRoutes.length, 1 + 1 + 8, 'country + region + 8 cities');
+  for (const r of finlandRoutes) {
+    const html = body(r);
+    assert.ok(/Fintraffic/.test(html), r);
+    assert.ok(!/DriveBC|Caltrans|HighwayCams|Open511|Quebec|Québec|MTMD|quebec511/.test(html), `${r} names another source`);
+  }
+  const fi = pages.get('/cameras/finland/finland/');
+  assert.ok(fi.includes('Credit: Fintraffic / digitraffic.fi, license CC 4.0 BY.'), 'credit line from sources.json');
+  assert.ok(/does not say whether the pictures themselves are covered/.test(fi), 'country caveat printed');
+  assert.ok(fi.includes(`${countsBy(cameras.filter((c) => c.regionSlug === 'finland'), 'region').finland} cameras on `));
+});
+test('Finland city pages: every link goes to weathercam.digitraffic.fi as a link only; place is explained; no "camera facing" wording; counts equal the registry', () => {
+  for (const r of finlandRoutes.filter((x) => x.split('/').filter(Boolean).length === 4)) {
+    const html = pages.get(r);
+    const links = [...html.matchAll(/<li><a href="(https?:[^"]+)" rel="noopener" title="[^"]*">/g)].map((m) => m[1]);
+    assert.ok(links.length >= 3, r);
+    for (const l of links) assert.match(l, /^https:\/\/weathercam\.digitraffic\.fi\/C\d{7}\.jpg$/, r);
+    assert.ok(/second part of these stations/.test(html) && /no direction/.test(html), `${r}: place and direction explained`);
+    assert.ok(!/camera facing/.test(html), r);
+    assert.ok(!/<img /.test(body(r).replace(/<header[\s\S]*?<\/header>/, '')), `${r}: no image tag`);
+  }
+});
+test('Quebec: 13 region hubs (Abitibi-Temiscamingue has 1 camera: no page), no city pages, every camera of the region listed once with a quebec511.info link', () => {
+  assert.equal(quebecRoutes.length, 13);
+  assert.ok(!pages.has('/cameras/canada/abitibi-temiscamingue/'));
+  assert.ok(![...pages.keys()].some((r) => /^\/cameras\/canada\/(?!british-columbia\/)[a-z-]+\/[a-z0-9-]+\/$/.test(r)), 'no Quebec city page: the feed has no place field');
+  for (const r of quebecRoutes) {
+    const slug = r.split('/')[3];
+    const mine = cameras.filter((c) => c.regionSlug === slug);
+    const html = pages.get(r);
+    assert.ok(mine.length >= 3, r);
+    assert.ok(html.includes(`data-count="${mine.length}"`) && html.includes(`All ${mine.length} cameras`), `${r}: count`);
+    const block = html.match(/<section data-block="cameras"[\s\S]*?<\/section>/)[0];
+    assert.equal((block.match(/<li>/g) || []).length, mine.length, `${r}: list length`);
+    for (const m of block.matchAll(/<li><a href="([^"]+)"/g)) assert.match(m[1], /^https:\/\/www\.quebec511\.info\/Carte\/Fenetres\/FenetreVideo\.html\?id=\d+$/);
+    assert.ok(/bot-check page/.test(html) && /unknown by design/.test(html), `${r}: link check caveat`);
+    assert.ok(/Credit: Contains data from the Ministere des Transports/.test(html), `${r}: credit line`);
+    assert.ok(!/Fintraffic|DriveBC|Caltrans|HighwayCams/.test(body(r)), `${r} names another source`);
+    assert.ok(!isNoindex(html), r);
+  }
+});
+test('country hub of Canada: BC and Quebec regions with their own text, and the one-camera Quebec region is counted in the total but said to have no page', () => {
+  const html = pages.get('/cameras/canada/');
+  const total = cameras.filter((c) => countryOfRegion(c.regionSlug) === 'canada').length;
+  assert.ok(html.includes(`${total} Canada traffic cameras in `), 'country total');
+  const noHub = cameras.filter((c) => c.regionSlug === 'abitibi-temiscamingue').length;
+  assert.equal(noHub, 1);
+  assert.ok(html.includes('1 more camera is in regions with fewer than 3 cameras, which get no region page.'));
+  assert.ok(/No camera here has a named place, so there are no city pages\./.test(html));
+  assert.ok(/imported \d{4}-\d\d-\d\d\. Licence on record for MTMD Québec: Attribution \(CC-BY 4\.0\)\./.test(html.replace(/&#39;/g, "'")) || /Licence on record for MTMD/.test(html));
+});
+test('footer credit lines come from sources.json (one place): Finland and Quebec attribution appear on every page', () => {
+  const srcs = JSON.parse(readFileSync('../data/camera-registry/sources.json', 'utf8'));
+  const credits = ['digitraffic', 'quebec-mtmd'].map((id) => srcs.find((s) => s.id === id).attribution);
+  for (const [route, html] of pages) { if (route === '/404/') continue; const f = html.match(/<footer[^>]*>[\s\S]*<\/footer>/)[0].replace(/&#39;/g, "'"); for (const c of credits) assert.ok(f.includes(c), `${route} footer lacks "${c}"`); }
+});
+test('footer credits link to the licence terms and say what we changed (CC BY: link to licence, note changes)', () => {
+  const srcs = JSON.parse(readFileSync('../data/camera-registry/sources.json', 'utf8'));
+  for (const [route, html] of pages) {
+    if (route === '/404/') continue;
+    const f = html.match(/<footer[^>]*>[\s\S]*<\/footer>/)[0];
+    for (const id of ['digitraffic', 'quebec-mtmd']) assert.ok(f.includes(`href="${srcs.find((s) => s.id === id).licenseUrl}"`), `${route} footer has no licence link for ${id}`);
+    assert.ok(/Changes by us:/.test(f), `${route} footer does not say what we changed`);
+  }
+});
+const countryOfRegion = (slug) => ({ california: 'united-states', finland: 'finland' }[slug] || (slug ? 'canada' : null));

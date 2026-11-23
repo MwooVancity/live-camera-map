@@ -1,0 +1,23 @@
+{
+  "type": "FeatureCollection",
+  "dataUpdatedTime": "2026-11-23T14:33:23Z",
+  "features": [
+    { "type": "Feature", "id": "C01506", "geometry": { "type": "Point", "coordinates": [23.85, 61.45, 0] }, "properties": { "id": "C01506", "name": "vt3_Tampere_Hervanta", "collectionStatus": "GATHERING", "presets": [{ "id": "C0150601", "inCollection": true }] } },
+    { "type": "Feature", "id": "C01507", "geometry": { "type": "Point", "coordinates": [27.7, 62.9, 0] }, "properties": { "id": "C01507", "name": "st100_Kuopio", "collectionStatus": "GATHERING", "presets": [{ "id": "C0150701", "inCollection": true }] } },
+    { "type": "Feature", "id": "C01508", "geometry": { "type": "Point", "coordinates": [30.0, 63.3, 0] }, "properties": { "id": "C01508", "name": "mt500_Lieksa_Vuonislahti", "collectionStatus": "GATHERING", "presets": [{ "id": "C0150801", "inCollection": true }] } },
+    { "type": "Feature", "id": "C01503", "geometry": { "type": "Point", "coordinates": [23.99616, 60.05374, 0] }, "properties": { "id": "C01503", "name": "kt51_Inkoo", "collectionStatus": "GATHERING", "presets": [{ "id": "C0150301", "inCollection": true }, { "id": "C0150302", "inCollection": true }], "state": null } },
+    { "type": "Feature", "id": "C01504", "geometry": { "type": "Point", "coordinates": [24.1, 60.5, 0] }, "properties": { "id": "C01504", "name": "vt2_Karkkila_Korpi", "collectionStatus": "GATHERING", "presets": [{ "id": "C0150400", "inCollection": false }, { "id": "C0150401", "inCollection": true }], "state": null } },
+    { "type": "Feature", "id": "C01505", "geometry": { "type": "Point", "coordinates": [23.5, 60.0, 0] }, "properties": { "id": "C01505", "name": "kt52_Raasepori_Tenhola", "collectionStatus": "GATHERING", "presets": [{ "id": "C0150501", "inCollection": true }], "state": null } },
+    { "type": "Feature", "id": "C03623", "geometry": { "type": "Point", "coordinates": [27.2732, 60.5895, 0] }, "properties": { "id": "C03623", "name": "vt7_Hamina_Karjusuo", "collectionStatus": "GATHERING", "presets": [{ "id": "C0362300", "inCollection": true }], "state": null } },
+    { "type": "Feature", "id": "C03675", "geometry": { "type": "Point", "coordinates": [27.2732, 60.5895, 0] }, "properties": { "id": "C03675", "name": "vt7_Hamina_Karjusuo_B", "collectionStatus": "GATHERING", "presets": [{ "id": "C0367500", "inCollection": true }], "state": null } },
+    { "type": "Feature", "id": "C12629", "geometry": { "type": "Point", "coordinates": [26.19, 65.19, 0] }, "properties": { "id": "C12629", "name": "TEST_vt20_Oulu_Arkala_B5100i", "collectionStatus": "GATHERING", "presets": [{ "id": "C1262901", "inCollection": true }] } },
+    { "type": "Feature", "id": "C00001", "geometry": { "type": "Point", "coordinates": [25.0, 62.0, 0] }, "properties": { "id": "C00001", "name": "vt4_Jyvaskyla_X", "collectionStatus": "REMOVED_TEMPORARILY", "presets": [{ "id": "C0000101", "inCollection": true }] } },
+    { "type": "Feature", "id": "C00002", "geometry": { "type": "Point", "coordinates": [25.0, 48.0, 0] }, "properties": { "id": "C00002", "name": "vt4_Nowhere_X", "collectionStatus": "GATHERING", "presets": [{ "id": "C0000201", "inCollection": true }] } },
+    { "type": "Feature", "id": "C00003", "geometry": { "type": "Point", "coordinates": [25.5, 62.5, 0] }, "properties": { "id": "C00003", "name": "vt4_Nopreset_X", "collectionStatus": "GATHERING", "presets": [{ "id": "C0000301", "inCollection": false }] } },
+    { "type": "Feature", "id": "C00004", "geometry": { "type": "Point", "coordinates": [25.2, 60.4, 0] }, "properties": { "id": "C00004", "name": "Tie 170 Vuosaari Itäväylä", "collectionStatus": "GATHERING", "presets": [{ "id": "C0000401", "inCollection": true }] } },
+    { "type": "Feature", "id": "C00005", "geometry": { "type": "Point", "coordinates": [19.7, 60.2, 0] }, "properties": { "id": "C00005", "name": "Åland_Eckerö", "collectionStatus": "GATHERING", "presets": [{ "id": "C0000501", "inCollection": true }] } },
+    { "type": "Feature", "id": "C00006", "geometry": { "type": "Point", "coordinates": ["x", 60.2, 0] }, "properties": { "id": "C00006", "name": "vt4_Badcoords_X", "collectionStatus": "GATHERING", "presets": [{ "id": "C0000601", "inCollection": true }] } },
+    { "type": "Feature", "id": "bad", "geometry": { "type": "Point", "coordinates": [25.2, 61.4, 0] }, "properties": { "id": "X1", "name": "vt4_Badid_X", "collectionStatus": "GATHERING", "presets": [{ "id": "C0000701", "inCollection": true }] } },
+    { "type": "Feature", "geometry": null, "properties": null }
+  ]
+}

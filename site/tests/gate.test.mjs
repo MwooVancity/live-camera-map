@@ -76,3 +76,12 @@ test('pageList: a country page carries the newest date of its own regions and th
   assert.deepEqual([row('/cameras/canada/').count, row('/cameras/canada/').lastmod], [4, '2026-11-20']);
   assert.equal(row('/cameras/canada/').kind, 'country');
 });
+
+test('slugify drops accents instead of splitting the word (Finnish and Quebec place names)', async () => {
+  const { slugify } = await import('../src/lib/pages.mjs');
+  assert.equal(slugify('Hämeenlinna'), 'hameenlinna');
+  assert.equal(slugify('Enontekiö'), 'enontekio');
+  assert.equal(slugify('Québec (Capitale-Nationale)'), 'quebec-capitale-nationale');
+  assert.equal(slugify('Saguenay—Lac-Saint-Jean'), 'saguenay-lac-saint-jean');
+  assert.equal(slugify('Fort St. John'), 'fort-st-john');
+});

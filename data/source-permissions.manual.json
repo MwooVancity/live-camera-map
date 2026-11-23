@@ -121,6 +121,38 @@
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
       "mustNotShip": false
+    },
+    {
+      "id": "digitraffic-weathercam",
+      "name": "Fintraffic Digitraffic weather cameras (tie.digitraffic.fi/api/weathercam/v1/stations)",
+      "section": "Camera registry sources (read by ops/importers/digitraffic.mjs)",
+      "folder": "",
+      "licence": "Digitraffic terms of service (https://www.digitraffic.fi/en/terms-of-service/, HTTP 200 read 2026-11-23): \"Fintraffic's open data is licensed under the Creative Commons 4.0 By license. It gives the right to distribute, remix, tweak, and build upon our data, even commercially, as long as you credit the source for the original creation.\" Attribution example on the same page: \"Source: Fintraffic / digitraffic.fi, license CC 4.0 BY\"; the page also asks for a link to the licence and a note when the material was changed. The sentence speaks of Fintraffic's \"open data\" in general: whether the camera PICTURES are covered is NOT stated, so image display, caching and redistribution stay unverified and we only link out. Usage rules (https://www.digitraffic.fi/en/support/instructions/): gzip required (406 without it), weather camera images limited to 60 requests per minute per IP without the Digitraffic-User header (more with it); the importer sends the header \"Digitraffic-User: NearbyCams-build\" (no personal data) and stops if the two phrases \"Creative Commons 4.0 By\" and \"even commercially\" are no longer on the terms page.",
+      "commercialStatus": "allowed_per_doc",
+      "statusReason": "quoted text: CC 4.0 BY open data, \"even commercially\", credit required; applies to the station list, pictures unverified (link-out only)",
+      "attribution": "Source: Fintraffic / digitraffic.fi, license CC 4.0 BY (https://www.digitraffic.fi/en/terms-of-service/)",
+      "provenance": "https://www.digitraffic.fi/en/terms-of-service/ and https://www.digitraffic.fi/en/support/instructions/, read 2026-11-23",
+      "imageStatus": "unverified: image display, caching and redistribution not stated; link-out only",
+      "reviewedAt": "2026-11-23",
+      "reviewedBy": "claude-doc-read",
+      "needsHumanReview": true,
+      "mustNotShip": false
+    },
+    {
+      "id": "quebec-cameras",
+      "name": "Camera de circulation, MTMD Quebec (Donnees Quebec dataset camera-de-circulation, WFS GeoJSON)",
+      "section": "Camera registry sources (read by ops/importers/quebec.mjs)",
+      "folder": "",
+      "licence": "Donnees Quebec dataset record (https://www.donneesquebec.ca/recherche/api/3/action/package_show?id=camera-de-circulation, HTTP 200 read 2026-11-23): license_id \"cc-by\", license_title \"Attribution (CC-BY 4.0)\", license_url https://www.donneesquebec.ca/licence/#cc-by; the 7 resources carry no licence of their own. Licence page (https://www.donneesquebec.ca/licence/, HTTP 200 read 2026-11-23), CC BY variant: \"Cette licence permet à d’autres personnes de distribuer, remixer, arranger et adapter votre œuvre, même à des fins commerciales, tant qu’on vous attribue le crédit de la création originale en citant votre nom.\" (this licence lets others distribute, remix, arrange and adapt, even for commercial purposes, as long as the original is credited); the same page says this variant is the default for every dataset. The licence covers the LIST (camera id, description, position, link). The links go to quebec511.info video pages, which answered our request with a Cloudflare bot-check page (HTTP 403, header Cf-Mitigated: challenge) on 2026-11-23: we do not work around that, never request those pages, and whether the pictures or video are covered is NOT stated, so image display, caching and redistribution stay unverified and we only link out. The importer stops if the record's license_id is not \"cc-by\".",
+      "commercialStatus": "allowed_per_doc",
+      "statusReason": "quoted text: CC BY allows reuse even for commercial purposes with credit; dataset record says cc-by; applies to the camera list only, pictures unverified (link-out only)",
+      "attribution": "Contains data from the Ministere des Transports et de la Mobilite durable du Quebec, Donnees Quebec, licence CC-BY 4.0 (https://www.donneesquebec.ca/licence/#cc-by)",
+      "provenance": "https://www.donneesquebec.ca/recherche/api/3/action/package_show?id=camera-de-circulation and https://www.donneesquebec.ca/licence/, read 2026-11-23",
+      "imageStatus": "unverified: image display, caching and redistribution not stated; link-out only; link host blocks automated checks",
+      "reviewedAt": "2026-11-23",
+      "reviewedBy": "claude-doc-read",
+      "needsHumanReview": true,
+      "mustNotShip": false
     }
   ]
 }

@@ -7,6 +7,7 @@ import { mkdtempSync, readdirSync, readFileSync, writeFileSync, existsSync } fro
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { run, loadPrevious, sampleCameras } from '../../ops/health/check.mjs';
+import { EXTRA_HEADERS } from '../../ops/health/lib/probe.mjs';
 import { classify, feedKindOf } from '../../ops/health/lib/classify.mjs';
 
 const JPEG = (extra = '') => Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.from(extra), Buffer.alloc(2500, 7)]);
@@ -312,4 +313,57 @@ test('sample of one big group is evenly spread over the list, not its first N', 
   const list = Array.from({ length: 100 }, (_, i) => ({ id: `drivebc-${i}`, sourceId: 'drivebc' }));
   assert.deepEqual(sampleCameras(list, 4).map((c) => c.id), ['drivebc-0', 'drivebc-25', 'drivebc-50', 'drivebc-75']);
   assert.deepEqual(spread([1, 2, 3], 5), [1, 2, 3]);
+});
+
+// ---- world sources (2026-11-23): Finland (digitraffic) and Quebec (quebec-mtmd) ----
+const REAL_CAMS = JSON.parse(readFileSync(new URL('../../data/camera-registry/cameras.json', import.meta.url), 'utf8'));
+
+test('digitraffic config: one worker, 1100 ms apart (under its 60 requests a minute), and the whole Finland list fits the time budget and the cap', () => {
+  const c = CONFIG.perSource.digitraffic;
+  assert.equal(c.concurrency, 1);
+  assert.ok(c.hostDelayMs >= 1000, 'at most 60 requests a minute');
+  const n = REAL_CAMS.filter((x) => x.sourceId === 'digitraffic').length;
+  assert.ok(n >= 100, 'the real registry holds the Finland list');
+  assert.ok(n * c.hostDelayMs < CONFIG.budgetMs * 0.95, `${n} cameras x ${c.hostDelayMs} ms must fit the ${CONFIG.budgetMs / 60000} min budget`);
+  const probed = REAL_CAMS.filter((x) => !(CONFIG.perSource[x.sourceId] && CONFIG.perSource[x.sourceId].skip)).length;
+  assert.ok(probed * 1.2 < CONFIG.maxRequests, `${probed} probed cameras plus retries must fit the cap ${CONFIG.maxRequests}`);
+});
+
+test('the Digitraffic-User header is sent only to the weather camera host and holds no personal detail', () => {
+  assert.deepEqual(Object.keys(EXTRA_HEADERS), ['weathercam.digitraffic.fi']);
+  assert.match(EXTRA_HEADERS['weathercam.digitraffic.fi']['Digitraffic-User'], /^NearbyCams-build$/);
+});
+
+test('needValidators: a JPEG with no Last-Modified and no ETag (Digitraffic "Image not available") is unavailable for that source and reachable for others (failing fixture)', async () => {
+  handler = (req, res) => sendJpeg(res, {}, Buffer.concat([JPEG(), Buffer.alloc(8000, 1)]));
+  const r = await go([cam(1, '/a.jpg', 'digitraffic'), cam(2, '/b.jpg', 'other')], { config: { perSource: { digitraffic: { needValidators: true } } } });
+  assert.equal(r.rec(0).status, 'unavailable');
+  assert.equal(r.rec(0).reason, 'placeholder-no-validators');
+  assert.equal(r.rec(1).status, 'reachable');
+  handler = (req, res) => sendJpeg(res, { 'Last-Modified': hoursAgo(0.1) });
+  assert.equal((await go([cam(1, '/a.jpg', 'digitraffic')], { config: { perSource: { digitraffic: { needValidators: true } } } })).rec(0).status, 'reachable', 'a dated picture is fine');
+});
+
+test('skip: a source that blocks automated checks gets no request, is unknown with a reason, never unavailable, and does not make the run partial', async () => {
+  handler = (req, res) => sendJpeg(res, { 'Last-Modified': hoursAgo(0.1) });
+  const cams = [...[1, 2, 3, 4].map((i) => cam(i, `/s${i}.jpg`, 'blocked')), ...[5, 6, 7].map((i) => cam(i, `/g${i}.jpg`, 'good'))];
+  const r = await go(cams, { config: { perSource: { blocked: { skip: 'host-blocks-automated-checks' } } } });
+  assert.equal(seen.filter((s) => /\/s\d/.test(s.url)).length, 0, 'no request to the blocked source');
+  for (let i = 0; i < 4; i++) { assert.equal(r.rec(i).status, 'unknown'); assert.equal(r.rec(i).reason, 'host-blocks-automated-checks'); assert.equal(r.rec(i).httpStatus, null); }
+  for (let i = 4; i < 7; i++) assert.equal(r.rec(i).status, 'reachable');
+  assert.equal(r.partial, false, '4 of 7 unknown by design must not trip the 20% rule');
+  assert.equal(r.name, 'health.json');
+  assert.equal(r.doc.perSource.blocked.skipped, 'host-blocks-automated-checks');
+});
+
+test('skip: unknowns that are NOT by design still count (a survived 429 on a normal source makes the run partial even beside a skipped source)', async () => {
+  handler = (req, res) => { if (/\/g/.test(req.url)) { res.writeHead(429, { 'Retry-After': '0' }); res.end(); } else sendJpeg(res); };
+  const cams = [...[1, 2].map((i) => cam(i, `/s${i}.jpg`, 'blocked')), ...[3, 4].map((i) => cam(i, `/g${i}.jpg`, 'good'))];
+  const r = await go(cams, { config: { perSource: { blocked: { skip: 'x' } } } });
+  assert.equal(r.partial, true);
+});
+
+test('the real Quebec config skips quebec-mtmd and no Quebec link is ever requested', () => {
+  assert.equal(CONFIG.perSource['quebec-mtmd'].skip, 'host-blocks-automated-checks');
+  assert.ok(REAL_CAMS.filter((x) => x.sourceId === 'quebec-mtmd').every((x) => x.officialUrl.startsWith('https://www.quebec511.info/')));
 });

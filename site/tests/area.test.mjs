@@ -7,6 +7,7 @@ import { greaterArea, GREATER_KM } from '../src/lib/area.mjs';
 import { cleanLabel } from '../src/lib/labels.mjs';
 import { distKm } from '../src/lib/live.mjs';
 import { readPages } from './helpers.mjs';
+import { curatedPlaces } from '../src/lib/pages.mjs';
 
 const cameras = JSON.parse(readFileSync('../data/camera-registry/cameras.json', 'utf8'));
 const ca = cameras.filter((c) => c.regionSlug === 'california');
@@ -106,7 +107,7 @@ const section = (html, id) => (html.match(new RegExp(`<section data-block="${id}
 const unesc = (s) => s.replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n))).replace(/&amp;/g, '&').replace(/&quot;/g, '"');
 const cityRoutes = [...pages.keys()].filter((r) => /^\/cameras\/[a-z-]+\/[a-z-]+\/[a-z0-9-]+\/$/.test(r));
 test('every city page prints the radius count from greaterArea, the exact count and the definition of "near"; the two never contradict', () => {
-  assert.equal(cityRoutes.length, 15);
+  assert.equal(cityRoutes.length, curatedPlaces(cameras).length, 'one page per curated place: California 10, British Columbia 5, Finland 8, Quebec none (its feed has no place field)');
   let withBlock = 0;
   for (const route of cityRoutes) {
     const html = pages.get(route);

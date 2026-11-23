@@ -27,3 +27,10 @@ Each camera has a link to the official Caltrans source. We store no pictures, th
     node ops/importers/drivebc.mjs --only=events  (Open511 road events -> data/conditions/bc-events.json)
 
 `cameras.json` holds every source. Each importer rewrites ONLY its own `sourceId` rows and keeps the others as they were (`mergeSource` in `ops/importers/lib/registry.mjs`, tested). `import-report-drivebc.json` is the BC log. The importer reads the BC Data Catalogue record first and stops if its licence title is no longer "Open Government Licence - British Columbia". DriveBC gives no city field: a camera's `city` is the place in its own name, kept only when DriveBC's own caption also names it as a location (`bcPlace`); `direction` is the way the camera looks ("Facing South"), not traffic direction; `locationText` is DriveBC's caption.
+
+## Finland (Fintraffic Digitraffic) and Quebec (MTMD), added 2026-11-23
+
+    node ops/importers/digitraffic.mjs   (Finland weather camera stations -> digitraffic rows, import-report-digitraffic.json)
+    node ops/importers/quebec.mjs        (Quebec traffic cameras -> quebec-mtmd rows, import-report-quebec.json)
+
+Both need no key, run on your own machine like the Caltrans and BC camera lists, and rewrite only their own `sourceId` rows (shared steps in `ops/importers/lib/runner.mjs`). Finland re-reads the terms page and stops unless it still says "Creative Commons 4.0 By" and "even commercially". Quebec stops unless the dataset record says license_id "cc-by". Finland: the place is the second part of the station name only when the name is road code + underscore + place; there is no direction. Quebec: no city at all (the feed has no place field); the region is the feed's own NomRegionDiffusion value (14 regions, table in `ops/importers/lib/quebec.mjs`); the camera links go to quebec511.info video pages, which block automated requests, so the health checker never requests them (status unknown by design).

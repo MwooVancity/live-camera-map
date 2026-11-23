@@ -118,3 +118,19 @@ test('built guide: says when the checker last ran only if the file is fresh', ()
   const stale = build(healthFile({ ageH: 30 })).pages.get(guide);
   assert.ok(!/checker last ran/.test(stale) && /has not produced a usable result/.test(stale));
 });
+
+test('built Quebec region page with a health file: every camera shows status unknown (never unavailable) and the page says why; the page gate passes', () => {
+  const cams = {};
+  cameras.forEach((c, i) => { cams[c.id] = c.sourceId === 'quebec-mtmd' ? { status: 'unknown', httpStatus: null, lastChecked: null, reason: 'host-blocks-automated-checks' } : { status: STATUSES[i % 3], httpStatus: 200, lastChecked: ago(1), feedKind: 'still' }; });
+  const f = join(mkdtempSync(join(tmpdir(), 'hf-')), 'health.json');
+  writeFileSync(f, JSON.stringify({ generatedAt: ago(1), runOk: true, perSource: {}, cameras: cams }));
+  const { out, pages } = build(f);
+  const html = pages.get('/cameras/canada/montreal/');
+  const mine = cameras.filter((c) => c.regionSlug === 'montreal');
+  const marks = [...html.matchAll(/data-status="([a-z]+)"/g)].map((m) => m[1]);
+  assert.equal(marks.length, mine.length);
+  assert.ok(marks.every((s) => s === 'unknown'), 'no Quebec camera is shown as reachable or unavailable');
+  assert.match(html, /Unknown means we have not checked it/);
+  assert.match(html, /unknown by design, not broken/);
+  assert.deepEqual(gate(out, readFileSync('PAGES.md', 'utf8')), []);
+});

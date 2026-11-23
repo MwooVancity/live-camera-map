@@ -2,7 +2,7 @@
 import Base from '../../../../layouts/Base.astro';
 import { SITE_NAME } from '../../../../config.mjs';
 import { cameras, countsBy, registryDateOf, sourceOf, loadedDistricts } from '../../../../lib/data.mjs';
-import { curatedPlaces, curatedRoads, slugify, cityRoute, regionRoute, countryRoute, isIndexable, regionInfo } from '../../../../lib/pages.mjs';
+import { curatedPlaces, curatedRoads, creditLine, slugify, cityRoute, regionRoute, countryRoute, isIndexable, regionInfo } from '../../../../lib/pages.mjs';
 import { cityBlocks } from '../../../../lib/live.mjs';
 import { greaterArea } from '../../../../lib/area.mjs';
 import { cleanLabel } from '../../../../lib/labels.mjs';
@@ -28,7 +28,7 @@ const feeds = countsBy(here, 'feedType');
 const source = sourceOf(info.sourceId);
 const regionDate = registryDateOf(region);
 const isCA = region === 'california';
-const dirWord = isCA ? 'direction' : 'camera facing';
+const dirWord = region === 'british-columbia' ? 'camera facing' : 'direction';
 
 // Related: the 4 nearest other curated places in the same region (by average camera position); when the region has fewer than
 // 4 others, the nearest places of other regions fill the list (so a small region still links 3 or more cities).
@@ -54,7 +54,7 @@ const unnamedShown = ga.unnamed.slice(0, 6);
 const plural = (k, w) => `${k} ${w}${k === 1 ? '' : 's'}`;
 const guides = isCA
   ? [['how-caltrans-cameras-work', 'How Caltrans traffic cameras work'], ['how-to-read-last-checked-status', 'How to read "last checked" status'], ['camera-link-is-dead', 'What to do if a camera link is dead'], ['what-live-road-conditions-mean', 'What the live road conditions mean']]
-  : [[info.guide, `How ${regionName} (${info.agency}) traffic cameras work`], ['how-to-read-last-checked-status', 'How to read "last checked" status'], ['camera-link-is-dead', 'What to do if a camera link is dead']];
+  : [...(info.guide ? [[info.guide, `How ${regionName} (${info.agency}) traffic cameras work`]] : []), ['how-to-read-last-checked-status', 'How to read "last checked" status'], ['camera-link-is-dead', 'What to do if a camera link is dead']];
 ---
 <Base title={`${city} traffic cameras: ${n} official links | ${SITE_NAME}`} description={`${n} ${info.agency} traffic cameras near ${city}, ${regionName}, on ${roads.length} road${roads.length === 1 ? '' : 's'}${top ? `, mostly ${top}` : ''}. Official links, last updated ${regionDate}.`} route={cityRoute(region, city)} crumbs={[{ name: 'All cameras', route: '/cameras/' }, { name: country.countryName, route: countryRoute(country.countrySlug) }, { name: regionName, route: regionRoute(region) }, { name: city, route: cityRoute(region, city) }]} noindex={!isIndexable(n)}>
   <h1>{city} traffic cameras</h1>
@@ -70,7 +70,7 @@ const guides = isCA
     {noRoad > 0 && <p class="meta">{noRoad} camera{noRoad === 1 ? ' has' : 's have'} no road recorded.</p>}
     {isCA
       ? <p class="meta">Source: {source.name}, districts {loadedDistricts.join(', ')}. Registry date {regionDate}. {linkCheckText(hres)}</p>
-      : <p class="meta">Source: {source.name}. Registry date {regionDate}. {info.agency} gives no city field and no traffic direction: {city} is the place named in these cameras' own names and captions, not a municipal boundary, and "facing" is the way the camera looks. {linkCheckText(hres)}</p>}
+      : <p class="meta">Source: {source.name}. {info.credit ? creditLine(source) + ' ' : ''}Registry date {regionDate}. {info.cityText(city)} {linkCheckText(hres)}</p>}
   </section>
 
   {ga.within > ga.exact && (

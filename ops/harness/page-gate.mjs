@@ -5,7 +5,7 @@ import { readdirSync, readFileSync, existsSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const CAMERA_HOSTS = ['cwwp2.dot.ca.gov', 'wzmedia.dot.ca.gov', 'drivebc.ca']; // drivebc.ca covers www.drivebc.ca picture addresses
+const CAMERA_HOSTS = ['cwwp2.dot.ca.gov', 'wzmedia.dot.ca.gov', 'drivebc.ca', 'weathercam.digitraffic.fi', 'quebec511.info']; // drivebc.ca covers www.drivebc.ca picture addresses; the last two are the Finland and Quebec link-out hosts
 
 function walk(dir, out = []) {
   for (const f of readdirSync(dir)) {
@@ -155,7 +155,7 @@ export function gate(dist, pagesMd = '', now = new Date()) {
 
   // 4) near-duplicate pages (shared sentences), compared within one kind: city pages together, road pages together, country hubs together
   for (const group of [cities, roads, countries]) {
-    const sents = new Map(group.map((c) => [c, new Set(textOf(pages.get(c).html).split(/(?<=[.!?])\s+/).map((s) => s.toLowerCase().replace(/[0-9]+/g, '#')).filter((s) => s.split(' ').length >= 5))]));
+    const sents = new Map(group.map((c) => [c, new Set(textOf(pages.get(c).html.replace(/<footer[\s\S]*<\/footer>/i, ' ')) /* the footer is the same on every page by design: only the body counts */.split(/(?<=[.!?])\s+/).map((s) => s.toLowerCase().replace(/[0-9]+/g, '#')).filter((s) => s.split(' ').length >= 5))]));
     for (let i = 0; i < group.length; i++) for (let j = i + 1; j < group.length; j++) {
       const a = sents.get(group[i]), b = sents.get(group[j]);
       if (!a.size || !b.size) continue;

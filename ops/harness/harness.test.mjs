@@ -111,6 +111,14 @@ test('a DriveBC camera picture in an image tag fails the link-out rule (failing 
   assert.ok(bad.some((e) => /link-out/.test(e) && /drivebc/.test(e)), bad.join('\n'));
   assert.deepStrictEqual(gate(site({ city: (c, b) => page(b + a('https://www.drivebc.ca/images/520.jpg', 'Britannia')) }), md), []);
 });
+// ---- Finland and Quebec link-out hosts (2026-11-23) ----
+test('a Finland or Quebec camera picture or video in a page tag fails the link-out rule (failing fixtures); plain links are fine', () => {
+  for (const [tag, host] of [['<img src="https://weathercam.digitraffic.fi/C0150301.jpg">', /digitraffic/], ['<video src="https://www.quebec511.info/Carte/Fenetres/FenetreVideo.html?id=3998"></video>', /quebec511/], ['<iframe src="https://www.quebec511.info/Carte/Fenetres/FenetreVideo.html?id=1"></iframe>', /quebec511/]]) {
+    const bad = gate(site({ city: (c, b) => page(b + tag) }), md);
+    assert.ok(bad.some((e) => /link-out/.test(e) && host.test(e)), `${tag}: ${bad.join(' | ')}`);
+  }
+  assert.deepStrictEqual(gate(site({ city: (c, b) => page(b + a('https://weathercam.digitraffic.fi/C0150301.jpg', 'Inkoo') + a('https://www.quebec511.info/Carte/Fenetres/FenetreVideo.html?id=3998', 'Aut. 540')) }), md), []);
+});
 // a second region "bc" with only 3 city pages: each links its 2 region siblings plus 1 nearest city of region "ca" (3 related, as the gate needs)
 const bcCities = ['campbell-river', 'dawson-creek', 'elkford'];
 const bcMd = [md, '- `/cameras/cn/` Beats Argos by: one country hub with its regions and sources', '- `/cameras/cn/bc/` Beats Argos by: one region hub', ...bcCities.map((c) => `- \`/cameras/cn/bc/${c}/\` Beats Argos by: every camera as a named official link with a checked status`)].join('\n');
@@ -180,6 +188,13 @@ test('country hubs that share their sentences fail the near-duplicate check', ()
   writeFileSync(join(d, 'cameras', 'us', 'index.html'), page(a('/cameras/') + a('/cameras/us/ca/') + same));
   writeFileSync(join(d, 'cameras', 'cn', 'index.html'), page(a('/cameras/') + a('/cameras/cn/bc/') + same));
   assert.ok(gate(d, bcMd).some((x) => /near-duplicate/.test(x) && /cameras\/(us|cn)\//.test(x)));
+});
+test('a shared footer alone is not a near-duplicate (only body sentences count)', () => {
+  const foot = '<footer><p>This footer is the same on every page of the whole site by design.</p><p>Credits and licence links are listed here for every country we cover.</p><p>No ads, no tracking, no third-party scripts or fonts on any page.</p></footer>';
+  const d = bcSite(true);
+  writeFileSync(join(d, 'cameras', 'us', 'index.html'), page(a('/cameras/') + a('/cameras/us/ca/') + '<p>California has its own list of official traffic camera sources.</p>' + foot));
+  writeFileSync(join(d, 'cameras', 'cn', 'index.html'), page(a('/cameras/') + a('/cameras/cn/bc/') + '<p>British Columbia lists cameras from the provincial DriveBC feed.</p>' + foot));
+  assert.ok(!gate(d, bcMd).some((x) => /near-duplicate/.test(x)));
 });
 test('failing fixture: an indexable country hub without a Beats Argos line fails', () => assert.ok(gate(bcSite(true), bcMd.split('\n').filter((l) => !l.includes('`/cameras/cn/`')).join('\n')).some((x) => /\/cameras\/cn\/: PAGES.md/.test(x))));
 

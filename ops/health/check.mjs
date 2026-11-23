@@ -1,6 +1,6 @@
 // Camera health checker. Reads data/camera-registry/cameras.json, writes data/health/health.json (generated, gitignored).
 // Usage: node ops/health/check.mjs [--previous <file|url>] [--registry <cameras.json>] [--out <health.json>]
-//   [--limit N] [--sample N] [--max-requests 4000] [--budget-min 12] [--concurrency 6] [--host-delay-ms 100]
+//   [--limit N] [--sample N] [--max-requests 7000] [--budget-min 18] [--concurrency 6] [--host-delay-ms 100]
 //   [--stale-hours 6] [--magic-all] [--source <sourceId>]   (--source checks one source only; with --sample it never writes health.json)
 // Throttling: per-source concurrency, minimum delay between requests per host, a global request cap, a hard time budget,
 // exponential backoff on 429/5xx, and a per-source circuit breaker (25 consecutive transport failures: the rest of that
@@ -14,11 +14,20 @@ import { writeJsonAtomic, readJsonOrNull } from '../importers/lib/registry.mjs';
 import { observe, Limit } from './lib/probe.mjs';
 import { classify } from './lib/classify.mjs';
 
-export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 6000, budgetMs: 12 * 60000, breakerAt: 25, retries: 2, backoffMs: 1000, backoffMaxMs: 30000, timeoutMs: 15000, staleHours: 6, minBytes: 1000, maxUnknownShare: 0.2, magicAll: false,
+export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 7000, budgetMs: 18 * 60000, breakerAt: 25, retries: 2, backoffMs: 1000, backoffMaxMs: 30000, timeoutMs: 15000, staleHours: 6, minBytes: 1000, maxUnknownShare: 0.2, magicAll: false,
   // Per-source overrides (concurrency, hostDelayMs = minimum gap between requests to that source's host, staleHours).
   // drivebc: www.drivebc.ca publishes no rate limit and its API terms say limits may change without notice, so it gets its own
   // gentler pace (3 workers, 300 ms between requests = at most ~3 requests/s, HEAD only) and a 4 h stale limit (see docs/decisions/bc-health-stale-limit.md).
-  perSource: { drivebc: { concurrency: 3, hostDelayMs: 300, staleHours: 4 } } };
+  // digitraffic (Finland): Digitraffic limits weather camera images to 60 requests a minute per IP without its Digitraffic-User header, so one worker
+  // 1100 ms apart (54 a minute) is used whatever the header allows; 805 cameras take about 15 minutes, which is why the time budget is 18 minutes and the cap 7000.
+  // It answers a camera with no picture with a grey "Image not available" JPEG (200, image/jpeg, no Last-Modified, no ETag): needValidators counts that as unavailable.
+  // quebec-mtmd: quebec511.info answers automated requests with a Cloudflare bot-check page (403, Cf-Mitigated: challenge); we do not work around it (CLAUDE.md),
+  // so `skip` sends no request at all and every Quebec camera is unknown by design (never unavailable, and not counted in the 20% unknown limit).
+  perSource: {
+    drivebc: { concurrency: 3, hostDelayMs: 300, staleHours: 4 },
+    digitraffic: { concurrency: 1, hostDelayMs: 1100, staleHours: 6, needValidators: true },
+    'quebec-mtmd': { skip: 'host-blocks-automated-checks' },
+  } };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const STATUSES = ['reachable', 'stale', 'unavailable', 'unknown'];
 
@@ -85,11 +94,12 @@ export async function run(opts) {
   };
 
   async function checkOne(c, src, ctx) {
+    if (src.skip) return unknownRec(c, src.skip); // never probed: see CONFIG.perSource
     if (src.open) { src.skipped++; return unknownRec(c, 'circuit-breaker'); }
     let o;
     try { new URL(c.officialUrl); } catch { return { ...unknownRec(c, 'bad-url'), status: 'unavailable', reason: 'bad-url', unknownReason: undefined, lastChecked: stamp }; }
     try { o = await observe(c.officialUrl, ctx); } catch (e) { if (e instanceof Limit) { state.hit = state.hit || e.reason; src.skipped++; return unknownRec(c, e.reason === 'cap' ? 'request-cap' : 'time-budget'); } throw e; }
-    const k = classify(c.officialUrl, o, { staleHours: src.staleHours, minBytes: cfg.minBytes }, now());
+    const k = classify(c.officialUrl, o, { staleHours: src.staleHours, minBytes: cfg.minBytes, needValidators: src.needValidators }, now());
     if (k.transient) { if (++src.consec >= cfg.breakerAt) src.open = true; } else src.consec = 0;
     const p = prev[c.id] || {}, ok = k.status === 'reachable' || k.status === 'stale';
     const changed = ok && k.fingerprint && k.fingerprint !== p.fingerprint;
@@ -106,7 +116,7 @@ export async function run(opts) {
   }
 
   await Promise.all([...bySource].map(async ([id, list]) => {
-    const src = perSource[id] = { id, total: list.length, requests: 0, skipped: 0, consec: 0, open: false, staleHours: (cfg.perSource && cfg.perSource[id] && cfg.perSource[id].staleHours) || cfg.staleHours };
+    const src = perSource[id] = { id, total: list.length, requests: 0, skipped: 0, consec: 0, open: false, staleHours: (cfg.perSource && cfg.perSource[id] && cfg.perSource[id].staleHours) || cfg.staleHours, skip: (cfg.perSource && cfg.perSource[id] && cfg.perSource[id].skip) || null, needValidators: Boolean(cfg.perSource && cfg.perSource[id] && cfg.perSource[id].needValidators) };
     const ctx = ctxFor(src), queue = [...list];
     const conc = (cfg.perSource && cfg.perSource[id] && cfg.perSource[id].concurrency) || cfg.concurrency;
     await Promise.all(Array.from({ length: conc }, async () => { for (let c; (c = queue.shift());) rec[c.id] = await checkOne(c, src, ctx); }));
@@ -118,10 +128,12 @@ export async function run(opts) {
   for (const [id, s] of Object.entries(perSource)) {
     const n = Object.fromEntries(STATUSES.map((x) => [x, 0]));
     for (const c of bySource.get(id)) n[cameras[c.id].status]++;
-    summary[id] = { total: s.total, ...n, requests: s.requests, circuitOpen: s.open, staleHours: s.staleHours };
+    summary[id] = { total: s.total, ...n, requests: s.requests, circuitOpen: s.open, staleHours: s.staleHours, ...(s.skip ? { skipped: s.skip } : {}) };
   }
-  const unknownRun = Object.values(cameras).filter((c) => c.status === 'unknown').length; // breaker, budget, cap and survived-429 alike
-  const share = total ? unknownRun / total : 1;
+  const skippedIds = new Set(cams.filter((c) => perSource[c.sourceId].skip).map((c) => c.id)); // never probed on purpose: not a failure of this run
+  const unknownRun = cams.filter((c) => cameras[c.id].status === 'unknown' && !skippedIds.has(c.id)).length; // breaker, budget, cap and survived-429 alike
+  const checkable = total - skippedIds.size;
+  const share = checkable ? unknownRun / checkable : total ? 0 : 1;
   const runOk = total > 0 && !state.hit;
   const doc = { generatedAt: stamp, runOk, requests: state.requests, elapsedMs: Date.now() - t0, staleHours: cfg.staleHours, perSource: summary, cameras };
   if (!runOk) doc.incomplete = state.hit ? `${state.hit === 'cap' ? 'request cap' : 'time budget'} reached` : 'no cameras';
@@ -157,7 +169,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const regFile = a.registry || join(root, 'data', 'camera-registry', 'cameras.json');
   const out = a.out ? resolve(a.out) : join(root, 'data', 'health', 'health.json');
   const num = (v, d) => (v === undefined ? d : Number(v));
-  const config = { concurrency: num(a.concurrency, CONFIG.concurrency), hostDelayMs: num(a['host-delay-ms'], CONFIG.hostDelayMs), maxRequests: num(a['max-requests'], CONFIG.maxRequests), budgetMs: num(a['budget-min'], 12) * 60000, staleHours: num(a['stale-hours'], CONFIG.staleHours), magicAll: Boolean(a['magic-all']) };
+  const config = { concurrency: num(a.concurrency, CONFIG.concurrency), hostDelayMs: num(a['host-delay-ms'], CONFIG.hostDelayMs), maxRequests: num(a['max-requests'], CONFIG.maxRequests), budgetMs: num(a['budget-min'], CONFIG.budgetMs / 60000) * 60000, staleHours: num(a['stale-hours'], CONFIG.staleHours), magicAll: Boolean(a['magic-all']) };
   if (!existsSync(regFile)) { console.error(`registry not found: ${regFile}`); process.exit(2); }
   const log = (m) => console.log(m);
   const previous = await loadPrevious(a.previous, log);

@@ -15,7 +15,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 32
     env:
       PUBLIC_SITE_URL: https://mwoovancity.github.io/live-camera-map
       PUBLIC_BASE_PATH: /live-camera-map
@@ -35,8 +35,8 @@ jobs:
           node ops/importers/nws.mjs || echo "nws not fully refreshed (exit $?)"
       - name: Refresh British Columbia road events (DriveBC Open511; a failed run keeps the last good file and never fails the deploy)
         run: timeout 120 node ops/importers/drivebc.mjs --only=events || echo "BC events not refreshed (exit $?); the page block hides itself when its data is older than 15 minutes"
-      - name: Camera health check (previous result from the deployed site, 12 min time budget)
-        timeout-minutes: 14
+      - name: Camera health check (previous result from the deployed site, 18 min time budget, Finland images 1100 ms apart, Quebec links never requested)
+        timeout-minutes: 22
         run: |
           curl --fail --silent --show-error --location --max-time 30 -o previous-health.json "$PUBLIC_SITE_URL/health.json" || { echo "no previous health.json (first run or fetch failed): starting fresh"; rm -f previous-health.json; }
           if [ -s previous-health.json ]; then PREV="--previous previous-health.json"; else PREV=""; fi

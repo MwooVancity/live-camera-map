@@ -1,0 +1,27 @@
+{
+ "generatedAt": "2026-11-23T14:50:08.461Z",
+ "source": "https://ws.mapserver.transports.gouv.qc.ca/swtq?service=wfs&version=2.0.0&request=getfeature&typename=ms:infos_cameras&outfile=Camera&srsname=EPSG:4326&outputformat=geojson",
+ "datasetModified": "2026-11-23T13:20:45.439338",
+ "licence": "Attribution (CC-BY 4.0)",
+ "raw": 683,
+ "dropped": {
+  "dupLocation": 11
+ },
+ "total": 672,
+ "byRegion": {
+  "quebec-capitale-nationale": 179,
+  "bas-saint-laurent-gaspesie-iles-de-la-madeleine": 71,
+  "estrie": 15,
+  "outaouais": 31,
+  "saguenay-lac-saint-jean": 36,
+  "nord-du-quebec": 3,
+  "montreal": 146,
+  "abitibi-temiscamingue": 1,
+  "cote-nord": 37,
+  "chaudiere-appalaches": 46,
+  "mauricie-centre-du-quebec": 43,
+  "monteregie": 34,
+  "laurentides-lanaudiere": 17,
+  "laval": 13
+ }
+}

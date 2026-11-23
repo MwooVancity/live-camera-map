@@ -3,6 +3,8 @@
 // Generic user agent, no contact detail. Redirects followed by hand, at most 3.
 export const UA = 'NearbyCams-build';
 export const MAX_REDIRECTS = 3;
+// Digitraffic asks API users to identify the application in this header (no personal data); it raises their request limit.
+export const EXTRA_HEADERS = { 'weathercam.digitraffic.fi': { 'Digitraffic-User': UA } };
 const REDIRECT = new Set([301, 302, 303, 307, 308]);
 export const HEAD_REFUSED = new Set([400, 403, 405, 501]); // HEAD not allowed: try one ranged GET instead
 
@@ -17,7 +19,7 @@ async function once(url, method, ctx) {
     await ctx.before(u);
     let res;
     try {
-      res = await fetch(u, { method, redirect: 'manual', headers: { 'User-Agent': UA, ...(method === 'GET' ? { Range: 'bytes=0-1023' } : {}) }, signal: AbortSignal.timeout(ctx.timeoutMs) });
+      res = await fetch(u, { method, redirect: 'manual', headers: { 'User-Agent': UA, ...(EXTRA_HEADERS[new URL(u).host] || {}), ...(method === 'GET' ? { Range: 'bytes=0-1023' } : {}) }, signal: AbortSignal.timeout(ctx.timeoutMs) });
     } catch (e) { return { error: e && e.name === 'TimeoutError' ? 'timeout' : 'network' }; }
     const loc = res.headers.get('location');
     if (REDIRECT.has(res.status) && loc) {

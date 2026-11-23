@@ -4,7 +4,7 @@ import { join, resolve } from 'node:path';
 
 export const DIST = resolve(process.cwd(), 'dist');
 export const SITE_URL = (process.env.PUBLIC_SITE_URL || 'https://nearbycams.example').replace(/\/$/, '');
-export const CAMERA_HOSTS = ['cwwp2.dot.ca.gov', 'wzmedia.dot.ca.gov', 'drivebc.ca'];
+export const CAMERA_HOSTS = ['cwwp2.dot.ca.gov', 'wzmedia.dot.ca.gov', 'drivebc.ca', 'weathercam.digitraffic.fi', 'quebec511.info'];
 
 function walk(dir, out = []) {
   for (const f of readdirSync(dir)) {

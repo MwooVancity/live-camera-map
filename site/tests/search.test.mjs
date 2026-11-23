@@ -41,7 +41,7 @@ test('build writes a manifest that points only to existing files with matching h
   const out = join(tmp(), 'search'); writeIndex(entries, out);
   assert.deepEqual(verifyIndex(out), []);
   const m = JSON.parse(readFileSync(join(out, 'manifest.json'), 'utf8'));
-  assert.equal(m.shards.length, 2); assert.match(m.global.file, /^global\.[0-9a-f]{12}\.json$/);
+  assert.equal(m.shards.length, new Set(entries.map((e) => e.countrySlug)).size, 'one shard per country'); assert.match(m.global.file, /^global\.[0-9a-f]{12}\.json$/);
 });
 test('failing fixture: a missing file, a changed byte and a stray file are each reported by verifyIndex', () => {
   const out = join(tmp(), 'search'); writeIndex(entries, out);
