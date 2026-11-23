@@ -71,7 +71,7 @@ Cameras: Caltrans 3,263; DriveBC 1,036; Finland 805; Quebec 672; Toronto 334; Ca
 ## 3. NEXT STEPS (Claude works these in order, without asking)
 An item is done only when each Edge-cases line names a passing test or a recorded guard.
 
-1. **Read and debate ChatGPT's answer to the strategy debate** (guest chat https://chatgpt.com/uc/6b04c6d8-9468-83ea-81fc-1118550b93d9, sent 2026-11-23; may not persist; the question asked is not recorded in the repo). Moves: any decision that changes this plan. Procedure: section 9.
+1. **Strategy debate DONE 2026-11-23** (outcome in section 9 log). Build from it: network-status page from our own health data, original research pieces, browser-local saved cameras and routes, agency outreach after launch.
    Edge cases: chat gone or blocked -> one line, carry on. Answer cut off -> no judgement until read to the end. Its claims stay UNVERIFIED until checked on the primary source.
 2. **Shareable map links (Session 9).** Moves: shares of `/map/` links are our viral engine. Use GEV's native `/share/<code>`; times in UTC.
    Beats Argos by: free, no sign-in, every view shareable with visible freshness.
@@ -231,7 +231,7 @@ When: before any plan-changing decision, for big research (source hunts, licence
 | 2026-11-23 | Day 4 search design | `day4-search-design.md`; per-camera pages rejected; sizes now measured |
 | 2026-11-23 | World feed ranking | `chatgpt-world-feeds-2026-11-23.md` UNVERIFIED, then the live audit |
 | 2026-11-23 | TfL, Calgary, NZTA terms read in Chrome; DGT email | `world-feed-audit-2026-11-23.md` |
-| 2026-11-23 | Strategy debate (sent) | answer not yet read: section 3 item 1 |
+| 2026-11-23 | Strategy debate (read to its last line) | Agree: distribution is the biggest risk, so shareable map links (Session 9) stay first; camera health and provenance public (already built, extend with a network-status page); never index thin pages (MIN_CAMERAS gate exists); no-account is our edge, so add browser-local saved cameras and a saved-route page (no server). New: original research from our own health data ("how many public road cameras are actually online", coverage by highway) as link bait; ask the agencies that run each feed to list us. Disagree: "road-first, skip country count" conflicts with the owner's world-first rule and the parity gate, so we keep adding licensed countries; its 3K visits by day 90 is a floor, not our target; "buy domain / use Cloudflare" already done; its 15 names are moot (name bought) and its Cloudflare 500 builds per month and Argos facts are UNVERIFIED (it cites pages it says it read; we have not checked them). Its freshness point is right but not new: 200 is not proof (CLAUDE.md rule); image-age freshness stays unverified because we link out and never fetch images. |
 
 ## 10. WHAT BREAKS FIRST (edge-case register, worst first)
 1. A licence changes or is misread and ads break a source's terms. Guard: gate with quote, URL, date; importers stop if the phrase vanishes; 180-day expiry; ads OFF (`revenue-slots` PENDING). Needs Mike item 4.
