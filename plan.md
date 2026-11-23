@@ -1,233 +1,261 @@
-# Plan: Free live traffic camera directory (Argos Atlas alternative)
+# Plan: free world live-camera directory (Argos Atlas alternative)
 
-Status: direction agreed after a 3-round Claude vs ChatGPT debate, 2026-11-21.
-Owner: Mike. Site name is a placeholder ("NearbyCams"); no domain chosen yet.
+**This is the ONLY plan, status and to-do file.** Files in `docs/` are evidence records (what was read, measured or decided on a day). They are never plans. Mike-only tasks live in section 1.
 
-## 1. Goal
-A free, no-paywall, search-first camera directory with a simple 2D map. English first, WORLD-wide target (owner 2026-11-22); California and BC are the first two regions, not the scope.
-- Launch is LINK-OUT ONLY: each camera page shows metadata and links to the official source.
-- Success = users find a camera, click through to the official source, and come back. Not camera count.
-- First milestone: 150-300 real, reliable cameras (quality over count), 2 working importers, a working map, health monitoring, ~10 useful landing pages.
-- Monetization later (ads / affiliate / donations). Never a paywall.
+## 0. Header
+- Goal: a free, world-wide directory of live traffic cameras with road conditions, camera health and a free map that never asks for a sign-in. Link-out only until a source allows pictures.
+- End game: beat argosatlas.com page for page, match the traffic they capture, then pass it (measured by Search Console against Ahrefs). Make money inside the rules (ads and affiliate beside data, never a paywall). A penalised site earns $0.
+- Site name "NearbyCams" is a placeholder (one config constant). No real domain yet. Staging (noindex): https://mwoovancity.github.io/live-camera-map/
+- How to read: section 1 is what only Mike can do. Section 2 says what is built. Section 3 is the work queue Claude takes in order. Everything else is reference. "UNVERIFIED" = not checked on the primary source.
+- Success = people find a camera, click through to the official source and come back; the scoreboard is Search Console non-brand clicks and shares of `/map/` links, never camera or page counts. Monetization: ads, affiliate, donations; never a paywall.
+- Last updated: 2026-11-23. Registry: 6,332 cameras from 6 sources. 66 pages built. Search index 7,368 entries.
 
-## 2. Decisions (debate outcome)
-| Decision | Result |
-|---|---|
-| Stack | Astro (static) + MapLibre GL JS + OpenFreeMap tiles behind a provider abstraction (fallback: self-hosted PMTiles) |
-| Data | JSON files in git: `cameras.json`, `sources.json`. Generated `health.json` is NOT committed |
-| Licensing | Granular per-source permissions (see section 4), each `allowed / not_allowed / unverified`. Default `unverified` |
-| Images | No embeds and no image proxy until a source's written permission is confirmed |
-| Regional pages | Config default min 3 cameras, but INDEXING is controlled by a curated page list picked from keyword data |
-| Camera pages | Only selectively, where a camera has independent search value. Whole registry is not auto-published |
-| Health checks | GitHub Actions cron -> publishes `health.json` to Cloudflare R2. Site fetches it client-side. No server |
-| Health statuses | `reachable`, `stale`, `unavailable`, `unknown`. `last_changed` is separate (an unchanged image is not proof of a dead camera) |
-| Importers | Run locally first (the Claude sandbox cannot reach camera APIs) |
-| God's Eye View | The `/map` engine. Untouched upstream (pinned commit in `ops/upstream-base.txt`), run from its Docker image on its own subdomain and embedded by the Astro `/map/` page. We only ADD files around it. Gated by Session 3 (see docs/decisions/red-team-round3.md) |
-| Backend / DB | No database in v1. GEV's own Node server is the live-data engine; camera health is static JSON on R2 |
+## 1. OWNER TO-DO (Mike only; Claude must not attempt these)
+Highest unblocking first. "Claude did" = what is already prepared so your step is small.
 
-Disputed and settled: fixed 8-camera threshold dropped; link-out-first (Claude won); GitHub Actions over a server (Claude won); R2 over committing health data (ChatGPT won); per-camera health and granular permissions (ChatGPT won).
+| # | Your step (one line) | Why it matters | Claude already did | Status |
+|---|---|---|---|---|
+| 1 | Cloudflare deploy, two steps. (a) Create an API token: Cloudflare > My Profile > API Tokens > Create Token > Custom token, permissions: Account > Cloudflare Pages > Edit, and Zone > DNS > Edit (zone worldtrafficcameras.com). (b) In GitHub: repo MwooVancity/live-camera-map > Settings > Secrets and variables > Actions > New repository secret, twice: CLOUDFLARE_API_TOKEN (the token) and CLOUDFLARE_ACCOUNT_ID = 175119c9cdd3c5d253a685ce56080b8c (the long number in your Cloudflare dashboard address). Never paste the token to Claude. | The site goes live on worldtrafficcameras.com. Until then the production workflow does nothing. | DOMAIN BOUGHT 2026-11-23 (Cloudflare nameservers confirmed; expires 2027-11-23). Site name is now World Traffic Cameras. .github/workflows/production.yml creates the Pages project, deploys, attaches the domain, and keeps the whole site hidden from search (noindex, robots Disallow, empty sitemap) until you set the repository variable LAUNCH to live (Settings > Secrets and variables > Actions > Variables). Switch is tested. | OPEN (domain DONE) |
+| 2 | Register a free TfL developer account. | Unlocks London, 889 cameras (810 flagged available). | Read the TfL terms: commercial use allowed, show "Powered by TfL Open Data", max 500 calls a minute. Importer pattern ready. | OPEN |
+| 3 | Watch your Gmail for the reply from nap@dgt.es and paste it to Claude. | Unlocks Spain, 1,980 cameras (not Catalonia, not the Basque Country). Spain is blocked because DGT's two official pages disagree about commercial use. | Email sent 2026-11-23 (EN + ES). | WAITING |
+| 4 | Confirm each licence row below (read the quoted line, say OK). Claude never sets "allowed" for you. Needed before any ads. | Ads must not break a source's terms. | Each row has quote, URL and date in `data/source-permissions.json` and the importer re-reads the terms every run. | OPEN |
+| 5 | Open one quebec511.info camera link in a normal browser (e.g. https://www.quebec511.info/Carte/Fenetres/FenetreVideo.html?id=3998) and tell Claude if it loads. | Our tool got a bot-check page, so all 672 Quebec cameras show "unknown" by design. | Importer built; we do not bypass the check. | OPEN |
+| 6 | Register Ontario 511 (developer key + agreement). | Next big Canadian source. | Importer not built (needs key). | OPEN |
+| 7 | Alberta 511: get a developer key AND written permission for commercial use. | Terms forbid commercial reproduction without it (quoted in section 7). | Nothing built. | OPEN |
+| 8 | Register an Oregon TripCheck (TTIP) account; ask ODOT in writing that ads are fine. | Strongest permission found ("businesses ... may use data and images"). | Quote verified on the FAQ page (an FAQ, not a licence). | OPEN |
+| 9 | Apply for 511NY developer access and save the agreement text. | Agreement text could not be read by us. | Only a search snippet seen: UNVERIFIED. | OPEN |
+| 10 | Read Open-Meteo's commercial terms and tell Claude. | Permissions mark it allowed from a CC BY line; my recollection is that the free tier is non-commercial (UNVERIFIED). `/api/weather-effects` depends on it. | Flagged in section 10. | OPEN |
+| 11 | Decide how ads sit beside third-party data; ask each provider whether pictures may be shown beside ads (DriveBC and Fintraffic optional). | Ad slots stay OFF until this is answered. | Rule `revenue-slots` is PENDING. | OPEN |
+| 12 | Host and deploy steps: choose host; Cloudflare Tunnel and DNS to 127.0.0.1:8080 (token stays on the host); set `GEV_ALLOWED_HOSTS` and `GEV_EMBED_FRAME_ANCESTORS` in `ops/deploy/.env`; run workflow `session5-compose` once from the Actions tab and say if green; after launch set repo variable `HEALTH_BASE_URL`. | Public map engine and monitoring. | Compose file, proxy, runbook, healthcheck written; never run on a real host. | OPEN (after 1) |
+| 13 | Optional: Washington access code; Norway credentials; keys for Queensland, Georgia, Pennsylvania, Minnesota; email tmc@transpordiamet.ee (Estonia); ask MDOT for a licensed Michigan feed; ask LTA why Singapore returns 8 cameras. | Each could add a source; none blocks the rest. | Probed, section 7. | OPEN, low |
+| 14 | Optional: email OpenSky for written commercial permission (ads count as commercial). | Live flights stay OFF until then. | OpenSky route blocked at the proxy. | OPEN, low |
+| 15 | Optional: re-run Gemini Deep Research (limit hit 2026-11-21) and paste into `docs/research/`; keyword research in Keyword Planner. | Extra ideas only. Pages are already chosen by real coverage; Search Console after launch is the scoreboard. | Ahrefs-free and Similarweb evidence in section 4. | OPEN, low |
 
-## 3. Architecture
-```
-Source APIs -> importers (local) -> normalize + dedupe + validate -> cameras.json (git)
-sources.json (git, permissions) -----------------------------------^
-GitHub Actions cron -> health checker (per-source throttling) -> health.json -> Cloudflare R2
-Astro build (cameras.json + sources.json + curated page list) -> static site (Cloudflare Pages)
-Browser: MapLibre map + client fetch of health.json from R2
-```
-Rule: if a health run fails or is incomplete, never overwrite the last good `health.json`.
+Licence rows waiting for your OK (full quote, URL and date are in `data/source-permissions.json`; the importers re-read the terms every run):
+- Caltrans `caltrans-lcs`, `-cc`, `-cms`, `-rwis`: "public domain", "no charge", "available for integration into your application" (cwwp2.dot.ca.gov, dot.ca.gov/conditions-of-use). Caltrans calls its portal the Commercial Wholesale Web Portal but the text never says "commercial" either way; RWIS units not stated; rows stay flagged `needsHumanReview`.
+- NWS `nws-forecast`, `nws-alerts`: weather.gov/disclaimer, public domain, any lawful purpose; no implied endorsement, no modified data passed off as official.
+- DriveBC `drivebc-cameras`, `drivebc-events`: OGL - British Columbia, "including for commercial purposes".
+- Finland `digitraffic-weathercam`: CC BY 4.0, "even commercially".
+- Quebec `quebec-cameras`: cc-by 4.0, "meme a des fins commerciales".
+- Toronto `toronto-traffic-cameras`, Calgary `calgary-traffic-cameras`: their own Open Government Licences, "including for commercial purposes". Required credit lines: "Contains information licensed under the Open Government Licence – Toronto." and "... – City of Calgary." Claude read both pages in a browser; you confirm.
+- Quebec: the 7 dataset resources carry no licence of their own. Finland: the sentence speaks of open data in general (page read 2026-11-23).
+- For all camera sources, pictures are NOT confirmed as covered: link-out only.
 
-## 4. Data model
-`cameras.json` entry: `id`, `sourceId`, `name`, `road`, `direction`, `city`, `regionSlug`, `regionName`, `lat`, `lon`, `feedType` (still|video), `officialUrl`, `officialUrlLastVerified`, `lastSeen`; optional `locationText` (the source's own caption, text only; DriveBC gives it).
+Done by Claude (so none is lost): read TfL, Calgary and NZTA terms in a real browser (2026-11-23); emailed DGT; decided NSW = not now; GitHub repo and staging exist; Docker Desktop install fails on this PC (admin prompt), so Linux CI is the real test target and the Docker tests ran there; DriveTexas ruled out (terms limit it to emergency management).
 
-`sources.json` entry: `id`, `name`, `api` {auth, rateLimit, docsUrl}, `permissions` {`metadata_commercial`, `image_display`, `image_caching`, `image_redistribution`: each allowed|not_allowed|unverified}, `attribution`, `license`, `licenseUrl`, `reviewedAt`.
+## 2. STATUS TABLE (honest state, 2026-11-23)
+Day 1 to 7 are this plan's build order; Sessions 1 to 10 are the master prompt's (`prompts/00-kickoff-master-prompt.md`, gitignored).
 
-`health.json`: top level `generatedAt`, `runOk`; per camera `status`, `httpStatus`, `contentType`, `lastChecked`, `lastSuccess`, `lastChanged`, `consecutiveFailures`. A 200 response with an HTML error page must NOT count as working (check content-type, preferably dimensions).
-
-## 5. Build order
-Run in parallel from day 1: keyword research (Google Keyword Planner or Ahrefs free) to choose which pages to index. The Gemini Deep Research run also exists in Mike's Gemini history (its UI never finished rendering).
-
-- [~] **Day 1: Foundation (PARTIAL 2026-11-23: Astro + data files + build done; map is the GEV iframe, not MapLibre/OpenFreeMap, and GEV is not deployed yet).** Astro + MapLibre + OpenFreeMap, the three data files, sample cameras. Done when: map renders sample cameras and `npm run build` passes.
-- [ ] **Day 2: Importer 1 (Ontario 511). NOT DONE: needs Mike key; British Columbia (DriveBC, OGL-BC, no key) built instead as a convenience, not by plan.** Auth, normalize, validate coordinates, dedupe, attribution, official URLs. Done when: real Ontario cameras on the map. If API approval is pending, build against saved sample responses and use Alberta 511 or another keyed source meanwhile.
-- [x] **Day 3: Importer 2 (Caltrans). DONE 2026-11-22 (3,263 cameras, all 12 districts, real run, tests).** Different API shape, same schema. Metadata only; image permissions stay `unverified`.
-- [~] **Day 4: Discovery UX. PARTIAL 2026-11-23: search built (static index, first-focus load, country shards, road aliases, header box on every page, /map/?lat=&lon= with GEV hash), size budget + 58-query relevance set + page gate.** NOT built: filters (country/road/direction/status), clustering, bbox loading, camera detail, nearby cameras, corridor navigation, GeoNames towns (towns come from camera captions only), real-browser/phone test of the box, 200 ms / 1 s timing budgets. MEASURED: real first search 139 KB gzip (4,998 entries); synthetic 200k does NOT fit 300 KB per country shard (needs ~30+ shards by region), see docs/decisions/day4-search-design.md.
-- [~] **Day 5: Health monitoring (MOSTLY DONE 2026-11-22: checker, throttling, backoff, publish via GitHub Pages every 3 h, statuses on pages; R2 and failure alerts not built).** Actions cron, per-source throttling and backoff, R2 publish, statuses on camera cards, workflow failure alerts. Start intervals at 30-60 min for still cameras; prefer bulk endpoints over per-camera requests.
-- [x] **Day 6: SEO pages. DONE 2026-11-23 (world hub, country, region, city, road pages, guides; canonical, sitemap, breadcrumbs, silo gate).** Homepage, major city pages, major highway pages, a few camera pages. Canonical, sitemap, BreadcrumbList, internal links, crawlable HTML that works without the map. No near-empty pages.
-- [~] **Day 7: Test and deploy (PARTIAL: CI, noindex staging on GitHub Pages; no real domain, no Cloudflare, no load of 1,000+ markers, no post-deploy live check yet).** 1,000+ markers, broken official URLs, source API outages, duplicate cameras, mobile search, health failure, sitemap correctness.
-
-## 6. Blocked on Mike (Claude cannot do these)
-- Register for Ontario 511 developer access; get an Alberta 511 key.
-- Create accounts: GitHub repo, Cloudflare (Pages + R2). Pick site name and domain.
-- Read each source's terms and confirm the permission values in `sources.json`.
-- Run importers on your own machine and commit the output.
-- Keyword research, and review the Gemini report.
-
-## 7. What will break first (ranked)
-1. Camera URLs change, expire or stop updating. Mitigation: health records, official URL re-verification.
-2. Image licensing ambiguity. Mitigation: link-out only at launch.
-3. Source rate limits, auth changes, blocking. Mitigation: source-aware throttling, bulk endpoints.
-4. Scheduled GitHub Actions run late or get dropped; public-repo schedules can be disabled after 60 days of inactivity. Mitigation: manual dispatch, show "last checked" on the site.
-5. Thousands of thin pages. Mitigation: curated page list.
-6. OpenFreeMap has no SLA. Mitigation: provider abstraction.
-
-## 8. Unverified claims (from ChatGPT, not independently checked)
-- Ontario 511 data is under the Open Government Licence - Ontario; registration required; third-party redistribution must be disclosed.
-- Alberta 511 API needs a key and allows ~10 calls per 60 seconds.
-- Caltrans: general info public domain, some photos copyrighted.
-- WSDOT photo reuse criteria are non-commercial.
-- National Highways (England) needs a separate paid commercial licence.
-- Argos Atlas traffic of ~500k visits/month: CONFIRMED by the owner in Ahrefs on 2026-11-23 (owner-reported; Claude has not yet read the Ahrefs report itself; replace with the real figures once read). The old Tranco estimate is superseded.
-Open each source's official terms page before setting any permission to `allowed`.
-
-## 9. Out of scope for v1
-image proxy or caching (3D globe, flights, ships, conflict layers and Spanish moved OUT of this list by section 18, owner 2026-11-23), historical images, a database, a backend, mass programmatic SEO pages, copying anything from argosatlas.com (code, text, images, layout) or scraping it.
-
-## 10. Open question
-Ads next to third-party camera content: ask each provider whether images may be shown alongside advertisements before enabling embeds + ads.
-
-## 11. SEO structure (Argos Atlas teardown + Claude/ChatGPT debate, 2026-11-21)
-Correction to the earlier assumption: Argos Atlas is NOT "everything on /map". Their `/map/` is a JS app with ~100 words of crawlable text and no crawlable links into their content. The traffic engine is a silo around it (counts approximate, from sitemap chunks, +-20):
-- ~330 blog guides in 10 topic hubs (138 on traffic cameras), EN/ES mirrored, each linking to `/map/` with "Open the map" CTAs.
-- 1,000+ programmatic camera listing pages: `/en/cameras/<country>/<region-or-city>/`, templated, all lastmod 2026-11-20.
-- ~480 `/country/<country>/` pages, plus tools and author pages.
-- Their weaknesses: contradictory counts (London 845 vs 776 vs 2,143), templated generic prose, Spanish slugs on English URLs, no sibling-city links. No JSON-LD or hreflang seen (from extracted page text; check view-source before relying on this).
-
-Our version (agreed): the map is the product, a SMALL curated silo is the acquisition engine, camera health is the differentiator.
-- `/map/` = the app. Add a short crawlable intro and plain HTML links to the hubs. Map-state URLs (`/map/<place>/`) are app entry points whose canonical points to the matching landing page. Never hash-only (`/map/#london`).
-- `/cameras/` hub (1), country/region hubs (2-4), city/corridor landing pages (10), guides (3-5). Total 16-20 pages at launch.
-- City/corridor pages are chosen from keyword research plus real coverage; each page must have unique data (coverage roads, sources, last verified, health), not just swapped city names.
-- Internal links (real `<a>` tags only): hub -> region -> city; city -> parent; city -> 3-6 related locations; city -> 2-3 guides; guide -> city; every landing page -> prominent map CTA; map -> crawlable links to landing pages. Descriptive anchors ("Toronto traffic cameras"), not "click here".
-- Initial HTML must contain title, count, coverage, sources, health summary and links. The map hydrates after.
-- One registry powers every count, so numbers never disagree across title, map and list.
-- Do NOT copy their text, code, images or layout. (Superseded 2026-11-23 by sections 17-18: we DO cover every topic and page type they rank for, with our own data-driven pages, EN and ES, no machine-translated thin mirrors, no featured thumbnails until image rights exist.)
-- (Superseded by section 12, owner 2026-11-22: every landing page ships maxed out from day one. Number of pages still grows only with real coverage, never because more records exist.)
-
-## 12. Page content: everything on the page (owner 2026-11-22: "put everything on the page, maxed out info gain")
-Goal: millions of views a month is the target, not a forecast (Argos's ~500k/month is unverified). The route is pages so complete that nothing else answers the question. Every city/corridor page carries ALL of the blocks below that have licensed data for that place. A block with no data is omitted, never faked. Every block shows its own source, timestamp and attribution, and hides itself if older than its limit.
-
-| Block | What it shows | Source (must be `allowed_per_doc` in `data/source-permissions.json`) | Max age |
-|---|---|---|---|
-| Cameras | Every camera, road, direction, plain link to the official source (no images) | Caltrans CWWP, later Ontario 511, Alberta 511, other states | registry date |
-| Camera health | reachable / stale / unavailable per camera, last checked, last changed, 30-day uptime per road | our own checker (GitHub Actions to R2) | 2 h |
-| Road conditions | active incidents, lane closures, chain controls, road work | Caltrans lane closure and chain control feeds, CHP incident feed; Canadian 511 equivalents | 15 min |
-| Road weather | stations on the roads: air and surface temperature, wind, visibility | Caltrans RWIS, NWS observations | 1 h |
-| Forecast and alerts | next 48 h forecast and active weather alerts for the city | NWS api.weather.gov (US public domain), ECCC for Canada only after its licence is read | 3 h |
-| Traffic signs | current message sign text on the corridors | Caltrans CMS feed | 15 min |
-| Coverage | roads and counts per road, camera density, gaps | our registry | registry date |
-| Corridor view | cameras in driving order along each highway, with the next and previous camera | registry (postmile order) | registry date |
-| Context | sunrise and sunset, local time | computed locally, no external call | live |
-| Map | the page's cameras on the GEV map, centred on the city | GEV embed `?embed=1` plus URL hash | live |
-Rules:
-- Live blocks are filled by the same Actions cron that writes `health.json` (one JSON per region on R2). The page contains a build-time snapshot in the HTML so it works without JS and is crawlable, then refreshes client-side.
-- One registry and one `countsBy` function feed every number on the page.
-- Each new feed needs: a row in `data/source-permissions.json` (allowed_per_doc with licence text and review date), a fetch script in `ops/importers/`, a fixture test, a failing-fixture test, and an entry in `data/exclusion-map.json` if it is reachable through GEV.
-- Added to the earlier cut line: Open-Meteo stays OFF until its commercial terms are read (UNVERIFIED).
-- Pages still publish only where the registry has 3+ cameras; the rest are noindex.
-- Do not copy Argos wording, layout or images. Their weakness is generic text and contradictory counts; ours is one data source per number.
-Edge cases:
-- A feed changes its JSON shape: parser fails closed, block hides, page still builds. Test: fixture with a renamed field.
-- A feed is down for a week: block hides after its max age and shows "last updated"; the page never shows old data as current. Test: stale-timestamp fixture.
-- A feed's licence turns out restrictive: flip its permission row to not allowed, the gate removes the block site-wide. Test: licensing test.
-- Two blocks disagree (camera count vs list): impossible by construction, one function. Test: count equals list length for every page.
-- 100x pages: build time and R2 file count. Measure monthly; per-region JSON, not per-page.
-
-Build order (replaces nothing in section 5; adds):
-- [ ] Block 1-2 (cameras, health) as part of Day 5/6.
-- [ ] Road conditions, signs, road weather from Caltrans (same API family, no key).
-- [ ] NWS forecast and alerts block (no key, needs a User-Agent).
-- [ ] Corridor view.
-- [ ] Ontario 511 and Alberta 511 once Mike has keys (Mike task, unchanged).
-
-## 13. Money and enforcement (owner 2026-11-22: "make more money than them", "enforce it every level")
-- Money first, inside the rules: a penalised site earns $0. Revenue comes from the same pages: display ads and affiliate links (dash cams, road-trip gear, roadside assistance) placed beside the data blocks, never inside a camera link-out. Ad slots stay OFF until each source's terms allow data beside ads (plan section 10); `revenue-slots` in `ops/harness/rules.mjs` is PENDING until a gate checks it.
-- Silo is enforced in code (`ops/harness/page-gate.mjs`): reachable from / in 4 clicks (world hub -> country -> region -> city), no orphans, city -> parent region, 3+ related cities, a guide, the map; region -> country, country -> world hub; every hub links every child; guides link a city.
-- Every rule lives in `ops/harness/rules.mjs` as ENFORCED (names its gate) or PENDING (a note). Check: `node ops/harness/selftest.mjs`. Layers: Claude Code hooks (`.claude/settings.json`: Line 0 every request, gev/ write block), git pre-commit (`.githooks/pre-commit`), CI (immutability, preflight, site), page gate on the built site.
-- Page gate also needs `site/PAGES.md` to carry "Beats Argos by: ..." for each indexable page.
-
-## Next
-- DONE 2026-11-22: Caltrans registry (3,263 cameras), Astro site (20 pages), enforcement harness, live blocks (lane closures, chain controls, signs, road weather, NWS), CI green, noindex staging live at https://mwoovancity.github.io/live-camera-map/ (workflow staging.yml, refreshes feeds every 3 h).
-- DONE 2026-11-22: British Columbia is the second source (lead from Argos list; ChatGPT claim checked against the BC pages and the CKAN record first). Licence rows `drivebc-cameras` and `drivebc-events` (Open Government Licence - BC, quoted; list only, pictures unverified so link-out). `ops/importers/drivebc.mjs`: HighwayCams list (1,036 cameras after 5 position duplicates) into the shared `cameras.json` (each importer rewrites only its own rows, tested), Open511 events into `data/conditions/bc-events.json` (319 active events on the first run). BC health is checked by the same `ops/health/check.mjs` with its own pace (3 workers, 300 ms apart); the BC picture server sends no Last-Modified, so BC cameras can be reachable or unavailable but never stale (docs/decisions/bc-health-stale-limit.md). Site: `/cameras/british-columbia/` hub, 5 city pages, BC guide; no road pages for BC. DriveBC has no city field, so a BC "city" is a named place (camera name plus DriveBC's own caption); 192 of 1,036 cameras have one, so BC city pages are the 5 largest named places, not the 5 largest towns. Not done for BC: forecast (no Canadian weather licence read), road pages, camera pictures.
-- DONE 2026-11-23 (world sources 2 and 3, from the live audit docs/source-audits/world-feed-audit-2026-11-23.md): Finland (Fintraffic Digitraffic weather cameras) and Quebec (MTMD Camera de circulation). Built only the two the audit VERIFIED with a quoted licence, no key and 100+ cameras; NOT built: Spain DGT (its dataset page says CC BY but its legal notice forbids commercialisation: blocked until DGT answers), NSW (open copy returned no image for 15 of 15 links, endpoint status unverified), Singapore (feed returns 8 cameras). Licence rows `digitraffic-weathercam` and `quebec-cameras` (quoted text, URL, review date 2026-11-23, pictures unverified so link-out; Mike confirmation lines in docs/decisions/mike-todo.md). Importers `ops/importers/digitraffic.mjs` (805 cameras from 808 stations: 1 test station, 1 not gathering, 1 repeated position; re-reads the terms page every run and stops if "Creative Commons 4.0 By" or "even commercially" is gone) and `ops/importers/quebec.mjs` (672 cameras from 683: 11 repeated position+road+direction; stops unless license_id is cc-by or if the feed is cut off), shared steps in `ops/importers/lib/runner.mjs`; each rewrites only its own rows (tested in any order with Caltrans and BC). Real run once each: both exit 0. Honest places: Finland city only from the strict name form road-code_Place (796 of 805; 320 places; the place is a NAME from the feed, that it is usually the municipality is UNVERIFIED), no direction; Quebec has NO city at all (the free text has no reliable place) and its 14 regions are the feed's own NomRegionDiffusion values (table QC_REGIONS, also builds REGION_COUNTRY). Site: /cameras/finland/ (country), /cameras/finland/finland/ (region) and 8 city pages (Oulu 31 ... Lappeenranta 11); 13 Quebec region hubs under /cameras/canada/<region>/ that list every camera (Abitibi-Temiscamingue has 1 camera: counted, no page, the Canada hub says so); no Quebec city pages; text per source from one table (REGIONS in site/src/lib/pages.mjs), credit lines from sources.json, caveats printed; `Beats Argos by:` lines added to site/PAGES.md (23); 64 pages built; search index 6,810 entries, first search 140,050 B gzip of the 307,200 B budget. Bug found and fixed on the way: slugify split accented words (Hameenlinna with an a-umlaut became ha-meenlinna); it now drops accents (test). Health: Digitraffic images 1 worker 1100 ms apart (its limit is 60 requests a minute per IP without the Digitraffic-User header; the checker sends that header, no personal data), time budget 12 to 18 min and cap 6000 to 7000 because 805 x 1.1 s is about 15 min (staging.yml timeouts raised, test that every list fits). Live sample of 20 Finland cameras (node ops/health/check.mjs --source digitraffic --sample 20): 19 reachable, 1 stale (Last-Modified 14 h old), 0 unavailable. Finding: Digitraffic answers a camera with no picture by a grey "Image not available" JPEG (HTTP 200, 9,897 bytes, no Last-Modified or ETag, same md5 for two cameras): a 200 is not proof, so a source flag needValidators counts that as unavailable (proved live on C0300101). Quebec: quebec511.info answers automated requests with a Cloudflare bot-check page (403, Cf-Mitigated: challenge); per CLAUDE.md we do not work around it: the checker never requests those links, every Quebec camera is unknown by design (reason shown, left out of the 20% unknown limit, the pages say so). robots.txt of weathercam.digitraffic.fi, tie.digitraffic.fi and www.quebec511.info read: Allow all for our generic agent. Rules added in ops/harness/rules.mjs: world-importers, honest-place-world, health-blocked-host, health-placeholder-image, health-fits-budget, region-text-one-source, slug-accents (46 enforced, 2 pending). Camera importers stay local-only like Caltrans and the BC list (they write the committed registry, CI does not refresh it); no importer step was added to staging.yml. NOT verified: a full health run over all sources end to end (about 15 min and 5,100 requests, not run); Digitraffic's higher limit with the header (not stated); that quebec511.info links load in a normal browser (Mike-only); picture or video rights for either source; update intervals other than the Digitraffic Last-Modified values seen; Finland/Quebec on an Android or phone viewport.
-- DONE 2026-11-23 (round 2, from the second audit section of docs/source-audits/world-feed-audit-2026-11-23.md): Toronto, the fair health budget, and the licence review-date fix. WHICH FEEDS: only Toronto met every bar (licence quoted by us, no key, 100+ cameras with coordinates and a link, free). NOT built: TfL (889 cameras, but its terms body is JavaScript only and was not read), Calgary and NZTA (feeds work, terms unread or blocked to our tool), Michigan (808 cameras, no licence found), Autobahn (0 webcams on all 113 roads), Norway (401, key needed), the rest gave no open feed. TORONTO: licence row `toronto-traffic-cameras` (Open Government Licence - Toronto, "including for commercial purposes", required credit "Contains information licensed under the Open Government Licence - Toronto"; list only, pictures unverified so link-out; Mike line in docs/decisions/mike-todo.md); importer `ops/importers/toronto.mjs` + `ops/importers/lib/toronto.mjs` (re-reads dataset license_id and two licence-page phrases every run, rewrites only its own rows, stops on a cut-off or half-size list). 334 cameras from 336 records (2 repeated positions); 30 intersections have two or three cameras, so each of those labels carries the City camera number. ROBOTS FINDING (changes the audit): the CKAN robots.txt Disallows the /dataset/*/resource/*/download/* file path the audit used, and Allows /api/, so the importer reads the datastore_search API instead (same 336 rows). One region `toronto` under Canada (/cameras/canada/toronto/), listing every camera with the compass views the City names; NO city pages (the feed has streets, no place field); caveats and credit printed; footer credit from sources.json; page gate knows opendata.toronto.ca as a camera host. Health: Toronto 2 workers 500 ms apart HEAD only (no stated limit; the picture host has no robots.txt of its own, www.toronto.ca names no /transportation/ path); real sample of 20: 20 reachable. Search index 7,145 entries (was 6,810), first search 140,081 B gzip of the 307,200 B budget; 65 pages built (64 in the sitemap). staging.yml refreshes the Toronto list before the build (non-fatal, 90 s). FAIR HEALTH BUDGET (rule health-fair-budget): `ops/health/lib/plan.mjs` gives each source a share of the 18 min and the 7,000-request cap by its own polite pace (small sources whole, big ones split the rest equally), cameras go oldest-last-checked first (never checked first), cameras a run does not reach keep their previous record, and a camera whose OWN last check is over 48 h is unknown (`ops/health/lib/age.mjs`, used by the checker and the page, so one number). The report prints per source "whole set every N runs = H h" (runs are 3 h apart); with today's registry every probed source fits ONE run (Finland about 15 min is the longest), the plan only matters once a list outgrows its share. Pages: "last checked 5 h ago" next to each status; the 24 h whole-file rule is unchanged (a run is always newer than 24 h when published, so it cannot hide one source). Two older health tests were rewritten on purpose: a small cap is now a plan (not a failure), a cap or time budget is hit only when retries or a slow server overrun it. REVIEW DATES (rule review-dates-kept): build-inventory.mjs keeps each generated licence row's own reviewedAt unless the row changed; the 2026-11-23 re-dating of 291 rows was undone (restored from the 2026-11-22 commit; 299 rows dated 2026-11-22, 3 dated 2026-11-23: Finland, Quebec, Toronto); running it again on any later date changes nothing (checked). Rules now 48 enforced, 2 pending. NOT verified: a full health run over all sources end to end (about 15 min, 5,400 requests, not run), image rights for any source, Toronto rate limits, a Toronto link on a phone or Android, that the Toronto camera numbers are stable between list refreshes, how the first run after this change behaves on the deployed site (the deployed health.json has no Toronto rows, so Toronto is checked first and whole). MIKE-ONLY: read and paste the sentence of the TfL Transport Data Service terms, Open Calgary Terms of Use and NZTA terms of use (each decides the next build); Norway credentials; confirm the Toronto licence line.
-- DONE 2026-11-23 (Calgary, world source 5): 222 cameras from 222 records (0 dropped, 1 shared label: 2 cameras at Riverfront Avenue / 1 Street SE get the City camera number). Licence row `calgary-traffic-cameras` (Open Government Licence - City of Calgary v2.1, "including for commercial purposes", exact credit "Contains information licensed under the Open Government Licence – City of Calgary.", exemptions third-party rights and official logos noted, pictures unverified so link-out; regenerated permissions diff = only the new row; Mike line added). Importer `ops/importers/calgary.mjs` + lib: re-reads the licence story page text every run (the raw HTML of the City's page carries the licence sentences, so no browser needed) and stops if "including for commercial purposes", "Contains information licensed under the Open Government Licence" or "City of Calgary" vanish; reads the Socrata `/resource/k7p9-kppz.json` path (data.calgary.ca robots.txt: Crawl-delay 1, Disallows browse, facet, /api/odata/, login, tiles etc, not /resource/ and not /stories/; one request per run); picture host trafficcam.calgary.ca robots.txt = 404 (none). REGION: `calgary` under Canada, not `alberta`, because the feed covers one city and an Alberta page would imply province coverage next to the pending alberta-511 source. No city pages: the feed has no neighbourhood field and the quadrant (NW/NE/SW/SE, also "SW/SE", "S") is a part of the city, kept as row text only. Page /cameras/canada/calgary/ prints the exact credit (creditLine now drops a licence statement's own final full stop so it is not doubled) and the caveat that the pictures belong to the City and are link-out only. Health: `calgary-traffic` 2 workers 500 ms apart HEAD only; real sample of 20: 20 reachable (9.7 s). staging.yml refreshes the Calgary list before the build (non-fatal, 60 s, two requests). Search index 7,368 entries (was 7,145), first search 140,113 B gzip of 307,200 B; 66 pages. Tests: tests/registry/calgary.test.mjs plus a Calgary dist test. NOT verified: image rights, Calgary rate limits (none published), a Calgary link on a phone, that camera numbers are stable between list refreshes, that Calgary changes the licence page layout without losing the phrases. NOTE: another session committed this work together with a refresh of data/conditions (Caltrans/NWS files re-fetched by me only so the 24 h freshness tests could pass); not committed by this task.
-- REVIEW 2026-11-22 (Gemini + ChatGPT guest chats; neither could open sub-pages, so their page-level claims are UNVERIFIED; their Argos counts of 493 LA / 706 CA / 200k+ total are UNVERIFIED third-hand). Agreed gaps, in order:
-  1. Camera health checker (GitHub Actions): proves a camera link works (content-type, not an HTML error page), classifies still / video / operator page / unavailable / retired, keeps history for 30-day uptime. Both reviewers: a last-checked stamp alone is not proof.
-  2. Road and corridor pages (I-5, I-10, I-405, US-101): cameras in driving order, closures and signs between them; camera-to-event links (each closure/incident links to its nearest cameras). Only where data exists.
-     DONE 2026-11-22: /roads/ hub plus 10 road pages (I-5, US-101, I-15, I-10, I-80, SR-99, SR-1, I-210, I-580, I-405), guide how-to-read-a-road-page. Order is by position along the road's line of best fit, NOT milepost: checked on the live Caltrans files, postmile restarts at every county line (I-5 and US-101 rank correlation with position 0.1 to 0.2) and milepost is not one scale across districts (I-5 northbound 0.77, I-405 0.90, US-101 0.88 overall, while inside most single districts it matches exactly; Los Angeles I-5 mixes values equal to the county postmile with cumulative ones). Registry schema unchanged. Closures, chain controls and signs are listed only with a road camera within 25 km. Gate: road-slug, road-order, road-silo, event-nearest-cameras in ops/harness/rules.mjs.
-  3. More licensed feeds on the page: CHP incidents, Caltrans speeds/travel times if CWWP offers them, USGS quakes, AirNow, CAL FIRE. Each needs a licence row first.
-  4. Count definitions on the page (what counts as a camera, active, and how a city is assigned) so numbers are never inflated.
-  5. Coverage beyond Caltrans for the same cities (city, county, port cameras) after each licence is read; Canadian sources seen in GEV catalog (DriveBC, Calgary, Toronto).
-  6. Problem-led guides (closures, chain controls, snow) instead of site-mechanics guides.
-- LICENCE: Caltrans calls its portal the Commercial Wholesale Web Portal and says no charge for use, but never states commercial use outright. Rows stay flagged needsHumanReview. Mike confirms before ads.
-- LAUNCH CHECKLIST: remove staging noindex and sitemap removal (ops/staging/prepare.mjs is staging only), real domain in PUBLIC_SITE_URL, licence confirmed, ad slots gate.
-- OWNER: Ontario 511 and Alberta 511 keys; domain and name when going live; Open-Meteo commercial terms.
-
-## 14. Argos as our lead list (owner 2026-11-22)
-- Rule: every public source Argos uses is a lead. Free = candidate, paid = excluded. A candidate becomes live only after its own licence row passes the gate (quote, URL, date). Argos using it is NOT a licence.
-- Method: read their public sources/methodology page by hand (no scraping, robots.txt respected), list source names in docs/research/argos-source-leads.md, then for each: free? key needed? commercial use? attribution? -> source-permissions row -> importer -> page block.
-- Why not skip licensing: a free feed can ban commercial use, so ads would break it; the gate costs minutes per source and protects the whole site.
-- Edge cases: lead is paid or login-walled -> excluded, row says why. Lead is free but non-commercial -> row not_allowed, block never ships. Lead moved or changed terms -> review date expires in 180 days, gate disables it.
-
-## 15. World-first (owner 2026-11-22: "I do not care about anywhere but the world, like Argos")
-- Supersedes "regional first" and "no global expansion in v1" (plan section 1/9, CLAUDE.md). Why those existed: the 2026-11-21 Claude vs ChatGPT debate, before this goal was stated.
-- Why BC was built first (record): plan never named it; it was the only non-California source needing nothing from Mike (OGL-BC, no key). That was convenience, not strategy; it yields only 5 city pages of 4 cameras.
-- How we get the world: (1) the GEV catalog already lists ~27 camera providers worldwide (seen in the Session 4 proof: Caltrans, TripCheck, Fintraffic, Live Traffic NSW, Vegagerdin, Toronto, Calgary, Quebec 511, MLIT river cameras 1,054, Autostrada del Brennero and more): each is a lead, each needs its own licence row; (2) rank leads by camera count x licence clarity x no key, build the top ones first; (3) country hub pages -> region -> city, same silo gate; (4) all numbers stay single-source.
-- Scale limit to design for: licences, not pages. Each country needs reading its terms; that is the bottleneck, so the licence workflow must be a repeatable script (fetch terms, quote, row, importer, fixtures).
-- Edge cases: a country with no licence text -> unknown, disabled, link-out only; sources that need a key -> Mike todo; a source dies -> health checker marks unknown/unavailable, pages hide blocks.
-- DONE 2026-11-23: country level added (Argos pattern country -> region/city, our silo gate): /cameras/ -> /cameras/<country>/ -> /cameras/<country>/<region>/ -> city. Cities are NOT avoided: plan section 15 always said country hub -> region -> city; what was avoided is a flat region-only list. Region -> country table is REGION_COUNTRY in ops/importers/lib/registry.mjs. Roads stay /roads/<slug>/ (California-only), see docs/decisions/url-map.md.
-- DONE 2026-11-23: review fixes 1-8 from docs/decisions/review-2026-11-22-chatgpt-vs-argos.md on city and road pages: Greater <city> block (cameras within 30 km, `site/src/lib/area.mjs`, radius set in one place, both counts printed with the definition of near), 'in <city>' vs 'on the whole road' road counts, link-check line derived from the health function (the 'never run yet' contradiction is gone), conditions above the camera lists, road page jump links and per-camera last-checked time, three times kept apart on live blocks, status words defined once at the top of each camera list, 'estimated from camera positions' wording, clean camera labels (`site/src/lib/labels.mjs`), 'Do not use this page while driving' notice. Rules `reader-first-pages`, `greater-area`, `clean-labels`, `timestamps-apart` in ops/harness/rules.mjs. Not built on purpose: a featured-cameras section (padding without images).
-
-## 16. Ask ChatGPT (and Gemini) first: procedure (owner 2026-11-22 "to save my money and time"; also global CLAUDE.md "Offload heavy lifting")
-When: (a) before any plan-changing decision (global rule 2026-11-20), (b) for big research: source hunts, licence terms, competitor teardowns, keyword and page ideas, (c) for a second opinion on a finished page or architecture. Not for small lookups or code edits.
-Steps:
-1. Write ONE batched prompt per topic: goal in one line, the exact questions, "give a table", "mark UNVERIFIED anything you could not open", "say 'could not open' instead of guessing". Public URLs and generic descriptions only: no secrets, keys, personal details or private data. If the site blocks bots (staging does), paste the page text.
-2. Use a guest chat in Chrome (chatgpt.com or gemini.google.com/app). Never log in or enter credentials for Mike. If the browser is blocked, say so in one line and carry on; do not loop.
-3. Read the WHOLE answer (confirm it ends at its final line). Treat every fact as UNVERIFIED. Check the claims that will ship against the primary source (agency page, licence text, the code) before anything is built or any licence row is written.
-4. Where they disagree with this plan or each other, say where Claude agrees, where not, and why; report wrong claims back to them instead of silently substituting.
-5. Log it in the table below and save any long answer as a file in docs/source-audits/ or docs/decisions/ marked UNVERIFIED/VERIFIED.
-Log:
-| Date | Asked | Outcome | Verified? |
-|---|---|---|---|
-| 2026-11-21 | 3-round red-team of GEV fork / architecture | plan sections 2-3, docs/decisions/red-team-round3.md | partly |
-| 2026-11-22 | Session 3 results review | allowlist proxy, public-dev-server beta caveat | yes, in code |
-| 2026-11-22 | Adversarial review of staging site (Gemini + ChatGPT) | gaps list in Next; they could not open sub-pages (robots disallow) | Argos counts UNVERIFIED |
-| 2026-11-22 | Free camera/road feed hunt, 13 jurisdictions (ChatGPT) | docs/source-audits/chatgpt-feed-research-2026-11-22.md | Oregon, BC, Alberta, WSDOT verified; NY, Texas not |
-| 2026-11-22 | Our LA + I-405 pages vs Argos (ChatGPT, text pasted) | docs/decisions/review-2026-11-22-chatgpt-vs-argos.md | 2 of its defects were my paste errors |
-| 2026-11-23 | Day 4 search/discovery design for 200k cameras (ChatGPT) | docs/decisions/day4-search-design.md; rejected its per-camera pages | sizes UNVERIFIED, licences leads |
-| 2026-11-23 | Rank world camera feeds by count x licence x no key (ChatGPT) | docs/source-audits/chatgpt-world-feeds-2026-11-23.md; no counts verified; shortlist Finland, Spain, NSW, Singapore, Quebec | UNVERIFIED, live audit running |
-| 2026-11-23 | Read TfL, Calgary, NZTA terms in Chrome; emailed DGT; NSW decision | docs/source-audits/world-feed-audit-2026-11-23.md | Calgary VERIFIED, TfL needs registration, NZTA excluded |
-Next asks queued: (1) [DONE 2026-11-23: Day 4 search design], (2) which countries have the most licence-clean free camera feeds, ranked (ChatGPT, then we verify each licence), (3) keyword and page ideas per country (Gemini Deep Research when available).
-
-## 17. End game and traffic parity (owner 2026-11-23: Argos's ~500k visits/month is confirmed in Ahrefs; "do not miss a single traffic user they have")
-**End game:** the world's best live traffic-camera directory: every page answers its query better than the Argos page for the same query (licensed data, camera health, road conditions, corridors), covers every page type and keyword cluster Argos ranks for, and then passes their traffic. Measured by Search Console (ours) against the Ahrefs estimate (theirs), monthly. Revenue (ads, affiliate) switches on only where each source's licence allows it.
-**Traffic parity procedure (the Ahrefs data is the missing keyword research and page list from section 5/6):**
-1. Evidence without a paid tool (owner has no paid Ahrefs): Ahrefs free Traffic Checker (visits, trend, top countries), Similarweb free page (channels, countries, top keywords, estimated), Argos sitemap (page types and counts), and OUR Search Console after launch. Claude reads these in Chrome (public, no login). Result so far: docs/decisions/argos-teardown-2026-11-23.md. Paid Ahrefs is not required.
-2. Cluster their ranking pages and keywords by type (country hub, region, city, road, guide, brand, map/app, other-language mirror). Brand and own-app searches are not capturable by pages: list them separately.
-3. For every cluster: our equivalent page URL, or a recorded gap with a valid reason (no licensed data, licence blocked, language not built, thin-page risk). Source of truth: data/traffic-parity.json (our mapping only: cluster names, type, our URL or gap reason, status; NO raw Ahrefs rows or volumes, because the export is paid-tool data and this repo is public).
-4. Gate: tests/parity/parity.test.mjs fails when a cluster has neither a built page nor a gap reason, and when a listed URL is not in the built site. Rule "traffic-parity" in ops/harness/rules.mjs is PENDING until the first Ahrefs read exists, then ENFORCED.
-5. Language: if the Ahrefs language split shows material Spanish (or other) traffic, build that language by the same silo and gates (supersedes the v1 "no Spanish" line; no machine-translated thin mirrors: real per-language data pages or none).
-6. Build order is by the traffic each gap represents, biggest first; sources by camera count x licence cleanliness (section 15).
-7. Re-read the Argos report monthly; new clusters become new rows. Search Console is the check that the pages actually rank.
-Edge cases: a cluster we cannot serve legally -> gap row with the reason, never a copied page; Argos traffic from the logged-in map app or brand -> listed as not capturable; Ahrefs numbers are estimates -> treat as direction, verify with Search Console; the export format changes -> parser fails closed.
-
-## 18. Argos verticals and language (owner 2026-11-23: "I need the page better than Argos"; "our plan might need adjustment"; teardown in docs/decisions/argos-teardown-2026-11-23.md)
-Argos is a world-right-now product. Traffic parity (section 17) means each vertical below is a candidate. Order is set by Ahrefs traffic, then by licence cleanliness. EVERYTHING here is a LEAD: each source needs its own licence row (quote, URL) before any data ships; paid or non-commercial sources are excluded.
-| Vertical (their page type) | Our page type | Free source leads to verify (UNVERIFIED) |
+| Step | State | Evidence |
 |---|---|---|
-| Cameras by country/region/city, EN + ES | already built (EN); add ES | official agency feeds (section 15) |
-| Country "today" (instability, advisories, ports, air quality, markets) | /country/<c>/ data page | travel advisories (government), OpenAQ or WAQI air quality, IMF PortWatch ports, USGS quakes; conflict data licence is the hard part (ACLED is non-commercial: likely excluded) |
-| Chokepoint / ship traffic tools | /tools/<x>/ data pages | IMF PortWatch (CC BY, to verify); live AIS needs a licensed free source |
-| Live flights, celebrity jets | /flights/ pages | ADS-B community feeds (adsb.lol ODbL?), OpenSky stays OFF until written commercial permission |
-| Earthquakes, wildfires, storms, outbreaks | /hazards/ data pages | USGS (public domain), NASA FIRMS, NOAA NWS (already used), WHO outbreak news (terms to read) |
-| Energy grids, critical infrastructure | /infrastructure/ | OSM-derived (ODbL, separate dataset), EIA, ENTSO-E (terms to read) |
-| Blog guides (their 346 per language) | our own short original guides per topic | none: written by us, no copying |
-| Internet outages, military posture | tools | IODA (Georgia Tech, terms to read); military: likely excluded |
-Rules: (a) Spanish: LOWER priority than first thought. Free-tool traffic data (teardown doc, 2026-11-23) puts the US, India, UK, Germany and Italy at the top and Spain outside the top five, although half of Argos's pages are Spanish. Build the string table and hreflang plumbing so a language is cheap to add, but add Spanish (or Italian, German) only when Search Console or these tools show that audience; guides are written, never machine-mirrored; (b) our map stays free with NO account wall (their map asks for sign-in); (c) cameras stay the core and the strongest edge (health, roads, conditions); (d) a vertical is built only after its licence row passes and Ahrefs shows its traffic is worth it; (e) each new page type gets a "Beats Argos by:" line and the page gate.
-Edge cases: a vertical whose only free source is non-commercial -> gap row, not built; machine-translated Spanish thin pages -> forbidden; a hazard feed stale -> block hides (existing rule); conflict content -> only licensed, verified, link-out with attribution, never our own claims.
-Queued ChatGPT ask (section 16): for each vertical above, which free licensed sources exist and what exactly do their licences say; ChatGPT can also screenshot argosatlas.com page types to confirm layouts.
+| Day 1 Foundation | PARTIAL | Astro, data files, build done. Map is the GEV iframe, not MapLibre/OpenFreeMap; GEV not deployed. |
+| Day 2 Ontario 511 importer | NOT DONE | Needs Mike's key (until then build against saved sample responses). BC built instead (no key needed; convenience, not strategy). |
+| Day 3 Caltrans importer | DONE | 3,263 cameras, 12 districts, tests. |
+| Day 4 Discovery UX | PARTIAL | Search built (static index, country shards, box on every page, `/map/?lat=&lon=`). Not built: filters, clustering, bbox loading, camera detail, nearby, GeoNames, phone test, timing budgets. |
+| Day 5 Health monitoring | MOSTLY | Checker, per-source pace, fair budget (18 min and 7,000-request cap per run, shared by source pace), publish every 3 h via GitHub Pages. No R2, no failure alerts, no full end-to-end run. Intervals start at 30-60 min for still cameras; prefer bulk endpoints over per-camera requests. |
+| Day 6 SEO pages | DONE | World, country, region, city, road pages (I-5, US-101, I-15, I-10, I-80, SR-99, SR-1, I-210, I-580, I-405; California only), guides; canonical, sitemap, breadcrumbs, silo gate. |
+| Day 7 Test and deploy | PARTIAL | CI and noindex staging. No domain, Cloudflare, 1,000-marker load or live post-deploy check. Still to test: broken official URLs, source outages, duplicate cameras, mobile search, health failure, sitemap correctness. |
+| S1 Freeze and baseline | DONE | `baseline.md`. Linux CI green except flaky `test:perf` (not a gate). |
+| S2 Source audit | DONE | `data/source-permissions.json`, inventory CSV, licensing tests; unknown = closed. |
+| S3 Deploy spike | CONDITIONAL GO | `session3-findings.md`. Beta only. 20/20 boots, 0 critical; 1,000-load kill test not done. |
+| S4 Exclusion proof | CONDITIONAL | 11 offline tests pass; CI `session4-exclusion` first run not confirmed. Gaps BK-1, BD-1, CCTV-NOSWITCH. |
+| S5 Deployment, monitoring | WRITTEN, NOT RUN | Compose, proxy, runbook, healthcheck; never run on a real host. |
+| S6 Astro SEO shell | DONE (out of order) | Built on the owner's 2026-11-22 "maxed out pages" call, before any keyword page list. |
+| S7 Registry and gate | DONE | 6 camera sources; each importer rewrites only its own rows (tested). |
+| S8 Camera browser, directories | PARTIAL | Directories done; filters, clustering, detail not. |
+| S9 Share link, freshness | PARTIAL | Freshness done (last checked, status words, block ages). Share links not built. |
+| S10 Launch certification | NOT BUILT | No site e2e, no k6 (100 then 250), no rehearsed rollback, no real-device test. |
 
-## 19. What the traffic evidence means (free tools, 2026-11-23; details in the teardown doc)
-- Argos Atlas: 494K visits in October 2026 (Ahrefs), up from about 121K in September: a young site, flat until July, exploding Aug-Oct. About 61% organic search (Similarweb desktop estimate), then direct and social (X, WhatsApp, YouTube). Top keywords are all BRAND; only 364 keywords in total. Top countries US, India, UK, Germany, Italy.
-- Consequences: (1) we cannot "capture every Argos user" with SEO pages: brand, direct and social traffic follow a product people share; (2) the non-brand long tail they own is small (364 keywords), so beating it is realistic; (3) a young site reaching ~500k in about 3 months shows domain age is not a barrier, but their spike likely came from media/social: UNVERIFIED cause; (4) our engines: (a) data pages for non-brand queries (cameras by place and road, conditions, health), (b) the free no-sign-in map with share links (Session 9: share-link and freshness panels) so every view is shareable, (c) press/social launch moments tied to real events (storms, closures) using our live data, (d) Search Console is the scoreboard.
-- GEV covers the APP side (globe with flights, ships, satellites, weather, quakes, fires, cameras); it does NOT produce the SEO pages, country-today pages, tools, guides, health or road conditions, and 146 of its 303 inventoried sources have unknown licences (OpenSky restricted; adsb.lol and USGS allowed per doc; AISStream, CelesTrak, GDELT, IMF PortWatch unknown). Architecture stays: Astro pages (SEO, data) + GEV map at /map/ (app).
-- Success metric: Search Console non-brand clicks and impressions, plus shares of /map/ links, not page counts.
+Cameras: Caltrans 3,263; DriveBC 1,036; Finland 805; Quebec 672; Toronto 334; Calgary 222. Rules: 48 enforced, 3 pending (`node ops/harness/selftest.mjs`).
+
+## 3. NEXT STEPS (Claude works these in order, without asking)
+An item is done only when each Edge-cases line names a passing test or a recorded guard.
+
+1. **Read and debate ChatGPT's answer to the strategy debate** (guest chat https://chatgpt.com/uc/6b04c6d8-9468-83ea-81fc-1118550b93d9, sent 2026-11-23; may not persist; the question asked is not recorded in the repo). Moves: any decision that changes this plan. Procedure: section 9.
+   Edge cases: chat gone or blocked -> one line, carry on. Answer cut off -> no judgement until read to the end. Its claims stay UNVERIFIED until checked on the primary source.
+2. **Shareable map links (Session 9).** Moves: shares of `/map/` links are our viral engine. Use GEV's native `/share/<code>`; times in UTC.
+   Beats Argos by: free, no sign-in, every view shareable with visible freshness.
+   Edge cases: link to a removed camera -> clear message (test needed); opened in another browser or in the iframe -> restores the view (test needed); storage blocked -> GEV logs "initialization failed: SecurityError" (seen in e2e, unresolved).
+3. **Finish Day 4.** Moves: findability. Filters in the URL (country, road, direction, status); camera detail through city and road pages, never per-camera pages; nearby cameras, bbox loading, clustering; GeoNames towns after a licence row (CC BY 4.0, credit and "modified" note; OSM stays a separate ODbL dataset); phone test, 200 ms and 1 s timing.
+   Edge cases: size. First search measured 139 KB gzip of the 300 KB budget at 4,998 entries; 200,000 synthetic entries do NOT fit (34 to 42 B gzip per entry, one shard holds about 7,000 to 9,000). Guard: size gate in `site/tests/search.test.mjs`; fix is region shards (30+). Ambiguous names (Springfield, Victoria, I-80): 58-query relevance set. Manifest names a missing shard: manifest test. No JS: no-JS fallback test.
+4. **Traffic-parity data file.** Moves: turns "match their traffic" into a gate. `data/traffic-parity.json` (cluster, type, our URL or gap reason, status; no raw Ahrefs rows, the repo is public) plus `tests/parity/parity.test.mjs`; rule `traffic-parity` PENDING -> ENFORCED.
+   Edge cases: cluster with no page and no gap reason -> test fails; listed URL not in the built site -> test fails; brand/direct/social -> "not capturable"; Ahrefs numbers are estimates -> Search Console decides; export format changes -> parser fails closed; a cluster we cannot serve legally -> gap row with the reason, never a copied page. If the language split shows material Spanish (or other) traffic, build that language by the same silo and gates (real per-language data pages or none). Build biggest gap first; re-read monthly.
+5. **Deploy to Cloudflare (needs Mike items 1 and 4).** Real domain in `PUBLIC_SITE_URL`; remove staging noindex and sitemap removal (`ops/staging/prepare.mjs` is staging only); ad-slot gate; health to R2; failure alert; Cloudflare Pages (GitHub Pages soft limit about 100 GB a month).
+   Edge cases: noindex left on -> zero traffic (live read of robots and meta after deploy); ads before licences -> gate; partial health run -> last good file kept (tested); free CI minutes checked before any run.
+6. **Launch security gaps:** BK-1 (a CC BY-NC data module loads at boot), BD-1 (browser-direct sources bypass the proxy), CCTV-NOSWITCH, 1,000-load boot test, load 100 then 250 clients, phone WebGL, restart and rollback.
+   Edge cases: any kill criterion in `red-team-round3.md` -> no public launch, ask Mike.
+7. **Build each blocked source when it unblocks:** London (TfL), Spain (DGT reply), Oregon (TTIP), Ontario and Alberta (keys). Each: licence row, importer, fixtures including a failing one, exclusion-map entry, health pace, one region-text table, `Beats Argos by:` in `site/PAGES.md`.
+   Beats Argos by: London shows which of 889 cameras TfL itself flags unavailable plus picture age from `Last-Modified` (Argos doing either is UNVERIFIED); Toronto and Calgary show labelled compass views per intersection with one source and one licence.
+   Edge cases: feed renames a field -> parser fails closed, block hides (fixture); licence phrase vanishes -> importer stops; same camera in two sources -> dedupe by position (tested).
+8. **Source hunts via ChatGPT/Gemini** (section 9): which countries have the most licence-clean free feeds, ranked; keyword and page ideas per country (Gemini Deep Research); free licensed sources per vertical; Argos page layouts by screenshot. Every claim checked on the primary page before a row is written.
+9. **Health finish:** R2 publish, failure alerts, one full end-to-end run (about 15 min, 5,400 requests; check CI minutes first).
+10. **Verticals** (section 4 table) only after the licence row passes and the Ahrefs-free numbers justify the page type.
+11. **Launch certification (S10):** unit, integration, Playwright e2e, security, k6, SEO, immutability, licensing, rehearsed rollback. Record the image digest, dependency inventory and a vulnerability scan with each run; test through the proxy at 10 / 25 / 50 / 100 clients, container crash, restart and rollback to the pinned image.
+12. **More licensed feeds and guides from the 2026-11-22 review (agreed gaps, not yet done):** CHP incidents, Caltrans speeds or travel times if CWWP offers them, USGS quakes, AirNow, CAL FIRE (each needs a licence row first); coverage beyond Caltrans for the same cities (city, county, port cameras) after each licence is read; problem-led guides (closures, chain controls, snow) instead of site-mechanics guides.
+   Edge cases: a lead that is paid or login-walled -> excluded, row says why; free but non-commercial -> row not_allowed, block never ships; a country with no licence text -> unknown, disabled, link-out only; a source that needs a key -> Mike item; a source dies -> health marks unknown or unavailable, blocks hide.
+
+## 4. STRATEGY AND EVIDENCE
+**End game.** Every page answers its query better than the Argos page for the same query (licensed data, health, conditions, corridors), covers every page type and keyword cluster they rank for, then passes their traffic. Scoreboard: Search Console non-brand clicks and impressions, and shares of `/map/` links; never page counts. Revenue only where a source's licence allows it.
+
+**Traffic parity procedure.** (1) Evidence from free tools only (no paid Ahrefs needed): Ahrefs free Traffic Checker, Similarweb free page, Argos sitemap, our Search Console after launch. (2) Cluster their pages by type (country, region, city, road, guide, brand, map/app, other language); brand and own-app searches cannot be captured by pages. (3) Each cluster gets our URL or a gap reason in `data/traffic-parity.json` (section 3 item 4). (4) Build biggest gap first. (5) Re-read monthly.
+
+**Argos teardown (2026-11-23, public pages and sitemap; details in `docs/decisions/argos-teardown-2026-11-23.md`).** Cameras, flights, ships, war, OSINT, infrastructure, hazards, 3D globe, paid tier; the map asks for sign-in. Sitemap 2,521 URLs: 644 Spanish and 564 English camera place pages, 79 country camera pages, 502 "country today" pages, 694 guides, 5 tools, ~15 other. Weaknesses: contradictory counts (London 845 vs 776 vs 2,143), templated prose, no sibling-city links (from page text; check view-source first).
+
+**Traffic numbers (free tools; estimates, not Argos's own).**
+- Ahrefs free Traffic Checker: October 2026 494K visits (+373K vs September), 459K unique visitors, 2M page views; flat May to July, steep rise Aug to Oct. Top countries by order: US, UK, India, Germany, Singapore.
+- Similarweb free (desktop, estimated): organic search 61.33%, direct second, organic social third (X, WhatsApp, YouTube); US 20.73%, India 14.12%, UK 6.45%, Germany 6.12%, Italy 5.38%; Spain not in the top five; all top keywords are brand; 364 keywords in total; global rank about 32,000.
+- Owner-reported: about 500k visits a month. Page counts: their public sitemap, +-20.
+
+**Reading.** Most of their traffic is brand, direct and social, so pages alone cannot capture it. The non-brand long tail they own is small (364 keywords) and beatable. A young site reached about 500k in three months, so domain age is no barrier; why it spiked is UNVERIFIED. Our engines: data pages for non-brand queries; the free no-sign-in map with share links; launch moments tied to real events (storms, closures) using our live data; Search Console as scoreboard.
+
+**Verticals (every row is a LEAD, all UNVERIFIED: a licence row with quote, URL and date first; paid or non-commercial = excluded).**
+| Argos page type | Our page type | Free source leads |
+|---|---|---|
+| Cameras by place | built (EN) | section 7 |
+| Country "today" | `/country/<c>/` | travel advisories, OpenAQ or WAQI, IMF PortWatch, USGS; conflict data is hard (ACLED non-commercial: likely excluded) |
+| Chokepoints, ships | `/tools/<x>/` | IMF PortWatch (CC BY, to verify); live AIS needs a licensed free source |
+| Flights | `/flights/` | adsb.lol (ODbL?); OpenSky stays OFF |
+| Quakes, fires, storms, outbreaks | `/hazards/` | USGS, NASA FIRMS, NOAA NWS (used), WHO |
+| Energy, infrastructure | `/infrastructure/` | OSM-derived (ODbL, separate), EIA, ENTSO-E |
+| Guides | our own short guides | written by us |
+| Outages, military | tools | IODA (terms to read); military likely excluded |
+Built only after the licence row passes and numbers justify it; each new page type gets a "Beats Argos by:" line and the page gate. Conflict content: only licensed, verified, link-out with attribution, never our own claims. A vertical whose only free source is non-commercial -> gap row, not built; a stale hazard feed -> block hides.
+Method for leads: read Argos's public sources page by hand (no scraping, robots.txt respected; list in `docs/source-audits/argos-source-leads.md`), then per source: free? key? commercial use? attribution? -> licence row -> importer -> page block. The bottleneck is reading licences, not pages, so the licence workflow stays a repeatable script (fetch terms, quote, row, importer, fixtures). Argos using a source is NOT a licence.
+
+**Language.** Spanish is LOW priority (Spain is outside their top five audiences although half their pages are Spanish). String table and hreflang plumbing are ready; add Spanish, Italian or German only when Search Console or these tools show that audience. Guides are written, never machine-mirrored.
+
+**GEV vs us.** GEV is the APP (globe, flights, ships, satellites, weather, quakes, fires, cameras). It does not make SEO pages, country pages, tools, guides, health or road conditions. 146 of its 303 inventoried sources have unknown licences (OpenSky restricted; adsb.lol and USGS allowed per doc; AISStream, CelesTrak, GDELT, IMF PortWatch unknown).
+
+## 5. ARCHITECTURE AND DATA MODEL
+```
+Importers (local) -> normalize, dedupe, validate -> data/camera-registry/cameras.json (git)
+data/source-permissions.json (git, gate) ---------^
+GitHub Actions every 3 h -> health checker (per-source pace) + live feeds -> health.json / conditions
+Astro build (registry + curated page list) -> static site; staging on GitHub Pages, launch on Cloudflare Pages
+Browser: Astro pages + GEV map in an iframe (own subdomain, behind an allowlist proxy)
+```
+- Site: Astro static, one registry and one `countsBy` function feed every number. Search is a prebuilt static index loaded on first focus, sharded by country. Map state is the URL (`/map/?lat=&lon=` becomes GEV's `#v=2&lat=&lon=&alt=`).
+- Map engine: God's Eye View (GEV), pinned in `ops/upstream-base.txt`, IMMUTABLE (separate gitignored clone, never edited; check: `git status --porcelain` empty and HEAD equals the pin). Docker image behind the nginx allowlist proxy (`ops/proxy/`, `data/proxy-allowlist.json`; 1,435 bypass checks, 0 failures). Deploy rules: GEV port never published, `GEV_KEY_SETUP_TRUSTED_PEERS=none`, `GEV_ALLOWED_HOSTS`, no secrets in the container, engine subdomain noindex. It runs a dev server (not hardened): beta only.
+- Ads go around the map on Astro pages, never inside the engine. Esri basemap disabled in public. OpenFreeMap with GEV: no test recorded; fallbacks self-hosted OSM tiles or Natural Earth; a basemap manifest (licence, attribution, review date) gets the same fail-closed gate as sources.
+- Data (files in `data/camera-registry/`): `cameras.json` (id prefixed by source, sourceId, name, road, direction, city, regionSlug, regionName, lat, lon, feedType still|video, officialUrl, officialUrlLastVerified, lastSeen; optional locationText = the source's own caption, text only); `sources.json` (api auth, rateLimit, docsUrl; attribution, license, licenseUrl, reviewedAt) and `data/source-permissions.json` (per-source `metadata_commercial`, `image_display`, `image_caching`, `image_redistribution`: allowed | not_allowed | unverified, default unverified; quote, URL, review date); `health.json` generated, never committed (generatedAt, runOk; per camera status, httpStatus, contentType, lastChecked, lastSuccess, lastChanged, consecutiveFailures).
+- Enforcement layers: Claude Code hooks (`.claude/settings.json`: Line 0 every request, block on writes under `gev/`), git pre-commit (`.githooks/pre-commit`), CI (immutability, preflight, site), page gate on the built site. Every rule is ENFORCED or PENDING in `ops/harness/rules.mjs`; check with `node ops/harness/selftest.mjs`.
+- Health: statuses reachable, stale, unavailable, unknown; `lastChanged` is separate (an unchanged picture is not proof of a dead camera); a 200 with an HTML error page or a placeholder picture is NOT working; a source with no `Last-Modified` (BC) can never be stale; blocked hosts (Quebec) are unknown by design; a camera whose own last check is over 48 h is unknown; a failed or partial run never replaces the last good file.
+- Importers: each rewrites only its own rows; each re-reads its licence page every run and stops if the quoted phrase is gone; local-only, they write the committed registry (CI does not refresh it).
+- No database, no backend in v1, no historical images, no mass programmatic pages, no copying or scraping argosatlas.com. GEV's own Node server is the live-data engine. No image embeds, proxy or caching for a source until its `image_*` permission is allowed.
+- Kill criteria and the session order are in `docs/decisions/red-team-round3.md`: if safe operation needs an edit under `gev/`, STOP and ask Mike (small documented patch series or drop GEV).
+
+## 6. PAGE CONTENT RULES
+Every city or road page carries ALL blocks that have licensed data for that place; a block with no data is omitted, never faked; each shows its own source, timestamp and credit and hides itself past its max age. A page works without JS (build-time snapshot, then refresh).
+
+| Block | What it shows | Source (needs `allowed_per_doc`) | Max age |
+|---|---|---|---|
+| Cameras | every camera, road, direction, link to the official source (no images) | registry | registry date |
+| Camera health | reachable / stale / unavailable / unknown, last checked, last changed | our checker | 2 h |
+| Road conditions | incidents, lane closures, chain controls, road work | Caltrans feeds; DriveBC Open511 | 15 min |
+| Road weather | air and surface temperature, wind, visibility | Caltrans RWIS, NWS | 1 h |
+| Forecast and alerts | 48 h forecast, active alerts | NWS (US only; Canada after ECCC licence read) | 3 h |
+| Traffic signs | message sign text | Caltrans CMS | 15 min |
+| Coverage | roads and counts, density, gaps, definition of "near" | registry | registry date |
+| Corridor view | cameras in driving order, "estimated from camera positions" | registry (geometric order, NOT milepost: postmile restarts at county lines) | registry date |
+| Map | the page's cameras on the GEV map | GEV embed `?embed=1` | live |
+
+Rules: pages publish only where the registry has 3+ cameras (rest noindex); conditions above camera lists; three times kept apart (feed updated, record changed, page built); status words defined once per list; a "Greater <city>" block (cameras within 30 km, both counts printed); sunrise and sunset computed locally; clean labels; a "do not use while driving" notice; no featured-camera section without images; Open-Meteo OFF until its terms are read.
+
+**Silo (enforced by `ops/harness/page-gate.mjs`).** `/cameras/` (world) -> `/cameras/<country>/` -> `/cameras/<country>/<region>/` -> city; `/roads/<slug>/` (California only until a second country has roads); guides. Reachable from `/` in 4 clicks, no orphans, city -> parent region, 3+ related cities, a guide, the map; region -> country -> world hub; hubs link every child; guides link a city. `site/PAGES.md` must carry "Beats Argos by: ..." for each indexable page. `/map/` is the app with a short crawlable intro and plain HTML links to the hubs; map-state URLs (`/map/<place>/`) have their canonical on the matching landing page, never hash-only (`/map/#london`). Real `<a>` links with descriptive anchors ("Toronto traffic cameras"), not "click here". Initial HTML carries title, count, coverage, sources, health summary and links; the map hydrates after. NWS calls need a User-Agent. City names come from the feed's own fields; where a feed has no place (Quebec, Toronto, Calgary) there are no city pages.
+
+**Licence and link-out rules.** Link-out only for pictures. Claude never sets a permission to allowed; Mike confirms. A free feed is not a licence; Argos using a source is not a licence; image rights are separate from data rights. Review dates expire in 180 days and the gate disables the row. A site that blocks automated access (robots, 403, bot check) is not worked around. Never copy Argos code, text, images, layout or branding; never scrape it. Registry data is untrusted: `textContent`, never HTML.
+
+**Money.** Display ads and affiliate (dash cams, road-trip gear, roadside assistance) beside data blocks, never inside a camera link-out; ad slots OFF until each source's terms allow data beside ads.
+
+## 7. SOURCES
+**Built (camera registry).**
+| Source | Cameras | Licence (quoted by us) | Notes |
+|---|---|---|---|
+| Caltrans CWWP, California | 3,263 | public domain, no charge (Mike OK pending) | plus lane closure, chain control, signs, RWIS feeds |
+| DriveBC HighwayCams, BC | 1,036 (from 1,041 rows, 5 position duplicates) | OGL - British Columbia, commercial | list only; 192 have a place; Open511 events (319 active) built |
+| Fintraffic Digitraffic, Finland | 805 (of 808) | CC BY 4.0, "even commercially" | stops if the sentence vanishes; 60 requests a minute limit; "Image not available" grey JPEG counts as unavailable |
+| Quebec MTMD | 672 (of 683) | CC BY 4.0 dataset level | Cloudflare bot check: all unknown by design |
+| Toronto | 334 (of 336) | OGL - Toronto, commercial | CKAN robots Disallows the file download, so the datastore API is read |
+| Calgary | 222 | OGL - City of Calgary v2.1, commercial | region `calgary`, not Alberta |
+Conditions feeds built: Caltrans lane closures, chain controls, signs, RWIS; NWS forecast and alerts; DriveBC Open511.
+
+**Verified, not built.**
+| Source | Cameras | What unblocks it |
+|---|---|---|
+| UK TfL JamCams | 889 | Mike registers (item 2); OGL v2 amended; image age readable; must not crop |
+| Spain DGT NAP | 1,980 | DGT reply (item 3); dataset page says CC BY, legal notice forbids unauthorised commercialisation |
+| Oregon TripCheck | not counted | TTIP account (item 8) |
+| NSW Live Traffic (open copy) | 250 | decision: not now; 0 of 15 image links worked, endpoint status unverified, official API needs a key |
+| Singapore data.gov.sg | 8 | feed too small; licence clean |
+
+**Blocked.** Ontario 511 (key, agreement). Alberta 511 (key; written commercial permission; 10 calls per 60 s). 511NY (agreement unread). Washington WSDOT (access code; photo criteria CC BY-NC-ND, link-out only). Norway (registration; NLOD). Queensland, Georgia, Pennsylvania (keys). Estonia, Japan MLIT (no open feed found). Michigan MiDrive (808 cameras, NO licence, undocumented endpoint: do not build).
+
+**Unverified claims from ChatGPT (check each source's terms page before any row is `allowed`).** Ontario 511 is under the Open Government Licence - Ontario, needs registration, and third-party redistribution must be disclosed. Alberta 511 allows about 10 calls per 60 s. Caltrans: general info public domain, some photos copyrighted. National Highways (England) needs a separate paid commercial licence. WSDOT photo reuse criteria are non-commercial (CC BY-NC-ND seen).
+
+**Excluded.** NZTA (terms: not for commercial purposes). DriveTexas (emergency use only). FL511 (personal use), NYC DOT (needs agreement), Houston TranStar (no licence). Germany Autobahn (0 webcams). Netherlands NDW (no cameras). Victoria (enforcement cameras only). Caltrans QuickMap speeds (Google data).
+
+**Leads, not checked.** Colorado, Utah, Arizona, Florida; CHP incidents (link-out only); other GEV catalog providers (Vegagerdin, MLIT river cameras 1,054, Autostrada del Brennero); Ireland TII, Czechia, Poland, Edmonton, Vancouver (nothing found, absence not proven). Data leads: OSM (ODbL), Natural Earth, OurAirports, GeoNames. Each needs its own licence row. Counts and quotes: `docs/source-audits/*`.
+
+
+## 8. DECISIONS LOG
+- 2026-11-23: domain worldtrafficcameras.com bought by the owner (Claude suggested it: matches the main query, world-first; Claude checked it was free via the registry, trademark not checked). Site name World Traffic Cameras. Production deploys to Cloudflare Pages from GitHub Actions; hidden from search until LAUNCH=live.
+- 2026-11-21 Link-out first; no fixed 8-camera threshold; GitHub Actions over a server; R2 for health; granular per-source permissions; no database in v1 (3-round debate).
+- 2026-11-21 GEV stays untouched in its own container behind a proxy; Sessions 1-3 before the Astro site; kill criteria agreed before testing.
+- 2026-11-22 World-first, not region-first. Argos's public sources are our lead list; each needs its own licence row.
+- 2026-11-22 BC was built second only because it needed no key (convenience, not strategy).
+- 2026-11-22 Road order is geometric, not milepost (checked on live Caltrans files: postmile restarts at every county line; rank correlation with position only 0.1 to 0.2 for I-5 and US-101, 0.77 to 0.90 for I-5 northbound, I-405, US-101 overall, and it matches exactly inside most single districts).
+- 2026-11-21 Stack debate result: Astro static; map was planned as MapLibre + OpenFreeMap (fallback self-hosted PMTiles) but is now the GEV iframe; R2 over committing health data (ChatGPT won); per-camera health and granular permissions (ChatGPT won); link-out-first and GitHub Actions over a server (Claude won).
+- 2026-11-22 Proxy uses an allowlist (denylist as second layer); public dev server accepted for beta only.
+- 2026-11-23 Country level added to URLs; roads stay `/roads/<slug>/`; no redirects (nothing was ever indexed).
+- 2026-11-23 Per-camera pages rejected (200,000 thin pages); search results go to city, road, region, country, map or the official source.
+- 2026-11-23 World sources built: Finland, Quebec, Toronto, Calgary. Spain blocked on DGT. NSW not now. NZTA excluded. Michigan not built. Singapore skipped (8). Autobahn empty.
+- 2026-11-23 Quebec shows unknown by design; we do not work around a bot check.
+- 2026-11-23 Spanish is low priority; plumbing ready; no thin mirrors. Map never asks for a sign-in.
+- 2026-11-23 One planning file: this one. `mike-todo.md` and `session3-plan.md` folded in and deleted.
+
+## 9. ASK-CHATGPT PROCEDURE (rule; also Gemini)
+When: before any plan-changing decision, for big research (source hunts, licence terms, teardowns, keyword and page ideas), and for a second opinion on a finished page or architecture. Not for small lookups or code edits.
+1. One batched prompt per topic: goal in one line, exact questions, "give a table", "mark UNVERIFIED anything you could not open", "say 'could not open' instead of guessing". Public URLs and generic text only: no secrets or personal details. If a site blocks bots (staging does), paste the page text.
+2. Guest chat in Chrome (chatgpt.com or gemini.google.com/app). Never log in or enter credentials for Mike. Browser blocked: say so in one line and carry on.
+3. Read the WHOLE answer to its final line. Every fact is UNVERIFIED until checked on the primary source.
+4. Where it disagrees with this plan, say where Claude agrees, where not, and why; report wrong claims back to it.
+5. Log below; save long answers in `docs/source-audits/` or `docs/decisions/` marked UNVERIFIED or VERIFIED.
+
+| Date | Asked | Outcome (file) |
+|---|---|---|
+| 2026-11-21 | Red-team of GEV fork and architecture | `red-team-round3.md` |
+| 2026-11-22 | Session 3 results review | allowlist proxy; verified in code |
+| 2026-11-22 | Staging review (Gemini + ChatGPT) | gap list; sub-pages unreadable to them, Argos counts UNVERIFIED |
+| 2026-11-22 | Feed hunt, 13 jurisdictions | `chatgpt-feed-research-2026-11-22.md`; Oregon, BC, Alberta, WSDOT verified |
+| 2026-11-22 | Our LA + I-405 pages vs Argos | `review-2026-11-22-chatgpt-vs-argos.md`; 8 fixes done; 2 of its defects were my paste errors |
+| 2026-11-23 | Day 4 search design | `day4-search-design.md`; per-camera pages rejected; sizes now measured |
+| 2026-11-23 | World feed ranking | `chatgpt-world-feeds-2026-11-23.md` UNVERIFIED, then the live audit |
+| 2026-11-23 | TfL, Calgary, NZTA terms read in Chrome; DGT email | `world-feed-audit-2026-11-23.md` |
+| 2026-11-23 | Strategy debate (sent) | answer not yet read: section 3 item 1 |
+
+## 10. WHAT BREAKS FIRST (edge-case register, worst first)
+1. A licence changes or is misread and ads break a source's terms. Guard: gate with quote, URL, date; importers stop if the phrase vanishes; 180-day expiry; ads OFF (`revenue-slots` PENDING). Needs Mike item 4.
+2. Restricted data reaches a visitor through GEV. Guard: allowlist proxy, deny rules, 1,435 checks, exclusion tests. Open: BK-1, BD-1, CCTV-NOSWITCH; `session4-exclusion` first CI run not confirmed.
+3. Public GEV exposure (dev server, credential setup). Guard: private network, no published port, trusted peers `none`. Never tested on a real host.
+4. Staging noindex left on at launch. Guard: launch checklist, live read after deploy.
+5. A 200 hides a dead camera. Guard: health checker (content type, placeholder picture, validators). Gaps: Quebec unknown; BC never stale.
+6. Rate limits and bot checks. Guard: per-source pace, fair budget. Gap: full end-to-end health run not done.
+7. Scheduled Actions run late or are disabled after 60 days idle in a public repo. Guard: manual dispatch, "last checked" on pages. No failure alert yet.
+8. Search index outgrows its budget. Guard: size gate; fix is region shards.
+9. CI free minutes run out. Guard: check the remaining minutes before any run; no forced full reruns.
+10. Thin pages. Guard: 3+ camera floor, curated list, unique data per page.
+11. CONTRADICTION: section 6 says Open-Meteo stays OFF until its terms are read, but `data/source-permissions.json` marks it allowed and `/api/weather-effects` is allowlisted on that basis. Fix: Mike item 10, then align.
+12. Two writers overwrite one file. Guard: one writer per file; one session edits this file at a time.
+13. Windows vs Linux: GEV `npm test` fails on Windows (ENAMETOOLONG); `test:perf` is flaky on both. Linux CI is the target; thresholds untouched.
+14. Public repo exposure: no secrets, no raw Ahrefs rows (`research-private/`, `docs/research/`, `prompts/` are gitignored).
+15. OpenFreeMap has no SLA. Guard: provider abstraction (the map is currently the GEV iframe).
+16. Scale of pages: 100x pages means build time and R2 file count grow. Guard: measure monthly; one JSON per region, not per page.
+17. NOT VERIFIED anywhere: a full end-to-end health run (about 15 min, 5,400 requests); picture rights for any source; that camera numbers (Toronto, Calgary) stay stable between list refreshes; any page on a phone or Android viewport; that Finland place names are municipalities; Digitraffic's higher limit with its header; Calgary and Toronto rate limits (none published). A feed that changes its licence-page layout without losing the phrases is not caught.
+
+
+## 11. EVIDENCE INDEX
+`plan.md` is the only plan, status and to-do file. These `docs/` files are read-only evidence records, never plans.
+- `docs/decisions/`: `baseline.md` (GEV baseline, exit codes); `red-team-round3.md` (kill criteria, 10-session order, 25 edge cases, test plan); `session3-findings.md` (deploy spike); `session4-findings.md` (exclusion proof, open gaps); `scan-policy.md` (what blocks a release); `day4-search-design.md` (search design, measured sizes); `url-map.md` (old to new URLs); `review-2026-11-22-chatgpt-vs-argos.md` (page review, 8 fixes); `bc-health-stale-limit.md` (why BC is never stale); `argos-teardown-2026-11-23.md` (Argos product, sitemap, traffic).
+- `docs/source-audits/`: `world-feed-audit-2026-11-23.md` (live audit, two rounds, terms read in a browser); `chatgpt-feed-research-2026-11-22.md` (Oregon, BC, NY, Alberta, Texas, WSDOT); `chatgpt-world-feeds-2026-11-23.md` (UNVERIFIED shortlist); `argos-source-leads.md`; `source-inventory.csv` (generated by `ops/audit/build-inventory.mjs`).
+- `docs/deploy/runbook.md`: deploy, rollback, kill switch (a procedure, not a plan).
+- Gitignored, not in the repo: `docs/research/`, `research-private/`, `prompts/`.

@@ -4,7 +4,7 @@
 import { CA_BOUNDS } from './registry.mjs';
 
 export const UA = 'NearbyCams-build'; // generic on purpose: no email, no name
-// Max age per block, plan.md section 12.
+// Max age per block, plan.md section 6.
 export const MAX_AGE_MIN = { lcs: 15, cc: 15, cms: 15, rwis: 60, 'nws-forecast': 180, 'nws-alerts': 180, 'bc-events': 15 };
 // Licence row (data/source-permissions.json) that must be enabled before a feed is fetched or shown.
 export const SOURCE_IDS = { lcs: 'caltrans-lcs', cc: 'caltrans-cc', cms: 'caltrans-cms', rwis: 'caltrans-rwis', 'nws-forecast': 'nws-forecast', 'nws-alerts': 'nws-alerts', 'bc-events': 'drivebc-events' };

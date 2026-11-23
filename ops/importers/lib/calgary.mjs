@@ -7,8 +7,8 @@ export const CGY_BOUNDS = { latMin: 50.8, latMax: 51.3, lonMin: -114.4, lonMax: 
 export const LIMIT = 5000; // a Socrata list of exactly this size was cut off (222 rows today)
 export const FEED_URL = `https://data.calgary.ca/resource/k7p9-kppz.json?$limit=${LIMIT}`;
 export const TERMS_URL = 'https://data.calgary.ca/stories/s/Open-Data-Terms/u45n-7awa';
-// All must still be in the licence page text (read 2026-11-23). The en dash in the licence name is left out of the phrases on purpose.
-export const LICENCE_PHRASES = ['including for commercial purposes', 'Contains information licensed under the Open Government Licence', 'City of Calgary'];
+// All must still be in the licence page text (read 2026-11-23). The en dash is part of the phrase: the page text has the same dash.
+export const LICENCE_PHRASES = ['including for commercial purposes', 'Contains information licensed under the Open Government Licence – City of Calgary']; // the second is the exact attribution sentence minus its full stop; a bare 'City of Calgary' matched anywhere
 export const ATTRIBUTION = 'Contains information licensed under the Open Government Licence – City of Calgary.';
 export const IMAGE_RE = /^https:\/\/trafficcam\.calgary\.ca\/loc(\d{1,6})\.jpg$/; // the link-out target must be the City's own picture address
 export const CGY_REGION = { slug: 'calgary', name: 'Calgary' };

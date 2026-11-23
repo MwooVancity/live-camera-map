@@ -17,8 +17,8 @@ export const RULES = [
   { id: 'prompt-line0', text: 'Line 0 is printed every request.', enforcedBy: ['ops/harness/hook-prompt.mjs'] },
   { id: 'commit-gate', text: 'A commit runs preflight, harness selftest and the unit tests.', enforcedBy: ['.githooks/pre-commit'] },
   { id: 'no-near-duplicate', text: 'No two landing pages share more than 60% of their sentences.', enforcedBy: ['ops/harness/page-gate.mjs'] },
-  { id: 'revenue-slots', text: 'Ad slots only after each source permits images/data beside ads (plan section 10).', enforcedBy: null },
-  { id: 'feed-fresh', text: 'A live feed block shows data only if its generatedAt is within its max age (plan section 12) and its shape is valid; a failed or partial run never replaces a good file.', enforcedBy: ['tests/conditions/conditions.test.mjs'] },
+  { id: 'revenue-slots', text: 'Ad slots only after each source permits images/data beside ads (plan.md sections 1 and 6).', enforcedBy: null },
+  { id: 'feed-fresh', text: 'A live feed block shows data only if its generatedAt is within its max age (plan.md section 6) and its shape is valid; a failed or partial run never replaces a good file.', enforcedBy: ['tests/conditions/conditions.test.mjs'] },
   { id: 'feed-licence', text: 'A live feed is fetched and shown only if its row in data/source-permissions.json is enabled, quotes the licence text and gives the URL.', enforcedBy: ['tests/licensing/licensing.test.mjs', 'tests/conditions/conditions.test.mjs'] },
   { id: 'live-block-omitted', text: 'A live page block is omitted (not shown empty) when its licence row is not enabled, its data is older than its max age at build, or no data is near the city.', enforcedBy: ['site/tests/live.test.mjs'] },
   { id: 'block-stale', text: 'A built page block whose data-asof is older than 24 h fails the page gate unless it is registry-based (data-basis="registry").', enforcedBy: ['ops/harness/page-gate.mjs'] },
@@ -52,5 +52,5 @@ export const RULES = [
   { id: 'region-text-one-source', text: 'Region, city and country page text about a source (place, direction, link target, credit, caveats) comes from one table (REGIONS in site/src/lib/pages.mjs): Finland pages never name DriveBC, Caltrans or Quebec sources and the other way round; credit lines come from sources.json; a region with under 3 cameras has no page and the country page says how many cameras that leaves out.', enforcedBy: ['site/tests/dist.test.mjs', 'site/tests/area.test.mjs'] },
   { id: 'slug-accents', text: 'A page address drops accents (a-umlaut names such as Hameenlinna keep their letters) instead of splitting the word at the accent; one slugify function builds every address.', enforcedBy: ['site/tests/gate.test.mjs', 'tests/registry/world.test.mjs'] },
   { id: 'timestamps-apart', text: 'Live blocks keep three times apart: feed updated, each item own record time where the source gives one, page built.', enforcedBy: ['site/tests/live.test.mjs'] },
-  { id: 'traffic-parity', text: 'Every Argos page type and keyword cluster has an equivalent page of ours or a recorded gap reason (plan section 17).', enforcedBy: null },
+  { id: 'traffic-parity', text: 'Every Argos page type and keyword cluster has an equivalent page of ours or a recorded gap reason (plan.md section 4).', enforcedBy: null },
 ];

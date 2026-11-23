@@ -3,10 +3,10 @@
 Read `plan.md` first. It is the source of truth for decisions, data model and build order.
 
 ## Line 0: Argos Atlas killer from the very start (HARD, owner 2026-11-22)
-The point of this site is to beat argosatlas.com, not to be a smaller copy of it. For every page and feature, helpfulness to the person and information gain over Argos come before everything else except the hard rules below (licensing, `gev/` immutability, security, link-out only). Every page must answer the visitor's question better than the Argos page for the same place: all licensed data for that place on the page (plan section 12), one source and one timestamp per number, camera health Argos does not have. Before building a page or block, say one line: "Beats Argos by: ...". If it cannot be said, do not build it. Never copy Argos code, text, images or layout; the goal is to win on data, not to imitate.
+The point of this site is to beat argosatlas.com, not to be a smaller copy of it. For every page and feature, helpfulness to the person and information gain over Argos come before everything else except the hard rules below (licensing, `gev/` immutability, security, link-out only). Every page must answer the visitor's question better than the Argos page for the same place: all licensed data for that place on the page (plan.md section 6), one source and one timestamp per number, camera health Argos does not have. Before building a page or block, say one line: "Beats Argos by: ...". If it cannot be said, do not build it. Never copy Argos code, text, images or layout; the goal is to win on data, not to imitate.
 
 ### Traffic parity (owner 2026-11-23, HARD)
-Argos Atlas gets about 500k visits a month (confirmed by the owner in Ahrefs). We do not miss any traffic they capture: every page type and keyword cluster Argos ranks for gets an equivalent page of ours or a recorded gap reason in data/traffic-parity.json; build order is by the traffic each gap represents. Procedure and gate: plan.md section 17. Raw Ahrefs exports never go into git (paid-tool data, public repo); research-private/ is gitignored. The end game is to pass their traffic, measured by Search Console against Ahrefs, never by page counts.
+Argos Atlas gets about 500k visits a month (confirmed by the owner in Ahrefs). We do not miss any traffic they capture: every page type and keyword cluster Argos ranks for gets an equivalent page of ours or a recorded gap reason in data/traffic-parity.json; build order is by the traffic each gap represents. Procedure and gate: plan.md section 4 and section 3 item 4. Raw Ahrefs exports never go into git (paid-tool data, public repo); research-private/ is gitignored. The end game is to pass their traffic, measured by Search Console against Ahrefs, never by page counts.
 
 ### Argos as our lead list (owner 2026-11-22)
 Every public data source Argos Atlas uses is a LEAD for us: if they use it and it is free, we add it, and we do it faster than they did. Paid sources are out. Argos using a source is not a licence: a free source can still forbid commercial use, need a key or require attribution, and Argos may have a private deal. So each lead gets its own row in data/source-permissions.json (licence text quoted, URL, review date) through the existing gate before any data ships. Copy their source list and feature ideas freely; never their code, text, images, layout or branding, and never scrape them (read their public methodology page by hand, respect robots.txt).
@@ -15,7 +15,7 @@ Every public data source Argos Atlas uses is a LEAD for us: if they use it and i
 Mike is a first-time solo developer building this as a side venture. He wants complete, immediately usable deliverables, direct communication, and for you to make decisions yourself and state them in one line. Do not hedge or pile on caveats. But assume everything will break: verify before claiming anything works, and say plainly what you could not verify.
 
 ## Project in one paragraph
-A free, search-first camera directory with a simple 2D map (English first, WORLD-wide: owner 2026-11-22 "I do not care about anywhere but the world, like Argos"), competing with argosatlas.com (a world-right-now product: cameras, flights, ships, hazards, country pages, tools; EN and ES; its map asks for sign-in, ours never will). Cameras are our core and strongest edge; every other Argos vertical is a lead built in order of Ahrefs traffic and licence cleanliness (plan sections 17-18). Launch is link-out only: show camera metadata and link to the official source.
+A free, search-first camera directory with a simple 2D map (English first, WORLD-wide: owner 2026-11-22 "I do not care about anywhere but the world, like Argos"), competing with argosatlas.com (a world-right-now product: cameras, flights, ships, hazards, country pages, tools; EN and ES; its map asks for sign-in, ours never will). Cameras are our core and strongest edge; every other Argos vertical is a lead built in order of Ahrefs traffic and licence cleanliness (plan.md section 4). Launch is link-out only: show camera metadata and link to the official source.
 
 ## Stack
 Astro (static site), MapLibre GL JS, OpenFreeMap tiles behind a provider abstraction, JSON data in git (`cameras.json`, `sources.json`), generated `health.json` published to Cloudflare R2, GitHub Actions for health checks, Cloudflare Pages hosting. Node 22+ for the site (the God's Eye View repo, if used, needs Node 24.14+ or 26).
@@ -37,7 +37,7 @@ God's Eye View (GEV) is proven upstream code. Its files must NEVER be edited, de
 - Allowed: new files and folders, external deploy/env config, the separate Astro site (`site/`), reverse-proxy config, wrapper services, registries, CI checks.
 - gev/ is a separate clone ignored by the outer repo. Immutability check: inside gev/, `git status --porcelain` is empty and `git rev-parse HEAD` equals ops/upstream-base.txt.
 - Before every commit: run that check, run GEV's own tests and build, run the new tests, report failures honestly. On Windows, an environmental baseline failure is logged in docs/decisions/baseline.md, never fixed by editing gev/.
-- Mike-only tasks go in docs/decisions/mike-todo.md (OpenSky permission, 511 keys, accounts, domain/host, keyword research and page list, ads placement). Never attempt them.
+- Mike-only tasks live in plan.md section 1 (OpenSky permission, 511 keys, accounts, domain/host, licence confirmations, ads placement). Never attempt them.
 - Never assume a GEV env var or flag exists. Verify it in the code that reads it.
 - If a feature needs an upstream edit: STOP, explain the exact blocker, offer an external workaround. Never edit silently.
 - A hidden button is not a disabled feature. Verify the endpoint and data route are unreachable too.
@@ -50,7 +50,7 @@ God's Eye View (GEV) is proven upstream code. Its files must NEVER be edited, de
 The Claude cloud sandbox cannot reach most camera APIs (only package registries and GitHub). Importers and live data tests run on Mike's machine. Build importers against saved sample responses and mark them "untested against live API" until Mike confirms a real run.
 
 ## Workflow
-0. Ask ChatGPT/Gemini first for big research and before plan-changing decisions: procedure and log in plan.md section 16 (their facts are UNVERIFIED until checked on the primary source).
+0. Ask ChatGPT/Gemini first for big research and before plan-changing decisions: procedure and log in plan.md section 9 (their facts are UNVERIFIED until checked on the primary source).
 1. Check `plan.md` for the current day and its "Done when" criteria.
 2. Make the smallest working change, then run `npm run build` (add `npm run validate` for data) before saying it is done.
 3. Update checkboxes in `plan.md` only for things actually verified.
@@ -66,4 +66,4 @@ The Claude cloud sandbox cannot reach most camera APIs (only package registries 
 Camera ids are stable and prefixed by source (`ontario-511-123`). Source ids are kebab-case. Dates are ISO 8601 UTC. Coordinates are decimal degrees, validated to lat -90..90 and lon -180..180.
 
 ## Naming
-Site name "NearbyCams" is a placeholder. Keep it in one config constant so it is a one-line change.
+Site name: World Traffic Cameras; domain worldtrafficcameras.com (bought 2026-11-23). Name and URL live in site/src/config.mjs only. The launch switch PUBLIC_NOINDEX=1 hides the whole site until the repo variable LAUNCH=live (production workflow).

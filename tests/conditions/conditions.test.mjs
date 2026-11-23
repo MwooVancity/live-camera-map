@@ -17,7 +17,7 @@ const perms = JSON.parse(readFileSync(resolve(here, '../../data/source-permissio
 const tmp = () => mkdtempSync(join(tmpdir(), 'cond-'));
 const quiet = () => {};
 
-test('plan section 12 max ages', () => {
+test('plan.md section 6 max ages', () => {
   assert.deepEqual(MAX_AGE_MIN, { lcs: 15, cc: 15, cms: 15, rwis: 60, 'nws-forecast': 180, 'nws-alerts': 180, 'bc-events': 15 });
 });
 

@@ -72,9 +72,22 @@ jobs:
           echo "LAUNCH=${{ vars.LAUNCH }} -> PUBLIC_NOINDEX=$PUBLIC_NOINDEX"
           npm run build -- --outDir dist-deploy
         working-directory: site
+      - name: Create the Cloudflare Pages project if it does not exist yet (harmless when it does)
+        continue-on-error: true
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages project create worldtrafficcameras --production-branch=main
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy site/dist-deploy --project-name=worldtrafficcameras --branch=main
+      - name: Attach the custom domain (idempotent; Cloudflare adds the DNS record because the domain is in the same account)
+        continue-on-error: true
+        run: |
+          for D in worldtrafficcameras.com www.worldtrafficcameras.com; do
+            curl -s -X POST "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/worldtrafficcameras/domains" -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" --data "{\"name\":\"$D\"}" | head -c 300; echo
+          done
