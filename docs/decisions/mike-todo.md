@@ -17,3 +17,10 @@
 - [ ] Confirm licence: Caltrans Road Weather (RWIS) feed (caltrans-rwis), same text as above; also units of the readings are not stated by Caltrans.
 - [ ] Confirm licence: NWS forecast (nws-forecast). weather.gov/disclaimer: public domain, any lawful purpose, no implied endorsement, no modified data passed off as official; API page says open data free for any purpose.
 - [ ] Confirm licence: NWS active alerts (nws-alerts), same text as above.
+
+## Source registrations (from the ChatGPT source hunt, 2026-11-22; claims unverified until checked)
+- Register for the Oregon TripCheck data API (strongest permission found: businesses may use data and images).
+- Apply for 511NY developer access (agreement says redistribution allowed with approval).
+- Ontario 511: register the developer key and agreement (already listed).
+- Alberta 511: ask Alberta Transportation for WRITTEN permission for commercial use (terms prohibit commercial reproduction without it).
+- Do not use DriveTexas (terms limit it to emergency management).
