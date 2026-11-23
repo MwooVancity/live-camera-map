@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { run } from '../../ops/importers/caltrans.mjs';
-import { normalizeCaltrans, dedupe, validateCamera, countsBy, CA_BOUNDS, FORBIDDEN_FIELDS } from '../../ops/importers/lib/registry.mjs';
+import { normalizeCaltrans, dedupe, validateCamera, countsBy, countryOf, REGION_COUNTRY, CA_BOUNDS, FORBIDDEN_FIELDS } from '../../ops/importers/lib/registry.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fixture = JSON.parse(readFileSync(join(here, 'fixtures', 'caltrans-small.json'), 'utf8'));
@@ -48,6 +48,14 @@ test('countsBy is the single count source and rejects unknown keys', () => {
   assert.deepEqual(countsBy(cams, 'city'), { A: 2 });
   assert.deepEqual(countsBy(cams, 'region'), { r: 3 });
   assert.throws(() => countsBy(cams, 'county'));
+});
+
+test('countsBy country: derived from the region table, never stored on a row; an unmapped region has no country (failing fixture)', () => {
+  const cams = [{ regionSlug: 'california' }, { regionSlug: 'california' }, { regionSlug: 'british-columbia' }, { regionSlug: 'atlantis' }];
+  assert.deepEqual(countsBy(cams, 'country'), { 'united-states': 2, canada: 1 });
+  assert.equal(countryOf('atlantis'), null);
+  assert.equal(countryOf('california').countryCode, 'US');
+  assert.equal(countryOf('british-columbia').countryName, 'Canada');
 });
 
 test('incomplete run (one district fails) does not write, even with no old file', async () => {
@@ -135,6 +143,11 @@ test('real data: region count equals the camera count of that source', () => {
   assert.equal(countsBy(allCams, 'region').california, cams.length);
   assert.equal(countsBy(allCams, 'region')['british-columbia'], allCams.filter((c) => c.sourceId === 'drivebc').length);
   assert.equal(allCams.length, cams.length + allCams.filter((c) => c.sourceId === 'drivebc').length, 'every row belongs to a known source');
+});
+
+test('real data: every region in the registry has a country row, and the country counts add up to the camera count', () => {
+  for (const r of Object.keys(countsBy(allCams, 'region'))) assert.ok(REGION_COUNTRY[r], `region ${r} has no country in REGION_COUNTRY`);
+  assert.equal(Object.values(countsBy(allCams, 'country')).reduce((a, b) => a + b, 0), allCams.length);
 });
 
 test('cleanCity: lower-case place names are capitalised so "orange" and "Orange" are one city', async () => {

@@ -63,7 +63,7 @@ function build(env) {
 }
 const blocksOn = (html) => [...html.matchAll(/<section data-block="([a-z-]+)"[^>]*data-source="[^"]+"[^>]*data-asof="([^"]+)"/g)].map((m) => m[1]);
 const LIVE = ['road-conditions', 'message-signs', 'road-weather', 'forecast', 'weather-alerts'];
-const sdRoute = '/cameras/california/san-diego/';
+const sdRoute = '/cameras/united-states/california/san-diego/';
 
 test('built page: fresh fixture shows each block with source, as-of, Updated text, no camera images, count = list length', () => {
   const pages = build(fixture().env);
@@ -72,7 +72,7 @@ test('built page: fresh fixture shows each block with source, as-of, Updated tex
     const sec = html.match(new RegExp(`<section data-block="${id}"[\\s\\S]*?</section>`));
     assert.ok(sec, `${id} missing`);
     assert.match(sec[0], /data-source="[^"]+"/); assert.match(sec[0], /data-asof="\d{4}-\d\d-\d\dT/);
-    assert.match(sec[0], /Updated <time datetime="/);
+    assert.match(sec[0], /Feed updated <time datetime="[^"]+">[^<]+<\/time>; page built <time datetime="\d{4}-\d\d-\d\dT[^"]+">[^<]+<\/time>; each item shows its own record time/);
     assert.ok(!/<img\b/i.test(sec[0]));
     const n = Number(sec[0].match(/data-rows="(\d+)"/)[1]);
     assert.equal(n, (sec[0].match(/<li>/g) || []).length, `${id}: count equals listed rows`);
@@ -80,19 +80,19 @@ test('built page: fresh fixture shows each block with source, as-of, Updated tex
   for (const [route, h] of pages) for (const host of CAMERA_HOSTS) assert.ok(!new RegExp(`<img[^>]*${host}`).test(h), route);
   assert.ok(html.includes('/guides/what-live-road-conditions-mean/'));
   assert.ok(pages.has('/guides/what-live-road-conditions-mean/'));
-  assert.ok(pages.get('/cameras/california/').includes('data-block="feed-freshness"'));
+  assert.ok(pages.get('/cameras/united-states/california/').includes('data-block="feed-freshness"'));
 });
 
 test('built page: stale fixture drops every live block; region page says so', () => {
   const pages = build(fixture({ ageMin: 400 }).env);
   for (const [route, html] of pages) for (const id of LIVE) assert.ok(!blocksOn(html).includes(id), `${route}: ${id} shown with stale data`);
-  assert.match(pages.get('/cameras/california/'), /older than its limit/);
+  assert.match(pages.get('/cameras/united-states/california/'), /older than its limit/);
 });
 
 test('built page: closed licence drops every live block; region page says so', () => {
   const pages = build(fixture({ closed: true }).env);
   for (const [route, html] of pages) for (const id of LIVE) assert.ok(!blocksOn(html).includes(id), `${route}: ${id} shown with closed licence`);
-  assert.match(pages.get('/cameras/california/'), /licence not enabled/);
+  assert.match(pages.get('/cameras/united-states/california/'), /licence not enabled/);
 });
 
 test('built page: HTML in feed text is escaped, never rendered', () => {
@@ -111,7 +111,7 @@ test('built page: HTML in feed text is escaped, never rendered', () => {
 // ---- British Columbia: DriveBC Open511 events (bc-events) ----
 const mission = cameras.filter((c) => c.regionSlug === 'british-columbia' && c.city === 'Mission');
 const M = { lat: mission.reduce((s, c) => s + c.lat, 0) / mission.length, lon: mission.reduce((s, c) => s + c.lon, 0) / mission.length, slug: 'mission', region: 'british-columbia' };
-const missionRoute = '/cameras/british-columbia/mission/';
+const missionRoute = '/cameras/canada/british-columbia/mission/';
 function bcFixture({ ageMin = 1, closed = false, withCa = false } = {}) {
   const d = mkdtempSync(join(tmpdir(), 'bclive-'));
   const ev = (id, dLat, o = {}) => ({ id, road: 'Highway 7', direction: null, roadState: 'ALL_LANES_OPEN', area: 'Lower Mainland District', eventType: 'CONSTRUCTION', severity: 'MINOR', headline: 'CONSTRUCTION', text: `Work on Highway 7 ${id}`, lat: M.lat + dLat, lon: M.lon, endLat: null, endLon: null, start: ago(60 * 24), end: null, endIndefinite: true, updated: ago(60), active: true, closed: false, ...o });
@@ -151,11 +151,11 @@ test('built BC page: bc-events block has source, as-of, Updated text, count = li
   const html = build(env).get(missionRoute);
   const sec = html.match(/<section data-block="bc-events"[\s\S]*?<\/section>/);
   assert.ok(sec, 'block missing');
-  assert.match(sec[0], /data-source="DriveBC Open511/); assert.match(sec[0], /data-asof="\d{4}-\d\d-\d\dT/); assert.match(sec[0], /Updated <time datetime="/);
+  assert.match(sec[0], /data-source="DriveBC Open511/); assert.match(sec[0], /data-asof="\d{4}-\d\d-\d\dT/); assert.match(sec[0], /Feed updated <time datetime="[^"]+">[^<]+<\/time>; page built <time datetime="\d{4}-\d\d-\d\dT[^"]+">[^<]+<\/time>; each item shows its own record time/);
   assert.equal(Number(sec[0].match(/data-rows="(\d+)"/)[1]), (sec[0].match(/<li>/g) || []).length);
   assert.ok(!html.includes('<script>alert(1)') && !/<img[^>]*onerror/i.test(html) && html.includes('&lt;script&gt;alert(1)'));
   assert.ok(sec[0].includes('/guides/how-drivebc-cameras-work/'));
   const stale = build(bcFixture({ ageMin: 400 }).env);
   for (const [route, h] of stale) assert.ok(!blocksOn(h).includes('bc-events'), `${route}: bc-events shown with stale data`);
-  assert.match(stale.get('/cameras/british-columbia/'), /older than its limit/);
+  assert.match(stale.get('/cameras/canada/british-columbia/'), /older than its limit/);
 });

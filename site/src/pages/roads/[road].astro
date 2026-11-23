@@ -3,11 +3,12 @@ import Base from '../../layouts/Base.astro';
 import RoadBlock from '../../components/RoadBlock.astro';
 import { SITE_NAME } from '../../config.mjs';
 import { cameras as allCameras, countsBy, registryDateOf, sources, loadedDistricts } from '../../lib/data.mjs';
-import { curatedRoads, curatedCities, slugify, isIndexable } from '../../lib/pages.mjs';
+import { curatedRoads, curatedCities, slugify, cityRoute as cityRouteOf, isIndexable } from '../../lib/pages.mjs';
 import { roadSlug } from '../../../../ops/importers/lib/registry.mjs';
 import { orderAlongRoad, relatedRoads, nearestCities } from '../../lib/roads.mjs';
 import { roadBlocks, loadLive, NEAR_KM } from '../../lib/live.mjs';
-import { loadHealth, cityHealth, MEANING, STATUSES } from '../../lib/health.mjs';
+import { loadHealth, cityHealth, linkCheckText, statusWords, MEANING } from '../../lib/health.mjs';
+import { cleanLabel } from '../../lib/labels.mjs';
 
 export function getStaticPaths() {
   return curatedRoads(allCameras).map((road) => ({ params: { road: roadSlug(road) }, props: { road } }));
@@ -24,7 +25,7 @@ const source = sources.find((s) => s.id === 'caltrans');
 
 const cities = curatedCities(cameras);
 const regionOf = (city) => cameras.find((c) => c.city === city).regionSlug;
-const cityRoute = (city) => `/cameras/${regionOf(city)}/${slugify(city)}/`;
+const cityRoute = (city) => cityRouteOf(regionOf(city), city);
 const byRoad = new Map(roads.map((r) => [r, cameras.filter((c) => c.road === r)]));
 const cityOf = new Map(roads.map((r) => [r, new Set(byRoad.get(r).map((c) => c.city).filter((c) => cities.includes(c)))]));
 const along = Object.entries(countsBy(here, 'city')).filter(([c]) => cities.includes(c)).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
@@ -38,24 +39,29 @@ const ord = orderAlongRoad(here);
 const total = ord.groups.reduce((s, g) => s + g.cams.length, 0);
 if (total !== n) throw new Error(`${road}: ${total} cameras in the order lists but countsBy says ${n}`);
 const live = roadBlocks(slug, here, along.map(([c]) => ({ city: c, slug: slugify(c) })), loadLive(), new Date(), { road, along: ord.along });
-const { block: hb, reason: hReason } = cityHealth(here, loadHealth());
+const hres = cityHealth(here, loadHealth());
+const { block: hb, reason: hReason } = hres;
+const dirId = (g) => `dir-${slugify(g.direction) || 'none'}`;
 const when = (iso) => iso.slice(0, 16).replace('T', ' ') + ' UTC';
-const verified = here.map((c) => c.officialUrlLastVerified).filter(Boolean).sort().at(-1);
 const km = (x) => x.toFixed(1);
 const axisText = ord.northish ? 'south to north' : 'west to east';
 ---
-<Base title={`${road} traffic cameras in driving order: ${n} official links | ${SITE_NAME}`} description={`${n} Caltrans traffic cameras on ${road} in driving order for each direction, with the closures, chain controls and message signs on the road linked to their nearest cameras.`} route={`/roads/${slug}/`} crumbs={[{ name: 'Roads', route: '/roads/' }, { name: road, route: `/roads/${slug}/` }]} noindex={!isIndexable(n)}>
+<Base title={`${road} traffic cameras in driving order, California, United States: ${n} official links | ${SITE_NAME}`} description={`${n} Caltrans traffic cameras on ${road} in driving order for each direction, with the closures, chain controls and message signs on the road linked to their nearest cameras.`} route={`/roads/${slug}/`} crumbs={[{ name: 'Roads', route: '/roads/' }, { name: road, route: `/roads/${slug}/` }]} noindex={!isIndexable(n)}>
   <h1>{road} traffic cameras</h1>
-  <p>{n} Caltrans cameras are listed on {road}: {ord.groups.map((g) => `${g.cams.length} ${g.label === 'Direction not recorded' ? 'with no direction recorded' : g.label.toLowerCase()}`).join(', ')}. Each name below is a link to the official Caltrans source, not a picture. Part of <a href="/roads/">traffic cameras by road</a>; <a href="/guides/how-to-read-a-road-page/">how to read this page</a>.</p>
+  <p>{n} Caltrans cameras are listed on {road} in California, United States: {ord.groups.map((g, i) => <>{i > 0 && ', '}<a href={`#${dirId(g)}`}>{g.cams.length} {g.label === 'Direction not recorded' ? 'with no direction recorded' : g.label.toLowerCase()}</a></>)}. Each name below is a link to the official Caltrans source, not a picture. Part of <a href="/roads/">traffic cameras by road</a>; <a href="/guides/how-to-read-a-road-page/">how to read this page</a>.</p>
+  <p><strong>Do not use this page while driving.</strong></p>
   <p><a class="cta" href="/map/">Open the map</a></p>
 
+  {live.map((b) => <RoadBlock b={b} />)}
+
   <section data-block="cameras" data-basis="registry" data-count={n} data-source={source.name} data-asof={registryDate}>
-    <h2>All {n} cameras on {road} in driving order</h2>
-    <p class="meta">Each direction is ordered by position along the road's main line (we draw the line of best fit through its cameras), because the postmile in the Caltrans data restarts at every county line and the milepost does not run on one scale across districts. On a winding stretch the order can be off.</p>
+    <h2>All {n} cameras on {road}, in estimated driving order</h2>
+    <p class="meta">Driving order is estimated from camera positions along the road: each direction is ordered by position along the road's main line (we draw the line of best fit through its cameras), because the postmile in the Caltrans data restarts at every county line and the milepost does not run on one scale across districts. On a winding stretch the order can be off.</p>
+    {hb && <p class="meta">Status words. {statusWords()}</p>}
     {ord.groups.map((g) => (<>
-      <h3>{g.label} ({g.cams.length})</h3>
+      <h3 id={dirId(g)}>{g.label} ({g.cams.length})</h3>
       <ol>{g.cams.map(({ camera: c }) => (
-        <li data-camera={c.id}><a href={c.officialUrl} rel="noopener">{c.name}</a> <span class="meta">{[c.city, c.feedType === 'still' ? 'still image' : 'video'].filter(Boolean).join(', ')}.</span>{hb && <> <span class="meta" data-status={hb.statusOf(c.id)} title={`${MEANING[hb.statusOf(c.id)]}${hb.record(c.id)?.lastChecked ? '; last checked ' + when(hb.record(c.id).lastChecked) : ''}`}>Status: {hb.statusOf(c.id)}.</span></>}</li>
+        <li data-camera={c.id}><a href={c.officialUrl} rel="noopener" title={c.name}>{cleanLabel(c)}</a> <span class="meta">{[c.feedType === 'still' ? 'still image' : 'video'].filter(Boolean).join(', ')}.</span>{hb && <> <span class="meta" data-status={hb.statusOf(c.id)} title={`${MEANING[hb.statusOf(c.id)]}${hb.record(c.id)?.lastChecked ? '; last checked ' + when(hb.record(c.id).lastChecked) : ''}`}>Status: {hb.statusOf(c.id)}.</span>{hb.record(c.id)?.lastChecked && <span class="meta"> Last checked {when(hb.record(c.id).lastChecked)}.</span>}</>}</li>
       ))}</ol>
     </>))}
   </section>
@@ -71,7 +77,7 @@ const axisText = ord.northish ? 'south to north' : 'west to east';
   {hb ? (
     <section data-block="health" data-source="NearbyCams health checker" data-asof={hb.asof} data-count={hb.total}>
       <h2>Camera health on {road}</h2>
-      <p>Last check {when(hb.asof)}: {hb.counts.reachable} reachable, {hb.counts.stale} stale, {hb.counts.unavailable} unavailable, {hb.counts.unknown} unknown, out of {hb.total} cameras. {STATUSES.map((s) => `${s[0].toUpperCase()}${s.slice(1)} means ${MEANING[s]}.`).join(' ')} See <a href="/guides/how-to-read-last-checked-status/">how to read these statuses</a>.</p>
+      <p>Last check {when(hb.asof)}: {hb.counts.reachable} reachable, {hb.counts.stale} stale, {hb.counts.unavailable} unavailable, {hb.counts.unknown} unknown, out of {hb.total} cameras. See <a href="/guides/how-to-read-last-checked-status/">how to read these statuses</a>.</p>
     </section>
   ) : (
     <section data-block="health" data-source="NearbyCams health checker" data-asof="not-checked">
@@ -82,12 +88,10 @@ const axisText = ord.northish ? 'south to north' : 'west to east';
     </section>
   )}
 
-  {live.map((b) => <RoadBlock b={b} />)}
-
   <section data-block="coverage" data-basis="registry" data-source={source.name} data-asof={registryDate}>
     <h2>Coverage gaps on {road}</h2>
     <ul>{ord.groups.map((g) => <li>{g.label}: {g.gap ? `the largest gap is ${km(g.gap.km)} km, between ${g.gap.from.name} and ${g.gap.to.name}.` : `${g.cams.length} camera, so there is no gap to measure.`}</li>)}</ul>
-    <p class="meta">A gap is the straight-line distance between two neighbouring cameras in the order above, for a road that runs {axisText} overall. Source: {source.name}, districts {loadedDistricts.join(', ')}. Registry date {registryDate}. Link check by us: {verified ? `last verified ${verified}` : 'never run yet'}. Closures, chain controls and signs are listed only when one of these cameras is within {NEAR_KM} km.</p>
+    <p class="meta">A gap is the straight-line distance between two neighbouring cameras in the order above, for a road that runs {axisText} overall. Source: {source.name}, districts {loadedDistricts.join(', ')}. Registry date {registryDate}. {linkCheckText(hres)} Closures, chain controls and signs are listed only when one of these cameras is within {NEAR_KM} km.</p>
   </section>
 
   <h2>Related roads</h2>

@@ -1,14 +1,16 @@
 ---
-import Base from '../../../layouts/Base.astro';
-import { SITE_NAME } from '../../../config.mjs';
-import { cameras, countsBy, registryDateOf, sourceOf, loadedDistricts, failedDistricts, bcReport } from '../../../lib/data.mjs';
-import { feedStatus, FEEDS_BY_REGION } from '../../../lib/live.mjs';
-import { regionsWithPages, curatedPlaces, slugify, isIndexable, GUIDES, regionInfo } from '../../../lib/pages.mjs';
+import Base from '../../../../layouts/Base.astro';
+import { SITE_NAME } from '../../../../config.mjs';
+import { countryOf } from '../../../../../../ops/importers/lib/registry.mjs';
+import { cameras, countsBy, registryDateOf, sourceOf, loadedDistricts, failedDistricts, bcReport } from '../../../../lib/data.mjs';
+import { feedStatus, FEEDS_BY_REGION } from '../../../../lib/live.mjs';
+import { regionsWithPages, curatedPlaces, cityRoute, regionRoute, countryRoute, isIndexable, GUIDES, regionInfo } from '../../../../lib/pages.mjs';
 
 export function getStaticPaths() {
-  return regionsWithPages(cameras).map((region) => ({ params: { region } }));
+  return regionsWithPages(cameras).map((region) => ({ params: { country: countryOf(region).countrySlug, region } }));
 }
 const { region } = Astro.params;
+const country = countryOf(region);
 const info = regionInfo(region);
 const regionCams = cameras.filter((c) => c.regionSlug === region);
 const regionName = regionCams[0].regionName;
@@ -23,14 +25,15 @@ const isCA = region === 'california';
 const unnamed = total - Object.values(byCity).reduce((s, k) => s + k, 0);
 const guides = isCA ? GUIDES.slice(0, 3) : [GUIDES.find((g) => g.slug === info.guide), ...GUIDES.filter((g) => ['how-to-read-last-checked-status', 'camera-link-is-dead'].includes(g.slug))].filter(Boolean);
 ---
-<Base title={`${regionName} traffic cameras: ${total} official links | ${SITE_NAME}`} description={`${total} ${regionName} traffic cameras linked to the official source, by city, with coverage and last update date.`} route={`/cameras/${region}/`} crumbs={[{ name: 'All cameras', route: '/cameras/' }, { name: regionName, route: `/cameras/${region}/` }]} noindex={!isIndexable(total)}>
+<Base title={`${regionName} traffic cameras: ${total} official links | ${SITE_NAME}`} description={`${total} ${regionName} traffic cameras linked to the official source, by city, with coverage and last update date.`} route={regionRoute(region)} crumbs={[{ name: 'All cameras', route: '/cameras/' }, { name: country.countryName, route: countryRoute(country.countrySlug) }, { name: regionName, route: regionRoute(region) }]} noindex={!isIndexable(total)}>
   <h1>{regionName} traffic cameras</h1>
+  <p class="meta">Part of <a href={countryRoute(country.countrySlug)}>{country.countryName} traffic cameras</a>.</p>
   {isCA
     ? <p>{total} cameras in {allCities} named places, from Caltrans districts {loadedDistricts.join(', ')}. {failedDistricts.length > 0 ? `Districts ${failedDistricts.join(', ')} did not load in the last import, so this list is partial.` : 'All districts loaded in the last import.'}</p>
     : <p>{total} cameras on {Object.keys(countsBy(regionCams, 'road')).length} roads, from the {info.agency} HighwayCams list ({source.license}), imported {regionDate}. {info.agency} gives no city field, so only {total - unnamed} cameras have a named place ({allCities} places, taken from the camera's own name and caption); the other {unnamed} are on the road list only.{bcReport && bcReport.dropped ? ` We left out ${bcReport.dropped.dupLocation || 0} entries that repeated another camera's position, road and direction.` : ''}</p>}
   <section data-block="cities" data-basis="registry" data-source={source.name} data-asof={regionDate}>
     <h2>Cities with the most cameras</h2>
-    <ul class="cols">{cities.map((p) => <li><a href={`/cameras/${region}/${slugify(p.city)}/`}>{p.city} traffic cameras</a> ({p.n})</li>)}</ul>
+    <ul class="cols">{cities.map((p) => <li><a href={cityRoute(region, p.city)}>{p.city} traffic cameras</a> ({p.n})</li>)}</ul>
   </section>
   {feeds.length > 0 && <section data-block="feed-freshness" data-source={isCA ? 'Caltrans CWWP feeds and NOAA National Weather Service, checked by our importers' : `${info.agency} Open511 events feed, checked by our importer`} data-asof={feeds.map((f) => f.asof).filter(Boolean).sort().at(-1) || 'not-fetched'}>
     <h2>Live data freshness</h2>

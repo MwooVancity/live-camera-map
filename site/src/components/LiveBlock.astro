@@ -1,6 +1,6 @@
 ---
 // One live-conditions block (see src/lib/live.mjs). Text only: no images, no scripts. Server-rendered at build.
-import { MAX_ROWS } from '../lib/live.mjs';
+import { MAX_ROWS, BUILT_AT } from '../lib/live.mjs';
 const { b, city } = Astro.props;
 const total = b.id === 'road-conditions' ? b.lcs.length + b.cc.length : b.items.length;
 const km = (i) => `${i.km < 1 ? '<1' : Math.round(i.km)} km from ${city}`;
@@ -34,5 +34,5 @@ const more = (n) => (n > MAX_ROWS ? n - MAX_ROWS : 0);
   {b.id === 'weather-alerts' && (
     <ul>{b.items.map((a) => <li><strong>{a.event}</strong> ({[a.severity, a.urgency].filter(Boolean).join(', ')}). {a.headline}</li>)}</ul>
   )}
-  <p class="meta">Source: {b.link ? <a href={b.link} rel="noopener">{b.source}</a> : b.source}. {b.attribution}. Updated <time datetime={b.asof}>{b.asof.slice(0, 16).replace('T', ' ')} UTC</time>; hidden when older than {b.maxAgeMin} minutes at build. See <a href={b.id === 'bc-events' ? '/guides/how-drivebc-cameras-work/' : '/guides/what-live-road-conditions-mean/'}>what these conditions mean</a>.</p>
+  <p class="meta">Source: {b.link ? <a href={b.link} rel="noopener">{b.source}</a> : b.source}. {b.attribution}. Feed updated <time datetime={b.asof}>{b.asof.slice(0, 16).replace('T', ' ')} UTC</time>; page built <time datetime={BUILT_AT}>{BUILT_AT.slice(0, 16).replace('T', ' ')} UTC</time>; each item shows its own record time where the source gives one; hidden when older than {b.maxAgeMin} minutes at build. See <a href={b.id === 'bc-events' ? '/guides/how-drivebc-cameras-work/' : '/guides/what-live-road-conditions-mean/'}>what these conditions mean</a>.</p>
 </section>

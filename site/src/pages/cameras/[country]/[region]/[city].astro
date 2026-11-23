@@ -1,0 +1,118 @@
+---
+import Base from '../../../../layouts/Base.astro';
+import { SITE_NAME } from '../../../../config.mjs';
+import { cameras, countsBy, registryDateOf, sourceOf, loadedDistricts } from '../../../../lib/data.mjs';
+import { curatedPlaces, curatedRoads, slugify, cityRoute, regionRoute, countryRoute, isIndexable, regionInfo } from '../../../../lib/pages.mjs';
+import { cityBlocks } from '../../../../lib/live.mjs';
+import { greaterArea } from '../../../../lib/area.mjs';
+import { cleanLabel } from '../../../../lib/labels.mjs';
+import { loadHealth, cityHealth, linkCheckText, statusWords, MEANING } from '../../../../lib/health.mjs';
+import { roadSlug, countryOf } from '../../../../../../ops/importers/lib/registry.mjs';
+import LiveBlock from '../../../../components/LiveBlock.astro';
+
+export function getStaticPaths() {
+  return curatedPlaces(cameras).map((p) => ({ params: { country: countryOf(p.region).countrySlug, region: p.region, city: slugify(p.city) }, props: { city: p.city } }));
+}
+const { region, city: citySlug } = Astro.params;
+const { city } = Astro.props;
+const country = countryOf(region);
+const info = regionInfo(region);
+const regionCams = cameras.filter((c) => c.regionSlug === region);
+const here = regionCams.filter((c) => c.city === city);
+const regionName = here[0].regionName;
+const byCity = countsBy(regionCams, 'city'); // counted inside the region: one place name in two regions never merges
+const n = byCity[city];
+const roads = Object.entries(countsBy(here, 'road')).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+const noRoad = n - roads.reduce((s, r) => s + r[1], 0);
+const feeds = countsBy(here, 'feedType');
+const source = sourceOf(info.sourceId);
+const regionDate = registryDateOf(region);
+const isCA = region === 'california';
+const dirWord = isCA ? 'direction' : 'camera facing';
+
+// Related: the 4 nearest other curated places in the same region (by average camera position); when the region has fewer than
+// 4 others, the nearest places of other regions fill the list (so a small region still links 3 or more cities).
+const centre = (list) => ({ lat: list.reduce((s, c) => s + c.lat, 0) / list.length, lon: list.reduce((s, c) => s + c.lon, 0) / list.length });
+const me = centre(here);
+const live = cityBlocks({ lat: me.lat, lon: me.lon, slug: citySlug, region });
+const places = curatedPlaces(cameras).filter((p) => !(p.region === region && p.city === city));
+const dist = (p) => { const q = centre(cameras.filter((x) => x.regionSlug === p.region && x.city === p.city)); return (q.lat - me.lat) ** 2 + ((q.lon - me.lon) * Math.cos(me.lat * Math.PI / 180)) ** 2; };
+const ranked = places.map((p) => ({ p, d: dist(p), same: p.region === region })).sort((a, b) => Number(b.same) - Number(a.same) || a.d - b.d);
+const related = ranked.filter((x) => x.same).slice(0, 4).concat(ranked.filter((x) => x.same).length < 4 ? ranked.filter((x) => !x.same).slice(0, 4 - ranked.filter((x) => x.same).length) : []).map((x) => x.p);
+
+const roadsHere = curatedRoads(cameras).map((r) => [r, here.filter((c) => c.road === r).length]).filter(([, k]) => k > 0).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+const sorted = [...here].sort((a, b) => a.road.localeCompare(b.road) || a.direction.localeCompare(b.direction) || a.name.localeCompare(b.name));
+const hres = cityHealth(here, loadHealth());
+const { block: hb, reason: hReason } = hres;
+const when = (iso) => iso.slice(0, 16).replace('T', ' ') + ' UTC';
+const top = roads.slice(0, 3).map(([r, k]) => `${r} (${k})`).join(', ');
+// Greater <city>: one function gives the exact-town count and the radius count (see lib/area.mjs). The towns that have their own page are linked.
+const ga = greaterArea(regionCams, city);
+const pageOf = new Set(curatedPlaces(cameras).filter((p) => p.region === region).map((p) => p.city));
+const wholeRoad = countsBy(cameras, 'road');
+const unnamedShown = ga.unnamed.slice(0, 6);
+const plural = (k, w) => `${k} ${w}${k === 1 ? '' : 's'}`;
+const guides = isCA
+  ? [['how-caltrans-cameras-work', 'How Caltrans traffic cameras work'], ['how-to-read-last-checked-status', 'How to read "last checked" status'], ['camera-link-is-dead', 'What to do if a camera link is dead'], ['what-live-road-conditions-mean', 'What the live road conditions mean']]
+  : [[info.guide, `How ${regionName} (${info.agency}) traffic cameras work`], ['how-to-read-last-checked-status', 'How to read "last checked" status'], ['camera-link-is-dead', 'What to do if a camera link is dead']];
+---
+<Base title={`${city} traffic cameras: ${n} official links | ${SITE_NAME}`} description={`${n} ${info.agency} traffic cameras near ${city}, ${regionName}, on ${roads.length} road${roads.length === 1 ? '' : 's'}${top ? `, mostly ${top}` : ''}. Official links, last updated ${regionDate}.`} route={cityRoute(region, city)} crumbs={[{ name: 'All cameras', route: '/cameras/' }, { name: country.countryName, route: countryRoute(country.countrySlug) }, { name: regionName, route: regionRoute(region) }, { name: city, route: cityRoute(region, city) }]} noindex={!isIndexable(n)}>
+  <h1>{city} traffic cameras</h1>
+  <p>{n} {info.agency} cameras are listed near {city} on {roads.length} road{roads.length === 1 ? '' : 's'}: {feeds.still || 0} still-image and {feeds.video || 0} video feeds. Each name below is a link to the official {info.agency} source, not a picture. Part of <a href={regionRoute(region)}>{regionName} traffic cameras</a>, {country.countryName}.</p>
+  <p><strong>Do not use this page while driving.</strong></p>
+  <p><a class="cta" href="/map/">Open the map</a></p>
+
+  {live.map((b) => <LiveBlock b={b} city={city} />)}
+
+  <section data-block="coverage" data-basis="registry" data-source={source.name} data-asof={regionDate}>
+    <h2>Roads covered</h2>
+    <ul class="cols">{roads.map(([r, k]) => <li>{r}: {k} camera{k === 1 ? '' : 's'} ({Object.entries(countsBy(here.filter((c) => c.road === r), 'direction')).sort((x, y) => y[1] - x[1] || x[0].localeCompare(y[0])).map(([d, q]) => `${q} ${d}`).join(', ') || `no ${dirWord} recorded`}).</li>)}</ul>
+    {noRoad > 0 && <p class="meta">{noRoad} camera{noRoad === 1 ? ' has' : 's have'} no road recorded.</p>}
+    {isCA
+      ? <p class="meta">Source: {source.name}, districts {loadedDistricts.join(', ')}. Registry date {regionDate}. {linkCheckText(hres)}</p>
+      : <p class="meta">Source: {source.name}. Registry date {regionDate}. {info.agency} gives no city field and no traffic direction: {city} is the place named in these cameras' own names and captions, not a municipal boundary, and "facing" is the way the camera looks. {linkCheckText(hres)}</p>}
+  </section>
+
+  {ga.within > ga.exact && (
+    <section data-block="greater-area" data-basis="registry" data-within={ga.within} data-source={source.name} data-asof={regionDate}>
+      <h2>Greater {city}: {ga.within} cameras within {ga.km} km</h2>
+      <p>{ga.exact} are listed under {city} by name and the other {ga.within - ga.exact} are in {plural(ga.towns.length, 'nearby town')}{ga.noTown > 0 ? ` or have no named place (${ga.noTown})` : ''}. A camera is filed under the place its own record names, so cameras just outside {city} are not in its exact count. "Near {city}" means within {ga.km} km of the centre of the {ga.exact} {city} cameras, the average of their positions.</p>
+      {ga.towns.length > 0 && <ul class="cols">{ga.towns.map((t) => <li>{pageOf.has(t.town) ? <a href={cityRoute(region, t.town)}>{t.town}</a> : t.town}: {plural(t.n, 'camera')} ({t.roads.slice(0, 4).join(', ') || 'no road recorded'}).</li>)}</ul>}
+      {unnamedShown.length > 0 && <><p>The {plural(ga.noTown, 'camera')} with no named place, nearest first:</p>
+      <ul>{unnamedShown.map((x) => <li><a href={x.camera.officialUrl} rel="noopener" title={x.camera.name}>{cleanLabel(x.camera)}</a> <span class="meta">{[x.camera.road, x.camera.direction].filter(Boolean).join(', ')}; {x.km < 1 ? 'under 1' : Math.round(x.km)} km in a straight line from the centre.</span></li>)}</ul>
+      {ga.noTown > unnamedShown.length && <p class="meta">and {ga.noTown - unnamedShown.length} more.</p>}</>}
+    </section>
+  )}
+
+  {hb ? (
+    <section data-block="health" data-source="NearbyCams health checker" data-asof={hb.asof} data-count={hb.total}>
+      <h2>Camera health</h2>
+      <p>Last check {when(hb.asof)}: {hb.counts.reachable} reachable, {hb.counts.stale} stale, {hb.counts.unavailable} unavailable, {hb.counts.unknown} unknown, out of {hb.total} cameras. See <a href="/guides/how-to-read-last-checked-status/">how to read these statuses</a>.</p>
+      <ul class="cols">{hb.roads.map((r) => <li>{r.road}: {r.counts.reachable} reachable, {r.counts.stale} stale, {r.counts.unavailable} unavailable, {r.counts.unknown} unknown (of {r.n}).</li>)}</ul>
+    </section>
+  ) : (
+    <section data-block="health" data-source="NearbyCams health checker" data-asof="not-checked">
+      <h2>Camera health</h2>
+      {hReason === 'stale'
+        ? <p>Not checked recently. Our last camera check is more than 24 hours old, so we show no status for these {n} links rather than an old one. See <a href="/guides/how-to-read-last-checked-status/">how to read these statuses</a>.</p>
+        : <p>Not checked yet. We have not run our camera checker, so we do not know which of these {n} links work today. See <a href="/guides/how-to-read-last-checked-status/">how to read these statuses</a> for what the checks will report.</p>}
+    </section>
+  )}
+
+  <section data-block="cameras" data-basis="registry" data-count={n} data-source={source.name} data-asof={regionDate}>
+    <h2>All {n} cameras</h2>
+    {hb && <p class="meta">Status words. {statusWords()}</p>}
+    <ul>
+      {sorted.map((c) => (
+        <li><a href={c.officialUrl} rel="noopener" title={c.name}>{cleanLabel(c)}</a> <span class="meta">{[c.road, c.direction, c.feedType === 'still' ? 'still image' : 'video'].filter(Boolean).join(', ')}.</span>{c.locationText && <span class="meta"> {c.locationText}</span>}{hb && <> <span class="meta" data-status={hb.statusOf(c.id)} title={`${MEANING[hb.statusOf(c.id)]}${hb.record(c.id)?.lastChecked ? '; last checked ' + when(hb.record(c.id).lastChecked) : ''}`}>Status: {hb.statusOf(c.id)}.</span></>}</li>
+      ))}
+    </ul>
+  </section>
+
+  <h2>Nearby places</h2>
+  <ul>{related.map((p) => <li><a href={cityRoute(p.region, p.city)}>{p.city} traffic cameras</a> ({p.n})</li>)}</ul>
+  {roadsHere.length > 0 && <><h2>Roads in {city}: this city and the whole road</h2>
+  <ul>{roadsHere.map(([r, k]) => <li><a href={`/roads/${roadSlug(r)}/`}>{r} traffic cameras</a>: {k} in {city}, {wholeRoad[r]} on the whole road</li>)}</ul></>}
+  <h2>Guides</h2>
+  <ul>{guides.map(([slug, title]) => <li><a href={`/guides/${slug}/`}>{title}</a></li>)}</ul>
+</Base>

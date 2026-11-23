@@ -13,7 +13,7 @@ import { gate } from '../../ops/harness/page-gate.mjs';
 const cameras = JSON.parse(readFileSync('../data/camera-registry/cameras.json', 'utf8'));
 const sd = cameras.filter((c) => c.city === 'San Diego');
 const ago = (h) => new Date(Date.now() - h * 3600000).toISOString();
-const route = '/cameras/california/san-diego/';
+const route = '/cameras/united-states/california/san-diego/';
 
 // Every camera gets a status by its position, so each status appears; the last SD camera is left out of the file (-> unknown).
 function healthFile({ ageH = 1, runOk = true } = {}) {
@@ -63,7 +63,12 @@ test('built page, fresh health file: counts, per-road lines and per-camera marke
   const want = tally(sd, h);
   assert.ok(sec.includes(`${want.reachable} reachable, ${want.stale} stale, ${want.unavailable} unavailable, ${want.unknown} unknown, out of ${sd.length} cameras`), 'city counts line');
   assert.ok(sec.includes('/guides/how-to-read-last-checked-status/'));
-  for (const s of STATUSES) assert.ok(sec.includes(`${s[0].toUpperCase()}${s.slice(1)} means`), `${s} explained`);
+  const camSec = html.match(/<section data-block="cameras"[\s\S]*?<\/section>/)[0]; // the four words are defined once, at the top of the camera list
+  for (const s of STATUSES) assert.ok(camSec.includes(`${s[0].toUpperCase()}${s.slice(1)} means`), `${s} explained`);
+  assert.ok(!sec.includes(' means '), 'definitions are not repeated in the health block');
+  assert.ok(camSec.indexOf('Reachable means') < camSec.indexOf('data-status='), 'defined before the first marker');
+  assert.ok(html.includes('Link check by us: last run '), 'link check line comes from the health file');
+  assert.ok(!/never run|not run yet/i.test(html.replace(/<[^>]+>/g, ' ')), 'no page text says the check never ran beside real markers');
   const roadLines = [...sec.matchAll(/<li>[^<]*?: (\d+) reachable, (\d+) stale, (\d+) unavailable, (\d+) unknown \(of (\d+)\)/g)];
   assert.ok(roadLines.length > 0);
   assert.equal(roadLines.reduce((a, m) => a + Number(m[5]), 0), sd.length);
@@ -71,7 +76,7 @@ test('built page, fresh health file: counts, per-road lines and per-camera marke
   // every camera link is followed by its own status marker, equal to the file
   const marks = Object.fromEntries(STATUSES.map((s) => [s, 0]));
   for (const c of sd) {
-    const i = html.indexOf(`<a href="${c.officialUrl}" rel="noopener">`);
+    const i = html.indexOf(`<a href="${c.officialUrl}"`);
     assert.ok(i > 0, `link for ${c.id}`);
     const li = html.slice(i, html.indexOf('</li>', i));
     const m = li.match(/data-status="(\w+)"[^>]*>Status: (\w+)\./);
@@ -88,7 +93,7 @@ test('built page, fresh health file: counts, per-road lines and per-camera marke
 test('built page, missing file: honest "not checked yet", no counts, no markers', () => {
   const { pages } = build(join(tmpdir(), 'no-such-health.json'));
   for (const [r, html] of pages) {
-    if (!r.startsWith('/cameras/california/') || r.split('/').filter(Boolean).length !== 3) continue;
+    if (!r.startsWith('/cameras/united-states/california/') || r.split('/').filter(Boolean).length !== 4) continue;
     const sec = healthSection(html);
     assert.match(sec, /Not checked yet/); assert.match(sec, /data-asof="not-checked"/);
     assert.ok(!/reachable,/.test(sec) && !/Status: /.test(html), `${r}: no counts or markers`);

@@ -1,8 +1,13 @@
 // Pure helpers (no Astro): page list, noindex gate, sitemap. Tested with fixtures in tests/gate.test.mjs.
-import { countsBy, roadSlug } from '../../../ops/importers/lib/registry.mjs';
+import { countsBy, roadSlug, countryOf, REGION_COUNTRY } from '../../../ops/importers/lib/registry.mjs';
 import { MIN_CAMERAS } from '../config.mjs';
 
 export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+// The ONE place a camera-page address is built: /cameras/<country>/<region>/<city>/. A region with no country row has no address (null).
+export const countryRoute = (countrySlug) => `/cameras/${countrySlug}/`;
+export const regionRoute = (region) => { const c = countryOf(region); return c ? `/cameras/${c.countrySlug}/${region}/` : null; };
+export const cityRoute = (region, city) => { const r = regionRoute(region); return r ? `${r}${slugify(city)}/` : null; };
 
 // The one noindex rule.
 export const isIndexable = (count) => count >= MIN_CAMERAS;
@@ -28,7 +33,7 @@ export const regionInfo = (slug) => REGIONS[slug] || { sourceId: null, agency: '
 // Curated places: [{ region, city, n }]. Counted PER REGION, so the same place name in two regions never merges into one count
 // or one page. Bigger regions first; inside a region by camera count, ties A to Z. Provisional.
 export function curatedPlaces(cams, limit) {
-  const regions = Object.entries(countsBy(cams, 'region')).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([r]) => r);
+  const regions = Object.entries(countsBy(cams, 'region')).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([r]) => r).filter((r) => countryOf(r));
   const out = [];
   for (const region of regions) {
     Object.entries(countsBy(cams.filter((c) => c.regionSlug === region), 'city')).filter(([, n]) => n >= MIN_CAMERAS)
@@ -58,8 +63,15 @@ export function curatedRoads(cams, limit = 10) {
 
 // Regions that get a hub: only with enough cameras (an empty hub is never generated).
 export function regionsWithPages(cams) {
-  return Object.entries(countsBy(cams, 'region')).filter(([, n]) => n >= MIN_CAMERAS).map(([slug]) => slug);
+  return Object.entries(countsBy(cams, 'region')).filter(([slug, n]) => n >= MIN_CAMERAS && countryOf(slug)).map(([slug]) => slug);
 }
+
+// Countries that get a hub: only with enough cameras across their regions.
+export function countriesWithPages(cams) {
+  return Object.entries(countsBy(cams, 'country')).filter(([, n]) => n >= MIN_CAMERAS).map(([slug]) => slug);
+}
+export const countryName = (slug) => Object.values(REGION_COUNTRY).find((c) => c.countrySlug === slug)?.countryName;
+export const regionsOfCountry = (cams, countrySlug) => regionsWithPages(cams).filter((r) => countryOf(r).countrySlug === countrySlug);
 
 // Every page: { route, kind, count, indexable, lastmod }. cities are passed in so tests can use fixtures.
 // cities: names (one region) or curatedPlaces rows. dates: optional { regionSlug: 'YYYY-MM-DD' } so a region page carries ITS registry date.
@@ -71,13 +83,16 @@ export function pageList(cams, cities, registryDate, roads = [], dates = {}) {
     { route: '/map/', kind: 'map', count: cams.length, indexable: true, lastmod: registryDate },
     { route: '/cameras/', kind: 'hub', count: cams.length, indexable: isIndexable(cams.length), lastmod: registryDate },
   ];
-  for (const r of regionsWithPages(cams)) out.push({ route: `/cameras/${r}/`, kind: 'region', count: byRegion[r], indexable: isIndexable(byRegion[r]), lastmod: dateOf(r) });
+  const byCountry = countsBy(cams, 'country');
+  const countryDate = (c) => regionsOfCountry(cams, c).map(dateOf).filter(Boolean).sort().at(-1) || registryDate;
+  for (const c of countriesWithPages(cams)) out.push({ route: countryRoute(c), kind: 'country', count: byCountry[c], indexable: isIndexable(byCountry[c]), lastmod: countryDate(c) });
+  for (const r of regionsWithPages(cams)) out.push({ route: regionRoute(r), kind: 'region', count: byRegion[r], indexable: isIndexable(byRegion[r]), lastmod: dateOf(r) });
   for (const p of cities.map((x) => (typeof x === 'string' ? { city: x, region: null } : x))) {
     const sub = p.region ? cams.filter((c) => c.regionSlug === p.region) : cams;
     const rs = [...new Set(sub.filter((c) => c.city === p.city).map((c) => c.regionSlug))];
-    if (rs.length !== 1) continue; // a bare name used in two regions is ambiguous: no page rather than a wrong one
+    if (rs.length !== 1 || !regionRoute(rs[0])) continue; // a bare name used in two regions is ambiguous, and a region with no country has no address: no page rather than a wrong one
     const n = countsBy(sub, 'city')[p.city] || 0;
-    out.push({ route: `/cameras/${rs[0]}/${slugify(p.city)}/`, kind: 'city', count: n, indexable: isIndexable(n), lastmod: dateOf(rs[0]) });
+    out.push({ route: cityRoute(rs[0], p.city), kind: 'city', count: n, indexable: isIndexable(n), lastmod: dateOf(rs[0]) });
   }
   if (roads.length) out.push({ route: '/roads/', kind: 'roads-hub', count: roads.length, indexable: true, lastmod: dateOf('california') }); // road pages are California-only
   const byRoad = countsBy(cams, 'road');

@@ -78,13 +78,22 @@ export function validateCamera(c) {
   return p;
 }
 
-// The ONE place any page count comes from. by: 'region' | 'city' | 'road' | 'feedType'.
+// The ONE region -> country table (keyed by regionSlug). A new region needs a row here before it gets any page; a region with no row
+// is counted by region but has no country, so the site builds nothing for it (tests/registry fails if a registry region is missing).
+export const REGION_COUNTRY = {
+  california: { countryCode: 'US', countrySlug: 'united-states', countryName: 'United States' },
+  'british-columbia': { countryCode: 'CA', countrySlug: 'canada', countryName: 'Canada' },
+};
+export const countryOf = (regionSlug) => REGION_COUNTRY[regionSlug] || null;
+
+// The ONE place any page count comes from. by: 'country' | 'region' | 'city' | 'road' | 'feedType'.
+// 'country' is derived from the region through REGION_COUNTRY (never stored on a camera row, so a country cannot disagree with its region).
 const COUNT_KEYS = { region: 'regionSlug', city: 'city', road: 'road', feedType: 'feedType', direction: 'direction' };
 export function countsBy(cams, by) {
-  const key = COUNT_KEYS[by];
-  if (!key) throw new Error("countsBy: by must be 'region', 'city', 'road', 'feedType' or 'direction'");
+  if (by !== 'country' && !COUNT_KEYS[by]) throw new Error("countsBy: by must be 'country', 'region', 'city', 'road', 'feedType' or 'direction'");
+  const val = by === 'country' ? (c) => countryOf(c.regionSlug)?.countrySlug : (c) => c[COUNT_KEYS[by]];
   const m = {};
-  for (const c of cams) if (c[key]) m[c[key]] = (m[c[key]] || 0) + 1;
+  for (const c of cams) { const v = val(c); if (v) m[v] = (m[v] || 0) + 1; }
   return m;
 }
 

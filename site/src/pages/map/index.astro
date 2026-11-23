@@ -2,7 +2,8 @@
 import Base from '../../layouts/Base.astro';
 import { SITE_NAME } from '../../config.mjs';
 import { cameras, countsBy } from '../../lib/data.mjs';
-import { curatedPlaces, regionsWithPages, slugify, GUIDES } from '../../lib/pages.mjs';
+import { countryOf } from '../../../../ops/importers/lib/registry.mjs';
+import { curatedPlaces, regionsWithPages, countriesWithPages, countryName, countryRoute, regionRoute, cityRoute, GUIDES } from '../../lib/pages.mjs';
 
 // Iframe src always ends in ?embed=1; empty env means the engine is not deployed yet.
 const raw = (import.meta.env.PUBLIC_GEV_EMBED_URL || '').trim();
@@ -15,14 +16,16 @@ const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names.at
 ---
 <Base title={`Traffic camera map | ${SITE_NAME}`} description={`Map of ${cameras.length} traffic cameras in ${list}. Each camera links to its official source. Browse by region or city below.`} route="/map/" crumbs={[{ name: 'Map', route: '/map/' }]}>
   <h1>Traffic camera map</h1>
-  <p>The map shows {cameras.length} official traffic camera locations in {list}. Selecting a camera sends you to the official source; we do not display camera pictures. The same cameras are listed below as plain links, so you can browse without the map: start with <a href="/cameras/">all camera regions</a>, a region hub, or a city.</p>
+  <p>The map shows {cameras.length} official traffic camera locations in {list}. Selecting a camera sends you to the official source; we do not display camera pictures. The same cameras are listed below as plain links, so you can browse without the map: start with <a href="/cameras/">all camera countries</a>, a country, a region, or a city.</p>
   {embed
     ? <iframe class="map" title="Traffic camera map" src={embed} sandbox="allow-scripts allow-same-origin" referrerpolicy="no-referrer" loading="lazy"></iframe>
     : <p class="meta">The map engine is not deployed yet. The lists below work now.</p>}
+  <h2>Countries</h2>
+  <ul>{countriesWithPages(cameras).map((c) => <li><a href={countryRoute(c)}>{countryName(c)} traffic cameras</a> ({countsBy(cameras, 'country')[c]})</li>)}</ul>
   <h2>Regions</h2>
-  <ul>{regionsWithPages(cameras).map((r) => <li><a href={`/cameras/${r}/`}>{regionName(r)} traffic cameras</a> ({byRegion[r]})</li>)}</ul>
+  <ul>{regionsWithPages(cameras).map((r) => <li><a href={regionRoute(r)}>{regionName(r)} traffic cameras</a> ({byRegion[r]})</li>)}</ul>
   <h2>Cities</h2>
-  <ul class="cols">{places.map((p) => <li><a href={`/cameras/${p.region}/${slugify(p.city)}/`}>{p.city} traffic cameras</a> ({p.n})</li>)}</ul>
+  <ul class="cols">{places.map((p) => <li><a href={cityRoute(p.region, p.city)}>{p.city} traffic cameras</a> ({p.n})</li>)}</ul>
   <h2>Roads</h2>
   <p><a href="/roads/">Traffic cameras by road, in driving order</a></p>
   <h2>Guides</h2>

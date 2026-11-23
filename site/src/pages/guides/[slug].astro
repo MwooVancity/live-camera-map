@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { SITE_NAME } from '../../config.mjs';
 import { cameras, countsBy, registryDate, report, bcReport, loadedDistricts, failedDistricts } from '../../lib/data.mjs';
-import { GUIDES, curatedPlaces, curatedRoads, slugify } from '../../lib/pages.mjs';
+import { GUIDES, curatedPlaces, curatedRoads, cityRoute } from '../../lib/pages.mjs';
 import { GUIDE_BODY } from '../../lib/guides.mjs';
 import { roadSlug } from '../../../../ops/importers/lib/registry.mjs';
 import { loadHealth, HEALTH_MAX_AGE_H } from '../../lib/health.mjs';
@@ -30,7 +30,7 @@ const others = GUIDES.filter((g) => g.slug !== guide.slug);
   {sections.map((s) => (<><h2>{s.h}</h2>{s.p.map((t) => <p>{t}</p>)}</>))}
   <p class="meta">Written {guide.date}.</p>
   <h2>See it on a real page</h2>
-  <ul>{places.map((p) => <li><a href={`/cameras/${p.region}/${slugify(p.city)}/`}>{p.city} traffic cameras</a> ({p.n})</li>)}</ul>
+  <ul>{places.map((p) => <li><a href={cityRoute(p.region, p.city)}>{p.city} traffic cameras</a> ({p.n})</li>)}</ul>
   {roads.length > 0 && <><h2>Road pages</h2>
   <ul>{roads.map((r) => <li><a href={`/roads/${roadSlug(r)}/`}>{r} traffic cameras</a> ({byRoad[r]})</li>)}</ul>
   <p><a href="/roads/">All roads</a></p></>}

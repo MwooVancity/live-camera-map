@@ -189,12 +189,12 @@ test('built road pages: one per curated road plus the hub, counts equal countsBy
     assert.ok(hub.includes(`href="${route}"`), `hub does not link ${route}`);
     assert.ok(!isNoindex(html), `${route} should be indexable`);
     const n = byRoad[road];
-    assert.ok(html.includes(`${road} traffic cameras in driving order: ${n} official links`), `${route}: title count`);
-    assert.ok(html.includes(`<p>${n} Caltrans cameras are listed on ${road}:`), `${route}: intro count`);
+    assert.ok(html.includes(`${road} traffic cameras in driving order, California, United States: ${n} official links`), `${route}: title count`);
+    assert.ok(html.includes(`<p>${n} Caltrans cameras are listed on ${road} in California, United States:`), `${route}: intro count`);
     const cams = section(html, 'cameras');
     assert.ok(cams.includes(`data-count="${n}"`), `${route}: data-count`);
     assert.equal((cams.match(/<li data-camera=/g) || []).length, n, `${route}: list length`);
-    const headSum = [...cams.matchAll(/<h3>[^<]*\((\d+)\)<\/h3>/g)].reduce((s, m) => s + Number(m[1]), 0);
+    const headSum = [...cams.matchAll(/<h3[^>]*>[^<]*\((\d+)\)<\/h3>/g)].reduce((s, m) => s + Number(m[1]), 0);
     assert.equal(headSum, n, `${route}: direction headings add up`);
     assert.ok(!/<img\b|<video\b/i.test(html), `${route}: media tag`);
   }
@@ -241,8 +241,8 @@ test('built road pages: without a health file the page says not checked and show
 
 test('city pages link the road pages that pass their cameras; the guide, home, region hub and map link the roads hub', () => {
   const { pages } = build({});
-  const la = pages.get('/cameras/california/los-angeles/');
+  const la = pages.get('/cameras/united-states/california/los-angeles/');
   assert.ok(la.includes('Roads in Los Angeles') && la.includes('href="/roads/i-405/"'));
-  for (const r of ['/', '/cameras/california/', '/map/', '/guides/how-to-read-a-road-page/']) assert.ok(pages.get(r).includes('href="/roads/"'), `${r} does not link /roads/`);
+  for (const r of ['/', '/cameras/united-states/california/', '/map/', '/guides/how-to-read-a-road-page/']) assert.ok(pages.get(r).includes('href="/roads/"'), `${r} does not link /roads/`);
   for (const [route, html] of pages) if (route.startsWith('/roads/') && route !== '/roads/') assert.ok(html.includes('href="/guides/how-to-read-a-road-page/"'), `${route}: guide`);
 });

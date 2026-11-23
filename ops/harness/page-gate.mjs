@@ -1,6 +1,6 @@
 // Page gate over the BUILT site. Usage: node ops/harness/page-gate.mjs [distDir] [PAGES.md]
-// Checks: link-out only, silo structure (reachability, depth, parent/related/guide/map links, hubs link every child),
-// block proof (data-block needs data-source + data-asof), road pages (hub, related roads, cities, guide, map, nearest cameras per event), near-duplicate city and road pages, "Beats Argos by:" per indexable page.
+// Checks: link-out only, silo structure (levels: world hub /cameras/, country /cameras/<c>/, region /cameras/<c>/<r>/, city /cameras/<c>/<r>/<city>/; reachability, depth, parent/related/guide/map links, hubs link every child and their parent),
+// reader-first rules on city and road pages (driving notice, conditions above cameras, honest health wording, status words defined, road jump links), block proof (data-block needs data-source + data-asof), road pages (hub, related roads, cities, guide, map, nearest cameras per event), near-duplicate city and road pages, "Beats Argos by:" per indexable page.
 import { readdirSync, readFileSync, existsSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -30,6 +30,9 @@ const normalize = (href, from) => {
 const textOf = (html) => html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/&[a-z#0-9]+;/gi, ' ').replace(/\s+/g, ' ').trim();
 
 export const MAX_BLOCK_AGE_H = 24;
+// Max clicks from /: world hub (1) -> country (2) -> region (3) -> city (4). It was 3 before the country level existed; 4 is the length of the
+// longest hub chain, so a page that needs a 5th click (a level skipped by no link at all) still fails.
+export const MAX_DEPTH = 4;
 export function gate(dist, pagesMd = '', now = new Date()) {
   const errors = [];
   const files = walk(dist);
@@ -62,17 +65,18 @@ export function gate(dist, pagesMd = '', now = new Date()) {
   for (const route of pages.keys()) {
     if (route === '/404/' || route === '/404.html') continue;
     if (!depth.has(route)) errors.push(`${route}: orphan, not reachable from /`);
-    else if (depth.get(route) > 3) errors.push(`${route}: ${depth.get(route)} clicks from /, max 3`);
+    else if (depth.get(route) > MAX_DEPTH) errors.push(`${route}: ${depth.get(route)} clicks from /, max ${MAX_DEPTH}`);
   }
   const under = (r, pre) => r.startsWith(pre) && r !== pre;
   const segs = (r) => r.split('/').filter(Boolean);
-  const cities = [...pages.keys()].filter((r) => under(r, '/cameras/') && segs(r).length === 3);
-  const regions = [...pages.keys()].filter((r) => under(r, '/cameras/') && segs(r).length === 2);
+  const cities = [...pages.keys()].filter((r) => under(r, '/cameras/') && segs(r).length === 4);
+  const regions = [...pages.keys()].filter((r) => under(r, '/cameras/') && segs(r).length === 3);
+  const countries = [...pages.keys()].filter((r) => under(r, '/cameras/') && segs(r).length === 2);
   const guides = [...pages.keys()].filter((r) => under(r, '/guides/'));
   const roads = [...pages.keys()].filter((r) => under(r, '/roads/') && segs(r).length === 2);
   for (const c of cities) {
     const p = pages.get(c);
-    const parent = '/' + segs(c).slice(0, 2).join('/') + '/';
+    const parent = '/' + segs(c).slice(0, 3).join('/') + '/';
     const related = [...p.links].filter((l) => l !== c && cities.includes(l));
     if (!p.links.has(parent)) errors.push(`${c}: no link to parent ${parent}`);
     if (related.length < 3) errors.push(`${c}: ${related.length} related-city links, need 3 or more`);
@@ -95,7 +99,10 @@ export function gate(dist, pagesMd = '', now = new Date()) {
     }
   }
   if (roads.length && !pages.has('/roads/')) errors.push('road pages exist but /roads/ hub was not built');
-  const hubs = [['/cameras/', regions], ...regions.map((r) => [r, cities.filter((c) => c.startsWith(r))]), ['/roads/', roads]];
+  // every region hub links its country, every country hub links the world hub (the up-links), then each hub links every child
+  for (const r of regions) { const up = '/' + segs(r).slice(0, 2).join('/') + '/'; if (!pages.has(up)) errors.push(`${r}: country hub ${up} was not built`); else if (!pages.get(r).links.has(up)) errors.push(`${r}: no link to its country ${up}`); }
+  for (const c of countries) if (!pages.get(c).links.has('/cameras/')) errors.push(`${c}: no link to the world hub /cameras/`);
+  const hubs = [['/cameras/', countries], ...countries.map((c) => [c, regions.filter((r) => r.startsWith(c))]), ...regions.map((r) => [r, cities.filter((c) => c.startsWith(r))]), ['/roads/', roads]];
   for (const [hub, kids] of hubs) {
     if (!pages.has(hub)) continue;
     for (const k of kids) if (!pages.get(hub).links.has(k)) errors.push(`${hub}: does not link child ${k}`);
@@ -121,8 +128,33 @@ export function gate(dist, pagesMd = '', now = new Date()) {
     if (cities.includes(route) && !p.noindex && !/data-block=/.test(p.html)) errors.push(`${route}: indexable city page has no data blocks`);
   }
 
-  // 4) near-duplicate pages (shared sentences), compared within one kind: city pages together, road pages together
-  for (const group of [cities, roads]) {
+  // 3b) reader-first rules on city and road pages: a driving notice; conditions (closures, chain controls, signs, weather) above the camera list;
+  // no "never run" text beside real health markers; the four status words defined before the first marker and no freshness claim; road jump links resolve
+  const CONDITION_BLOCKS = ['road-conditions', 'message-signs', 'bc-events', 'road-weather', 'forecast', 'weather-alerts'];
+  const blockAt = (html, id) => html.search(new RegExp(`data-block=["']${id}["']`));
+  for (const route of [...cities, ...roads]) {
+    const html = pages.get(route).html;
+    if (!/do not use this page while driving/i.test(html)) errors.push(`${route}: no "Do not use this page while driving" notice`);
+    const cam = blockAt(html, 'cameras');
+    for (const id of CONDITION_BLOCKS) { const at = blockAt(html, id); if (at >= 0 && cam >= 0 && at > cam) errors.push(`${route}: ${id} block is below the camera list (conditions come first)`); }
+    const hasMarkers = /data-status=/.test(html);
+    const healthAsof = (html.match(/data-block=["']health["'][^>]*data-asof=["']([^"']+)["']/) || [])[1];
+    if ((hasMarkers || (healthAsof && healthAsof !== 'not-checked')) && /never run|not run yet|not checked yet/i.test(textOf(html))) errors.push(`${route}: says the link check never ran, but the page has health markers`);
+    if (hasMarkers) {
+      const camText = textOf((html.match(/<section[^>]*data-block=["']cameras["'][\s\S]*?<\/section>/) || [''])[0]);
+      for (const w of ['Reachable', 'Stale', 'Unavailable', 'Unknown']) if (!camText.includes(`${w} means`)) errors.push(`${route}: status word "${w}" is not defined in the camera list`);
+      if (/\b(fresh|up to date)\b/i.test(camText)) errors.push(`${route}: camera list claims a picture is fresh (only a Last-Modified time can say so)`);
+    }
+  }
+  for (const r of roads) {
+    const html = pages.get(r).html;
+    const jumps = [...html.matchAll(/href=["']#(dir-[^"']+)["']/g)].map((m) => m[1]);
+    if (!jumps.length) errors.push(`${r}: no jump links to the direction lists`);
+    for (const j of jumps) if (!new RegExp(`id=["']${j}["']`).test(html)) errors.push(`${r}: jump link #${j} has no target`);
+  }
+
+  // 4) near-duplicate pages (shared sentences), compared within one kind: city pages together, road pages together, country hubs together
+  for (const group of [cities, roads, countries]) {
     const sents = new Map(group.map((c) => [c, new Set(textOf(pages.get(c).html).split(/(?<=[.!?])\s+/).map((s) => s.toLowerCase().replace(/[0-9]+/g, '#')).filter((s) => s.split(' ').length >= 5))]));
     for (let i = 0; i < group.length; i++) for (let j = i + 1; j < group.length; j++) {
       const a = sents.get(group[i]), b = sents.get(group[j]);

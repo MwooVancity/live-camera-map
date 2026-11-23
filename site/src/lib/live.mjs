@@ -8,6 +8,7 @@ import { isEnabled } from '../../../tests/licensing/gate.mjs';
 import { usableItems, usableNws, SOURCE_IDS, MAX_AGE_MIN } from '../../../ops/importers/lib/conditions.mjs';
 import { roadSlug } from '../../../ops/importers/lib/registry.mjs';
 
+export const BUILT_AT = new Date().toISOString(); // when this build started: the 'page built' time on every live block
 export const RADIUS_KM = 15; // a road item counts as "near" a city when within this of the city's camera centroid
 export const MAX_ROWS = 15; // rows shown per list; the heading count is the full count
 

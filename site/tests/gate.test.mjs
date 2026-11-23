@@ -22,11 +22,11 @@ test('a region with fewer than 3 cameras gets no hub', () => {
 
 test('a forced low-count city is noindex and left out of the sitemap', () => {
   const pages = pageList(fixture, ['Big', 'Tiny'], '2026-11-22');
-  const tiny = pages.find((p) => p.route === '/cameras/california/tiny/');
+  const tiny = pages.find((p) => p.route === '/cameras/united-states/california/tiny/');
   assert.equal(tiny.indexable, false);
   const xml = buildSitemap(pages, 'https://x.test');
   assert.ok(!xml.includes('/tiny/'));
-  assert.ok(xml.includes('<loc>https://x.test/cameras/california/big/</loc><lastmod>2026-11-22</lastmod>'));
+  assert.ok(xml.includes('<loc>https://x.test/cameras/united-states/california/big/</loc><lastmod>2026-11-22</lastmod>'));
 });
 
 test('failing-fixture proof: with the gate off (min 1) the same page would be listed', () => {
@@ -49,6 +49,30 @@ test('pageList: a region page and its city pages carry that region\'s own date, 
   const cams = [...many('A', 3, 'california'), ...many('B', 3, 'british-columbia')];
   const pl = pageList(cams, curatedPlaces(cams), '2026-11-23', [], { california: '2026-11-22', 'british-columbia': '2026-11-23' });
   const d = (route) => pl.find((p) => p.route === route).lastmod;
-  assert.equal(d('/cameras/california/'), '2026-11-22'); assert.equal(d('/cameras/california/a/'), '2026-11-22');
-  assert.equal(d('/cameras/british-columbia/b/'), '2026-11-23'); assert.equal(d('/cameras/'), '2026-11-23');
+  assert.equal(d('/cameras/united-states/california/'), '2026-11-22'); assert.equal(d('/cameras/united-states/california/a/'), '2026-11-22');
+  assert.equal(d('/cameras/canada/british-columbia/b/'), '2026-11-23'); assert.equal(d('/cameras/'), '2026-11-23');
+});
+
+// ---- country level ----
+test('countriesWithPages and routes come from the one region->country table; a region with no country gets no page (failing fixture)', async () => {
+  const { countriesWithPages, regionRoute, cityRoute, countryRoute } = await import('../src/lib/pages.mjs');
+  const cams = [...many('A', 3, 'california'), ...many('B', 3, 'british-columbia'), ...many('Z', 5, 'atlantis')];
+  assert.deepEqual(countriesWithPages(cams).sort(), ['canada', 'united-states']);
+  assert.equal(regionRoute('atlantis'), null);
+  assert.equal(cityRoute('atlantis', 'Z'), null);
+  assert.equal(regionRoute('california'), '/cameras/united-states/california/');
+  assert.equal(cityRoute('british-columbia', 'Fort St John'), '/cameras/canada/british-columbia/fort-st-john/');
+  assert.equal(countryRoute('canada'), '/cameras/canada/');
+  assert.deepEqual(regionsWithPages(cams).sort(), ['british-columbia', 'california'], 'atlantis has 5 cameras but no country row: no hub');
+  const routes = pageList(cams, curatedPlaces(cams), '2026-11-22').map((p) => p.route);
+  assert.ok(!routes.some((r) => r.includes('atlantis')));
+  assert.ok(routes.includes('/cameras/united-states/') && routes.includes('/cameras/canada/'));
+});
+test('pageList: a country page carries the newest date of its own regions and the camera count of its regions', () => {
+  const cams = [...many('A', 3, 'california'), ...many('B', 4, 'british-columbia')];
+  const pl = pageList(cams, [], '2026-11-23', [], { california: '2026-11-22', 'british-columbia': '2026-11-20' });
+  const row = (route) => pl.find((p) => p.route === route);
+  assert.deepEqual([row('/cameras/united-states/').count, row('/cameras/united-states/').lastmod], [3, '2026-11-22']);
+  assert.deepEqual([row('/cameras/canada/').count, row('/cameras/canada/').lastmod], [4, '2026-11-20']);
+  assert.equal(row('/cameras/canada/').kind, 'country');
 });

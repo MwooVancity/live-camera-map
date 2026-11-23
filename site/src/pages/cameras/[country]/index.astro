@@ -1,0 +1,40 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { SITE_NAME } from '../../../config.mjs';
+import { cameras, countsBy, registryDateOf, sourceOf } from '../../../lib/data.mjs';
+import { countriesWithPages, regionsOfCountry, countryName, curatedPlaces, regionInfo, regionRoute, cityRoute, countryRoute, isIndexable } from '../../../lib/pages.mjs';
+
+export function getStaticPaths() {
+  return countriesWithPages(cameras).map((country) => ({ params: { country } }));
+}
+const { country } = Astro.params;
+const name = countryName(country);
+const total = countsBy(cameras, 'country')[country];
+const regions = regionsOfCountry(cameras, country);
+const byRegion = countsBy(cameras, 'region');
+const places = curatedPlaces(cameras);
+// One row per region of this country: every figure is a count from the registry (countsBy) or the region's own import date.
+const rows = regions.map((r) => {
+  const cams = cameras.filter((c) => c.regionSlug === r);
+  const byCity = countsBy(cams, 'city');
+  const info = regionInfo(r);
+  const src = sourceOf(info.sourceId) || {};
+  return { r, regionName: cams[0].regionName, n: byRegion[r], roads: Object.keys(countsBy(cams, 'road')).length, named: Object.values(byCity).reduce((s, k) => s + k, 0), namedPlaces: Object.keys(byCity).length, top: places.filter((p) => p.region === r), info, src, date: registryDateOf(r) };
+});
+const dates = rows.map((x) => x.date).filter(Boolean).sort();
+const sourceNames = rows.map((x) => x.src.name).filter(Boolean).join('; ');
+const regionWord = rows.length === 1 ? 'region' : 'regions';
+---
+<Base title={`${name} traffic cameras: ${total} official links in ${rows.length} ${regionWord} | ${SITE_NAME}`} description={`${total} ${name} traffic cameras linked to the official source: ${rows.map((x) => `${x.regionName} (${x.n}, ${x.info.agency})`).join(', ')}.`} route={countryRoute(country)} crumbs={[{ name: 'All cameras', route: '/cameras/' }, { name, route: countryRoute(country) }]} noindex={!isIndexable(total)}>
+  <h1>{name} traffic cameras</h1>
+  <p>{total} {name} traffic cameras in {rows.length} {regionWord}: {rows.map((x) => `${x.regionName} ${x.n}`).join(', ')}. Part of <a href="/cameras/">all traffic cameras</a>.</p>
+  <section data-block="regions" data-basis="registry" data-source={sourceNames} data-asof={dates.at(-1)}>
+    <h2>{name} regions and who supplies their cameras</h2>
+    {rows.map((x) => (<>
+      <h3><a href={regionRoute(x.r)}>{x.regionName} traffic cameras</a> ({x.n})</h3>
+      <p>{x.regionName}: {x.n} cameras on {x.roads} roads from {x.info.agency} ({x.src.name}), imported {x.date}. {x.named} of them have a named place ({x.namedPlaces} places) and {x.top.length} places have their own page. Licence on record for {x.info.agency}: {x.src.license || 'not recorded'}.</p>
+      <ul class="cols">{x.top.map((p) => <li><a href={cityRoute(x.r, p.city)}>{p.city} traffic cameras</a> ({p.n})</li>)}</ul>
+    </>))}
+  </section>
+  <p><a class="cta" href="/map/">Open the map</a>{rows.some((x) => x.r === 'california') && <> <a href="/roads/">Traffic cameras by road (California)</a></>}</p>
+</Base>

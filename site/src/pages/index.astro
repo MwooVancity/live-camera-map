@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { SITE_NAME } from '../config.mjs';
 import { cameras, countsBy, registryDate, loadedDistricts } from '../lib/data.mjs';
-import { curatedPlaces, regionsWithPages, regionInfo, slugify, GUIDES } from '../lib/pages.mjs';
+import { curatedPlaces, regionsWithPages, regionInfo, cityRoute, GUIDES } from '../lib/pages.mjs';
 const total = cameras.length;
 const places = curatedPlaces(cameras);
 const regions = regionsWithPages(cameras);
@@ -18,9 +18,9 @@ const agencies = regions.map((r) => regionInfo(r).agency).join(' and ');
   <p><a class="cta" href="/map/">Open the map</a></p>
   <h2>Cities with the most cameras</h2>
   <ul class="cols">
-    {places.map((p) => <li><a href={`/cameras/${p.region}/${slugify(p.city)}/`}>{p.city} traffic cameras</a> ({p.n})</li>)}
+    {places.map((p) => <li><a href={cityRoute(p.region, p.city)}>{p.city} traffic cameras</a> ({p.n})</li>)}
   </ul>
-  <p><a href="/cameras/">All regions</a> | <a href="/roads/">Cameras by road</a></p>
+  <p><a href="/cameras/">All countries and regions</a> | <a href="/roads/">Cameras by road</a></p>
   <h2>Guides</h2>
   <ul>{GUIDES.map((g) => <li><a href={`/guides/${g.slug}/`}>{g.title}</a></li>)}</ul>
 </Base>

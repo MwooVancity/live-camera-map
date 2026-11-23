@@ -9,11 +9,17 @@ import { countsBy } from '../../../ops/importers/lib/registry.mjs';
 export const HEALTH_MAX_AGE_H = 24;
 export const STATUSES = ['reachable', 'stale', 'unavailable', 'unknown'];
 export const MEANING = {
-  reachable: 'the official link answered with a picture',
-  stale: 'it answered, but its own last-modified time is older than 6 hours',
-  unavailable: 'it failed, or answered with a web page or error instead of a picture',
-  unknown: 'this check could not be completed, so we do not know',
+  reachable: 'the official link answers with a picture (this does not say the picture is recent)',
+  stale: 'the server says the file is old: its own last-modified time is more than 6 hours ago',
+  unavailable: 'the official link does not answer, or answers with a web page or error instead of a picture',
+  unknown: 'we have not checked it, or the check could not finish',
 };
+// The status words, defined once per page (near the top of the camera list) from MEANING. Never says a picture is fresh.
+export const statusWords = () => STATUSES.map((s) => `${s[0].toUpperCase()}${s.slice(1)} means ${MEANING[s]}.`).join(' ');
+// The one sentence about our link check, derived from cityHealth's result so it can never say "never run" beside real markers.
+export const linkCheckText = ({ block, reason }) => (block ? `Link check by us: last run ${block.asof.slice(0, 16).replace('T', ' ')} UTC.`
+  : reason === 'stale' ? 'Link check by us: the last run is more than 24 hours old, so no status is shown.' : 'Link check by us: not run yet.');
+
 
 const healthFile = () => process.env.HEALTH_FILE || resolve(process.cwd(), '../data/health/health.json');
 

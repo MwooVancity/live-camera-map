@@ -10,9 +10,9 @@ import { countsBy } from '../../ops/importers/lib/registry.mjs';
 
 const pages = readPages();
 const cameras = JSON.parse(readFileSync('../data/camera-registry/cameras.json', 'utf8'));
-const cityRoutes = [...pages.keys()].filter((r) => r.split('/').filter(Boolean).length === 3 && r.startsWith('/cameras/'));
+const cityRoutes = [...pages.keys()].filter((r) => r.split('/').filter(Boolean).length === 4 && r.startsWith('/cameras/'));
 
-test('page count is 16-45 (California 20 + roads hub + 10 roads + guides; British Columbia hub + 5 cities + guide)', () => {
+test('page count is 16-45 (United States hub; California 20 + roads hub + 10 roads + guides; British Columbia hub + 5 cities + guide)', () => {
   const n = [...pages.keys()].filter((r) => r !== '/404/').length;
   assert.ok(n >= 16 && n <= 45, `built ${n} pages`);
 });
@@ -73,7 +73,7 @@ test('city pages: title, intro, data-count and list all equal countsBy of the pa
   assert.equal(cityRoutes.length, 15, '10 California + 5 British Columbia');
   for (const route of cityRoutes) {
     const html = pages.get(route);
-    const region = route.split('/')[2];
+    const region = route.split('/')[3];
     const byCity = countsBy(cameras.filter((c) => c.regionSlug === region), 'city'); // counted inside the region
     const agency = region === 'california' ? 'Caltrans' : 'DriveBC';
     const city = html.match(/<h1>([^<]*) traffic cameras<\/h1>/)[1];
@@ -153,27 +153,27 @@ test('map page links to every region hub and city page', () => {
 });
 
 // ---- British Columbia (second source) ----
-const bcRoutes = cityRoutes.filter((r) => r.startsWith('/cameras/british-columbia/'));
+const bcRoutes = cityRoutes.filter((r) => r.startsWith('/cameras/canada/british-columbia/'));
 const dateOf = (region) => cameras.filter((c) => c.regionSlug === region).map((c) => c.lastSeen).sort().at(-1).slice(0, 10);
 
 test('BC: a region hub and 3 to 5 curated city pages, all indexable; each count equals the BC rows', () => {
-  assert.ok(pages.has('/cameras/british-columbia/'));
+  assert.ok(pages.has('/cameras/canada/british-columbia/'));
   assert.ok(bcRoutes.length >= 3 && bcRoutes.length <= 5, `${bcRoutes.length} BC city pages`);
   const total = cameras.filter((c) => c.regionSlug === 'british-columbia').length;
-  const hub = pages.get('/cameras/british-columbia/');
+  const hub = pages.get('/cameras/canada/british-columbia/');
   assert.ok(titleOf(hub).includes(`${total} official links`));
   assert.ok(hub.includes(`${total} cameras on `));
   assert.ok(!isNoindex(hub));
   for (const r of bcRoutes) assert.ok(hub.includes(`href="${r}"`), `hub does not link ${r}`);
-  assert.ok(pages.get('/cameras/').includes('href="/cameras/british-columbia/"'));
+  assert.ok(pages.get('/cameras/').includes('href="/cameras/canada/british-columbia/"'));
 });
 
 test('BC: every page carries its own region registry date (a newer BC import never relabels California pages)', () => {
   const xml = readFileSync(join(DIST, 'sitemap.xml'), 'utf8');
-  assert.ok(xml.includes(`<loc>${SITE_URL}/cameras/british-columbia/</loc><lastmod>${dateOf('british-columbia')}</lastmod>`));
-  assert.ok(xml.includes(`<loc>${SITE_URL}/cameras/california/</loc><lastmod>${dateOf('california')}</lastmod>`));
+  assert.ok(xml.includes(`<loc>${SITE_URL}/cameras/canada/british-columbia/</loc><lastmod>${dateOf('british-columbia')}</lastmod>`));
+  assert.ok(xml.includes(`<loc>${SITE_URL}/cameras/united-states/california/</loc><lastmod>${dateOf('california')}</lastmod>`));
   for (const r of bcRoutes) assert.ok(pages.get(r).includes(`Registry date ${dateOf('british-columbia')}`), r);
-  assert.ok(pages.get('/cameras/california/los-angeles/').includes(`Registry date ${dateOf('california')}`));
+  assert.ok(pages.get('/cameras/united-states/california/los-angeles/').includes(`Registry date ${dateOf('california')}`));
 });
 
 test('BC city pages: no Caltrans or NWS block, no forecast; only the DriveBC events block may appear', () => {
@@ -211,6 +211,56 @@ test('a place name used in two regions is counted and paged per region (failing 
   const cams2 = [...mk('california', 'Richmond', 4), ...mk('british-columbia', 'Richmond', 3)];
   assert.deepEqual(curatedPlaces(cams2), [{ region: 'california', city: 'Richmond', n: 4 }, { region: 'british-columbia', city: 'Richmond', n: 3 }]);
   const pl = pageList(cams2, curatedPlaces(cams2), '2026-11-22', [], { 'british-columbia': '2026-11-23' }).filter((p) => p.kind === 'city');
-  assert.deepEqual(pl.map((p) => [p.route, p.count, p.lastmod]), [['/cameras/california/richmond/', 4, '2026-11-22'], ['/cameras/british-columbia/richmond/', 3, '2026-11-23']]);
+  assert.deepEqual(pl.map((p) => [p.route, p.count, p.lastmod]), [['/cameras/united-states/california/richmond/', 4, '2026-11-22'], ['/cameras/canada/british-columbia/richmond/', 3, '2026-11-23']]);
   assert.equal(pageList(cams2, ['Richmond'], '2026-11-22').filter((p) => p.kind === 'city').length, 0, 'a bare ambiguous name gets no page rather than a merged one');
+});
+
+// ---- country level: /cameras/ -> /cameras/<country>/ -> /cameras/<country>/<region>/ -> city ----
+const lvl = (n) => [...pages.keys()].filter((r) => r.startsWith('/cameras/') && r.split('/').filter(Boolean).length === n);
+test('levels built: 1 world hub, one country hub per country, one region hub per region, city pages; counts match the registry', async () => {
+  const { countsBy: cb, REGION_COUNTRY } = await import('../../ops/importers/lib/registry.mjs');
+  const byCountry = cb(cameras, 'country');
+  assert.ok(pages.has('/cameras/'));
+  assert.equal(lvl(2).length, Object.keys(byCountry).length);
+  assert.equal(lvl(3).length, Object.keys(cb(cameras, 'region')).length);
+  for (const [country, n] of Object.entries(byCountry)) {
+    const html = pages.get(`/cameras/${country}/`);
+    assert.ok(html, country);
+    assert.ok(titleOf(html).includes(`${n} official links`), `${country}: title count`);
+    assert.ok(!isNoindex(html));
+    for (const [region, c] of Object.entries(REGION_COUNTRY)) {
+      if (c.countrySlug !== country) continue;
+      assert.ok(html.includes(`href="/cameras/${country}/${region}/"`), `${country} does not link ${region}`);
+      assert.ok(html.includes(`${cb(cameras.filter((x) => x.regionSlug === region), 'region')[region]} cameras on `), `${country}: ${region} count in text`);
+    }
+  }
+  const world = pages.get('/cameras/');
+  for (const c of Object.keys(byCountry)) assert.ok(world.includes(`href="/cameras/${c}/"`), `world hub does not link ${c}`);
+});
+test('breadcrumb JSON-LD has one more level: Home, All cameras, country, region, city', () => {
+  const ld = (route) => JSON.parse(pages.get(route).match(/<script type="application\/ld\+json">([^<]*)<\/script>/)[1]).itemListElement.map((i) => i.item.replace(SITE_URL, ''));
+  assert.deepEqual(ld('/cameras/united-states/california/los-angeles/'), ['/', '/cameras/', '/cameras/united-states/', '/cameras/united-states/california/', '/cameras/united-states/california/los-angeles/']);
+  assert.deepEqual(ld('/cameras/canada/british-columbia/'), ['/', '/cameras/', '/cameras/canada/', '/cameras/canada/british-columbia/']);
+  assert.deepEqual(ld('/cameras/canada/'), ['/', '/cameras/', '/cameras/canada/']);
+});
+test('old two-level addresses are gone and nothing links them (no redirects needed: staging is noindex)', () => {
+  for (const old of ['/cameras/california/', '/cameras/british-columbia/', '/cameras/california/los-angeles/']) assert.ok(!pages.has(old), `${old} still built`);
+  for (const [route, html] of pages) for (const m of html.matchAll(/href="(\/cameras\/(?:california|british-columbia)\/[^"]*)"/g)) assert.fail(`${route} links old address ${m[1]}`);
+});
+test('country hubs: in the sitemap, canonical, and each region hub says which country it is in and links it', () => {
+  const xml = readFileSync(join(DIST, 'sitemap.xml'), 'utf8');
+  for (const c of lvl(2)) { assert.ok(xml.includes(`<loc>${SITE_URL}${c}</loc>`), `${c} not in sitemap`); assert.ok(pages.get(c).includes(`<link rel="canonical" href="${SITE_URL}${c}">`)); }
+  assert.ok(pages.get('/cameras/united-states/california/').includes('href="/cameras/united-states/"'));
+  assert.ok(pages.get('/cameras/canada/british-columbia/').includes('href="/cameras/canada/"'));
+  assert.ok(pages.get('/cameras/canada/british-columbia/mission/').includes('Canada.'), 'city page names its country');
+});
+test('road pages stay at /roads/<slug>/ and say California, United States in their title', () => {
+  for (const r of pages.keys()) if (/^\/roads\/(i|sr|us)-\d+[a-z]?\/$/.test(r)) assert.ok(titleOf(pages.get(r)).includes('California, United States'), r);
+  assert.ok(titleOf(pages.get('/roads/')).includes('California, United States'));
+});
+test('country hubs hold their own data, not swapped names: the sources and counts of the other country are absent', () => {
+  const us = pages.get('/cameras/united-states/').replace(/<footer[\s\S]*<\/footer>/, '');
+  const ca = pages.get('/cameras/canada/').replace(/<footer[\s\S]*<\/footer>/, '');
+  assert.ok(/Caltrans/.test(us) && !/DriveBC/.test(us));
+  assert.ok(/DriveBC/.test(ca) && !/Caltrans/.test(ca));
 });

@@ -2,18 +2,21 @@
 import Base from '../../layouts/Base.astro';
 import { SITE_NAME } from '../../config.mjs';
 import { cameras, countsBy, registryDate, sourceOf } from '../../lib/data.mjs';
-import { regionsWithPages, isIndexable, regionInfo } from '../../lib/pages.mjs';
+import { countryOf } from '../../../../ops/importers/lib/registry.mjs';
+import { regionsWithPages, countriesWithPages, countryName, countryRoute, regionRoute, isIndexable, regionInfo } from '../../lib/pages.mjs';
 const total = cameras.length;
 const byRegion = countsBy(cameras, 'region');
 const regions = regionsWithPages(cameras);
+const countries = countriesWithPages(cameras);
+const byCountry = countsBy(cameras, 'country');
 const nameOf = (slug) => cameras.find((c) => c.regionSlug === slug).regionName;
 const sourceNames = regions.map((r) => (sourceOf(regionInfo(r).sourceId) || {}).name).filter(Boolean).join('; ');
 ---
-<Base title={`Traffic cameras by region: ${total} cameras | ${SITE_NAME}`} description={`${total} traffic cameras across ${regions.length} region${regions.length === 1 ? '' : 's'}, each linked to the official source.`} route="/cameras/" crumbs={[{ name: 'All cameras', route: '/cameras/' }]} noindex={!isIndexable(total)}>
-  <h1>Traffic cameras by region</h1>
-  <p>{total} cameras in {regions.length} region{regions.length === 1 ? '' : 's'}. A region appears here only when we hold at least 3 cameras for it. Ontario and Alberta are not listed because we have no cameras for them yet.</p>
+<Base title={`Traffic cameras by country: ${total} cameras | ${SITE_NAME}`} description={`${total} traffic cameras in ${countries.length} countr${countries.length === 1 ? 'y' : 'ies'} and ${regions.length} region${regions.length === 1 ? '' : 's'}, each linked to the official source.`} route="/cameras/" crumbs={[{ name: 'All cameras', route: '/cameras/' }]} noindex={!isIndexable(total)}>
+  <h1>Traffic cameras by country</h1>
+  <p>{total} cameras in {countries.length} countr{countries.length === 1 ? 'y' : 'ies'} and {regions.length} region{regions.length === 1 ? '' : 's'}. A country or region appears here only when we hold at least 3 cameras for it. Ontario and Alberta are not listed because we have no cameras for them yet.</p>
   <section data-block="regions" data-basis="registry" data-source={sourceNames} data-asof={registryDate}>
-    <ul>{regions.map((r) => <li><a href={`/cameras/${r}/`}>{nameOf(r)} traffic cameras</a> ({byRegion[r]})</li>)}</ul>
+    <ul>{countries.map((c) => <li><a href={countryRoute(c)}>{countryName(c)} traffic cameras</a> ({byCountry[c]}): {regions.filter((r) => countryOf(r).countrySlug === c).map((r, i) => <>{i > 0 && ', '}<a href={regionRoute(r)}>{nameOf(r)}</a> ({byRegion[r]})</>)}</li>)}</ul>
   </section>
   <p><a class="cta" href="/map/">Open the map</a></p>
 </Base>
