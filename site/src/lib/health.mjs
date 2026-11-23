@@ -1,4 +1,4 @@
-// Camera health block data (plan section 12). Pure functions plus a loader; no network.
+// Camera health block data (plan.md section 6). Pure functions plus a loader; no network.
 // Beats Argos by: every camera shows its own checked status from our checker (a 200 HTML page counts as failed), and the
 // block is hidden, never shown as current, when the last run is older than 24 h at build.
 // ONE function (`cityHealth`, through `tally`) computes every count the block shows.

@@ -1,5 +1,5 @@
 ---
-import { SITE_NAME, SITE_URL } from '../config.mjs';
+import { SITE_NAME, SITE_URL, NOINDEX_ALL } from '../config.mjs';
 import { sourceOf } from '../lib/data.mjs';
 const fi = sourceOf('digitraffic'), qc = sourceOf('quebec-mtmd'), tor = sourceOf('toronto-traffic'), cgy = sourceOf('calgary-traffic'); // attribution lines come from sources.json (one place), shown only when that source is in the registry
 const { title, description, route, crumbs = [], noindex = false } = Astro.props;
@@ -20,7 +20,7 @@ const ld = JSON.stringify({
   <title>{title}</title>
   <meta name="description" content={description} />
   <link rel="canonical" href={canonical} />
-  {noindex && <meta name="robots" content="noindex,follow" />}
+  {NOINDEX_ALL ? <meta name="robots" content="noindex,nofollow" /> : noindex && <meta name="robots" content="noindex,follow" />}
   <script type="application/ld+json" set:html={ld}></script>
   <style>
     :root { --fg:#1b1f24; --bg:#fff; --mut:#566; --line:#d9dee3; --link:#0b57d0; --cta:#0b57d0; }

@@ -1,4 +1,4 @@
-// Live-conditions page blocks (plan section 12). Pure functions plus a cached loader; no network.
+// Live-conditions page blocks (plan.md section 6). Pure functions plus a cached loader; no network.
 // Beats Argos by: every block names its source, links the feed doc, shows its own timestamp, and is OMITTED
 // (never empty, never faked) when its licence row is closed, its data is past its max age, or nothing is near the city.
 // Every number a block shows is items.length of the list the block renders, computed here once.

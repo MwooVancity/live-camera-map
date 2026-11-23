@@ -62,7 +62,7 @@ Every line carries "Beats Argos by:". The Argos pages for the same places were n
 - `/404.html` (noindex, not in sitemap).
 - Any city or region that falls below 3 cameras after a re-import.
 
-## Live blocks on city pages (plan section 12, built 2026-11-22)
+## Live blocks on city pages (plan.md section 6, built 2026-11-22)
 Each block is a server-rendered `<section data-block data-source data-asof>` with source link, attribution and an "Updated" time, text only. It is omitted when its licence row is not enabled (`tests/licensing/gate.mjs`), when its data is older than its max age at build, or when nothing is within 15 km of the city centre. One function (`site/src/lib/live.mjs`, `cityBlocks`) decides all of that and produces every number shown. No block appears on pages without data, so the blocks present differ per city.
 - `road-conditions` (max age 15 min) Beats Argos by: shows only closures in effect now plus chain controls, each with its own distance from the city, delay and end time from Caltrans, instead of a flat statewide list.
 - `message-signs` (15 min) Beats Argos by: the exact sign wording with the time the message was set, and a warning that a sign can keep an old message, so an old message is never passed off as current.

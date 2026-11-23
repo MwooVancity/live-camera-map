@@ -85,13 +85,13 @@ const guides = isCA
   )}
 
   {hb ? (
-    <section data-block="health" data-source="NearbyCams health checker" data-asof={hb.asof} data-count={hb.total}>
+    <section data-block="health" data-source="World Traffic Cameras health checker" data-asof={hb.asof} data-count={hb.total}>
       <h2>Camera health</h2>
       <p>Last check {when(hb.asof)}: {hb.counts.reachable} reachable, {hb.counts.stale} stale, {hb.counts.unavailable} unavailable, {hb.counts.unknown} unknown, out of {hb.total} cameras. See <a href="/guides/how-to-read-last-checked-status/">how to read these statuses</a>.</p>
       <ul class="cols">{hb.roads.map((r) => <li>{r.road}: {r.counts.reachable} reachable, {r.counts.stale} stale, {r.counts.unavailable} unavailable, {r.counts.unknown} unknown (of {r.n}).</li>)}</ul>
     </section>
   ) : (
-    <section data-block="health" data-source="NearbyCams health checker" data-asof="not-checked">
+    <section data-block="health" data-source="World Traffic Cameras health checker" data-asof="not-checked">
       <h2>Camera health</h2>
       {hReason === 'stale'
         ? <p>Not checked recently. Our last camera check is more than 24 hours old, so we show no status for these {n} links rather than an old one. See <a href="/guides/how-to-read-last-checked-status/">how to read these statuses</a>.</p>

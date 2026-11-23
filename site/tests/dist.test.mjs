@@ -381,3 +381,19 @@ test('footer credits link to the licence terms and say what we changed (CC BY: l
   }
 });
 const countryOfRegion = (slug) => ({ california: 'united-states', finland: 'finland' }[slug] || (slug ? 'canada' : null));
+
+// ---- launch switch (owner 2026-11-23): PUBLIC_NOINDEX=1 hides EVERY page, robots disallows all, sitemap is empty ----
+test('launch switch: PUBLIC_NOINDEX=1 build hides every page and offers no URL to search engines', () => {
+  const out = mkdtempSync(join(tmpdir(), 'noindex-'));
+  execFileSync(process.execPath, ['node_modules/astro/astro.js', 'build', '--outDir', out], { env: { ...process.env, PUBLIC_NOINDEX: '1' }, stdio: 'pipe' });
+  const pages = readPages(out);
+  assert.ok(pages.size > 20, 'built pages: ' + pages.size);
+  for (const [route, html] of pages) assert.match(html, /<meta name="robots" content="noindex,nofollow"/, route + ' is not noindex,nofollow');
+  assert.match(readFileSync(join(out, 'robots.txt'), 'utf8'), /Disallow: \//);
+  assert.doesNotMatch(readFileSync(join(out, 'robots.txt'), 'utf8'), /Sitemap:/);
+  assert.doesNotMatch(readFileSync(join(out, 'sitemap.xml'), 'utf8'), /<loc>/);
+});
+test('default build (launch switch off) is indexable and has a real sitemap', () => {
+  assert.match(readFileSync(join(DIST, 'robots.txt'), 'utf8'), /Allow: \//);
+  assert.match(readFileSync(join(DIST, 'sitemap.xml'), 'utf8'), /<loc>/);
+});

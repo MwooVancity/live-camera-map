@@ -1,0 +1,80 @@
+name: production
+# Builds the real site (worldtrafficcameras.com) with fresh feeds and deploys it to Cloudflare Pages.
+# Does NOTHING until the owner adds the two repository secrets CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID (plan.md owner to-do),
+# so it never doubles the load on the data sources before it can deploy.
+# The site stays HIDDEN from search (noindex on every page, robots.txt Disallow, empty sitemap) until the owner sets the repository
+# variable LAUNCH to the value live (Settings > Secrets and variables > Actions > Variables).
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '47 */3 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: production
+  cancel-in-progress: true
+env:
+  PUBLIC_SITE_URL: https://worldtrafficcameras.com
+jobs:
+  configured:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      ok: ${{ steps.cfg.outputs.ok }}
+    steps:
+      - id: cfg
+        env:
+          T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          A: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$T" ] && [ -n "$A" ]; then echo "ok=true" >> "$GITHUB_OUTPUT"; else echo "ok=false" >> "$GITHUB_OUTPUT"; echo "Cloudflare secrets not set: production deploy skipped (see plan.md owner to-do)."; fi
+  deploy:
+    needs: configured
+    if: needs.configured.outputs.ok == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 32
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Refresh live feeds (a feed that cannot refresh keeps its last file; one bad feed never stops the deploy)
+        run: |
+          node ops/importers/caltrans-conditions.mjs || echo "caltrans conditions not fully refreshed (exit $?)"
+          node ops/importers/nws.mjs || echo "nws not fully refreshed (exit $?)"
+          timeout 120 node ops/importers/drivebc.mjs --only=events || echo "BC events not refreshed (exit $?)"
+          timeout 90 node ops/importers/toronto.mjs || echo "Toronto list not refreshed (exit $?)"
+          timeout 60 node ops/importers/calgary.mjs || echo "Calgary list not refreshed (exit $?)"
+      - name: Camera health check (fair budget by source, previous result from the live site or, on the first run, from staging)
+        timeout-minutes: 22
+        run: |
+          curl --fail --silent --location --max-time 30 -o previous-health.json "$PUBLIC_SITE_URL/health.json" || curl --fail --silent --location --max-time 30 -o previous-health.json "https://mwoovancity.github.io/live-camera-map/health.json" || { echo "no previous health.json: starting fresh"; rm -f previous-health.json; }
+          if [ -s previous-health.json ]; then PREV="--previous previous-health.json"; else PREV=""; fi
+          node ops/health/check.mjs $PREV --out data/health/health.json || echo "health checker crashed (exit $?): the deploy continues without a new health.json"
+          mkdir -p site/public
+          if [ ! -f data/health/health.json ] && [ -s previous-health.json ]; then mkdir -p data/health; cp previous-health.json data/health/health.json; fi
+          if [ -f data/health/health.json ]; then cp data/health/health.json site/public/health.json; else echo "no health.json to publish"; fi
+      - run: npm ci
+        working-directory: site
+      - name: Build and test the normal site (the tests expect the indexable build)
+        run: |
+          npm run build
+          npm test
+        working-directory: site
+      - run: node ops/harness/page-gate.mjs site/dist site/PAGES.md
+      - name: Build the site to deploy (hidden from search unless the repository variable LAUNCH is live)
+        env:
+          PUBLIC_NOINDEX: ${{ vars.LAUNCH == 'live' && '0' || '1' }}
+        run: |
+          echo "LAUNCH=${{ vars.LAUNCH }} -> PUBLIC_NOINDEX=$PUBLIC_NOINDEX"
+          npm run build -- --outDir dist-deploy
+        working-directory: site
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy site/dist-deploy --project-name=worldtrafficcameras --branch=main

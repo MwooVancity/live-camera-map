@@ -2,7 +2,7 @@
 // Beats Argos by: a driver sees every camera on a road in driving order, with the closures, signs and chain controls
 // between them each linked to their nearest cameras; Argos lists cameras by city only.
 //
-// WHY THE ORDER IS GEOMETRIC (checked on the real Caltrans files, 2026-11-22, see plan.md): `postmile` restarts at every
+// WHY THE ORDER IS GEOMETRIC (checked on the real Caltrans files, 2026-11-22, see docs/decisions/review-2026-11-22-chatgpt-vs-argos.md and plan.md section 6): `postmile` restarts at every
 // county line, and `milepost` is not one continuous scale across districts (on I-5 northbound the milepost of an Orange
 // County camera is lower than a Los Angeles camera that is further south of it), so neither is a reliable sort key.
 // We order by projecting each camera onto the road's main axis (line of best fit through all its cameras).

@@ -1,5 +1,5 @@
 // Search entries from the registry. Pure (no fs, no network). Every URL is built by the same functions the pages use (pages.mjs), and an entry
-// links to a page only if pageList says that page exists. Never a per-camera page (plan section 2).
+// links to a page only if pageList says that page exists. Never a per-camera page (plan.md section 8).
 // Beats Argos by: the index is made from the same registry and page list as the pages, so a result can never point at a page that is not built
 // and a town with no page still gets a result (its map position) instead of nothing.
 import { roadSlug, countryOf } from '../../../ops/importers/lib/registry.mjs';

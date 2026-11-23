@@ -1,8 +1,11 @@
 import { cameras, registryDate, regionDates } from '../lib/data.mjs';
 import { pageList, curatedPlaces, curatedRoads, buildSitemap } from '../lib/pages.mjs';
-import { SITE_URL } from '../config.mjs';
+import { SITE_URL, NOINDEX_ALL } from '../config.mjs';
 
 export function GET() {
-  const pages = pageList(cameras, curatedPlaces(cameras), registryDate, curatedRoads(cameras), regionDates);
-  return new Response(buildSitemap(pages, SITE_URL), { headers: { 'Content-Type': 'application/xml' } });
+  // Launch switch off: an empty sitemap, so no URL is offered to search engines.
+  const xml = NOINDEX_ALL
+    ? '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>'
+    : buildSitemap(pageList(cameras, curatedPlaces(cameras), registryDate, curatedRoads(cameras), regionDates), SITE_URL);
+  return new Response(xml, { headers: { 'Content-Type': 'application/xml' } });
 }

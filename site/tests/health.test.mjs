@@ -58,7 +58,7 @@ test('built page, fresh health file: counts, per-road lines and per-camera marke
   const { out, pages } = build(f);
   const html = pages.get(route);
   const sec = healthSection(html);
-  assert.match(sec, /data-source="NearbyCams health checker"/);
+  assert.match(sec, /data-source="World Traffic Cameras health checker"/);
   assert.ok(sec.includes(`data-asof="${h.generatedAt}"`));
   const want = tally(sd, h);
   assert.ok(sec.includes(`${want.reachable} reachable, ${want.stale} stale, ${want.unavailable} unavailable, ${want.unknown} unknown, out of ${sd.length} cameras`), 'city counts line');

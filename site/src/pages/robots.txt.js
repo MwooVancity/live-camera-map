@@ -1,5 +1,6 @@
-import { SITE_URL } from '../config.mjs';
+import { SITE_URL, NOINDEX_ALL } from '../config.mjs';
 
 export function GET() {
-  return new Response(`User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`, { headers: { 'Content-Type': 'text/plain' } });
+  const body = NOINDEX_ALL ? 'User-agent: *\nDisallow: /\n' : `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`;
+  return new Response(body, { headers: { 'Content-Type': 'text/plain' } });
 }
