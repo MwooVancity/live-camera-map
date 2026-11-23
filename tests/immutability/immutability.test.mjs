@@ -25,7 +25,7 @@ const withClone = (fn) => () => {
   try {
     fn(d);
   } finally {
-    rmSync(d, { recursive: true, force: true });
+    try { rmSync(d, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch { /* cleanup race on CI: a leftover temp folder must not fail the immutability test */ }
   }
 };
 
