@@ -15,7 +15,7 @@ Every public data source Argos Atlas uses is a LEAD for us: if they use it and i
 Mike is a first-time solo developer building this as a side venture. He wants complete, immediately usable deliverables, direct communication, and for you to make decisions yourself and state them in one line. Do not hedge or pile on caveats. But assume everything will break: verify before claiming anything works, and say plainly what you could not verify.
 
 ## Project in one paragraph
-A free, search-first camera directory with a simple 2D map (English first, WORLD-wide: owner 2026-11-22 "I do not care about anywhere but the world, like Argos"), competing with argosatlas.com. Launch is link-out only: show camera metadata and link to the official source.
+A free, search-first camera directory with a simple 2D map (English first, WORLD-wide: owner 2026-11-22 "I do not care about anywhere but the world, like Argos"), competing with argosatlas.com (a world-right-now product: cameras, flights, ships, hazards, country pages, tools; EN and ES; its map asks for sign-in, ours never will). Cameras are our core and strongest edge; every other Argos vertical is a lead built in order of Ahrefs traffic and licence cleanliness (plan sections 17-18). Launch is link-out only: show camera metadata and link to the official source.
 
 ## Stack
 Astro (static site), MapLibre GL JS, OpenFreeMap tiles behind a provider abstraction, JSON data in git (`cameras.json`, `sources.json`), generated `health.json` published to Cloudflare R2, GitHub Actions for health checks, Cloudflare Pages hosting. Node 22+ for the site (the God's Eye View repo, if used, needs Node 24.14+ or 26).

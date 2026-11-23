@@ -80,7 +80,7 @@ Run in parallel from day 1: keyword research (Google Keyword Planner or Ahrefs f
 Open each source's official terms page before setting any permission to `allowed`.
 
 ## 9. Out of scope for v1
-3D globe, flights, ships, conflict layers, voice/AI, Spanish, image proxy or caching, historical images, a database, a backend, mass programmatic SEO pages, copying anything from argosatlas.com (code, text, images, layout) or scraping it.
+image proxy or caching (3D globe, flights, ships, conflict layers and Spanish moved OUT of this list by section 18, owner 2026-11-23), historical images, a database, a backend, mass programmatic SEO pages, copying anything from argosatlas.com (code, text, images, layout) or scraping it.
 
 ## 10. Open question
 Ads next to third-party camera content: ask each provider whether images may be shown alongside advertisements before enabling embeds + ads.
@@ -99,7 +99,7 @@ Our version (agreed): the map is the product, a SMALL curated silo is the acquis
 - Internal links (real `<a>` tags only): hub -> region -> city; city -> parent; city -> 3-6 related locations; city -> 2-3 guides; guide -> city; every landing page -> prominent map CTA; map -> crawlable links to landing pages. Descriptive anchors ("Toronto traffic cameras"), not "click here".
 - Initial HTML must contain title, count, coverage, sources, health summary and links. The map hydrates after.
 - One registry powers every count, so numbers never disagree across title, map and list.
-- Do NOT copy: 330 guides, EN/ES mirroring, 1,000+ pages, featured thumbnails (no image rights yet), "is X free" posts.
+- Do NOT copy their text, code, images or layout. (Superseded 2026-11-23 by sections 17-18: we DO cover every topic and page type they rank for, with our own data-driven pages, EN and ES, no machine-translated thin mirrors, no featured thumbnails until image rights exist.)
 - (Superseded by section 12, owner 2026-11-22: every landing page ships maxed out from day one. Number of pages still grows only with real coverage, never because more records exist.)
 
 ## 12. Page content: everything on the page (owner 2026-11-22: "put everything on the page, maxed out info gain")
@@ -208,3 +208,19 @@ Next asks queued: (1) [DONE 2026-11-23: Day 4 search design], (2) which countrie
 6. Build order is by the traffic each gap represents, biggest first; sources by camera count x licence cleanliness (section 15).
 7. Re-read the Argos report monthly; new clusters become new rows. Search Console is the check that the pages actually rank.
 Edge cases: a cluster we cannot serve legally -> gap row with the reason, never a copied page; Argos traffic from the logged-in map app or brand -> listed as not capturable; Ahrefs numbers are estimates -> treat as direction, verify with Search Console; the export format changes -> parser fails closed.
+
+## 18. Argos verticals and language (owner 2026-11-23: "I need the page better than Argos"; "our plan might need adjustment"; teardown in docs/decisions/argos-teardown-2026-11-23.md)
+Argos is a world-right-now product. Traffic parity (section 17) means each vertical below is a candidate. Order is set by Ahrefs traffic, then by licence cleanliness. EVERYTHING here is a LEAD: each source needs its own licence row (quote, URL) before any data ships; paid or non-commercial sources are excluded.
+| Vertical (their page type) | Our page type | Free source leads to verify (UNVERIFIED) |
+|---|---|---|
+| Cameras by country/region/city, EN + ES | already built (EN); add ES | official agency feeds (section 15) |
+| Country "today" (instability, advisories, ports, air quality, markets) | /country/<c>/ data page | travel advisories (government), OpenAQ or WAQI air quality, IMF PortWatch ports, USGS quakes; conflict data licence is the hard part (ACLED is non-commercial: likely excluded) |
+| Chokepoint / ship traffic tools | /tools/<x>/ data pages | IMF PortWatch (CC BY, to verify); live AIS needs a licensed free source |
+| Live flights, celebrity jets | /flights/ pages | ADS-B community feeds (adsb.lol ODbL?), OpenSky stays OFF until written commercial permission |
+| Earthquakes, wildfires, storms, outbreaks | /hazards/ data pages | USGS (public domain), NASA FIRMS, NOAA NWS (already used), WHO outbreak news (terms to read) |
+| Energy grids, critical infrastructure | /infrastructure/ | OSM-derived (ODbL, separate dataset), EIA, ENTSO-E (terms to read) |
+| Blog guides (their 346 per language) | our own short original guides per topic | none: written by us, no copying |
+| Internet outages, military posture | tools | IODA (Georgia Tech, terms to read); military: likely excluded |
+Rules: (a) Spanish is first-class: UI strings and data labels via one string table, hreflang es/en/x-default, per-language data pages (our pages are data, so translation is mostly labels; guides are written, not machine-mirrored); (b) our map stays free with NO account wall (their map asks for sign-in); (c) cameras stay the core and the strongest edge (health, roads, conditions); (d) a vertical is built only after its licence row passes and Ahrefs shows its traffic is worth it; (e) each new page type gets a "Beats Argos by:" line and the page gate.
+Edge cases: a vertical whose only free source is non-commercial -> gap row, not built; machine-translated Spanish thin pages -> forbidden; a hazard feed stale -> block hides (existing rule); conflict content -> only licensed, verified, link-out with attribution, never our own claims.
+Queued ChatGPT ask (section 16): for each vertical above, which free licensed sources exist and what exactly do their licences say; ChatGPT can also screenshot argosatlas.com page types to confirm layouts.
