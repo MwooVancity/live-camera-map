@@ -1,3 +1,4 @@
+import { NEAR_KM } from './live.mjs';
 import { MAX_AGE_MIN } from '../../../ops/importers/lib/conditions.mjs';
 // Guide text. Short, factual, about how THIS site works. Numbers come in through ctx (from the registry), never typed here.
 // ctx: { total, districts: ['10',...], failed: [...], dropped: {notInService, dupLocation}, date }
@@ -70,6 +71,23 @@ export const GUIDE_BODY = {
     { h: 'Why a block can be missing', p: [
       `A block is left out when its licence record is not enabled, when nothing is near the city, or when the data is older than its limit when the site is built: ${MAX_AGE_MIN.lcs} minutes for closures, chain controls and signs, ${MAX_AGE_MIN.rwis} minutes for road weather and ${MAX_AGE_MIN['nws-forecast']} minutes for the forecast and alerts. We would rather show nothing than old data presented as current.`,
       'These feeds come with no accuracy guarantee from Caltrans, and the times Caltrans gives for signs and chain controls have no time zone, which we read as Pacific time. For a closure that affects your trip, check the official source before you drive.',
+    ] },
+  ],
+  'how-to-read-a-road-page': () => [
+    { h: 'What a road page is', p: [
+      'A road page lists every camera on one road, grouped by direction, then the lane closures, chain controls and message signs on that road, each with the cameras closest to it. Each camera name is a link to the official Caltrans source. We do not show the picture.',
+    ] },
+    { h: 'Why the order is by position, not by milepost', p: [
+      'Cameras are listed in driving order: northbound and eastbound run from the start of the road, southbound and westbound run the other way. We work the order out from where each camera is. We draw the straight line of best fit through the cameras of the road and sort each direction by position along it.',
+      'We did not sort by the numbers in the Caltrans file. The postmile starts again at zero at every county line, and the milepost is not one scale across districts: on Interstate 5 northbound, a camera in Orange County carries a lower milepost than one in Los Angeles County that is further south. A sort on either number would put cameras in the wrong order.',
+      'The cost is that a winding stretch, or a road that doubles back, can come out in a slightly wrong order. Treat the order as a guide and use the distances in the coverage section for the real spacing.',
+    ] },
+    { h: 'Nearest cameras', p: [
+      `Next to each closure, chain control or sign we list up to three cameras of the same road, with the straight-line distance in kilometres. We only list an item when at least one camera of that road is within ${NEAR_KM} km of it; any others are counted at the bottom of the block, not hidden.`,
+      'Nearest means closest on the map, not closest by road. A camera 2 km away may be on the other side of a hill or a junction, so check the camera name before you rely on it.',
+    ] },
+    { h: 'Coverage gaps', p: [
+      'The largest gap is the longest straight-line distance between two neighbouring cameras in one direction. A big gap means that stretch has no camera to look at, so a closure there will not have one close by.',
     ] },
   ],
   'camera-link-is-dead': (x) => [

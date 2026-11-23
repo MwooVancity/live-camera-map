@@ -66,3 +66,37 @@ test('hub missing a child link fails', () => {
   writeFileSync(join(d, 'cameras', 'ca', 'index.html'), page(a('/cameras/ca/la/') + a('/cameras/ca/sf/') + a('/cameras/ca/sd/')));
   assert.ok(gate(d, md).some((e) => /does not link child/.test(e)));
 });
+
+// ---- road pages (plan review item 2) ----
+const ROADS = ['i-5', 'i-10', 'sr-1', 'us-101'];
+const WORD = { 'i-5': 'alpha', 'i-10': 'bravo', 'sr-1': 'charlie', 'us-101': 'delta' };
+const roadMd = [md, '- `/roads/` Beats Argos by: one hub that links every road', ...ROADS.map((r) => `- \`/roads/${r}/\` Beats Argos by: cameras in driving order with nearest cameras per event`)].join('\n');
+const event = (cam = true) => `<li data-event="closure">Closure on the ramp today.${cam ? ' Nearest cameras: ' + a('https://cwwp2.dot.ca.gov/x', 'cam').replace('<a ', '<a data-nearest ') : ''}</li>`;
+// opts: mut(road, body) -> body; hub(links) -> html; drop home link to the hub
+function roadSite(opts = {}) {
+  return site({ extra: (w) => {
+    w('', page(a('/cameras/') + a('/map/') + a('/guides/dead-links/') + (opts.homeLink === false ? '' : a('/roads/'))));
+    w('roads', page(opts.hub ? opts.hub(ROADS) : ROADS.map((r) => a(`/roads/${r}/`)).join('')));
+    for (const r of ROADS) {
+      let body = ROADS.filter((o) => o !== r).map((o) => a(`/roads/${o}/`)).join('') + a('/roads/') + a('/cameras/ca/la/') + a('/cameras/ca/sf/') + a('/guides/dead-links/') + a('/map/') +
+        `<section data-block="cameras" data-basis="registry" data-source="caltrans" data-asof="2026-11-22"><p>Road ${WORD[r]} runs past its own exit with camera spacing unique to ${WORD[r]}.</p><p>The ${WORD[r]} corridor has distinct wording for ${WORD[r]} drivers today.</p><ul>${event()}</ul></section>`;
+      if (opts.mut) body = opts.mut(r, body);
+      w(`roads/${r}`, page(body));
+    }
+  } });
+}
+const strip = (re) => (r, b) => b.replace(re, '');
+test('good road fixture passes the page gate', () => assert.deepStrictEqual(gate(roadSite(), roadMd), []));
+test('road page without the hub link fails', () => assert.ok(gate(roadSite({ mut: strip(/<a href="\/roads\/">x<\/a>/) }), roadMd).some((e) => /no link to the roads hub/.test(e))));
+test('road page with fewer than 3 related roads fails', () => assert.ok(gate(roadSite({ mut: (r, b) => b.replace(/<a href="\/roads\/(?!")[a-z0-9-]+\/">x<\/a>/g, '') }), roadMd).some((e) => /related-road links/.test(e))));
+test('road page with fewer than 2 city links fails', () => assert.ok(gate(roadSite({ mut: (r, b) => b.replace(/<a href="\/cameras\/ca\/sf\/">x<\/a>/, '') }), roadMd).some((e) => /city-page links/.test(e))));
+test('road page without a guide link fails', () => assert.ok(gate(roadSite({ mut: strip(/<a href="\/guides\/dead-links\/">x<\/a>/) }), roadMd).some((e) => /no link to any guide/.test(e))));
+test('road page without a map link fails', () => assert.ok(gate(roadSite({ mut: (r, b) => b.replace('<a href="/map/">x</a>', '') }), roadMd).some((e) => /no link to \/map\//.test(e))));
+test('roads hub missing a road fails', () => assert.ok(gate(roadSite({ hub: (rs) => rs.slice(1).map((r) => a(`/roads/${r}/`)).join('') }), roadMd).some((e) => /\/roads\/: does not link child \/roads\/i-5\//.test(e))));
+test('road pages not linked from / are orphans (reachable within 3 clicks is enforced)', () => assert.ok(gate(roadSite({ homeLink: false }), roadMd).some((e) => /orphan/.test(e))));
+test('closure or sign with no nearest camera link fails', () => assert.ok(gate(roadSite({ mut: (r, b) => b.replace(event(), event(false)) }), roadMd).some((e) => /lists no nearest camera/.test(e))));
+test('road pages that share their sentences fail the duplicate check', () => {
+  const same = '<p>This road has cameras in driving order for every direction it runs.</p><p>Each closure lists the cameras that are nearest to it on the map.</p>';
+  assert.ok(gate(roadSite({ mut: (r, b) => b.replace(/<p>[\s\S]*<\/p>/, same) }), roadMd).some((e) => /near-duplicate/.test(e) && /roads/.test(e)));
+});
+test('road page without a Beats Argos line fails', () => assert.ok(gate(roadSite(), roadMd.split('\n').filter((l) => !l.includes('/roads/sr-1/')).join('\n')).some((e) => /\/roads\/sr-1\/: PAGES.md/.test(e))));

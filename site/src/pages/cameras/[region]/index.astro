@@ -27,6 +27,6 @@ const feeds = FEED_LIST.map((f) => feedStatus(f));
     <h2>Live data freshness</h2>
     <ul>{feeds.map((f) => <li>{f.name}: {f.state}{f.failed.length ? `, districts ${f.failed.join(', ')} did not load` : ''}{f.asof ? `, last fetched ${f.asof.slice(0, 16).replace('T', ' ')} UTC` : ''}. <span class="meta">Shown on city pages only when newer than {f.maxAgeMin} minutes at build.</span></li>)}</ul>
   </section>
-  <p><a class="cta" href="/map/">Open the map</a></p>
+  <p><a class="cta" href="/map/">Open the map</a> <a href="/roads/">Traffic cameras by road</a></p>
   <p>Guides: {GUIDES.slice(0, 3).map((g, i) => <>{i > 0 && ', '}<a href={`/guides/${g.slug}/`}>{g.title}</a></>)}.</p>
 </Base>

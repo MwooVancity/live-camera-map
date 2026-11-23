@@ -2,9 +2,10 @@
 import Base from '../../../layouts/Base.astro';
 import { SITE_NAME } from '../../../config.mjs';
 import { cameras, countsBy, registryDate, sources, loadedDistricts } from '../../../lib/data.mjs';
-import { curatedCities, slugify, isIndexable } from '../../../lib/pages.mjs';
+import { curatedCities, curatedRoads, slugify, isIndexable } from '../../../lib/pages.mjs';
 import { cityBlocks } from '../../../lib/live.mjs';
 import { loadHealth, cityHealth, MEANING, STATUSES } from '../../../lib/health.mjs';
+import { roadSlug } from '../../../../../ops/importers/lib/registry.mjs';
 import LiveBlock from '../../../components/LiveBlock.astro';
 
 export function getStaticPaths() {
@@ -34,6 +35,7 @@ const related = curatedCities(cameras).filter((c) => c !== city && cameras.find(
   .map((c) => { const p = centre(cameras.filter((x) => x.city === c)); return { c, d: (p.lat - me.lat) ** 2 + ((p.lon - me.lon) * Math.cos(me.lat * Math.PI / 180)) ** 2 }; })
   .sort((a, b) => a.d - b.d).slice(0, 4).map((x) => x.c);
 
+const roadsHere = curatedRoads(cameras).map((r) => [r, here.filter((c) => c.road === r).length]).filter(([, k]) => k > 0).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 const sorted = [...here].sort((a, b) => a.road.localeCompare(b.road) || a.direction.localeCompare(b.direction) || a.name.localeCompare(b.name));
 const { block: hb, reason: hReason } = cityHealth(here, loadHealth());
 const when = (iso) => iso.slice(0, 16).replace('T', ' ') + ' UTC';
@@ -80,6 +82,8 @@ const top = roads.slice(0, 3).map(([r, k]) => `${r} (${k})`).join(', ');
 
   <h2>Nearby places</h2>
   <ul>{related.map((c) => <li><a href={`/cameras/${region}/${slugify(c)}/`}>{c} traffic cameras</a> ({byCity[c]})</li>)}</ul>
+  {roadsHere.length > 0 && <><h2>Roads in {city}</h2>
+  <ul>{roadsHere.map(([r, k]) => <li><a href={`/roads/${roadSlug(r)}/`}>{r} traffic cameras</a>: {k} of its cameras {k === 1 ? 'is' : 'are'} near {city}</li>)}</ul></>}
   <h2>Guides</h2>
   <ul>
     <li><a href="/guides/how-caltrans-cameras-work/">How Caltrans traffic cameras work</a></li>

@@ -151,3 +151,26 @@ test('real data: no two city names differ only by case or spacing', () => {
     seen.set(k, c.city);
   }
 });
+
+test('roadSlug: spellings of one road give one slug; unreadable gives empty (never a page)', async () => {
+  const { roadSlug } = await import('../../ops/importers/lib/registry.mjs');
+  for (const v of ['I-405', 'i-405', ' I 405 ', 'I405', 'I-0405']) assert.equal(roadSlug(v), 'i-405', v);
+  assert.equal(roadSlug('SR-91'), 'sr-91');
+  assert.equal(roadSlug('US-101'), 'us-101');
+  assert.equal(roadSlug('SR-99S'), 'sr-99s'); // suffix kept apart
+  for (const v of ['', null, undefined, 'Main St', 'I-', 'Highway 1', 'SR-12345']) assert.equal(roadSlug(v), '', String(v));
+});
+
+test('real data: every road string gives a slug, and no slug has two spellings', async () => {
+  const { roadSlug } = await import('../../ops/importers/lib/registry.mjs');
+  const by = new Map();
+  for (const c of cams) {
+    if (!c.road) continue; // a camera with no road is counted as "no road recorded", never given a slug
+    const k = roadSlug(c.road);
+    assert.ok(k, `road "${c.road}" has no slug`);
+    if (!by.has(k)) by.set(k, new Set());
+    by.get(k).add(c.road);
+  }
+  for (const [k, spellings] of by) assert.equal(spellings.size, 1, `${k} has spellings ${[...spellings].join(', ')}`);
+  assert.ok(by.has('i-5') && by.has('i-405') && by.has('us-101'));
+});

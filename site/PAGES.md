@@ -10,7 +10,7 @@ Rules used to choose it:
 
 Every line carries "Beats Argos by:". The Argos pages for the same places were not opened; the claims below are about what our page contains.
 
-## Pages (19 indexable)
+## Pages (31 indexable)
 - `/` Beats Argos by: one short answer with the real camera total and the date it was counted, then straight links to the busiest cities.
 - `/map/` Beats Argos by: real crawlable links to every region and city page next to the map, and a page that still works when the map engine is down.
 - `/cameras/` Beats Argos by: one registry number for every count, so the hub, region and city counts cannot disagree.
@@ -25,10 +25,22 @@ Every line carries "Beats Argos by:". The Argos pages for the same places were n
 - `/cameras/california/san-bernardino/` Beats Argos by: every camera as a named official link, roads with counts and direction splits, source and registry date, and a camera health block with a checked status (reachable, stale, unavailable, unknown) beside every camera link, or an honest "not checked yet" line when there is no fresh check.
 - `/cameras/california/san-diego/` Beats Argos by: every camera as a named official link, roads with counts and direction splits, source and registry date, and a camera health block with a checked status (reachable, stale, unavailable, unknown) beside every camera link, or an honest "not checked yet" line when there is no fresh check.
 - `/cameras/california/san-jose/` Beats Argos by: every camera as a named official link, roads with counts and direction splits, source and registry date, and a camera health block with a checked status (reachable, stale, unavailable, unknown) beside every camera link, or an honest "not checked yet" line when there is no fresh check.
+- `/roads/` Beats Argos by: one hub that links every road page, so a driver can start from the road instead of the city, which Argos does not offer; counts come from the same registry function as every other page.
+- `/roads/i-5/` Beats Argos by: a driver sees every camera on I-5 in driving order for each direction, with the closures, signs and chain controls between them, each linked to its nearest cameras, plus the largest camera gap and a checked status per camera; Argos lists cameras by city only.
+- `/roads/us-101/` Beats Argos by: a driver sees every camera on US-101 in driving order for each direction, with the closures, signs and chain controls between them, each linked to its nearest cameras, plus the largest camera gap and a checked status per camera; Argos lists cameras by city only.
+- `/roads/i-15/` Beats Argos by: a driver sees every camera on I-15 in driving order for each direction, with the closures, signs and chain controls between them, each linked to its nearest cameras, plus the largest camera gap and a checked status per camera; Argos lists cameras by city only.
+- `/roads/i-10/` Beats Argos by: a driver sees every camera on I-10 in driving order for each direction, with the closures, signs and chain controls between them, each linked to its nearest cameras, plus the largest camera gap and a checked status per camera; Argos lists cameras by city only.
+- `/roads/i-80/` Beats Argos by: a driver sees every camera on I-80 in driving order for each direction, with the closures, signs and chain controls between them, each linked to its nearest cameras, plus the largest camera gap and a checked status per camera; Argos lists cameras by city only.
+- `/roads/sr-99/` Beats Argos by: a driver sees every camera on SR-99 in driving order for each direction, with the closures, signs and chain controls between them, each linked to its nearest cameras, plus the largest camera gap and a checked status per camera; Argos lists cameras by city only.
+- `/roads/sr-1/` Beats Argos by: a driver sees every camera on SR-1 in driving order for each direction, with the closures, signs and chain controls between them, each linked to its nearest cameras, plus the largest camera gap and a checked status per camera; Argos lists cameras by city only.
+- `/roads/i-210/` Beats Argos by: a driver sees every camera on I-210 in driving order for each direction, with the closures, signs and chain controls between them, each linked to its nearest cameras, plus the largest camera gap and a checked status per camera; Argos lists cameras by city only.
+- `/roads/i-580/` Beats Argos by: a driver sees every camera on I-580 in driving order for each direction, with the closures, signs and chain controls between them, each linked to its nearest cameras, plus the largest camera gap and a checked status per camera; Argos lists cameras by city only.
+- `/roads/i-405/` Beats Argos by: a driver sees every camera on I-405 in driving order for each direction, with the closures, signs and chain controls between them, each linked to its nearest cameras, plus the largest camera gap and a checked status per camera; Argos lists cameras by city only.
 - `/guides/how-to-read-last-checked-status/` Beats Argos by: explains camera health statuses (reachable, stale, unavailable, unknown) that Argos does not report.
 - `/guides/what-link-out-only-means/` Beats Argos by: states plainly what we show and do not show, and why, with the permission status of the data.
 - `/guides/how-caltrans-cameras-work/` Beats Argos by: describes the real source, which districts we hold, what was dropped and what the "city" field really is.
 - `/guides/what-live-road-conditions-mean/` Beats Argos by: explains each live block (closures, chain controls, signs, road weather, forecast, alerts) from the feed owners' own documentation, with its update rhythm and the exact rule for when a block is hidden, which Argos does not publish.
+- `/guides/how-to-read-a-road-page/` Beats Argos by: says why we order cameras by position and not by the Caltrans postmile or milepost (checked on I-5, I-405 and US-101: the postmile restarts at every county line and the milepost is not one scale across districts), and what nearest camera means, which Argos does not explain.
 - `/guides/camera-link-is-dead/` Beats Argos by: a short fix-it path for a dead link, tied to our own health statuses.
 
 ## Not indexed
@@ -44,4 +56,12 @@ Each block is a server-rendered `<section data-block data-source data-asof>` wit
 - `weather-alerts` (180 min) Beats Argos by: official active alerts for the city point beside the road conditions, hidden when none are active rather than shown as an empty box.
 - `feed-freshness` (region page) Beats Argos by: one line per live feed with its last fetch time and which Caltrans districts failed to load.
 - `health` (24 h, our own checker, `ops/health/check.mjs`; counts from one function, `site/src/lib/health.mjs`) Beats Argos by: a checked status next to every camera link (a 200 that returns an HTML or JSON page counts as unavailable, a picture whose server says it was last modified over 6 hours ago is stale), counts per city and per road, and the time of the last check; the statuses are hidden, never shown as current, when the last run is older than 24 hours or did not finish, and the checker keeps last changed apart from status so a still picture is not called dead. Argos shows no per-camera health.
+
+## Road pages (built 2026-11-22)
+Roads: the 10 with the most cameras, each at least 3 (`curatedRoads` in `src/lib/pages.mjs`, provisional like the cities; one spelling per road through `roadSlug` in `ops/importers/lib/registry.mjs`). Cameras are ordered by position along the road's line of best fit (`src/lib/roads.mjs`), not by postmile or milepost. Closures, chain controls and signs come from the same feeds and the same licence and freshness gates as the city blocks (`roadBlocks` in `src/lib/live.mjs`), matched by `roadSlug`, each with its 3 nearest cameras of that road within 25 km (`nearestCameras`); an item with no camera that close is counted, not listed.
+- `cameras` (road page, registry) Beats Argos by: every camera on the road in driving order per direction instead of a list by city, with a checked status beside each.
+- `road-cities` (registry) Beats Argos by: the cities along the road with camera counts and links to their pages; where a road passes no city with a page, the nearest city pages with their distance.
+- `road-conditions`, `message-signs` (15 min) Beats Argos by: each closure, chain control and sign carries its nearest cameras with the distance in km, so a driver can look at the spot; Argos has no event-to-camera link.
+- `road-weather` (60 min), `weather-alerts` (180 min) Beats Argos by: road weather stations on this road and the National Weather Service alerts for the cities listed, with fetch times, on the road page; omitted when stale or unlicensed.
+- `coverage` (registry) Beats Argos by: the largest gap in km between neighbouring cameras per direction, so a driver knows where there is no camera to look at; Argos shows no coverage gaps.
 Not built: CHP incidents and Canadian 511 (no licence row or importer yet).

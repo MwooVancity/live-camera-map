@@ -11,6 +11,14 @@ const s = (v) => (typeof v === 'string' ? v.trim() : '');
 // Caltrans types some places in lower case ("orange" next to "Orange"); that made two cities with one page address.
 export const cleanCity = (v) => s(v).replace(/\s+/g, ' ').toLowerCase().replace(/(^|[ '-])([a-z])/g, (m, a, b) => a + b.toUpperCase());
 
+// The ONE road normalizer: 'I-405', 'i 405', 'SR-91', 'US-101', 'I-5' -> 'i-405', 'sr-91', 'us-101', 'i-5'. A trailing
+// letter stays (Caltrans 'SR-99S' is kept apart from 'SR-99': what the suffix means is not documented in the feed).
+// Returns '' for anything it cannot read; callers must skip '' (never build a page or match on it).
+export const roadSlug = (road) => {
+  const m = s(road).toUpperCase().match(/^(I|SR|US)[\s-]*0*(\d{1,3})([A-Z]?)$/);
+  return m ? `${m[1].toLowerCase()}-${m[2]}${m[3].toLowerCase()}` : '';
+};
+
 // Returns a camera or null; drop reasons are counted into `drop`.
 export function normalizeCaltrans(raw, district, lastSeen, drop = {}) {
   const c = raw && raw.cctv;

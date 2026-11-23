@@ -2,8 +2,9 @@
 import Base from '../../layouts/Base.astro';
 import { SITE_NAME } from '../../config.mjs';
 import { cameras, countsBy, registryDate, report, loadedDistricts, failedDistricts } from '../../lib/data.mjs';
-import { GUIDES, curatedCities, slugify } from '../../lib/pages.mjs';
+import { GUIDES, curatedCities, curatedRoads, slugify } from '../../lib/pages.mjs';
 import { GUIDE_BODY } from '../../lib/guides.mjs';
+import { roadSlug } from '../../../../ops/importers/lib/registry.mjs';
 import { loadHealth, HEALTH_MAX_AGE_H } from '../../lib/health.mjs';
 
 export function getStaticPaths() {
@@ -15,6 +16,8 @@ const fresh = hf && (Date.now() - Date.parse(hf.generatedAt)) / 3600000 <= HEALT
 const sections = GUIDE_BODY[guide.slug]({ healthAsof: fresh ? hf.generatedAt : null, healthTotal: fresh ? Object.keys(hf.cameras).length : 0, total: cameras.length, districts: loadedDistricts, failed: failedDistricts, dropped: report.dropped || {}, date: registryDate });
 const byCity = countsBy(cameras, 'city');
 const cities = curatedCities(cameras).slice(0, 3);
+const roads = curatedRoads(cameras).slice(0, 3);
+const byRoad = countsBy(cameras, 'road');
 const regionOf = (city) => cameras.find((c) => c.city === city).regionSlug;
 const others = GUIDES.filter((g) => g.slug !== guide.slug);
 ---
@@ -24,6 +27,9 @@ const others = GUIDES.filter((g) => g.slug !== guide.slug);
   <p class="meta">Written {guide.date}.</p>
   <h2>See it on a real page</h2>
   <ul>{cities.map((c) => <li><a href={`/cameras/${regionOf(c)}/${slugify(c)}/`}>{c} traffic cameras</a> ({byCity[c]})</li>)}</ul>
+  <h2>Road pages</h2>
+  <ul>{roads.map((r) => <li><a href={`/roads/${roadSlug(r)}/`}>{r} traffic cameras</a> ({byRoad[r]})</li>)}</ul>
+  <p><a href="/roads/">All roads</a></p>
   <p><a class="cta" href="/map/">Open the map</a></p>
   <h2>More guides</h2>
   <ul>{others.map((g) => <li><a href={`/guides/${g.slug}/`}>{g.title}</a></li>)}</ul>

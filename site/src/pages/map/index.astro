@@ -23,6 +23,8 @@ const regionOf = (city) => cameras.find((c) => c.city === city).regionSlug;
   <ul>{regionsWithPages(cameras).map((r) => <li><a href={`/cameras/${r}/`}>{regionName(r)} traffic cameras</a> ({byRegion[r]})</li>)}</ul>
   <h2>Cities</h2>
   <ul class="cols">{cities.map((c) => <li><a href={`/cameras/${regionOf(c)}/${slugify(c)}/`}>{c} traffic cameras</a> ({byCity[c]})</li>)}</ul>
+  <h2>Roads</h2>
+  <p><a href="/roads/">Traffic cameras by road, in driving order</a></p>
   <h2>Guides</h2>
   <ul>{GUIDES.map((g) => <li><a href={`/guides/${g.slug}/`}>{g.title}</a></li>)}</ul>
 </Base>

@@ -12,9 +12,9 @@ const pages = readPages();
 const cameras = JSON.parse(readFileSync('../data/camera-registry/cameras.json', 'utf8'));
 const cityRoutes = [...pages.keys()].filter((r) => r.split('/').filter(Boolean).length === 3 && r.startsWith('/cameras/'));
 
-test('page count is 16-20', () => {
+test('page count is 16-32 (19 base + roads hub + 10 roads + 1 guide)', () => {
   const n = [...pages.keys()].filter((r) => r !== '/404/').length;
-  assert.ok(n >= 16 && n <= 20, `built ${n} pages`);
+  assert.ok(n >= 16 && n <= 32, `built ${n} pages`);
 });
 
 test('every page: one h1, unique title, canonical, breadcrumb JSON-LD', () => {

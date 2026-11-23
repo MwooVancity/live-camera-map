@@ -1,6 +1,6 @@
 // Page gate over the BUILT site. Usage: node ops/harness/page-gate.mjs [distDir] [PAGES.md]
 // Checks: link-out only, silo structure (reachability, depth, parent/related/guide/map links, hubs link every child),
-// block proof (data-block needs data-source + data-asof), near-duplicate city pages, "Beats Argos by:" per indexable page.
+// block proof (data-block needs data-source + data-asof), road pages (hub, related roads, cities, guide, map, nearest cameras per event), near-duplicate city and road pages, "Beats Argos by:" per indexable page.
 import { readdirSync, readFileSync, existsSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -69,6 +69,7 @@ export function gate(dist, pagesMd = '', now = new Date()) {
   const cities = [...pages.keys()].filter((r) => under(r, '/cameras/') && segs(r).length === 3);
   const regions = [...pages.keys()].filter((r) => under(r, '/cameras/') && segs(r).length === 2);
   const guides = [...pages.keys()].filter((r) => under(r, '/guides/'));
+  const roads = [...pages.keys()].filter((r) => under(r, '/roads/') && segs(r).length === 2);
   for (const c of cities) {
     const p = pages.get(c);
     const parent = '/' + segs(c).slice(0, 2).join('/') + '/';
@@ -78,7 +79,23 @@ export function gate(dist, pagesMd = '', now = new Date()) {
     if (!guides.some((g) => p.links.has(g))) errors.push(`${c}: no link to any guide`);
     if (![...p.links].some((l) => l.startsWith('/map/'))) errors.push(`${c}: no link to /map/`);
   }
-  const hubs = [['/cameras/', regions], ...regions.map((r) => [r, cities.filter((c) => c.startsWith(r))])];
+  // road pages (plan review item 2): hub, 3+ related roads, 2+ cities, a guide, the map; the roads hub links every road
+  for (const r of roads) {
+    const p = pages.get(r);
+    if (!p.links.has('/roads/')) errors.push(`${r}: no link to the roads hub /roads/`);
+    const rel = [...p.links].filter((l) => l !== r && roads.includes(l));
+    if (rel.length < 3) errors.push(`${r}: ${rel.length} related-road links, need 3 or more`);
+    const cs = [...p.links].filter((l) => cities.includes(l));
+    if (cs.length < 2) errors.push(`${r}: ${cs.length} city-page links, need 2 or more`);
+    if (!guides.some((g) => p.links.has(g))) errors.push(`${r}: no link to any guide`);
+    if (![...p.links].some((l) => l.startsWith('/map/'))) errors.push(`${r}: no link to /map/`);
+    // every closure, chain control and sign lists at least one nearest-camera link
+    for (const m of p.html.matchAll(/<li\b[^>]*\bdata-event\b[^>]*>([\s\S]*?)<\/li>/gi)) {
+      if (!/<a\b[^>]*\bdata-nearest\b[^>]*href=["'][^"']+["']|<a\b[^>]*href=["'][^"']+["'][^>]*\bdata-nearest\b/i.test(m[1])) errors.push(`${r}: an event (${textOf(m[1]).slice(0, 50)}) lists no nearest camera`);
+    }
+  }
+  if (roads.length && !pages.has('/roads/')) errors.push('road pages exist but /roads/ hub was not built');
+  const hubs = [['/cameras/', regions], ...regions.map((r) => [r, cities.filter((c) => c.startsWith(r))]), ['/roads/', roads]];
   for (const [hub, kids] of hubs) {
     if (!pages.has(hub)) continue;
     for (const k of kids) if (!pages.get(hub).links.has(k)) errors.push(`${hub}: does not link child ${k}`);
@@ -104,14 +121,16 @@ export function gate(dist, pagesMd = '', now = new Date()) {
     if (cities.includes(route) && !p.noindex && !/data-block=/.test(p.html)) errors.push(`${route}: indexable city page has no data blocks`);
   }
 
-  // 4) near-duplicate city pages (shared sentences)
-  const sents = new Map(cities.map((c) => [c, new Set(textOf(pages.get(c).html).split(/(?<=[.!?])\s+/).map((s) => s.toLowerCase().replace(/[0-9]+/g, '#')).filter((s) => s.split(' ').length >= 5))]));
-  for (let i = 0; i < cities.length; i++) for (let j = i + 1; j < cities.length; j++) {
-    const a = sents.get(cities[i]), b = sents.get(cities[j]);
-    if (!a.size || !b.size) continue;
-    let shared = 0; for (const s of a) if (b.has(s)) shared++;
-    const share = shared / Math.min(a.size, b.size);
-    if (share > 0.6) errors.push(`${cities[i]} and ${cities[j]} share ${(share * 100).toFixed(0)}% of sentences (near-duplicate)`);
+  // 4) near-duplicate pages (shared sentences), compared within one kind: city pages together, road pages together
+  for (const group of [cities, roads]) {
+    const sents = new Map(group.map((c) => [c, new Set(textOf(pages.get(c).html).split(/(?<=[.!?])\s+/).map((s) => s.toLowerCase().replace(/[0-9]+/g, '#')).filter((s) => s.split(' ').length >= 5))]));
+    for (let i = 0; i < group.length; i++) for (let j = i + 1; j < group.length; j++) {
+      const a = sents.get(group[i]), b = sents.get(group[j]);
+      if (!a.size || !b.size) continue;
+      let shared = 0; for (const s of a) if (b.has(s)) shared++;
+      const share = shared / Math.min(a.size, b.size);
+      if (share > 0.6) errors.push(`${group[i]} and ${group[j]} share ${(share * 100).toFixed(0)}% of sentences (near-duplicate)`);
+    }
   }
 
   // 5) "Beats Argos by:" per indexable page

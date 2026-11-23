@@ -6,6 +6,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { isEnabled } from '../../../tests/licensing/gate.mjs';
 import { usableItems, usableNws, SOURCE_IDS, MAX_AGE_MIN } from '../../../ops/importers/lib/conditions.mjs';
+import { roadSlug } from '../../../ops/importers/lib/registry.mjs';
 
 export const RADIUS_KM = 15; // a road item counts as "near" a city when within this of the city's camera centroid
 export const MAX_ROWS = 15; // rows shown per list; the heading count is the full count
@@ -22,6 +23,15 @@ export const distKm = (aLat, aLon, bLat, bLon) => {
 };
 export const nearby = (items, c, km = RADIUS_KM) => items.filter((i) => Number.isFinite(i.lat) && Number.isFinite(i.lon) && distKm(c.lat, c.lon, i.lat, i.lon) <= km)
   .map((i) => ({ ...i, km: distKm(c.lat, c.lon, i.lat, i.lon) })).sort((a, b) => a.km - b.km);
+
+// The k cameras closest to an item (great-circle km), nearest first, ties by camera id. [] when the item has no position.
+export const NEAR_KM = 25; // a road page lists a closure or sign only if one of its cameras is within this
+export function nearestCameras(item, cams, k = 3) {
+  if (!item || !Number.isFinite(item.lat) || !Number.isFinite(item.lon)) return [];
+  return cams.filter((c) => Number.isFinite(c.lat) && Number.isFinite(c.lon))
+    .map((camera) => ({ camera, km: distKm(item.lat, item.lon, camera.lat, camera.lon) }))
+    .sort((a, b) => a.km - b.km || a.camera.id.localeCompare(b.camera.id)).slice(0, k);
+}
 
 export function loadLive() {
   const perms = readOrNull(permFile());
@@ -44,14 +54,17 @@ export function feedStatus(feed, live = loadLive(), now = new Date()) {
 }
 export const FEED_LIST = ['lcs', 'cc', 'cms', 'rwis', 'nws-forecast', 'nws-alerts'];
 
+const metaOf = (live, now, feeds, asofs) => {
+  const rs = feeds.map((f) => src(live, f, now).row);
+  return { source: rs.map((r) => r.name.replace(/ \(.*$/, '')).join('; '), attribution: [...new Set(rs.map((r) => r.attribution))].join(' | '), link: firstUrl(rs[0]), asof: [...asofs].sort()[0] };
+};
+const caItemsOf = (live, now, feed) => (src(live, feed, now).ok ? usableItems(live.doc(`ca-${feed}`), feed, now) : []);
+
 // Blocks for one city. c = {lat, lon, slug}. Returns only blocks that passed every gate, in display order.
 export function cityBlocks(c, live = loadLive(), now = new Date()) {
   const out = [];
-  const meta = (feeds, asofs) => {
-    const rs = feeds.map((f) => src(live, f, now).row);
-    return { source: rs.map((r) => r.name.replace(/ \(.*$/, '')).join('; '), attribution: [...new Set(rs.map((r) => r.attribution))].join(' | '), link: firstUrl(rs[0]), asof: asofs.sort()[0] };
-  };
-  const caItems = (feed) => (src(live, feed, now).ok ? usableItems(live.doc(`ca-${feed}`), feed, now) : []);
+  const meta = (feeds, asofs) => metaOf(live, now, feeds, asofs);
+  const caItems = (feed) => caItemsOf(live, now, feed);
   const caAsof = (feed) => live.doc(`ca-${feed}`).generatedAt;
 
   const lcs = nearby(caItems('lcs').filter((i) => i.active), c);
@@ -72,5 +85,50 @@ export function cityBlocks(c, live = loadLive(), now = new Date()) {
   if (periods.length) out.push({ id: 'forecast', title: 'Forecast for the next 48 hours', items: periods, ...meta(['nws-forecast'], [nwsDoc.forecast.fetchedAt]), maxAgeMin: 180 });
   const alerts = src(live, 'nws-alerts', now).ok ? nws.alerts : [];
   if (alerts.length) out.push({ id: 'weather-alerts', title: 'Active weather alerts', items: alerts, ...meta(['nws-alerts'], [nwsDoc.alerts.fetchedAt]), maxAgeMin: 180 });
+  return out;
+}
+
+// Blocks for one road page (same licence and freshness gates as the city blocks). slug = roadSlug; cams = that road's cameras;
+// cities = [{city, slug}] with a page along the road; opts.road = display name, opts.along(item) = position along the road
+// (events are listed in that order). Every closure, chain control and sign carries its 3 nearest road cameras, all within
+// NEAR_KM; an item with none that close is not listed and is counted in `far`, never shown without a camera.
+export function roadBlocks(slug, cams, cities, live = loadLive(), now = new Date(), opts = {}) {
+  const out = [];
+  const road = opts.road || slug;
+  const along = opts.along || (() => 0);
+  const feedAsof = (feed) => live.doc(`ca-${feed}`).generatedAt;
+  const onRoad = (feed, keep = () => true) => caItemsOf(live, now, feed).filter((i) => roadSlug(i.road) === slug && keep(i));
+  const withCams = (list) => {
+    const shown = [], far = [];
+    for (const i of list) {
+      const nearest = nearestCameras(i, cams).filter((n) => n.km <= NEAR_KM);
+      (nearest.length ? shown : far).push({ ...i, nearest });
+    }
+    shown.sort((a, b) => along(a) - along(b) || a.id.localeCompare(b.id));
+    return { shown, far: far.length };
+  };
+
+  const lcs = withCams(onRoad('lcs', (i) => i.active)), cc = withCams(onRoad('cc', (i) => i.inEffect));
+  const rc = [['lcs', lcs], ['cc', cc]].filter(([, l]) => l.shown.length);
+  if (rc.length) out.push({ id: 'road-conditions', title: `Lane closures and chain controls on ${road}`, lcs: lcs.shown, cc: cc.shown, far: lcs.far + cc.far, ...metaOf(live, now, rc.map(([f]) => f), rc.map(([f]) => feedAsof(f))), maxAgeMin: 15 });
+
+  const cms = withCams(onRoad('cms'));
+  if (cms.shown.length) out.push({ id: 'message-signs', title: `Message signs on ${road}`, items: cms.shown, far: cms.far, ...metaOf(live, now, ['cms'], [feedAsof('cms')]), maxAgeMin: 15 });
+
+  const rwis = onRoad('rwis').sort((a, b) => along(a) - along(b) || a.id.localeCompare(b.id));
+  if (rwis.length) out.push({ id: 'road-weather', title: `Road weather stations on ${road}`, items: rwis, ...metaOf(live, now, ['rwis'], [feedAsof('rwis')]), maxAgeMin: 60 });
+
+  // NWS alerts are per city point, so these are the alerts for the cities listed on this page, not for the whole road.
+  if (src(live, 'nws-alerts', now).ok) {
+    const byKey = new Map(), asofs = [];
+    for (const c of cities) {
+      const doc = live.doc(`nws-${c.slug}`);
+      const alerts = usableNws(doc, now).alerts;
+      if (!alerts.length) continue;
+      asofs.push(doc.alerts.fetchedAt);
+      for (const a of alerts) { const k = `${a.event}|${a.headline}`; if (!byKey.has(k)) byKey.set(k, { ...a, cities: [] }); byKey.get(k).cities.push(c.city); }
+    }
+    if (byKey.size) out.push({ id: 'weather-alerts', title: `Weather alerts for cities on ${road}`, items: [...byKey.values()], ...metaOf(live, now, ['nws-alerts'], asofs), maxAgeMin: 180 });
+  }
   return out;
 }

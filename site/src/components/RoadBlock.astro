@@ -1,0 +1,32 @@
+---
+// One live block for a road page (see roadBlocks in src/lib/live.mjs). Text and plain links only, server-rendered at build.
+// Every closure, chain control and sign is an <li data-event> that must carry at least one nearest-camera link (page gate).
+import { NEAR_KM } from '../lib/live.mjs';
+const { b } = Astro.props;
+const total = b.id === 'road-conditions' ? b.lcs.length + b.cc.length : b.items.length;
+const where = (i) => [i.direction, i.place || i.locationName].filter(Boolean).join(', ');
+const val = (v, label) => (v === null || v === undefined ? null : `${label} ${v}`);
+const kmText = (km) => (km < 0.1 ? 'under 0.1' : km.toFixed(1));
+---
+<section data-block={b.id} data-source={b.source} data-asof={b.asof} data-rows={total}>
+  <h2>{b.title} ({total})</h2>
+  {b.id === 'road-conditions' && (<>
+    {b.lcs.length > 0 && <><h3>Lane closures in effect now ({b.lcs.length})</h3>
+      <ul>{b.lcs.map((i) => <li data-event="closure">{where(i)}: {i.text}{i.estimatedDelay ? `, estimated delay ${i.estimatedDelay}` : ''}. <span class="meta">Ends {i.endIndefinite ? 'no set end' : (i.end || 'not stated').slice(0, 16).replace('T', ' ') + ' UTC'}.</span> <span class="meta">Nearest cameras: {i.nearest.map((n, k) => <>{k > 0 && ', '}<a data-nearest href={n.camera.officialUrl} rel="noopener">{n.camera.name}</a> ({kmText(n.km)} km)</>)}.</span></li>)}</ul></>}
+    {b.cc.length > 0 && <><h3>Chain controls in effect ({b.cc.length})</h3>
+      <ul>{b.cc.map((i) => <li data-event="chain-control">{where(i)}: {i.status}. {i.text} <span class="meta">Status set {i.statusLocal || 'time not given'} Pacific.</span> <span class="meta">Nearest cameras: {i.nearest.map((n, k) => <>{k > 0 && ', '}<a data-nearest href={n.camera.officialUrl} rel="noopener">{n.camera.name}</a> ({kmText(n.km)} km)</>)}.</span></li>)}</ul></>}
+  </>)}
+  {b.id === 'message-signs' && (
+    <ul>{b.items.map((i) => <li data-event="sign">{where(i)}: <strong>{i.text}</strong>. <span class="meta">Message set {i.messageLocal || 'time not given'} Pacific. A sign can keep an old message.</span> <span class="meta">Nearest cameras: {i.nearest.map((n, k) => <>{k > 0 && ', '}<a data-nearest href={n.camera.officialUrl} rel="noopener">{n.camera.name}</a> ({kmText(n.km)} km)</>)}.</span></li>)}</ul>
+  )}
+  {b.id === 'road-weather' && (<>
+    <ul>{b.items.map((i) => <li>{where(i)}{i.locationName && i.place ? ` (${i.locationName})` : ''}: {[val(i.airTemp, 'air temperature'), val(i.surfaceTemp, 'road surface temperature'), val(i.windAvg, 'wind'), val(i.windGust, 'gust'), val(i.visibility, 'visibility'), val(i.humidity, 'humidity %')].filter(Boolean).join(', ')}. <span class="meta">Read {i.recordedAt.slice(0, 16).replace('T', ' ')} UTC.</span></li>)}</ul>
+    <p class="meta">Caltrans does not state the units of these readings, so we show them exactly as reported.</p>
+  </>)}
+  {b.id === 'weather-alerts' && (<>
+    <ul>{b.items.map((a) => <li><strong>{a.event}</strong> ({[a.severity, a.urgency].filter(Boolean).join(', ')}). {a.headline} <span class="meta">For {a.cities.join(', ')}.</span></li>)}</ul>
+    <p class="meta">The National Weather Service gives alerts for a point, so these are the alerts for the cities listed on this page, not for every mile of the road.</p>
+  </>)}
+  {b.far > 0 && <p class="meta">{b.far} more {b.far === 1 ? 'item is' : 'items are'} not listed because none of this road's cameras is within {NEAR_KM} km of {b.far === 1 ? 'it' : 'them'}.</p>}
+  <p class="meta">Source: {b.link ? <a href={b.link} rel="noopener">{b.source}</a> : b.source}. {b.attribution}. Updated <time datetime={b.asof}>{b.asof.slice(0, 16).replace('T', ' ')} UTC</time>; hidden when older than {b.maxAgeMin} minutes at build. See <a href="/guides/how-to-read-a-road-page/">how to read a road page</a>.</p>
+</section>
