@@ -4,7 +4,7 @@ Status: direction agreed after a 3-round Claude vs ChatGPT debate, 2026-11-21.
 Owner: Mike. Site name is a placeholder ("NearbyCams"); no domain chosen yet.
 
 ## 1. Goal
-A free, no-paywall, search-first camera directory with a simple 2D map. English first, regional first.
+A free, no-paywall, search-first camera directory with a simple 2D map. English first, WORLD-wide target (owner 2026-11-22); California and BC are the first two regions, not the scope.
 - Launch is LINK-OUT ONLY: each camera page shows metadata and links to the official source.
 - Success = users find a camera, click through to the official source, and come back. Not camera count.
 - First milestone: 150-300 real, reliable cameras (quality over count), 2 working importers, a working map, health monitoring, ~10 useful landing pages.
@@ -38,7 +38,7 @@ Browser: MapLibre map + client fetch of health.json from R2
 Rule: if a health run fails or is incomplete, never overwrite the last good `health.json`.
 
 ## 4. Data model
-`cameras.json` entry: `id`, `sourceId`, `name`, `road`, `direction`, `city`, `regionSlug`, `regionName`, `lat`, `lon`, `feedType` (still|video), `officialUrl`, `officialUrlLastVerified`, `lastSeen`.
+`cameras.json` entry: `id`, `sourceId`, `name`, `road`, `direction`, `city`, `regionSlug`, `regionName`, `lat`, `lon`, `feedType` (still|video), `officialUrl`, `officialUrlLastVerified`, `lastSeen`; optional `locationText` (the source's own caption, text only; DriveBC gives it).
 
 `sources.json` entry: `id`, `name`, `api` {auth, rateLimit, docsUrl}, `permissions` {`metadata_commercial`, `image_display`, `image_caching`, `image_redistribution`: each allowed|not_allowed|unverified}, `attribution`, `license`, `licenseUrl`, `reviewedAt`.
 
@@ -80,7 +80,7 @@ Run in parallel from day 1: keyword research (Google Keyword Planner or Ahrefs f
 Open each source's official terms page before setting any permission to `allowed`.
 
 ## 9. Out of scope for v1
-3D globe, flights, ships, conflict layers, voice/AI, Spanish, image proxy or caching, historical images, a database, a backend, global expansion, mass programmatic SEO pages, copying anything from argosatlas.com (code, text, images, layout) or scraping it.
+3D globe, flights, ships, conflict layers, voice/AI, Spanish, image proxy or caching, historical images, a database, a backend, mass programmatic SEO pages, copying anything from argosatlas.com (code, text, images, layout) or scraping it.
 
 ## 10. Open question
 Ads next to third-party camera content: ask each provider whether images may be shown alongside advertisements before enabling embeds + ads.
@@ -146,6 +146,7 @@ Build order (replaces nothing in section 5; adds):
 
 ## Next
 - DONE 2026-11-22: Caltrans registry (3,263 cameras), Astro site (20 pages), enforcement harness, live blocks (lane closures, chain controls, signs, road weather, NWS), CI green, noindex staging live at https://mwoovancity.github.io/live-camera-map/ (workflow staging.yml, refreshes feeds every 3 h).
+- DONE 2026-11-22: British Columbia is the second source (lead from Argos list; ChatGPT claim checked against the BC pages and the CKAN record first). Licence rows `drivebc-cameras` and `drivebc-events` (Open Government Licence - BC, quoted; list only, pictures unverified so link-out). `ops/importers/drivebc.mjs`: HighwayCams list (1,036 cameras after 5 position duplicates) into the shared `cameras.json` (each importer rewrites only its own rows, tested), Open511 events into `data/conditions/bc-events.json` (319 active events on the first run). BC health is checked by the same `ops/health/check.mjs` with its own pace (3 workers, 300 ms apart); the BC picture server sends no Last-Modified, so BC cameras can be reachable or unavailable but never stale (docs/decisions/bc-health-stale-limit.md). Site: `/cameras/british-columbia/` hub, 5 city pages, BC guide; no road pages for BC. DriveBC has no city field, so a BC "city" is a named place (camera name plus DriveBC's own caption); 192 of 1,036 cameras have one, so BC city pages are the 5 largest named places, not the 5 largest towns. Not done for BC: forecast (no Canadian weather licence read), road pages, camera pictures.
 - REVIEW 2026-11-22 (Gemini + ChatGPT guest chats; neither could open sub-pages, so their page-level claims are UNVERIFIED; their Argos counts of 493 LA / 706 CA / 200k+ total are UNVERIFIED third-hand). Agreed gaps, in order:
   1. Camera health checker (GitHub Actions): proves a camera link works (content-type, not an HTML error page), classifies still / video / operator page / unavailable / retired, keeps history for 30-day uptime. Both reviewers: a last-checked stamp alone is not proof.
   2. Road and corridor pages (I-5, I-10, I-405, US-101): cameras in driving order, closures and signs between them; camera-to-event links (each closure/incident links to its nearest cameras). Only where data exists.
@@ -163,3 +164,10 @@ Build order (replaces nothing in section 5; adds):
 - Method: read their public sources/methodology page by hand (no scraping, robots.txt respected), list source names in docs/research/argos-source-leads.md, then for each: free? key needed? commercial use? attribution? -> source-permissions row -> importer -> page block.
 - Why not skip licensing: a free feed can ban commercial use, so ads would break it; the gate costs minutes per source and protects the whole site.
 - Edge cases: lead is paid or login-walled -> excluded, row says why. Lead is free but non-commercial -> row not_allowed, block never ships. Lead moved or changed terms -> review date expires in 180 days, gate disables it.
+
+## 15. World-first (owner 2026-11-22: "I do not care about anywhere but the world, like Argos")
+- Supersedes "regional first" and "no global expansion in v1" (plan section 1/9, CLAUDE.md). Why those existed: the 2026-11-21 Claude vs ChatGPT debate, before this goal was stated.
+- Why BC was built first (record): plan never named it; it was the only non-California source needing nothing from Mike (OGL-BC, no key). That was convenience, not strategy; it yields only 5 city pages of 4 cameras.
+- How we get the world: (1) the GEV catalog already lists ~27 camera providers worldwide (seen in the Session 4 proof: Caltrans, TripCheck, Fintraffic, Live Traffic NSW, Vegagerdin, Toronto, Calgary, Quebec 511, MLIT river cameras 1,054, Autostrada del Brennero and more): each is a lead, each needs its own licence row; (2) rank leads by camera count x licence clarity x no key, build the top ones first; (3) country hub pages -> region -> city, same silo gate; (4) all numbers stay single-source.
+- Scale limit to design for: licences, not pages. Each country needs reading its terms; that is the bottleneck, so the licence workflow must be a repeatable script (fetch terms, quote, row, importer, fixtures).
+- Edge cases: a country with no licence text -> unknown, disabled, link-out only; sources that need a key -> Mike todo; a source dies -> health checker marks unknown/unavailable, pages hide blocks.

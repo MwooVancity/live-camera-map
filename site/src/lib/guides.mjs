@@ -1,4 +1,4 @@
-import { NEAR_KM } from './live.mjs';
+import { NEAR_KM, RADIUS_KM } from './live.mjs';
 import { MAX_AGE_MIN } from '../../../ops/importers/lib/conditions.mjs';
 // Guide text. Short, factual, about how THIS site works. Numbers come in through ctx (from the registry), never typed here.
 // ctx: { total, districts: ['10',...], failed: [...], dropped: {notInService, dupLocation}, date }
@@ -39,7 +39,7 @@ export const GUIDE_BODY = {
       'These cameras belong to Caltrans, the California Department of Transportation. Caltrans publishes a list of its cameras, grouped by its twelve districts, with a name, road, direction, position and an address for the picture or video.',
     ] },
     { h: 'What we took from the list', p: [
-      `Our last import loaded districts ${x.districts.join(', ')}.${x.failed.length ? ` Districts ${x.failed.join(', ')} returned a server error, so California is only partly covered and we say so on the region page.` : ''} After cleaning, the registry holds ${x.total} cameras.`,
+      `Our last import loaded districts ${x.districts.join(', ')}.${x.failed.length ? ` Districts ${x.failed.join(', ')} returned a server error, so California is only partly covered and we say so on the region page.` : ''} After cleaning, the Caltrans registry holds ${x.caltransTotal ?? x.total} cameras.`,
       `We left out ${x.dropped.notInService ?? 0} cameras that Caltrans marks as not in service and ${x.dropped.dupLocation ?? 0} entries that repeated another camera's position, road and direction.`,
     ] },
     { h: 'What the "city" means', p: [
@@ -88,6 +88,27 @@ export const GUIDE_BODY = {
     ] },
     { h: 'Coverage gaps', p: [
       'The largest gap is the longest straight-line distance between two neighbouring cameras in one direction. A big gap means that stretch has no camera to look at, so a closure there will not have one close by.',
+    ] },
+  ],
+  // x.bc = { total, named, places, dropped, modified, licence } from the BC registry rows and import report.
+  'how-drivebc-cameras-work': (x) => [
+    { h: 'Who runs them', p: [
+      `These cameras belong to the Government of British Columbia and are shown on DriveBC. Our camera list comes from the BC Data Catalogue dataset "DriveBC HighwayCams", published under the ${x.bc.licence}. Our last import held ${x.bc.total} cameras (dataset last modified ${x.bc.modified}).`,
+    ] },
+    { h: 'What we took from the list', p: [
+      'Each camera has an id, a name, a highway, the way the camera looks, a position and the address of its picture. We keep the picture address only as the link you click. We do not fetch, store or show the picture: the licence covers the list, and it does not say whether it covers the pictures.',
+      `We left out ${x.bc.dropped.dupLocation ?? 0} entries that repeated another camera's position, road and direction${Object.entries(x.bc.dropped).filter(([k]) => k !== 'dupLocation').map(([k, v]) => `, and ${v} dropped for ${k}`).join('')}.`,
+    ] },
+    { h: 'What "facing" and "place" mean', p: [
+      'DriveBC gives the direction a camera looks, not the direction of traffic, so our pages say "Facing North", never "northbound".',
+      `DriveBC has no city field. A place on our pages is the name inside the camera's own name, kept only when DriveBC's caption for that camera also names it as a location (for example "in Elkford" or "south of Campbell River") and the name does not read as a road, junction or numbered location. ${x.bc.named} of the ${x.bc.total} cameras have such a place, in ${x.bc.places} places. A town whose cameras are captioned only by road has no place, so it has no city page here. These are named places, not municipal boundaries.`,
+    ] },
+    { h: 'Road events', p: [
+      `The road events block comes from the DriveBC Open511 feed, under the same licence. It lists events in effect now within ${RADIUS_KM} km of the middle of a place's cameras, each with its road, DriveBC's own text, the start and end time in UTC and the time DriveBC last updated it. The block is left out when the data is older than ${MAX_AGE_MIN['bc-events']} minutes when the site is built, or when nothing is near.`,
+      'We show no weather forecast for British Columbia: we have not read the licence of a Canadian weather source, so we use none.',
+    ] },
+    { h: 'What we have not measured', p: [
+      'How often each picture refreshes is set by DriveBC and we have not measured it. On the three picture addresses we checked, the server sent no last-modified time, so our checker can say a picture link answered with a JPEG (reachable) or did not (unavailable), but it cannot call a picture stale. Reachable does not mean the picture is recent.',
     ] },
   ],
   'camera-link-is-dead': (x) => [

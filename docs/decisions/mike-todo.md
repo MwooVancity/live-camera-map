@@ -24,3 +24,4 @@
 - Ontario 511: register the developer key and agreement (already listed).
 - Alberta 511: ask Alberta Transportation for WRITTEN permission for commercial use (terms prohibit commercial reproduction without it).
 - Do not use DriveTexas (terms limit it to emergency management).
+- [ ] Confirm licence: DriveBC HighwayCams camera list (drivebc-cameras) and DriveBC Open511 events (drivebc-events). Marked allowed_per_doc from the Open Government Licence - British Columbia ("including for commercial purposes", attribution required; Open511 help page says the API information is governed by it). The licence covers the LIST: whether the camera pictures themselves are covered is NOT stated, so image display/caching stay unverified and we link out. Optional: ask DriveBC whether pictures may be shown beside ads.

@@ -12,14 +12,14 @@ Every public data source Argos Atlas uses is a LEAD for us: if they use it and i
 Mike is a first-time solo developer building this as a side venture. He wants complete, immediately usable deliverables, direct communication, and for you to make decisions yourself and state them in one line. Do not hedge or pile on caveats. But assume everything will break: verify before claiming anything works, and say plainly what you could not verify.
 
 ## Project in one paragraph
-A free, search-first camera directory with a simple 2D map (English, regional first), competing with argosatlas.com. Launch is link-out only: show camera metadata and link to the official source.
+A free, search-first camera directory with a simple 2D map (English first, WORLD-wide: owner 2026-11-22 "I do not care about anywhere but the world, like Argos"), competing with argosatlas.com. Launch is link-out only: show camera metadata and link to the official source.
 
 ## Stack
 Astro (static site), MapLibre GL JS, OpenFreeMap tiles behind a provider abstraction, JSON data in git (`cameras.json`, `sources.json`), generated `health.json` published to Cloudflare R2, GitHub Actions for health checks, Cloudflare Pages hosting. Node 22+ for the site (the God's Eye View repo, if used, needs Node 24.14+ or 26).
 
 ## Hard rules
 - NO image embeds, NO image proxy, NO image caching for a source unless `sources.json` has that permission set to `allowed`. Default is `unverified`. Never set a permission to `allowed` yourself; propose it and let Mike confirm after he reads the source's terms.
-- NO database, NO backend server, NO mass programmatic page generation, NO global expansion in v1.
+- NO database, NO backend server, NO mass programmatic page generation, Global expansion is the GOAL (owner 2026-11-22, replaces the old "no global expansion in v1"): grow country by country, but every source ships only with its own licence row (CLAUDE.md lead-list rule). Pick the next source by camera count and licence cleanliness, never by what is easiest.
 - Regional pages: config default min 3 cameras, but only pages on the curated list are indexed. Everything else is `noindex`.
 - Never copy code, text, images, layout or branding from argosatlas.com, and never scrape it.
 - Never commit secrets. API keys live in `.env` (gitignored); keep `.env.example` up to date.

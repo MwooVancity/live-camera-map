@@ -46,13 +46,15 @@ const src = (live, feed, now) => { const row = live.rows.get(SOURCE_IDS[feed]); 
 export function feedStatus(feed, live = loadLive(), now = new Date()) {
   const nws = feed.startsWith('nws-');
   const { row, ok } = src(live, feed, now);
-  const doc = nws ? null : live.doc(`ca-${feed}`);
+  const doc = nws ? null : live.doc(feed === 'bc-events' ? 'bc-events' : `ca-${feed}`);
   const asof = nws ? ((live.doc('nws-los-angeles') || {}).forecast || {}).fetchedAt : doc && doc.generatedAt;
   const items = nws ? null : usableItems(doc, feed, now);
   const state = !ok ? 'licence not enabled' : !asof ? 'no data' : (nws ? Boolean(usableNws(live.doc('nws-los-angeles'), now).periods.length) : items.length > 0) ? 'fresh' : 'older than its limit';
   return { feed, name: row ? row.name.replace(/ \(.*$/, '') : feed, asof: asof || null, maxAgeMin: MAX_AGE_MIN[feed], state, failed: (doc && doc.failedDistricts) || [] };
 }
 export const FEED_LIST = ['lcs', 'cc', 'cms', 'rwis', 'nws-forecast', 'nws-alerts'];
+// Live feeds per region (the region hub lists exactly these). British Columbia has road events only: no US weather source is used there.
+export const FEEDS_BY_REGION = { california: FEED_LIST, 'british-columbia': ['bc-events'] };
 
 const metaOf = (live, now, feeds, asofs) => {
   const rs = feeds.map((f) => src(live, f, now).row);
@@ -60,8 +62,16 @@ const metaOf = (live, now, feeds, asofs) => {
 };
 const caItemsOf = (live, now, feed) => (src(live, feed, now).ok ? usableItems(live.doc(`ca-${feed}`), feed, now) : []);
 
-// Blocks for one city. c = {lat, lon, slug}. Returns only blocks that passed every gate, in display order.
+// British Columbia city blocks: DriveBC Open511 events in effect now within RADIUS_KM of the city's camera centre.
+// Same gates as the California blocks (licence row enabled, shape valid, newer than its max age at build); no NWS, no Caltrans.
+function bcBlocks(c, live, now) {
+  const items = nearby(src(live, 'bc-events', now).ok ? usableItems(live.doc('bc-events'), 'bc-events', now).filter((i) => i.active) : [], c);
+  return items.length ? [{ id: 'bc-events', title: 'Road events near here', items, ...metaOf(live, now, ['bc-events'], [live.doc('bc-events').generatedAt]), maxAgeMin: MAX_AGE_MIN['bc-events'] }] : [];
+}
+
+// Blocks for one city. c = {lat, lon, slug, region?}. Returns only blocks that passed every gate, in display order.
 export function cityBlocks(c, live = loadLive(), now = new Date()) {
+  if (c.region && c.region !== 'california') return c.region === 'british-columbia' ? bcBlocks(c, live, now) : [];
   const out = [];
   const meta = (feeds, asofs) => metaOf(live, now, feeds, asofs);
   const caItems = (feed) => caItemsOf(live, now, feed);

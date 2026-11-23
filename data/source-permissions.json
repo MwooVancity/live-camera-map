@@ -4753,6 +4753,39 @@
       "needsHumanReview": true,
       "mustNotShip": false,
       "enabled": true
+    },
+    {
+      "id": "drivebc-cameras",
+      "name": "DriveBC HighwayCams list (BC Data Catalogue dataset bc-highwaycams, webcams.csv)",
+      "section": "Camera registry sources (read by ops/importers/drivebc.mjs)",
+      "folder": "",
+      "licence": "BC Data Catalogue record (https://catalogue.data.gov.bc.ca/api/3/action/package_show?id=bc-highwaycams, HTTP 200 read 2026-11-22): license_title \"Open Government Licence - British Columbia\", description \"A list of the locations, web addresses and attributes regarding Ministry owned highway web cameras.\" OGL-BC (https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61, HTTP 200): \"... non-exclusive licence to use the Information, including for commercial purposes, subject to the terms below\"; free to \"Copy, modify, publish, translate, adapt, distribute or otherwise use the Information in any medium, mode or format for any lawful purpose\"; condition: acknowledge the source with the Information Provider's attribution statement and, where possible, link to the licence; exemption: \"third party rights the Information Provider is not authorized to licence\". The licence covers the LIST (camera id, name, position, highway, web address). Whether the camera JPEG itself is covered is NOT stated, so image display, caching and redistribution stay unverified and we only link out. The importer refuses to run if the record's license_title is not exactly the OGL-BC title.",
+      "commercialStatus": "allowed_per_doc",
+      "statusReason": "quoted OGL-BC text permits use of the Information including for commercial purposes with attribution; applies to the camera list only, images unverified (link-out only)",
+      "attribution": "Contains information licensed under the Open Government Licence - British Columbia (https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61); camera list from DriveBC HighwayCams, BC Data Catalogue",
+      "provenance": "https://catalogue.data.gov.bc.ca/api/3/action/package_show?id=bc-highwaycams and https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61, read 2026-11-22",
+      "imageStatus": "unverified: image display, caching and redistribution not stated; link-out only",
+      "reviewedAt": "2026-11-22",
+      "reviewedBy": "claude-doc-read",
+      "needsHumanReview": true,
+      "mustNotShip": false,
+      "enabled": true
+    },
+    {
+      "id": "drivebc-events",
+      "name": "DriveBC Open511 events feed (api.open511.gov.bc.ca/events)",
+      "section": "Live conditions feeds (read by ops/importers/drivebc.mjs)",
+      "folder": "",
+      "licence": "Open511 BC help page (https://api.open511.gov.bc.ca/help, HTTP 200 read 2026-11-22): \"Use of the Information provided by this API is governed by the Open Government Licence – British Columbia (\"OGL-BC\")\". OGL-BC (https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61): \"... non-exclusive licence to use the Information, including for commercial purposes, subject to the terms below\"; attribution required: \"Contains information licensed under the Open Government Licence – British Columbia.\" when the provider gives no specific statement. API Terms of Use (https://www2.gov.bc.ca/gov/content?id=D1EE0A405E584363B205CD4353E02C88): developer credentials apply only \"If you are assigned developer credentials\"; the provider \"may, without notice, impose and or adjust limits on your access or use of the API\" (so the importer makes one paged request per run). The events endpoint answered HTTP 200 with no key.",
+      "commercialStatus": "allowed_per_doc",
+      "statusReason": "quoted text: API information governed by OGL-BC, which permits use including for commercial purposes with attribution; no key needed",
+      "attribution": "Contains information licensed under the Open Government Licence - British Columbia (https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61); road events from DriveBC Open511 (api.open511.gov.bc.ca), data as reported, not guaranteed accurate",
+      "provenance": "https://api.open511.gov.bc.ca/help, https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61 and https://www2.gov.bc.ca/gov/content?id=D1EE0A405E584363B205CD4353E02C88, read 2026-11-22",
+      "reviewedAt": "2026-11-22",
+      "reviewedBy": "claude-doc-read",
+      "needsHumanReview": true,
+      "mustNotShip": false,
+      "enabled": true
     }
   ]
 }

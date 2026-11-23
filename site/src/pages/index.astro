@@ -2,19 +2,23 @@
 import Base from '../layouts/Base.astro';
 import { SITE_NAME } from '../config.mjs';
 import { cameras, countsBy, registryDate, loadedDistricts } from '../lib/data.mjs';
-import { curatedCities, slugify, GUIDES } from '../lib/pages.mjs';
+import { curatedPlaces, regionsWithPages, regionInfo, slugify, GUIDES } from '../lib/pages.mjs';
 const total = cameras.length;
-const byCity = countsBy(cameras, 'city');
-const cities = curatedCities(cameras);
-const regionOf = (city) => cameras.find((c) => c.city === city).regionSlug;
+const places = curatedPlaces(cameras);
+const regions = regionsWithPages(cameras);
+const byRegion = countsBy(cameras, 'region');
+const regionName = (slug) => cameras.find((c) => c.regionSlug === slug).regionName;
+const names = regions.map(regionName);
+const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names.at(-1)}` : names[0];
+const agencies = regions.map((r) => regionInfo(r).agency).join(' and ');
 ---
-<Base title={`Live traffic cameras: ${total} official camera links | ${SITE_NAME}`} description={`${total} traffic cameras in California, each linked to the official Caltrans source, with the roads covered and when the list was last updated.`} route="/">
+<Base title={`Live traffic cameras: ${total} official camera links | ${SITE_NAME}`} description={`${total} traffic cameras in ${list}, each linked to the official ${agencies} source, with the roads covered and when each list was last updated.`} route="/">
   <h1>Free live traffic cameras</h1>
-  <p>{SITE_NAME} lists {total} traffic cameras in California (Caltrans districts {loadedDistricts.join(', ')}), each one a link to the official source. We show where the cameras are, which roads they cover and when our list was last updated{registryDate ? ` (${registryDate})` : ''}. We do not copy camera pictures.</p>
+  <p>{SITE_NAME} lists {total} traffic cameras in {list}, each one a link to the official source ({regions.map((r) => `${regionName(r)}: ${byRegion[r]}${r === 'california' ? ` from Caltrans districts ${loadedDistricts.join(', ')}` : ` from ${regionInfo(r).agency}`}`).join('; ')}). We show where the cameras are, which roads they cover and when our list was last updated{registryDate ? ` (${registryDate})` : ''}. We do not copy camera pictures.</p>
   <p><a class="cta" href="/map/">Open the map</a></p>
   <h2>Cities with the most cameras</h2>
   <ul class="cols">
-    {cities.map((c) => <li><a href={`/cameras/${regionOf(c)}/${slugify(c)}/`}>{c} traffic cameras</a> ({byCity[c]})</li>)}
+    {places.map((p) => <li><a href={`/cameras/${p.region}/${slugify(p.city)}/`}>{p.city} traffic cameras</a> ({p.n})</li>)}
   </ul>
   <p><a href="/cameras/">All regions</a> | <a href="/roads/">Cameras by road</a></p>
   <h2>Guides</h2>

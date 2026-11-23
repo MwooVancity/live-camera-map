@@ -1,32 +1,41 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import { SITE_NAME } from '../../../config.mjs';
-import { cameras, countsBy, registryDate, sources, loadedDistricts, failedDistricts } from '../../../lib/data.mjs';
-import { feedStatus, FEED_LIST } from '../../../lib/live.mjs';
-import { regionsWithPages, curatedCities, slugify, isIndexable, GUIDES } from '../../../lib/pages.mjs';
+import { cameras, countsBy, registryDateOf, sourceOf, loadedDistricts, failedDistricts, bcReport } from '../../../lib/data.mjs';
+import { feedStatus, FEEDS_BY_REGION } from '../../../lib/live.mjs';
+import { regionsWithPages, curatedPlaces, slugify, isIndexable, GUIDES, regionInfo } from '../../../lib/pages.mjs';
 
 export function getStaticPaths() {
   return regionsWithPages(cameras).map((region) => ({ params: { region } }));
 }
 const { region } = Astro.params;
-const regionName = cameras.find((c) => c.regionSlug === region).regionName;
+const info = regionInfo(region);
+const regionCams = cameras.filter((c) => c.regionSlug === region);
+const regionName = regionCams[0].regionName;
 const total = countsBy(cameras, 'region')[region];
-const byCity = countsBy(cameras, 'city');
-const cities = curatedCities(cameras).filter((c) => cameras.find((x) => x.city === c).regionSlug === region);
+const byCity = countsBy(regionCams, 'city');
+const cities = curatedPlaces(cameras).filter((p) => p.region === region);
 const allCities = Object.keys(byCity).length;
-const feeds = FEED_LIST.map((f) => feedStatus(f));
+const source = sourceOf(info.sourceId);
+const regionDate = registryDateOf(region);
+const feeds = (FEEDS_BY_REGION[region] || []).map((f) => feedStatus(f));
+const isCA = region === 'california';
+const unnamed = total - Object.values(byCity).reduce((s, k) => s + k, 0);
+const guides = isCA ? GUIDES.slice(0, 3) : [GUIDES.find((g) => g.slug === info.guide), ...GUIDES.filter((g) => ['how-to-read-last-checked-status', 'camera-link-is-dead'].includes(g.slug))].filter(Boolean);
 ---
 <Base title={`${regionName} traffic cameras: ${total} official links | ${SITE_NAME}`} description={`${total} ${regionName} traffic cameras linked to the official source, by city, with coverage and last update date.`} route={`/cameras/${region}/`} crumbs={[{ name: 'All cameras', route: '/cameras/' }, { name: regionName, route: `/cameras/${region}/` }]} noindex={!isIndexable(total)}>
   <h1>{regionName} traffic cameras</h1>
-  <p>{total} cameras in {allCities} named places, from Caltrans districts {loadedDistricts.join(', ')}. {failedDistricts.length > 0 ? `Districts ${failedDistricts.join(', ')} did not load in the last import, so this list is partial.` : 'All districts loaded in the last import.'}</p>
-  <section data-block="cities" data-basis="registry" data-source={sources[0].name} data-asof={registryDate}>
+  {isCA
+    ? <p>{total} cameras in {allCities} named places, from Caltrans districts {loadedDistricts.join(', ')}. {failedDistricts.length > 0 ? `Districts ${failedDistricts.join(', ')} did not load in the last import, so this list is partial.` : 'All districts loaded in the last import.'}</p>
+    : <p>{total} cameras on {Object.keys(countsBy(regionCams, 'road')).length} roads, from the {info.agency} HighwayCams list ({source.license}), imported {regionDate}. {info.agency} gives no city field, so only {total - unnamed} cameras have a named place ({allCities} places, taken from the camera's own name and caption); the other {unnamed} are on the road list only.{bcReport && bcReport.dropped ? ` We left out ${bcReport.dropped.dupLocation || 0} entries that repeated another camera's position, road and direction.` : ''}</p>}
+  <section data-block="cities" data-basis="registry" data-source={source.name} data-asof={regionDate}>
     <h2>Cities with the most cameras</h2>
-    <ul class="cols">{cities.map((c) => <li><a href={`/cameras/${region}/${slugify(c)}/`}>{c} traffic cameras</a> ({byCity[c]})</li>)}</ul>
+    <ul class="cols">{cities.map((p) => <li><a href={`/cameras/${region}/${slugify(p.city)}/`}>{p.city} traffic cameras</a> ({p.n})</li>)}</ul>
   </section>
-  <section data-block="feed-freshness" data-source="Caltrans CWWP feeds and NOAA National Weather Service, checked by our importers" data-asof={feeds.map((f) => f.asof).filter(Boolean).sort().at(-1) || 'not-fetched'}>
+  {feeds.length > 0 && <section data-block="feed-freshness" data-source={isCA ? 'Caltrans CWWP feeds and NOAA National Weather Service, checked by our importers' : `${info.agency} Open511 events feed, checked by our importer`} data-asof={feeds.map((f) => f.asof).filter(Boolean).sort().at(-1) || 'not-fetched'}>
     <h2>Live data freshness</h2>
     <ul>{feeds.map((f) => <li>{f.name}: {f.state}{f.failed.length ? `, districts ${f.failed.join(', ')} did not load` : ''}{f.asof ? `, last fetched ${f.asof.slice(0, 16).replace('T', ' ')} UTC` : ''}. <span class="meta">Shown on city pages only when newer than {f.maxAgeMin} minutes at build.</span></li>)}</ul>
-  </section>
-  <p><a class="cta" href="/map/">Open the map</a> <a href="/roads/">Traffic cameras by road</a></p>
-  <p>Guides: {GUIDES.slice(0, 3).map((g, i) => <>{i > 0 && ', '}<a href={`/guides/${g.slug}/`}>{g.title}</a></>)}.</p>
+  </section>}
+  <p><a class="cta" href="/map/">Open the map</a>{isCA && <> <a href="/roads/">Traffic cameras by road</a></>}</p>
+  <p>Guides: {guides.map((g, i) => <>{i > 0 && ', '}<a href={`/guides/${g.slug}/`}>{g.title}</a></>)}.</p>
 </Base>

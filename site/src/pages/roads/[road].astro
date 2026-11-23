@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import RoadBlock from '../../components/RoadBlock.astro';
 import { SITE_NAME } from '../../config.mjs';
-import { cameras, countsBy, registryDate, sources, loadedDistricts } from '../../lib/data.mjs';
+import { cameras as allCameras, countsBy, registryDateOf, sources, loadedDistricts } from '../../lib/data.mjs';
 import { curatedRoads, curatedCities, slugify, isIndexable } from '../../lib/pages.mjs';
 import { roadSlug } from '../../../../ops/importers/lib/registry.mjs';
 import { orderAlongRoad, relatedRoads, nearestCities } from '../../lib/roads.mjs';
@@ -10,10 +10,12 @@ import { roadBlocks, loadLive, NEAR_KM } from '../../lib/live.mjs';
 import { loadHealth, cityHealth, MEANING, STATUSES } from '../../lib/health.mjs';
 
 export function getStaticPaths() {
-  return curatedRoads(cameras).map((road) => ({ params: { road: roadSlug(road) }, props: { road } }));
+  return curatedRoads(allCameras).map((road) => ({ params: { road: roadSlug(road) }, props: { road } }));
 }
 const { road: slug } = Astro.params;
 const { road } = Astro.props;
+const cameras = allCameras.filter((c) => c.regionSlug === 'california'); // road pages are California-only (BC highways are not I-, SR- or US- roads)
+const registryDate = registryDateOf('california');
 const roads = curatedRoads(cameras);
 const here = cameras.filter((c) => roadSlug(c.road) === slug);
 const n = countsBy(cameras, 'road')[road];

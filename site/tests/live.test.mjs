@@ -107,3 +107,55 @@ test('built page: HTML in feed text is escaped, never rendered', () => {
   assert.ok(!/<img[^>]*onerror/i.test(html), 'raw img leaked');
   assert.ok(html.includes('&lt;script&gt;alert(1)'), 'escaped text should be present');
 });
+
+// ---- British Columbia: DriveBC Open511 events (bc-events) ----
+const mission = cameras.filter((c) => c.regionSlug === 'british-columbia' && c.city === 'Mission');
+const M = { lat: mission.reduce((s, c) => s + c.lat, 0) / mission.length, lon: mission.reduce((s, c) => s + c.lon, 0) / mission.length, slug: 'mission', region: 'british-columbia' };
+const missionRoute = '/cameras/british-columbia/mission/';
+function bcFixture({ ageMin = 1, closed = false, withCa = false } = {}) {
+  const d = mkdtempSync(join(tmpdir(), 'bclive-'));
+  const ev = (id, dLat, o = {}) => ({ id, road: 'Highway 7', direction: null, roadState: 'ALL_LANES_OPEN', area: 'Lower Mainland District', eventType: 'CONSTRUCTION', severity: 'MINOR', headline: 'CONSTRUCTION', text: `Work on Highway 7 ${id}`, lat: M.lat + dLat, lon: M.lon, endLat: null, endLon: null, start: ago(60 * 24), end: null, endIndefinite: true, updated: ago(60), active: true, closed: false, ...o });
+  const items = [ev('far', 0.2), ev('near', 0.01), ev('expired', 0.02, { active: false }), ev('mid', 0.05, { closed: true, roadState: 'CLOSED' })];
+  writeFileSync(join(d, 'bc-events.json'), JSON.stringify({ feed: 'bc-events', sourceId: 'drivebc-events', generatedAt: ago(ageMin), items }));
+  if (withCa) writeFileSync(join(d, 'ca-lcs.json'), JSON.stringify({ feed: 'lcs', generatedAt: ago(1), items: [{ id: 'x', active: true, road: 'I-5', lat: M.lat, lon: M.lon, text: 'closure' }] }));
+  const rows = realPerms.sources.filter((s) => ['drivebc-events', 'caltrans-lcs'].includes(s.id)).map((s) => ({ ...s, reviewedAt: new Date().toISOString().slice(0, 10), ...(closed ? { mustNotShip: true } : {}) }));
+  const pf = join(d, 'perms.json');
+  writeFileSync(pf, JSON.stringify({ ...realPerms, sources: rows }));
+  process.env.CONDITIONS_DIR = d; process.env.PERMISSIONS_FILE = pf;
+  return { dir: d, env: { CONDITIONS_DIR: d, PERMISSIONS_FILE: pf } };
+}
+
+test('BC fresh data, enabled licence: one bc-events block with source, link, as-of, attribution; active events only, nearest first', () => {
+  bcFixture();
+  const blocks = cityBlocks(M, loadLive());
+  assert.deepEqual(blocks.map((b) => b.id), ['bc-events']);
+  const b = blocks[0];
+  assert.ok(b.source && b.attribution && b.asof && b.link, 'proof fields');
+  assert.match(b.attribution, /Open Government Licence - British Columbia/);
+  assert.deepEqual(b.items.map((i) => i.id), ['near', 'mid'], 'far (over 15 km) and expired are left out; nearest first');
+});
+test('BC stale data: the block is omitted (not shown empty)', () => { bcFixture({ ageMin: 400 }); assert.deepEqual(cityBlocks(M, loadLive()), []); });
+test('BC licence row closed: the block is omitted', () => { bcFixture({ closed: true }); assert.deepEqual(cityBlocks(M, loadLive()), []); });
+test('BC nothing near the city: block omitted', () => { bcFixture(); assert.deepEqual(cityBlocks({ ...M, lat: M.lat + 3 }, loadLive()), []); });
+test('BC never gets Caltrans or NWS blocks, and California never gets bc-events, even when both files exist', () => {
+  bcFixture({ withCa: true });
+  assert.deepEqual(cityBlocks(M, loadLive()).map((b) => b.id), ['bc-events']);
+  assert.ok(!cityBlocks({ ...M, region: 'california' }, loadLive()).some((b) => b.id === 'bc-events'));
+  assert.deepEqual(cityBlocks({ ...M, region: 'ontario' }, loadLive()), [], 'an unknown region gets no live block');
+});
+
+test('built BC page: bc-events block has source, as-of, Updated text, count = list length, text escaped, no images; stale build drops it', () => {
+  const { dir, env } = bcFixture();
+  const p = join(dir, 'bc-events.json'); const j = JSON.parse(readFileSync(p, 'utf8'));
+  j.items[1].text = '<script>alert(1)</script><img src=x onerror=alert(2)>'; writeFileSync(p, JSON.stringify(j));
+  const html = build(env).get(missionRoute);
+  const sec = html.match(/<section data-block="bc-events"[\s\S]*?<\/section>/);
+  assert.ok(sec, 'block missing');
+  assert.match(sec[0], /data-source="DriveBC Open511/); assert.match(sec[0], /data-asof="\d{4}-\d\d-\d\dT/); assert.match(sec[0], /Updated <time datetime="/);
+  assert.equal(Number(sec[0].match(/data-rows="(\d+)"/)[1]), (sec[0].match(/<li>/g) || []).length);
+  assert.ok(!html.includes('<script>alert(1)') && !/<img[^>]*onerror/i.test(html) && html.includes('&lt;script&gt;alert(1)'));
+  assert.ok(sec[0].includes('/guides/how-drivebc-cameras-work/'));
+  const stale = build(bcFixture({ ageMin: 400 }).env);
+  for (const [route, h] of stale) assert.ok(!blocksOn(h).includes('bc-events'), `${route}: bc-events shown with stale data`);
+  assert.match(stale.get('/cameras/british-columbia/'), /older than its limit/);
+});

@@ -3,6 +3,8 @@ import { writeFileSync, readFileSync, renameSync, existsSync, mkdirSync } from '
 import { dirname } from 'node:path';
 
 export const CA_BOUNDS = { latMin: 32.3, latMax: 42.1, lonMin: -124.6, lonMax: -114.0 };
+// Optional text field (one source gives it, another does not): the source's own words for where the camera is. Text only, never a picture.
+export const OPTIONAL_FIELDS = ['locationText'];
 export const FORBIDDEN_FIELDS = ['thumbnail', 'imageUrl', 'image', 'imageData', 'streamUrl', 'previewUrl'];
 export const CAMERA_FIELDS = ['id', 'sourceId', 'name', 'road', 'direction', 'city', 'regionSlug', 'regionName',
   'lat', 'lon', 'feedType', 'officialUrl', 'officialUrlLastVerified', 'lastSeen'];
@@ -66,7 +68,8 @@ export function validateCamera(c) {
   const p = [];
   for (const f of CAMERA_FIELDS) if (!(f in c)) p.push(`missing ${f}`);
   for (const f of FORBIDDEN_FIELDS) if (f in c) p.push(`forbidden field ${f}`);
-  for (const f of Object.keys(c)) if (!CAMERA_FIELDS.includes(f)) p.push(`unknown field ${f}`);
+  for (const f of Object.keys(c)) if (!CAMERA_FIELDS.includes(f) && !OPTIONAL_FIELDS.includes(f)) p.push(`unknown field ${f}`);
+  if ('locationText' in c && (typeof c.locationText !== 'string' || !c.locationText || c.locationText.length > 300)) p.push('bad locationText');
   if (typeof c.id !== 'string' || !c.id.startsWith(`${c.sourceId}-`)) p.push('id not prefixed by sourceId');
   if (!Number.isFinite(c.lat) || c.lat < -90 || c.lat > 90) p.push('bad lat');
   if (!Number.isFinite(c.lon) || c.lon < -180 || c.lon > 180) p.push('bad lon');
@@ -95,3 +98,19 @@ export function writeJsonAtomic(path, data) {
 export function readJsonOrNull(path) {
   try { return existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : null; } catch { return null; }
 }
+
+// Multi-source registry (cameras.json holds every source). One importer rewrites ONLY its own rows: the rows of every
+// other source are kept exactly as they were. Rows stay grouped by sourceId (alphabetical), original order inside a source.
+export const ownRows = (all, sourceId) => (Array.isArray(all) ? all.filter((c) => c && c.sourceId === sourceId) : []);
+export function mergeSource(all, sourceId, mine) {
+  const others = Array.isArray(all) ? all.filter((c) => !(c && c.sourceId === sourceId)) : [];
+  const key = (c) => String((c && c.sourceId) || '');
+  return [...others, ...mine].map((c, i) => [c, i]).sort((a, b) => key(a[0]).localeCompare(key(b[0])) || a[1] - b[1]).map(([c]) => c);
+}
+// sources.json: replace rows with the same id, keep every other row.
+export function upsertSources(existing, mine) {
+  const ids = new Set(mine.map((s) => s.id));
+  return [...(Array.isArray(existing) ? existing.filter((s) => s && !ids.has(s.id)) : []), ...mine];
+}
+// A registry file that exists but is not a JSON array (cut off, hand-edited) must stop the import: merging into "null" would drop every other source's rows.
+export const registryUnreadable = (path) => existsSync(path) && !Array.isArray(readJsonOrNull(path));

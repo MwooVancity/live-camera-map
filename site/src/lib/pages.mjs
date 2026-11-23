@@ -13,15 +13,32 @@ export const GUIDES = [
   { slug: 'how-caltrans-cameras-work', title: 'How Caltrans traffic cameras work', date: '2026-11-22' },
   { slug: 'what-live-road-conditions-mean', title: 'What the live road conditions mean', date: '2026-11-22' },
   { slug: 'how-to-read-a-road-page', title: 'How to read a road page (driving order, nearest cameras)', date: '2026-11-22' },
+  { slug: 'how-drivebc-cameras-work', title: 'How British Columbia (DriveBC) traffic cameras work', date: '2026-11-22', region: 'british-columbia' },
   { slug: 'camera-link-is-dead', title: 'What to do if a camera link is dead', date: '2026-11-22' },
 ];
 
-// Curated cities: the ten biggest by real coverage, each with at least MIN_CAMERAS cameras. Provisional.
-export function curatedCities(cams, limit = 10) {
-  const counts = countsBy(cams, 'city');
-  return Object.entries(counts).filter(([, n]) => n >= MIN_CAMERAS)
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, limit).map(([city]) => city);
+// Per-region facts. cityLimit = how many curated city pages the region gets (by real coverage, each with MIN_CAMERAS or more).
+// One entry per source: the agency named on its pages, its guide, and its live-conditions feeds.
+export const REGIONS = {
+  california: { sourceId: 'caltrans', agency: 'Caltrans', cityLimit: 10, guide: 'how-caltrans-cameras-work' },
+  'british-columbia': { sourceId: 'drivebc', agency: 'DriveBC', cityLimit: 5, guide: 'how-drivebc-cameras-work' },
+};
+export const regionInfo = (slug) => REGIONS[slug] || { sourceId: null, agency: 'the official source', cityLimit: 5, guide: null };
+
+// Curated places: [{ region, city, n }]. Counted PER REGION, so the same place name in two regions never merges into one count
+// or one page. Bigger regions first; inside a region by camera count, ties A to Z. Provisional.
+export function curatedPlaces(cams, limit) {
+  const regions = Object.entries(countsBy(cams, 'region')).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([r]) => r);
+  const out = [];
+  for (const region of regions) {
+    Object.entries(countsBy(cams.filter((c) => c.regionSlug === region), 'city')).filter(([, n]) => n >= MIN_CAMERAS)
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, limit ?? regionInfo(region).cityLimit)
+      .forEach(([city, n]) => out.push({ region, city, n }));
+  }
+  return out;
 }
+// Names only (callers that already know the region). Two regions with one name appear twice: use curatedPlaces when that matters.
+export const curatedCities = (cams, limit) => curatedPlaces(cams, limit).map((p) => p.city);
 
 // Curated roads: the ten with the most cameras, each with at least MIN_CAMERAS. Provisional, like the cities.
 // Counted by roadSlug so two spellings of one road would count once; returns the display spelling (most common).
@@ -45,24 +62,26 @@ export function regionsWithPages(cams) {
 }
 
 // Every page: { route, kind, count, indexable, lastmod }. cities are passed in so tests can use fixtures.
-export function pageList(cams, cities, registryDate, roads = []) {
+// cities: names (one region) or curatedPlaces rows. dates: optional { regionSlug: 'YYYY-MM-DD' } so a region page carries ITS registry date.
+export function pageList(cams, cities, registryDate, roads = [], dates = {}) {
   const byRegion = countsBy(cams, 'region');
-  const byCity = countsBy(cams, 'city');
+  const dateOf = (r) => dates[r] || registryDate;
   const out = [
     { route: '/', kind: 'home', count: cams.length, indexable: true, lastmod: registryDate },
     { route: '/map/', kind: 'map', count: cams.length, indexable: true, lastmod: registryDate },
     { route: '/cameras/', kind: 'hub', count: cams.length, indexable: isIndexable(cams.length), lastmod: registryDate },
   ];
-  for (const r of regionsWithPages(cams)) out.push({ route: `/cameras/${r}/`, kind: 'region', count: byRegion[r], indexable: isIndexable(byRegion[r]), lastmod: registryDate });
-  for (const city of cities) {
-    const rs = [...new Set(cams.filter((c) => c.city === city).map((c) => c.regionSlug))];
-    if (rs.length !== 1) continue;
-    const n = byCity[city] || 0;
-    out.push({ route: `/cameras/${rs[0]}/${slugify(city)}/`, kind: 'city', count: n, indexable: isIndexable(n), lastmod: registryDate });
+  for (const r of regionsWithPages(cams)) out.push({ route: `/cameras/${r}/`, kind: 'region', count: byRegion[r], indexable: isIndexable(byRegion[r]), lastmod: dateOf(r) });
+  for (const p of cities.map((x) => (typeof x === 'string' ? { city: x, region: null } : x))) {
+    const sub = p.region ? cams.filter((c) => c.regionSlug === p.region) : cams;
+    const rs = [...new Set(sub.filter((c) => c.city === p.city).map((c) => c.regionSlug))];
+    if (rs.length !== 1) continue; // a bare name used in two regions is ambiguous: no page rather than a wrong one
+    const n = countsBy(sub, 'city')[p.city] || 0;
+    out.push({ route: `/cameras/${rs[0]}/${slugify(p.city)}/`, kind: 'city', count: n, indexable: isIndexable(n), lastmod: dateOf(rs[0]) });
   }
-  if (roads.length) out.push({ route: '/roads/', kind: 'roads-hub', count: roads.length, indexable: true, lastmod: registryDate });
+  if (roads.length) out.push({ route: '/roads/', kind: 'roads-hub', count: roads.length, indexable: true, lastmod: dateOf('california') }); // road pages are California-only
   const byRoad = countsBy(cams, 'road');
-  for (const r of roads) out.push({ route: `/roads/${roadSlug(r)}/`, kind: 'road', count: byRoad[r] || 0, indexable: isIndexable(byRoad[r] || 0), lastmod: registryDate });
+  for (const r of roads) out.push({ route: `/roads/${roadSlug(r)}/`, kind: 'road', count: byRoad[r] || 0, indexable: isIndexable(byRoad[r] || 0), lastmod: dateOf('california') });
   for (const g of GUIDES) out.push({ route: `/guides/${g.slug}/`, kind: 'guide', count: null, indexable: true, lastmod: g.date });
   return out;
 }

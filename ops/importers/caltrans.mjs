@@ -1,7 +1,7 @@
 // Caltrans CCTV importer. No key needed. Run: node ops/importers/caltrans.mjs [--allow-partial]
 import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
-import { normalizeCaltrans, dedupe, validateCamera, countsBy, writeJsonAtomic, readJsonOrNull } from './lib/registry.mjs';
+import { normalizeCaltrans, dedupe, validateCamera, countsBy, writeJsonAtomic, readJsonOrNull, mergeSource, upsertSources, registryUnreadable } from './lib/registry.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const OUT_DIR = join(ROOT, 'data', 'camera-registry');
@@ -41,16 +41,18 @@ export async function run({ fetcher = fetchDistrict, outDir = OUT_DIR, now = new
   const failed = districts.filter((nn) => !perDistrict[nn].ok);
   const report = { generatedAt: now, perDistrict, dropped: drop, total: cams.length, failedDistricts: failed, byCity: countsBy(cams, 'city') };
   const camPath = join(outDir, 'cameras.json');
-  const old = readJsonOrNull(camPath);
+  const all0 = readJsonOrNull(camPath); // the shared registry: other sources' rows are kept untouched
+  const old = Array.isArray(all0) ? all0.filter((c) => !c || !c.sourceId || c.sourceId === 'caltrans') : null; // only Caltrans rows count for the "count fell" guard
   let reason = null;
-  if (bad.length) reason = `${bad.length} cameras failed validation`;
+  if (registryUnreadable(camPath)) reason = 'cameras.json exists but is not a readable list; fix it first (other sources would be lost)';
+  else if (bad.length) reason = `${bad.length} cameras failed validation`;
   else if (cams.length === 0) reason = 'zero cameras';
   else if (failed.length && !allowPartial) reason = `incomplete: districts failed: ${failed.join(',')}`;
   else if (failed.length && old) reason = 'partial run will not replace an existing good file';
   else if (old && cams.length < old.length * 0.5) reason = `count fell from ${old.length} to ${cams.length}`;
   if (reason) { log(`NOT WRITTEN: ${reason}`); return { written: false, reason, report }; }
-  writeJsonAtomic(camPath, cams);
-  writeJsonAtomic(join(outDir, 'sources.json'), SOURCES);
+  writeJsonAtomic(camPath, mergeSource(all0, 'caltrans', cams));
+  writeJsonAtomic(join(outDir, 'sources.json'), upsertSources(readJsonOrNull(join(outDir, 'sources.json')), SOURCES));
   writeJsonAtomic(join(outDir, 'import-report.json'), report);
   return { written: true, reason: null, report };
 }

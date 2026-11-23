@@ -100,3 +100,30 @@ test('road pages that share their sentences fail the duplicate check', () => {
   assert.ok(gate(roadSite({ mut: (r, b) => b.replace(/<p>[\s\S]*<\/p>/, same) }), roadMd).some((e) => /near-duplicate/.test(e) && /roads/.test(e)));
 });
 test('road page without a Beats Argos line fails', () => assert.ok(gate(roadSite(), roadMd.split('\n').filter((l) => !l.includes('/roads/sr-1/')).join('\n')).some((e) => /\/roads\/sr-1\/: PAGES.md/.test(e))));
+
+// ---- British Columbia (second region): link-out for drivebc.ca pictures, and the silo rule for a region with few cities ----
+test('a DriveBC camera picture in an image tag fails the link-out rule (failing fixture); a plain link to it is fine', () => {
+  const bad = gate(site({ city: (c, b) => page(b + '<img src="https://www.drivebc.ca/images/520.jpg">') }), md);
+  assert.ok(bad.some((e) => /link-out/.test(e) && /drivebc/.test(e)), bad.join('\n'));
+  assert.deepStrictEqual(gate(site({ city: (c, b) => page(b + a('https://www.drivebc.ca/images/520.jpg', 'Britannia')) }), md), []);
+});
+// a second region "bc" with only 3 city pages: each links its 2 region siblings plus 1 nearest city of region "ca" (3 related, as the gate needs)
+const bcCities = ['campbell-river', 'dawson-creek', 'elkford'];
+const bcMd = [md, '- `/cameras/bc/` Beats Argos by: one region hub', ...bcCities.map((c) => `- \`/cameras/bc/${c}/\` Beats Argos by: every camera as a named official link with a checked status`)].join('\n');
+function bcSite(fill = true) {
+  return site({ extra: (w) => {
+    w('cameras', page(a('/cameras/ca/') + a('/cameras/bc/')));
+    w('cameras/bc', page(bcCities.map((c) => a(`/cameras/bc/${c}/`)).join('')));
+    for (const c of bcCities) {
+      w(`cameras/bc/${c}`, page(bcCities.filter((o) => o !== c).map((o) => a(`/cameras/bc/${o}/`)).join('') + (fill ? a('/cameras/ca/la/') : '') + a('/cameras/bc/') + a('/guides/dead-links/') + a('/map/') +
+        `<section data-block="cameras" data-basis="registry" data-source="drivebc" data-asof="2026-11-23"><p>${c} has unique cameras named for ${c} with their own roads in the BC list today.</p><p>Highway number ${c.length} faces its own direction near ${c} only.</p></section>`));
+    }
+  } });
+}
+test('a region with only 3 city pages passes when each links its 2 siblings and 1 city of the nearest other region', () => assert.deepStrictEqual(gate(bcSite(true), bcMd), []));
+test('failing fixture: the same small region with no cross-region link has only 2 related cities and fails', () => assert.ok(gate(bcSite(false), bcMd).some((e) => /\/cameras\/bc\/.*2 related-city links, need 3/.test(e))));
+test('a BC hub that does not link a city fails like any hub', () => {
+  const d = bcSite(true);
+  writeFileSync(join(d, 'cameras', 'bc', 'index.html'), page(a('/cameras/bc/campbell-river/') + a('/cameras/bc/dawson-creek/')));
+  assert.ok(gate(d, bcMd).some((e) => /\/cameras\/bc\/: does not link child \/cameras\/bc\/elkford\//.test(e)));
+});

@@ -262,3 +262,54 @@ test('adversarial: concurrent workers never pass the request cap', async () => {
   const r = await go(Array.from({ length: 40 }, (_, i) => cam(i)), { config: { maxRequests: 7, concurrency: 6, hostDelayMs: 5 } });
   assert.ok(seen.length <= 7 && r.doc.requests <= 7, `${seen.length} requests`);
 });
+
+// ---- British Columbia (drivebc): its own pace and stale limit; a one-source run never replaces health.json ----
+import { CONFIG, spread } from '../../ops/health/check.mjs';
+test('BC config: drivebc has its own gentler pace (>= 250 ms between requests, <= 3 workers) and a 4 h stale limit', () => {
+  const b = CONFIG.perSource.drivebc;
+  assert.ok(b.hostDelayMs >= 250 && b.concurrency <= 3, JSON.stringify(b));
+  assert.equal(b.staleHours, 4);
+  assert.ok(CONFIG.maxRequests >= 3263 + 1036 + 500, 'request cap must cover Caltrans + BC with retries');
+});
+
+test('BC pace: a per-source hostDelayMs spaces requests to that host (4 requests, 120 ms apart, take at least 330 ms)', async () => {
+  handler = (req, res) => sendJpeg(res);
+  const t0 = Date.now();
+  const r = await go([1, 2, 3, 4].map((i) => cam(i, `/d${i}.jpg`, 'drivebc')), { config: { perSource: { drivebc: { hostDelayMs: 120, concurrency: 3 } } } });
+  assert.ok(Date.now() - t0 >= 330, `took only ${Date.now() - t0} ms`);
+  assert.equal(r.doc.perSource.drivebc.reachable, 4);
+  assert.equal(r.doc.perSource.drivebc.requests, 4);
+});
+
+test('BC stale limit: a picture last modified 5 h ago is stale for drivebc (4 h) but reachable for another source (6 h)', async () => {
+  handler = (req, res) => sendJpeg(res, { 'Last-Modified': hoursAgo(5) });
+  const r = await go([cam(1, '/a.jpg', 'drivebc'), cam(2, '/b.jpg', 't')]);
+  assert.equal(r.doc.cameras['drivebc-1'].status, 'stale');
+  assert.equal(r.doc.cameras['t-2'].status, 'reachable');
+  assert.equal(r.doc.perSource.drivebc.staleHours, 4);
+});
+
+test('BC html error page behind a 200 is unavailable (same rule as every source)', async () => {
+  handler = (req, res) => { const b = '<html>DriveBC error</html>'.repeat(100); res.writeHead(200, { 'Content-Type': 'text/html', 'Content-Length': b.length }); res.end(b); };
+  const r = await go([cam(1, '/x.jpg', 'drivebc')]);
+  assert.equal(r.doc.cameras['drivebc-1'].status, 'unavailable');
+});
+
+test('--source: only that source is checked and the output is health.sample.json, never health.json (failing fixture: a one-source run must not replace the full file)', async () => {
+  handler = (req, res) => sendJpeg(res);
+  const outDir = mkdtempSync(join(tmpdir(), 'health-'));
+  writeFileSync(join(outDir, 'health.json'), '{"keep":true}');
+  const cams = [cam(1, '/a.jpg', 'drivebc'), cam(2, '/b.jpg', 'drivebc'), cam(3, '/c.jpg', 't')];
+  seen = [];
+  const r = await run({ cameras: cams, outDir, previous: null, config: fast, source: 'drivebc' });
+  assert.equal(r.name, 'health.sample.json');
+  assert.deepEqual(Object.keys(r.doc.cameras).sort(), ['drivebc-1', 'drivebc-2']);
+  assert.equal(readFileSync(join(outDir, 'health.json'), 'utf8'), '{"keep":true}');
+  assert.ok(seen.every((s) => !s.url.startsWith('/c.jpg')), 'the other source was not requested');
+});
+
+test('sample of one big group is evenly spread over the list, not its first N', () => {
+  const list = Array.from({ length: 100 }, (_, i) => ({ id: `drivebc-${i}`, sourceId: 'drivebc' }));
+  assert.deepEqual(sampleCameras(list, 4).map((c) => c.id), ['drivebc-0', 'drivebc-25', 'drivebc-50', 'drivebc-75']);
+  assert.deepEqual(spread([1, 2, 3], 5), [1, 2, 3]);
+});

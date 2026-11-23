@@ -1,10 +1,12 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { SITE_NAME } from '../../config.mjs';
-import { cameras, countsBy, registryDate, sources } from '../../lib/data.mjs';
+import { cameras as allCameras, countsBy, registryDateOf, sources } from '../../lib/data.mjs';
 import { curatedRoads } from '../../lib/pages.mjs';
 import { roadSlug } from '../../../../ops/importers/lib/registry.mjs';
 
+const cameras = allCameras.filter((c) => c.regionSlug === 'california'); // road pages are California-only
+const registryDate = registryDateOf('california');
 const roads = curatedRoads(cameras);
 const byRoad = countsBy(cameras, 'road');
 const source = sources.find((s) => s.id === 'caltrans');

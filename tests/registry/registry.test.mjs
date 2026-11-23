@@ -89,14 +89,15 @@ test('allowPartial may create the first file only', async () => {
 
 test('large drop in count vs old file is refused', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'reg-'));
-  writeFileSync(join(dir, 'cameras.json'), JSON.stringify(new Array(100).fill({})));
+  writeFileSync(join(dir, 'cameras.json'), JSON.stringify(new Array(100).fill({ sourceId: 'caltrans' })));
   const r = await run({ fetcher: async () => fixture, outDir: dir, log: quiet });
   assert.equal(r.written, false);
   assert.match(r.reason, /count fell/);
 });
 
 // ---- real output file ----
-const cams = JSON.parse(readFileSync(join(REAL, 'cameras.json'), 'utf8'));
+const allCams = JSON.parse(readFileSync(join(REAL, 'cameras.json'), 'utf8')); // every source
+const cams = allCams.filter((c) => c.sourceId === 'caltrans'); // the California tests below look at the Caltrans rows; BC rows are tested in tests/registry/drivebc.test.mjs
 const sources = JSON.parse(readFileSync(join(REAL, 'sources.json'), 'utf8'));
 
 test('real cameras.json: schema valid, in California bounds, unique ids', () => {
@@ -112,7 +113,7 @@ test('real cameras.json: schema valid, in California bounds, unique ids', () => 
 
 test('real data: no image fields while image_display is not allowed', () => {
   const byId = Object.fromEntries(sources.map((s) => [s.id, s]));
-  for (const c of cams) {
+  for (const c of allCams) { // every source, BC included
     assert.ok(byId[c.sourceId], `unknown source ${c.sourceId}`);
     if (byId[c.sourceId].permissions.image_display !== 'allowed') {
       for (const f of FORBIDDEN_FIELDS) assert.ok(!(f in c), `${c.id} has ${f}`);
@@ -121,7 +122,7 @@ test('real data: no image fields while image_display is not allowed', () => {
 });
 
 test('real sources.json: every source has all four permissions, none set to allowed', () => {
-  assert.deepEqual(sources.map((s) => s.id).sort(), ['alberta-511', 'caltrans', 'ontario-511']);
+  assert.deepEqual(sources.map((s) => s.id).sort(), ['alberta-511', 'caltrans', 'drivebc', 'ontario-511']);
   for (const s of sources) {
     for (const k of ['metadata_commercial', 'image_display', 'image_caching', 'image_redistribution']) {
       assert.equal(s.permissions[k], 'unverified', `${s.id}.${k}`);
@@ -130,8 +131,10 @@ test('real sources.json: every source has all four permissions, none set to allo
   assert.equal(sources.find((s) => s.id === 'ontario-511').status, 'pending-key');
 });
 
-test('real data: region count equals camera count', () => {
-  assert.equal(countsBy(cams, 'region').california, cams.length);
+test('real data: region count equals the camera count of that source', () => {
+  assert.equal(countsBy(allCams, 'region').california, cams.length);
+  assert.equal(countsBy(allCams, 'region')['british-columbia'], allCams.filter((c) => c.sourceId === 'drivebc').length);
+  assert.equal(allCams.length, cams.length + allCams.filter((c) => c.sourceId === 'drivebc').length, 'every row belongs to a known source');
 });
 
 test('cleanCity: lower-case place names are capitalised so "orange" and "Orange" are one city', async () => {

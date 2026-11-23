@@ -33,3 +33,22 @@ test('failing-fixture proof: with the gate off (min 1) the same page would be li
   const pages = pageList(fixture, ['Tiny'], '2026-11-22').map((p) => ({ ...p, indexable: p.count === null || p.count >= 1 }));
   assert.ok(buildSitemap(pages, 'https://x.test').includes('/tiny/'), 'the gate is what keeps it out');
 });
+
+// ---- per-region curation (British Columbia added) ----
+import { curatedPlaces } from '../src/lib/pages.mjs';
+test('curatedPlaces: per region, each region has its own limit (California 10, British Columbia 5) and the 3-camera minimum', () => {
+  const cams = [...Array.from({ length: 12 }, (_, i) => many(`CA${String(i).padStart(2, '0')}`, 3 + (i % 2), 'california')).flat(), ...Array.from({ length: 7 }, (_, i) => many(`BC${i}`, 3, 'british-columbia')).flat(), ...many('Small', 2, 'british-columbia')];
+  const p = curatedPlaces(cams);
+  assert.equal(p.filter((x) => x.region === 'california').length, 10);
+  assert.equal(p.filter((x) => x.region === 'british-columbia').length, 5);
+  assert.ok(!p.some((x) => x.city === 'Small'), 'two cameras is below the minimum');
+  assert.deepEqual(p.slice(0, 3).map((x) => x.region), ['california', 'california', 'california'], 'the bigger region comes first');
+  assert.deepEqual(curatedPlaces(cams, 2).filter((x) => x.region === 'british-columbia').length, 2, 'an explicit limit overrides the region default');
+});
+test('pageList: a region page and its city pages carry that region\'s own date, the hubs the newest', () => {
+  const cams = [...many('A', 3, 'california'), ...many('B', 3, 'british-columbia')];
+  const pl = pageList(cams, curatedPlaces(cams), '2026-11-23', [], { california: '2026-11-22', 'british-columbia': '2026-11-23' });
+  const d = (route) => pl.find((p) => p.route === route).lastmod;
+  assert.equal(d('/cameras/california/'), '2026-11-22'); assert.equal(d('/cameras/california/a/'), '2026-11-22');
+  assert.equal(d('/cameras/british-columbia/b/'), '2026-11-23'); assert.equal(d('/cameras/'), '2026-11-23');
+});

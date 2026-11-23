@@ -24,11 +24,15 @@ const more = (n) => (n > MAX_ROWS ? n - MAX_ROWS : 0);
     <ul>{b.items.slice(0, MAX_ROWS).map((i) => <li>{where(i)}{i.locationName && i.place ? ` (${i.locationName})` : ''}: {[val(i.airTemp, 'air temperature'), val(i.surfaceTemp, 'road surface temperature'), val(i.windAvg, 'wind'), val(i.windGust, 'gust'), val(i.visibility, 'visibility'), val(i.humidity, 'humidity %')].filter(Boolean).join(', ')}. <span class="meta">{km(i)}; read {i.recordedAt.slice(0, 16).replace('T', ' ')} UTC.</span></li>)}</ul>
     <p class="meta">Caltrans does not state the units of these readings, so we show them exactly as reported.</p>
   </>)}
+  {b.id === 'bc-events' && (<>
+    <ul>{b.items.slice(0, MAX_ROWS).map((i) => <li>{[i.road, i.direction, i.area].filter(Boolean).join(', ')}{i.closed ? ' (road closed)' : ''}: {i.text} <span class="meta">{km(i)}; {[i.severity && `${i.severity.toLowerCase()} severity`, i.eventType && i.eventType.toLowerCase().replace('_', ' ')].filter(Boolean).join(', ')}; since {i.start.slice(0, 16).replace('T', ' ')} UTC, {i.endIndefinite ? 'no set end' : `until ${i.end.slice(0, 16).replace('T', ' ')} UTC`}{i.updated ? `; DriveBC updated it ${i.updated.slice(0, 16).replace('T', ' ')} UTC` : ''}.</span></li>)}</ul>
+    {more(b.items.length) > 0 && <p class="meta">and {more(b.items.length)} more events within {Math.round(Math.max(...b.items.map((i) => i.km)))} km.</p>}
+  </>)}
   {b.id === 'forecast' && (
     <ul>{b.items.map((p) => <li><strong>{p.name}:</strong> {p.shortForecast}, {p.temperature}&deg;{p.temperatureUnit}, wind {p.windDirection} {p.windSpeed}{p.precipChance !== null && p.precipChance !== undefined ? `, ${p.precipChance}% chance of precipitation` : ''}.</li>)}</ul>
   )}
   {b.id === 'weather-alerts' && (
     <ul>{b.items.map((a) => <li><strong>{a.event}</strong> ({[a.severity, a.urgency].filter(Boolean).join(', ')}). {a.headline}</li>)}</ul>
   )}
-  <p class="meta">Source: {b.link ? <a href={b.link} rel="noopener">{b.source}</a> : b.source}. {b.attribution}. Updated <time datetime={b.asof}>{b.asof.slice(0, 16).replace('T', ' ')} UTC</time>; hidden when older than {b.maxAgeMin} minutes at build. See <a href="/guides/what-live-road-conditions-mean/">what these conditions mean</a>.</p>
+  <p class="meta">Source: {b.link ? <a href={b.link} rel="noopener">{b.source}</a> : b.source}. {b.attribution}. Updated <time datetime={b.asof}>{b.asof.slice(0, 16).replace('T', ' ')} UTC</time>; hidden when older than {b.maxAgeMin} minutes at build. See <a href={b.id === 'bc-events' ? '/guides/how-drivebc-cameras-work/' : '/guides/what-live-road-conditions-mean/'}>what these conditions mean</a>.</p>
 </section>

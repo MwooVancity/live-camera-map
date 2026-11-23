@@ -68,6 +68,9 @@ export function buildDoc({ city, slug, c, points, forecast, alerts, now }) {
 // fetcher(url) -> parsed JSON or throws. Returns { slug: { written, reason } }.
 export async function run({ fetcher = fetchJson, outDir = OUT_DIR, now = new Date(), cams, cities, perms, log = console.log, pauseMs = 500 } = {}) {
   cams ??= JSON.parse(readFileSync(join(ROOT, 'data', 'camera-registry', 'cameras.json'), 'utf8'));
+  // NWS covers the United States only: British Columbia cameras are never sent to api.weather.gov (and a BC place that shares a
+  // name with a California city must not change that city's centre).
+  cams = cams.filter((c) => !c.regionSlug || c.regionSlug === 'california');
   cities ??= curatedCities(cams);
   perms ??= JSON.parse(readFileSync(join(ROOT, 'data', 'source-permissions.json'), 'utf8')).sources;
   const out = {};

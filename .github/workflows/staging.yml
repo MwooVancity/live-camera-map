@@ -31,6 +31,8 @@ jobs:
         run: |
           node ops/importers/caltrans-conditions.mjs
           node ops/importers/nws.mjs
+      - name: Refresh British Columbia road events (DriveBC Open511; a failed run keeps the last good file and never fails the deploy)
+        run: timeout 120 node ops/importers/drivebc.mjs --only=events || echo "BC events not refreshed (exit $?); the page block hides itself when its data is older than 15 minutes"
       - name: Camera health check (previous result from the deployed site, 12 min time budget)
         timeout-minutes: 14
         run: |

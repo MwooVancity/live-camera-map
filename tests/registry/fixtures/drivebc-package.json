@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "result": {
+    "license_title": "Open Government Licence - British Columbia",
+    "license_url": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61",
+    "metadata_modified": "2026-11-01T17:00:03.798234",
+    "resources": [
+      { "id": "a9d52d85", "format": "csv", "name": "drivebc-highway-cams", "url": "https://catalogue.data.gov.bc.ca/dataset/6b39a910/resource/a9d52d85/download/webcams.csv" }
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 // Camera health checker. Reads data/camera-registry/cameras.json, writes data/health/health.json (generated, gitignored).
 // Usage: node ops/health/check.mjs [--previous <file|url>] [--registry <cameras.json>] [--out <health.json>]
 //   [--limit N] [--sample N] [--max-requests 4000] [--budget-min 12] [--concurrency 6] [--host-delay-ms 100]
-//   [--stale-hours 6] [--magic-all]
+//   [--stale-hours 6] [--magic-all] [--source <sourceId>]   (--source checks one source only; with --sample it never writes health.json)
 // Throttling: per-source concurrency, minimum delay between requests per host, a global request cap, a hard time budget,
 // exponential backoff on 429/5xx, and a per-source circuit breaker (25 consecutive transport failures: the rest of that
 // source is 'unknown', never 'unavailable'). Defaults to HEAD only (headers); --magic-all also reads the 3-byte signature.
@@ -14,7 +14,11 @@ import { writeJsonAtomic, readJsonOrNull } from '../importers/lib/registry.mjs';
 import { observe, Limit } from './lib/probe.mjs';
 import { classify } from './lib/classify.mjs';
 
-export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 4000, budgetMs: 12 * 60000, breakerAt: 25, retries: 2, backoffMs: 1000, backoffMaxMs: 30000, timeoutMs: 15000, staleHours: 6, minBytes: 1000, maxUnknownShare: 0.2, magicAll: false };
+export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 6000, budgetMs: 12 * 60000, breakerAt: 25, retries: 2, backoffMs: 1000, backoffMaxMs: 30000, timeoutMs: 15000, staleHours: 6, minBytes: 1000, maxUnknownShare: 0.2, magicAll: false,
+  // Per-source overrides (concurrency, hostDelayMs = minimum gap between requests to that source's host, staleHours).
+  // drivebc: www.drivebc.ca publishes no rate limit and its API terms say limits may change without notice, so it gets its own
+  // gentler pace (3 workers, 300 ms between requests = at most ~3 requests/s, HEAD only) and a 4 h stale limit (see docs/decisions/bc-health-stale-limit.md).
+  perSource: { drivebc: { concurrency: 3, hostDelayMs: 300, staleHours: 4 } } };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const STATUSES = ['reachable', 'stale', 'unavailable', 'unknown'];
 
@@ -34,10 +38,12 @@ export async function loadPrevious(arg, log = () => {}) {
 }
 
 // Even spread: round-robin over groups (id minus its last "-<n>", i.e. the district).
+// Within a group the picks are evenly spaced (not the first N), so one source with a single group is sampled across its list.
+export const spread = (l, k) => (l.length <= k ? l : Array.from({ length: k }, (_, j) => l[Math.floor((j * l.length) / k)]));
 export function sampleCameras(cams, n) {
   const groups = new Map();
   for (const c of cams) { const g = c.id.replace(/-[^-]+$/, ''); if (!groups.has(g)) groups.set(g, []); groups.get(g).push(c); }
-  const lists = [...groups.values()], out = [];
+  const lists = [...groups.values()].map((l) => spread(l, Math.ceil(n / groups.size))), out = [];
   for (let i = 0; out.length < n && lists.some((l) => i < l.length); i++) for (const l of lists) if (i < l.length && out.length < n) out.push(l[i]);
   return out;
 }
@@ -47,7 +53,8 @@ export async function run(opts) {
   const log = opts.log || (() => {});
   const now = opts.now || (() => new Date());
   let cams = opts.cameras;
-  const isSample = Boolean(opts.sample || opts.limit);
+  if (opts.source) cams = cams.filter((c) => c.sourceId === opts.source);
+  const isSample = Boolean(opts.sample || opts.limit || opts.source); // a one-source run covers only part of the registry: never health.json
   if (opts.sample) cams = sampleCameras(cams, opts.sample);
   else if (opts.limit) cams = cams.slice(0, opts.limit);
   const prev = (opts.previous && opts.previous.cameras) || {};
@@ -61,7 +68,7 @@ export async function run(opts) {
       if (state.requests >= cfg.maxRequests) throw new Limit('cap');
       if (Date.now() >= deadline) throw new Limit('time');
       const h = new URL(url).host, t = Math.max(Date.now(), state.hosts.get(h) || 0);
-      state.hosts.set(h, t + cfg.hostDelayMs);
+      state.hosts.set(h, t + ((cfg.perSource && cfg.perSource[src.id] && cfg.perSource[src.id].hostDelayMs) ?? cfg.hostDelayMs));
       state.requests++; src.requests++; // reserved before the sleep so concurrent workers cannot pass the cap together
       if (t > Date.now()) await sleep(t - Date.now());
       if (Date.now() >= deadline) { state.requests--; src.requests--; throw new Limit('time'); }
@@ -99,7 +106,7 @@ export async function run(opts) {
   }
 
   await Promise.all([...bySource].map(async ([id, list]) => {
-    const src = perSource[id] = { total: list.length, requests: 0, skipped: 0, consec: 0, open: false, staleHours: (cfg.perSource && cfg.perSource[id] && cfg.perSource[id].staleHours) || cfg.staleHours };
+    const src = perSource[id] = { id, total: list.length, requests: 0, skipped: 0, consec: 0, open: false, staleHours: (cfg.perSource && cfg.perSource[id] && cfg.perSource[id].staleHours) || cfg.staleHours };
     const ctx = ctxFor(src), queue = [...list];
     const conc = (cfg.perSource && cfg.perSource[id] && cfg.perSource[id].concurrency) || cfg.concurrency;
     await Promise.all(Array.from({ length: conc }, async () => { for (let c; (c = queue.shift());) rec[c.id] = await checkOne(c, src, ctx); }));
@@ -154,7 +161,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   if (!existsSync(regFile)) { console.error(`registry not found: ${regFile}`); process.exit(2); }
   const log = (m) => console.log(m);
   const previous = await loadPrevious(a.previous, log);
-  const r = await run({ cameras: JSON.parse(readFileSync(regFile, 'utf8')), previous, outDir: dirname(out), config, log, limit: a.limit && !a.sample ? Number(a.limit) : 0, sample: a.sample ? Number(a.sample) : 0 });
+  const r = await run({ cameras: JSON.parse(readFileSync(regFile, 'utf8')), previous, outDir: dirname(out), config, log, limit: a.limit && !a.sample ? Number(a.limit) : 0, sample: a.sample ? Number(a.sample) : 0, source: a.source || '' });
   console.log(JSON.stringify(Object.fromEntries(Object.entries(r.doc.perSource).map(([k, v]) => [k, v])), null, 1));
   process.exit(0);
 }

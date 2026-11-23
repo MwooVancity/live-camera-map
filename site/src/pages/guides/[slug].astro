@@ -1,8 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { SITE_NAME } from '../../config.mjs';
-import { cameras, countsBy, registryDate, report, loadedDistricts, failedDistricts } from '../../lib/data.mjs';
-import { GUIDES, curatedCities, curatedRoads, slugify } from '../../lib/pages.mjs';
+import { cameras, countsBy, registryDate, report, bcReport, loadedDistricts, failedDistricts } from '../../lib/data.mjs';
+import { GUIDES, curatedPlaces, curatedRoads, slugify } from '../../lib/pages.mjs';
 import { GUIDE_BODY } from '../../lib/guides.mjs';
 import { roadSlug } from '../../../../ops/importers/lib/registry.mjs';
 import { loadHealth, HEALTH_MAX_AGE_H } from '../../lib/health.mjs';
@@ -13,12 +13,16 @@ export function getStaticPaths() {
 const { guide } = Astro.props;
 const hf = loadHealth();
 const fresh = hf && (Date.now() - Date.parse(hf.generatedAt)) / 3600000 <= HEALTH_MAX_AGE_H;
-const sections = GUIDE_BODY[guide.slug]({ healthAsof: fresh ? hf.generatedAt : null, healthTotal: fresh ? Object.keys(hf.cameras).length : 0, total: cameras.length, districts: loadedDistricts, failed: failedDistricts, dropped: report.dropped || {}, date: registryDate });
-const byCity = countsBy(cameras, 'city');
-const cities = curatedCities(cameras).slice(0, 3);
-const roads = curatedRoads(cameras).slice(0, 3);
-const byRoad = countsBy(cameras, 'road');
-const regionOf = (city) => cameras.find((c) => c.city === city).regionSlug;
+const caCams = cameras.filter((c) => c.regionSlug === 'california');
+const bcCams = cameras.filter((c) => c.regionSlug === 'british-columbia');
+const bcByCity = countsBy(bcCams, 'city');
+const bc = { total: bcCams.length, named: Object.values(bcByCity).reduce((s, k) => s + k, 0), places: Object.keys(bcByCity).length, dropped: (bcReport && bcReport.dropped) || {}, modified: (bcReport && bcReport.datasetModified ? bcReport.datasetModified.slice(0, 10) : 'not recorded'), licence: (bcReport && bcReport.licence) || 'Open Government Licence - British Columbia' };
+const sections = GUIDE_BODY[guide.slug]({ healthAsof: fresh ? hf.generatedAt : null, healthTotal: fresh ? Object.keys(hf.cameras).length : 0, total: cameras.length, caltransTotal: caCams.length, bc, districts: loadedDistricts, failed: failedDistricts, dropped: report.dropped || {}, date: registryDate });
+// "See it on a real page": the guide's own region when it has one (the BC guide), California otherwise. Counts are the curated rows' own.
+const region = guide.region || 'california';
+const places = curatedPlaces(cameras).filter((p) => p.region === region).slice(0, 3);
+const roads = guide.region ? [] : curatedRoads(caCams).slice(0, 3);
+const byRoad = countsBy(caCams, 'road');
 const others = GUIDES.filter((g) => g.slug !== guide.slug);
 ---
 <Base title={`${guide.title} | ${SITE_NAME}`} description={sections[0].p[0].slice(0, 155)} route={`/guides/${guide.slug}/`} crumbs={[{ name: guide.title, route: `/guides/${guide.slug}/` }]}>
@@ -26,10 +30,10 @@ const others = GUIDES.filter((g) => g.slug !== guide.slug);
   {sections.map((s) => (<><h2>{s.h}</h2>{s.p.map((t) => <p>{t}</p>)}</>))}
   <p class="meta">Written {guide.date}.</p>
   <h2>See it on a real page</h2>
-  <ul>{cities.map((c) => <li><a href={`/cameras/${regionOf(c)}/${slugify(c)}/`}>{c} traffic cameras</a> ({byCity[c]})</li>)}</ul>
-  <h2>Road pages</h2>
+  <ul>{places.map((p) => <li><a href={`/cameras/${p.region}/${slugify(p.city)}/`}>{p.city} traffic cameras</a> ({p.n})</li>)}</ul>
+  {roads.length > 0 && <><h2>Road pages</h2>
   <ul>{roads.map((r) => <li><a href={`/roads/${roadSlug(r)}/`}>{r} traffic cameras</a> ({byRoad[r]})</li>)}</ul>
-  <p><a href="/roads/">All roads</a></p>
+  <p><a href="/roads/">All roads</a></p></>}
   <p><a class="cta" href="/map/">Open the map</a></p>
   <h2>More guides</h2>
   <ul>{others.map((g) => <li><a href={`/guides/${g.slug}/`}>{g.title}</a></li>)}</ul>
