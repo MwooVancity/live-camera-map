@@ -138,5 +138,25 @@
   "license": "Open Government Licence - Toronto",
   "licenseUrl": "https://open.toronto.ca/open-data-licence/",
   "reviewedAt": "2026-11-23"
+ },
+ {
+  "id": "calgary-traffic",
+  "name": "Traffic Cameras (City of Calgary Open Data)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one request for the list per run (Socrata resource endpoint, allowed by the portal robots.txt, Crawl-delay 1); picture links are checked by the health checker at most 2 a second",
+   "docsUrl": "https://data.calgary.ca/resource/k7p9-kppz.json"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Contains information licensed under the Open Government Licence – City of Calgary.",
+  "license": "Open Government Licence - City of Calgary",
+  "licenseUrl": "https://data.calgary.ca/stories/s/Open-Data-Terms/u45n-7awa",
+  "reviewedAt": "2026-11-23"
  }
 ]

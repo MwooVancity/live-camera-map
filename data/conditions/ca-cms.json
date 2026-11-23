@@ -1,18 +1,18 @@
 {
  "feed": "cms",
  "sourceId": "caltrans-cms",
- "generatedAt": "2026-11-22T22:53:39.390Z",
+ "generatedAt": "2026-11-23T22:58:05.489Z",
  "timeNote": "statusLocal/messageLocal are America/Los_Angeles local time; start/end/recordedAt are UTC",
  "perDistrict": {
   "10": {
    "ok": true,
    "raw": 107,
-   "kept": 22
+   "kept": 23
   },
   "11": {
    "ok": true,
    "raw": 80,
-   "kept": 60
+   "kept": 36
   },
   "12": {
    "ok": true,
@@ -22,42 +22,42 @@
   "01": {
    "ok": true,
    "raw": 28,
-   "kept": 15
+   "kept": 19
   },
   "02": {
    "ok": true,
    "raw": 44,
-   "kept": 0
+   "kept": 3
   },
   "03": {
    "ok": true,
    "raw": 108,
-   "kept": 34
+   "kept": 21
   },
   "04": {
    "ok": true,
    "raw": 189,
-   "kept": 44
+   "kept": 53
   },
   "05": {
    "ok": true,
    "raw": 22,
-   "kept": 0
+   "kept": 2
   },
   "06": {
    "ok": true,
    "raw": 118,
-   "kept": 5
+   "kept": 2
   },
   "07": {
    "ok": true,
    "raw": 145,
-   "kept": 21
+   "kept": 17
   },
   "08": {
    "ok": true,
    "raw": 94,
-   "kept": 32
+   "kept": 33
   },
   "09": {
    "ok": true,
@@ -67,13 +67,69 @@
  },
  "failedDistricts": [],
  "dropped": {
-  "blankSign": 718,
+  "blankSign": 743,
   "notInService": 47,
-  "dupId": 9,
-  "badCoords": 1
+  "badCoords": 1,
+  "dupId": 8
  },
- "count": 242,
+ "count": 218,
  "items": [
+  {
+   "id": "ca-cms-d01-V1",
+   "district": "01",
+   "road": "US-101",
+   "direction": "South",
+   "place": "Redwood Valley",
+   "county": "Mendocino",
+   "locationName": "1 - Men 101 PM 31.6 - N of 101/20 Calpella - FSBT",
+   "lat": 39.249675,
+   "lon": -123.210905,
+   "phase1": [
+    "HEADLIGHTS ON",
+    "WHEN WIPERS ON"
+   ],
+   "phase2": [],
+   "text": "HEADLIGHTS ON / WHEN WIPERS ON",
+   "messageLocal": "2026-11-23 09:14:13"
+  },
+  {
+   "id": "ca-cms-d01-V3",
+   "district": "01",
+   "road": "US-101",
+   "direction": "South",
+   "place": "Fortuna",
+   "county": "Humboldt",
+   "locationName": "3 - Hum 101 PM 58.7 - N of Jct 36 - FSBT",
+   "lat": 40.56276,
+   "lon": -124.147953,
+   "phase1": [
+    "HWY 36",
+    "EXPECT DELAYS",
+    "15 MILES AHEAD"
+   ],
+   "phase2": [],
+   "text": "HWY 36 / EXPECT DELAYS / 15 MILES AHEAD",
+   "messageLocal": "2026-11-23 09:36:59"
+  },
+  {
+   "id": "ca-cms-d01-V4b",
+   "district": "01",
+   "road": "US-101",
+   "direction": "North",
+   "place": "Arcata",
+   "county": "Humboldt",
+   "locationName": "4b - US 101 / SR-299",
+   "lat": 40.88913,
+   "lon": -124.07933,
+   "phase1": [
+    "MOVE OVER OR",
+    "SLOW FOR WORKERS",
+    "IT'S THE LAW"
+   ],
+   "phase2": [],
+   "text": "MOVE OVER OR / SLOW FOR WORKERS / IT'S THE LAW",
+   "messageLocal": "2026-11-23 09:13:50"
+  },
   {
    "id": "ca-cms-d01-V6",
    "district": "01",
@@ -106,15 +162,13 @@
    "lat": 39.406104,
    "lon": -123.369739,
    "phase1": [
-    "HEAVY RAIN",
-    "WATCH FOR",
-    "FLOODING"
+    "EXPECTED STORMS",
+    "AND KING TIDES",
+    "11/24 TO 11/27"
    ],
-   "phase2": [
-    "REDUCE SPEED"
-   ],
-   "text": "HEAVY RAIN / WATCH FOR / FLOODING | REDUCE SPEED",
-   "messageLocal": "2026-11-14 15:23:14"
+   "phase2": [],
+   "text": "EXPECTED STORMS / AND KING TIDES / 11/24 TO 11/27",
+   "messageLocal": "2026-11-23 11:15:03"
   },
   {
    "id": "ca-cms-d01-V8",
@@ -179,6 +233,25 @@
    "messageLocal": "2026-11-14 18:59:15"
   },
   {
+   "id": "ca-cms-d01-V13",
+   "district": "01",
+   "road": "US-101",
+   "direction": "North",
+   "place": "Fortuna",
+   "county": "Humboldt",
+   "locationName": "13 - Hum 101 PM 55.96 - S of Jct 36 - FNBT",
+   "lat": 40.525289,
+   "lon": -124.150183,
+   "phase1": [
+    "HWY 36",
+    "EXPECT DELAYS",
+    "15 MILES AHEAD"
+   ],
+   "phase2": [],
+   "text": "HWY 36 / EXPECT DELAYS / 15 MILES AHEAD",
+   "messageLocal": "2026-11-23 09:37:47"
+  },
+  {
    "id": "ca-cms-d01-V14",
    "district": "01",
    "road": "US-101",
@@ -190,14 +263,14 @@
    "lon": -124.179497,
    "phase1": [
     "HEAVY RAIN",
-    "WATCH FOR",
-    "FLOODING"
+    "WATCH",
+    "FOR FLOODING"
    ],
    "phase2": [
     "USE CAUTION"
    ],
-   "text": "HEAVY RAIN / WATCH FOR / FLOODING | USE CAUTION",
-   "messageLocal": "2026-11-14 15:17:35"
+   "text": "HEAVY RAIN / WATCH / FOR FLOODING | USE CAUTION",
+   "messageLocal": "2026-11-23 09:11:26"
   },
   {
    "id": "ca-cms-d01-V15",
@@ -210,13 +283,16 @@
    "lat": 41.899567,
    "lon": -124.137094,
    "phase1": [
-    "RUTTING SEASON",
-    "USE CAUTION",
-    "WATCH FOR DEER"
+    "HEAVY RAIN",
+    "WATCH",
+    "FOR FLOODING"
    ],
-   "phase2": [],
-   "text": "RUTTING SEASON / USE CAUTION / WATCH FOR DEER",
-   "messageLocal": "2026-11-20 07:35:02"
+   "phase2": [
+    "HIGH SURF",
+    "USE CAUTION"
+   ],
+   "text": "HEAVY RAIN / WATCH / FOR FLOODING | HIGH SURF / USE CAUTION",
+   "messageLocal": "2026-11-23 09:12:37"
   },
   {
    "id": "ca-cms-d01-V16",
@@ -229,13 +305,16 @@
    "lat": 41.993307,
    "lon": -123.719809,
    "phase1": [
-    "RUTTING SEASON",
-    "USE CAUTION",
-    "WATCH FOR DEER"
+    "HEAVY RAIN",
+    "WATCH",
+    "FOR FLOODING"
    ],
-   "phase2": [],
-   "text": "RUTTING SEASON / USE CAUTION / WATCH FOR DEER",
-   "messageLocal": "2026-11-20 07:35:01"
+   "phase2": [
+    "HIGH SURF",
+    "USE CAUTION"
+   ],
+   "text": "HEAVY RAIN / WATCH / FOR FLOODING | HIGH SURF / USE CAUTION",
+   "messageLocal": "2026-11-23 09:10:44"
   },
   {
    "id": "ca-cms-d01-V17",
@@ -248,13 +327,16 @@
    "lat": 41.719817,
    "lon": -124.13765,
    "phase1": [
-    "WATCH FOR",
-    "FLOODING",
-    "REDUCE SPEED"
+    "HEAVY RAIN",
+    "WATCH",
+    "FOR FLOODING"
    ],
-   "phase2": [],
-   "text": "WATCH FOR / FLOODING / REDUCE SPEED",
-   "messageLocal": "2026-11-16 09:25:01"
+   "phase2": [
+    "HIGH SURF",
+    "USE CAUTION"
+   ],
+   "text": "HEAVY RAIN / WATCH / FOR FLOODING | HIGH SURF / USE CAUTION",
+   "messageLocal": "2026-11-23 09:10:00"
   },
   {
    "id": "ca-cms-d01-V18",
@@ -310,16 +392,16 @@
    "lat": 39.419186,
    "lon": -123.803047,
    "phase1": [
-    "CAUTION",
-    "WATCH",
-    "FOR DEER"
+    "EXPECTED",
+    "STORMS",
+    "KINGTIDE"
    ],
    "phase2": [
-    "RUTTING",
-    "SEASON"
+    "11/24 TO",
+    "11/27"
    ],
-   "text": "CAUTION / WATCH / FOR DEER | RUTTING / SEASON",
-   "messageLocal": "2026-11-09 09:22:57"
+   "text": "EXPECTED / STORMS / KINGTIDE | 11/24 TO / 11/27",
+   "messageLocal": "2026-11-23 11:09:31"
   },
   {
    "id": "ca-cms-d01-V76",
@@ -379,22 +461,59 @@
    "messageLocal": "2026-11-20 07:32:22"
   },
   {
-   "id": "ca-cms-d03-1238",
-   "district": "03",
-   "road": "I-80",
-   "direction": "West",
-   "place": "Truckee",
-   "county": "Nevada",
-   "locationName": "004 - Truckee",
-   "lat": 39.323323,
-   "lon": -120.212591,
+   "id": "ca-cms-d02-21",
+   "district": "02",
+   "road": "I-5",
+   "direction": "North",
+   "place": "Mount Shasta",
+   "county": "Siskiyou",
+   "locationName": "21 - Abrams Lake - N/B  Wind Warning",
+   "lat": 41.34486,
+   "lon": -122.343225,
    "phase1": [
-    "ICE AND SNOW",
-    "TAKE IT SLOW"
+    "WIND ADVISORY",
+    "WEED TO YREKA"
    ],
    "phase2": [],
-   "text": "ICE AND SNOW / TAKE IT SLOW",
-   "messageLocal": "2026-11-22 07:29:32"
+   "text": "WIND ADVISORY / WEED TO YREKA",
+   "messageLocal": "2026-11-23 10:38:33"
+  },
+  {
+   "id": "ca-cms-d02-22",
+   "district": "02",
+   "road": "I-5",
+   "direction": "South",
+   "place": "Yreka",
+   "county": "Siskiyou",
+   "locationName": "22 - South Yreka - S/B Wind Warning",
+   "lat": 41.696587,
+   "lon": -122.640488,
+   "phase1": [
+    "WIND ADVISORY",
+    "YREKA TO WEED"
+   ],
+   "phase2": [],
+   "text": "WIND ADVISORY / YREKA TO WEED",
+   "messageLocal": "2026-11-23 10:38:19"
+  },
+  {
+   "id": "ca-cms-d02-24",
+   "district": "02",
+   "road": "I-5",
+   "direction": "South",
+   "place": "Lakehead",
+   "county": "Shasta",
+   "locationName": "24 - Lakehead Rest - S/B",
+   "lat": 40.92589,
+   "lon": -122.411313,
+   "phase1": [
+    "ROAD WORK",
+    "2 MILES AHEAD",
+    "USE LEFT LANE"
+   ],
+   "phase2": [],
+   "text": "ROAD WORK / 2 MILES AHEAD / USE LEFT LANE",
+   "messageLocal": "2026-11-23 08:23:43"
   },
   {
    "id": "ca-cms-d03-1241",
@@ -409,11 +528,11 @@
    "phase1": [
     "MINUTES TO:",
     "COLFAX 12",
-    "TRUCKEE 57"
+    "TRUCKEE 58"
    ],
    "phase2": [],
-   "text": "MINUTES TO: / COLFAX 12 / TRUCKEE 57",
-   "messageLocal": "2026-11-22 14:53:34"
+   "text": "MINUTES TO: / COLFAX 12 / TRUCKEE 58",
+   "messageLocal": "2026-11-23 14:57:48"
   },
   {
    "id": "ca-cms-d03-1232",
@@ -430,48 +549,9 @@
     "ICE AND SNOW",
     "TAKE IT SLOW"
    ],
-   "phase2": [
-    "WATCH FOR SNOW",
-    "REMOVAL EQUIP"
-   ],
-   "text": "CAUTION / ICE AND SNOW / TAKE IT SLOW | WATCH FOR SNOW / REMOVAL EQUIP",
-   "messageLocal": "2026-11-21 12:53:46"
-  },
-  {
-   "id": "ca-cms-d03-1248",
-   "district": "03",
-   "road": "I-80",
-   "direction": "East",
-   "place": "Soda Springs",
-   "county": "Placer",
-   "locationName": "011 - Rainbow",
-   "lat": 39.311639,
-   "lon": -120.490908,
-   "phase1": [
-    "ICE AND SNOW",
-    "TAKE IT SLOW"
-   ],
    "phase2": [],
-   "text": "ICE AND SNOW / TAKE IT SLOW",
-   "messageLocal": "2026-11-22 07:28:10"
-  },
-  {
-   "id": "ca-cms-d03-1236",
-   "district": "03",
-   "road": "I-80",
-   "direction": "West",
-   "place": "Donner Lake",
-   "county": "Nevada",
-   "locationName": "013 - Vista Point",
-   "lat": 39.328996,
-   "lon": -120.26924,
-   "phase1": [
-    "ICE AND SNOW",
-    "TAKE IT SLOW"
-   ],
-   "phase2": [],
-   "text": "ICE AND SNOW / TAKE IT SLOW",
-   "messageLocal": "2026-11-22 07:26:37"
+   "text": "CAUTION / ICE AND SNOW / TAKE IT SLOW",
+   "messageLocal": "2026-11-22 16:29:10"
   },
   {
    "id": "ca-cms-d03-1266",
@@ -486,11 +566,11 @@
    "phase1": [
     "MINUTES TO:",
     "FLORIN 7",
-    "US 50 11"
+    "US 50 12"
    ],
    "phase2": [],
-   "text": "MINUTES TO: / FLORIN 7 / US 50 11",
-   "messageLocal": "2026-11-22 14:53:34"
+   "text": "MINUTES TO: / FLORIN 7 / US 50 12",
+   "messageLocal": "2026-11-23 14:57:47"
   },
   {
    "id": "ca-cms-d03-1259",
@@ -509,7 +589,7 @@
    ],
    "phase2": [],
    "text": "MINUTES TO: / WATT 15 / DOWNTOWN 22",
-   "messageLocal": "2026-11-22 14:53:35"
+   "messageLocal": "2026-11-23 14:57:48"
   },
   {
    "id": "ca-cms-d03-1267",
@@ -523,30 +603,31 @@
    "lon": -121.464819,
    "phase1": [
     "MINUTES TO:",
-    "US 50 3",
-    "AIRPORT 15"
+    "US 50 4",
+    "AIRPORT 16"
    ],
    "phase2": [],
-   "text": "MINUTES TO: / US 50 3 / AIRPORT 15",
-   "messageLocal": "2026-11-22 14:53:34"
+   "text": "MINUTES TO: / US 50 4 / AIRPORT 16",
+   "messageLocal": "2026-11-23 14:57:47"
   },
   {
-   "id": "ca-cms-d03-1249",
+   "id": "ca-cms-d03-1243",
    "district": "03",
    "road": "I-80",
    "direction": "West",
-   "place": "Soda Springs",
+   "place": "Gold Run",
    "county": "Placer",
-   "locationName": "027 - Kingvale",
-   "lat": 39.315835,
-   "lon": -120.439408,
+   "locationName": "029 - Gold Run (WB)",
+   "lat": 39.187404,
+   "lon": -120.843565,
    "phase1": [
-    "ICE AND SNOW",
-    "TAKE IT SLOW"
+    "WORKERS ON FOOT",
+    "IN AREA",
+    "STAY ALERT"
    ],
    "phase2": [],
-   "text": "ICE AND SNOW / TAKE IT SLOW",
-   "messageLocal": "2026-11-22 07:28:51"
+   "text": "WORKERS ON FOOT / IN AREA / STAY ALERT",
+   "messageLocal": "2026-11-22 21:27:53"
   },
   {
    "id": "ca-cms-d03-1247",
@@ -587,78 +668,6 @@
    "messageLocal": "2026-11-20 10:47:11"
   },
   {
-   "id": "ca-cms-d03-1239",
-   "district": "03",
-   "road": "I-80",
-   "direction": "West",
-   "place": "Truckee",
-   "county": "Nevada",
-   "locationName": "033 - Prosser Village Rd",
-   "lat": 39.35456,
-   "lon": -120.147641,
-   "phase1": [
-    "ICE AND SNOW",
-    "TAKE IT SLOW"
-   ],
-   "phase2": [],
-   "text": "ICE AND SNOW / TAKE IT SLOW",
-   "messageLocal": "2026-11-22 07:32:10"
-  },
-  {
-   "id": "ca-cms-d03-1237",
-   "district": "03",
-   "road": "I-80",
-   "direction": "East",
-   "place": "Truckee",
-   "county": "Nevada",
-   "locationName": "034 - Donner Park",
-   "lat": 39.323878,
-   "lon": -120.224141,
-   "phase1": [
-    "ICE AND SNOW",
-    "TAKE IT SLOW"
-   ],
-   "phase2": [],
-   "text": "ICE AND SNOW / TAKE IT SLOW",
-   "messageLocal": "2026-11-22 07:31:32"
-  },
-  {
-   "id": "ca-cms-d03-1251",
-   "district": "03",
-   "road": "SR-89",
-   "direction": "North",
-   "place": "Truckee",
-   "county": "Placer",
-   "locationName": "035 - Cabin Creek Rd",
-   "lat": 39.277931,
-   "lon": -120.206845,
-   "phase1": [
-    "ICE AND SNOW",
-    "TAKE IT SLOW"
-   ],
-   "phase2": [],
-   "text": "ICE AND SNOW / TAKE IT SLOW",
-   "messageLocal": "2026-11-22 11:25:20"
-  },
-  {
-   "id": "ca-cms-d03-1250",
-   "district": "03",
-   "road": "SR-89",
-   "direction": "South",
-   "place": "Tahoe City",
-   "county": "Placer",
-   "locationName": "036 - Fairway Dr",
-   "lat": 39.163825,
-   "lon": -120.151228,
-   "phase1": [
-    "ICE AND SNOW",
-    "TAKE IT SLOW"
-   ],
-   "phase2": [],
-   "text": "ICE AND SNOW / TAKE IT SLOW",
-   "messageLocal": "2026-11-21 11:07:23"
-  },
-  {
    "id": "ca-cms-d03-1156",
    "district": "03",
    "road": "I-80",
@@ -697,79 +706,6 @@
    "messageLocal": "2026-11-20 13:43:42"
   },
   {
-   "id": "ca-cms-d03-1227",
-   "district": "03",
-   "road": "SR-70",
-   "direction": "East",
-   "place": "Oroville",
-   "county": "Butte",
-   "locationName": "042 - Jct 149/70",
-   "lat": 39.574067,
-   "lon": -121.615489,
-   "phase1": [
-    "MINUTES TO:",
-    "CHICO 13",
-    "PULGA RD 26"
-   ],
-   "phase2": [],
-   "text": "MINUTES TO: / CHICO 13 / PULGA RD 26",
-   "messageLocal": "2026-11-22 14:53:36"
-  },
-  {
-   "id": "ca-cms-d03-1159",
-   "district": "03",
-   "road": "SR-89",
-   "direction": "North",
-   "place": "Tahoe City",
-   "county": "Placer",
-   "locationName": "045 - Granlibakken",
-   "lat": 39.161935,
-   "lon": -120.14467,
-   "phase1": [
-    "ICE AND SNOW",
-    "TAKE IT SLOW"
-   ],
-   "phase2": [],
-   "text": "ICE AND SNOW / TAKE IT SLOW",
-   "messageLocal": "2026-11-20 12:05:38"
-  },
-  {
-   "id": "ca-cms-d03-1157",
-   "district": "03",
-   "road": "SR-28",
-   "direction": "West",
-   "place": "Tahoe City",
-   "county": "Placer",
-   "locationName": "046 - Rocky Ridge Rd",
-   "lat": 39.179624,
-   "lon": -120.130339,
-   "phase1": [
-    "ICE AND SNOW",
-    "TAKE IT SLOW"
-   ],
-   "phase2": [],
-   "text": "ICE AND SNOW / TAKE IT SLOW",
-   "messageLocal": "2026-11-21 11:07:23"
-  },
-  {
-   "id": "ca-cms-d03-1160",
-   "district": "03",
-   "road": "SR-267",
-   "direction": "West",
-   "place": "Kings Beach",
-   "county": "Placer",
-   "locationName": "047 - National Ave",
-   "lat": 39.254854,
-   "lon": -120.042812,
-   "phase1": [
-    "ICE AND SNOW",
-    "TAKE IT SLOW"
-   ],
-   "phase2": [],
-   "text": "ICE AND SNOW / TAKE IT SLOW",
-   "messageLocal": "2026-11-20 09:47:37"
-  },
-  {
    "id": "ca-cms-d03-1169",
    "district": "03",
    "road": "I-80",
@@ -786,7 +722,7 @@
    ],
    "phase2": [],
    "text": "DOUGLAS 4 MIN / BUS 80 13 MIN / I-5 20 MIN",
-   "messageLocal": "2026-11-22 14:53:40"
+   "messageLocal": "2026-11-23 14:57:48"
   },
   {
    "id": "ca-cms-d03-1176",
@@ -801,11 +737,11 @@
    "phase1": [
     "AIRPORT 4 MIN",
     "WOODLAND 11 MIN",
-    "MRYSVILLE 33 MIN"
+    "MRYSVILLE 37 MIN"
    ],
    "phase2": [],
-   "text": "AIRPORT 4 MIN / WOODLAND 11 MIN / MRYSVILLE 33 MIN",
-   "messageLocal": "2026-11-22 14:53:35"
+   "text": "AIRPORT 4 MIN / WOODLAND 11 MIN / MRYSVILLE 37 MIN",
+   "messageLocal": "2026-11-23 14:57:48"
   },
   {
    "id": "ca-cms-d03-1179",
@@ -819,11 +755,11 @@
    "lon": -121.306954,
    "phase1": [
     "ELK GROVE 10 MIN",
-    ".US 50 21 MIN"
+    ".US 50 22 MIN"
    ],
    "phase2": [],
-   "text": "ELK GROVE 10 MIN / .US 50 21 MIN",
-   "messageLocal": "2026-11-22 14:53:37"
+   "text": "ELK GROVE 10 MIN / .US 50 22 MIN",
+   "messageLocal": "2026-11-23 14:57:48"
   },
   {
    "id": "ca-cms-d03-1181",
@@ -842,7 +778,7 @@
    ],
    "phase2": [],
    "text": "MINUTES TO: / WOODLAND 10 / DAVIS 16",
-   "messageLocal": "2026-11-22 14:53:33"
+   "messageLocal": "2026-11-23 14:57:47"
   },
   {
    "id": "ca-cms-d03-2269",
@@ -856,30 +792,12 @@
    "lon": -121.390435,
    "phase1": [
     "LINCOLN 10 MIN",
-    "I-80 20 MIN",
-    "AUBURN 33 MIN"
+    "I-80 26 MIN",
+    "AUBURN 39 MIN"
    ],
    "phase2": [],
-   "text": "LINCOLN 10 MIN / I-80 20 MIN / AUBURN 33 MIN",
-   "messageLocal": "2026-11-22 14:53:33"
-  },
-  {
-   "id": "ca-cms-d03-1214",
-   "district": "03",
-   "road": "SR-267",
-   "direction": "South",
-   "place": "Truckee",
-   "county": "Placer",
-   "locationName": "069 - Truckee Airport",
-   "lat": 39.313558,
-   "lon": -120.146272,
-   "phase1": [
-    "ICE AND SNOW",
-    "TAKE IT SLOW"
-   ],
-   "phase2": [],
-   "text": "ICE AND SNOW / TAKE IT SLOW",
-   "messageLocal": "2026-11-21 09:51:05"
+   "text": "LINCOLN 10 MIN / I-80 26 MIN / AUBURN 39 MIN",
+   "messageLocal": "2026-11-23 14:57:46"
   },
   {
    "id": "ca-cms-d03-3297",
@@ -893,12 +811,12 @@
    "lon": -121.540074,
    "phase1": [
     "MINUTES TO:",
-    "MARYSVILLE 26",
-    "YUBA CITY 29"
+    "MARYSVILLE 30",
+    "YUBA CITY 30"
    ],
    "phase2": [],
-   "text": "MINUTES TO: / MARYSVILLE 26 / YUBA CITY 29",
-   "messageLocal": "2026-11-22 14:53:35"
+   "text": "MINUTES TO: / MARYSVILLE 30 / YUBA CITY 30",
+   "messageLocal": "2026-11-23 14:57:48"
   },
   {
    "id": "ca-cms-d03-2594",
@@ -913,11 +831,11 @@
    "phase1": [
     "MINUTES TO:",
     "OROVILLE 12",
-    "70 MRYSVL 37"
+    "70 MRYSVL 38"
    ],
    "phase2": [],
-   "text": "MINUTES TO: / OROVILLE 12 / 70 MRYSVL 37",
-   "messageLocal": "2026-11-22 14:53:35"
+   "text": "MINUTES TO: / OROVILLE 12 / 70 MRYSVL 38",
+   "messageLocal": "2026-11-23 14:57:48"
   },
   {
    "id": "ca-cms-d03-4026",
@@ -932,11 +850,11 @@
    "phase1": [
     "MINUTES TO:",
     "HWY 12 7",
-    "ISLETON 12"
+    "ISLETON 13"
    ],
    "phase2": [],
-   "text": "MINUTES TO: / HWY 12 7 / ISLETON 12",
-   "messageLocal": "2026-11-22 14:53:35"
+   "text": "MINUTES TO: / HWY 12 7 / ISLETON 13",
+   "messageLocal": "2026-11-23 14:57:48"
   },
   {
    "id": "ca-cms-d03-4087",
@@ -952,12 +870,9 @@
     "ICE AND SNOW",
     "TAKE IT SLOW"
    ],
-   "phase2": [
-    "WATCH FOR SNOW",
-    "REMOVAL EQUIP"
-   ],
-   "text": "ICE AND SNOW / TAKE IT SLOW | WATCH FOR SNOW / REMOVAL EQUIP",
-   "messageLocal": "2026-11-21 12:55:07"
+   "phase2": [],
+   "text": "ICE AND SNOW / TAKE IT SLOW",
+   "messageLocal": "2026-11-22 16:29:14"
   },
   {
    "id": "ca-cms-d03-4065",
@@ -982,27 +897,6 @@
    "messageLocal": "2026-11-21 10:32:18"
   },
   {
-   "id": "ca-cms-d03-4090",
-   "district": "03",
-   "road": "US-50",
-   "direction": "East",
-   "place": "Wrights Lake",
-   "county": "El Dorado",
-   "locationName": "126 - Wrights Lake -EO",
-   "lat": 38.787156,
-   "lon": -120.205593,
-   "phase1": [
-    "ICE AND SNOW",
-    "TAKE IT SLOW"
-   ],
-   "phase2": [
-    "WATCH FOR SNOW",
-    "REMOVAL EQUIP"
-   ],
-   "text": "ICE AND SNOW / TAKE IT SLOW | WATCH FOR SNOW / REMOVAL EQUIP",
-   "messageLocal": "2026-11-21 10:17:40"
-  },
-  {
    "id": "ca-cms-d03-N/A",
    "district": "03",
    "road": "I-80",
@@ -1015,11 +909,11 @@
    "phase1": [
     "MINUTES TO:",
     "WEST SAC 5",
-    "DWTN SAC 8"
+    "DWTN SAC 9"
    ],
    "phase2": [],
-   "text": "MINUTES TO: / WEST SAC 5 / DWTN SAC 8",
-   "messageLocal": "2026-11-22 14:53:34"
+   "text": "MINUTES TO: / WEST SAC 5 / DWTN SAC 9",
+   "messageLocal": "2026-11-23 14:57:48"
   },
   {
    "id": "ca-cms-d04-2",
@@ -1057,7 +951,7 @@
    ],
    "phase2": [],
    "text": "EXPECTED STORMS / AND KING TIDES / 11/24 TO 11/27",
-   "messageLocal": "2026-11-21 15:37:55"
+   "messageLocal": "2026-11-23 14:36:28"
   },
   {
    "id": "ca-cms-d04-4",
@@ -1089,13 +983,13 @@
    "lat": 37.620465,
    "lon": -122.076074,
    "phase1": [
-    "OAK ARPT   9 MIN",
-    "OAKLAND   20 MIN",
-    "CASTRO VY  9 MIN"
+    "OAK ARPT  16 MIN",
+    "OAKLAND   30 MIN",
+    "CASTRO VY 17 MIN"
    ],
    "phase2": [],
-   "text": "OAK ARPT   9 MIN / OAKLAND   20 MIN / CASTRO VY  9 MIN",
-   "messageLocal": "2026-11-22 14:44:39"
+   "text": "OAK ARPT  16 MIN / OAKLAND   30 MIN / CASTRO VY 17 MIN",
+   "messageLocal": "2026-11-23 14:53:38"
   },
   {
    "id": "ca-cms-d04-11",
@@ -1109,12 +1003,12 @@
    "lon": -122.390375,
    "phase1": [
     "SFO ARPT   5 MIN",
-    "RTE 92    13 MIN",
-    "RTE 84    20 MIN"
+    "RTE 92    21 MIN",
+    "RTE 84    27 MIN"
    ],
    "phase2": [],
-   "text": "SFO ARPT   5 MIN / RTE 92    13 MIN / RTE 84    20 MIN",
-   "messageLocal": "2026-11-22 14:51:10"
+   "text": "SFO ARPT   5 MIN / RTE 92    21 MIN / RTE 84    27 MIN",
+   "messageLocal": "2026-11-23 14:55:12"
   },
   {
    "id": "ca-cms-d04-14",
@@ -1127,13 +1021,13 @@
    "lat": 37.534778,
    "lon": -122.278512,
    "phase1": [
-    "SFO ARPT   8 MIN",
-    "SF DWNTWN 25 MIN",
-    "HAYWARD   13 MIN"
+    "SFO ARPT  10 MIN",
+    "SF DWNTWN 37 MIN",
+    "HAYWARD   23 MIN"
    ],
    "phase2": [],
-   "text": "SFO ARPT   8 MIN / SF DWNTWN 25 MIN / HAYWARD   13 MIN",
-   "messageLocal": "2026-11-22 14:46:38"
+   "text": "SFO ARPT  10 MIN / SF DWNTWN 37 MIN / HAYWARD   23 MIN",
+   "messageLocal": "2026-11-23 14:49:39"
   },
   {
    "id": "ca-cms-d04-16",
@@ -1146,13 +1040,32 @@
    "lat": 37.453545,
    "lon": -122.128737,
    "phase1": [
-    "SFO ARPT  18 MIN",
-    "SAN MATEO 13 MIN",
-    "FREMONT   15 MIN"
+    "SFO ARPT  20 MIN",
+    "SAN MATEO 15 MIN",
+    "FREMONT   22 MIN"
    ],
    "phase2": [],
-   "text": "SFO ARPT  18 MIN / SAN MATEO 13 MIN / FREMONT   15 MIN",
-   "messageLocal": "2026-11-22 13:46:39"
+   "text": "SFO ARPT  20 MIN / SAN MATEO 15 MIN / FREMONT   22 MIN",
+   "messageLocal": "2026-11-23 14:55:39"
+  },
+  {
+   "id": "ca-cms-d04-17",
+   "district": "04",
+   "road": "US-101",
+   "direction": "South",
+   "place": "Palo Alto",
+   "county": "Santa Clara",
+   "locationName": "CM017-SCL 101 S/B S/OF EMBARCADERO RD OC",
+   "lat": 37.440985,
+   "lon": -122.114982,
+   "phase1": [
+    "SJ ARPT   20 MIN",
+    "MILPITAS  20 MIN",
+    "LOS GATOS 24 MIN"
+   ],
+   "phase2": [],
+   "text": "SJ ARPT   20 MIN / MILPITAS  20 MIN / LOS GATOS 24 MIN",
+   "messageLocal": "2026-11-23 14:56:39"
   },
   {
    "id": "ca-cms-d04-19",
@@ -1165,13 +1078,13 @@
    "lat": 37.232981,
    "lon": -121.97127,
    "phase1": [
-    "SJ ARPT    9 MIN",
-    "MILPITAS  16 MIN",
-    "MTN VIEW  22 MIN"
+    "SJ ARPT   11 MIN",
+    "MILPITAS  21 MIN",
+    "MTN VIEW  21 MIN"
    ],
    "phase2": [],
-   "text": "SJ ARPT    9 MIN / MILPITAS  16 MIN / MTN VIEW  22 MIN",
-   "messageLocal": "2026-11-22 14:40:38"
+   "text": "SJ ARPT   11 MIN / MILPITAS  21 MIN / MTN VIEW  21 MIN",
+   "messageLocal": "2026-11-23 14:55:39"
   },
   {
    "id": "ca-cms-d04-21",
@@ -1184,13 +1097,13 @@
    "lat": 37.461466,
    "lon": -121.902118,
    "phase1": [
-    "SJ STATE  11 MIN",
-    "CUPERTINO 19 MIN",
-    "S101 / 85 18 MIN"
+    "SJ STATE  13 MIN",
+    "CUPERTINO 21 MIN",
+    "S101 / 85 22 MIN"
    ],
    "phase2": [],
-   "text": "SJ STATE  11 MIN / CUPERTINO 19 MIN / S101 / 85 18 MIN",
-   "messageLocal": "2026-11-22 14:13:39"
+   "text": "SJ STATE  13 MIN / CUPERTINO 21 MIN / S101 / 85 22 MIN",
+   "messageLocal": "2026-11-23 14:55:39"
   },
   {
    "id": "ca-cms-d04-24",
@@ -1204,12 +1117,31 @@
    "lon": -121.981264,
    "phase1": [
     "LOS GATOS  5 MIN",
-    "SANTA CRZ 25 MIN",
-    "MORG HILL 25 MIN"
+    "SANTA CRZ 28 MIN",
+    "MORG HILL 42 MIN"
    ],
    "phase2": [],
-   "text": "LOS GATOS  5 MIN / SANTA CRZ 25 MIN / MORG HILL 25 MIN",
-   "messageLocal": "2026-11-22 14:46:38"
+   "text": "LOS GATOS  5 MIN / SANTA CRZ 28 MIN / MORG HILL 42 MIN",
+   "messageLocal": "2026-11-23 14:55:39"
+  },
+  {
+   "id": "ca-cms-d04-25",
+   "district": "04",
+   "road": "SR-24",
+   "direction": "East",
+   "place": "Oakland",
+   "county": "Alameda",
+   "locationName": "CM025-ALA24 E/B W/OF BROADWAY",
+   "lat": 37.843203,
+   "lon": -122.254532,
+   "phase1": [
+    "WALNUT CR 21 MIN",
+    "SAN RAMON 32 MIN",
+    "CONCORD   36 MIN"
+   ],
+   "phase2": [],
+   "text": "WALNUT CR 21 MIN / SAN RAMON 32 MIN / CONCORD   36 MIN",
+   "messageLocal": "2026-11-23 14:55:39"
   },
   {
    "id": "ca-cms-d04-26",
@@ -1222,13 +1154,13 @@
    "lat": 37.878117,
    "lon": -122.186389,
    "phase1": [
-    "OAKLAND   13 MIN",
-    "SF DWNTWN 22 MIN",
-    "OAK ARPT  12 MIN"
+    "OAKLAND   11 MIN",
+    "SF DWNTWN 19 MIN",
+    "OAK ARPT  14 MIN"
    ],
    "phase2": [],
-   "text": "OAKLAND   13 MIN / SF DWNTWN 22 MIN / OAK ARPT  12 MIN",
-   "messageLocal": "2026-11-22 14:50:38"
+   "text": "OAKLAND   11 MIN / SF DWNTWN 19 MIN / OAK ARPT  14 MIN",
+   "messageLocal": "2026-11-23 14:52:38"
   },
   {
    "id": "ca-cms-d04-28",
@@ -1242,12 +1174,12 @@
    "lon": -122.40365,
    "phase1": [
     "SFO ARPT  10 MIN",
-    "RTE 92    17 MIN",
+    "RTE 92    23 MIN",
     "DALY CITY 10 MIN"
    ],
    "phase2": [],
-   "text": "SFO ARPT  10 MIN / RTE 92    17 MIN / DALY CITY 10 MIN",
-   "messageLocal": "2026-11-22 13:28:39"
+   "text": "SFO ARPT  10 MIN / RTE 92    23 MIN / DALY CITY 10 MIN",
+   "messageLocal": "2026-11-23 14:52:38"
   },
   {
    "id": "ca-cms-d04-29",
@@ -1260,13 +1192,13 @@
    "lat": 38.227399,
    "lon": -122.121624,
    "phase1": [
-    "CARQ BRDG 12 MIN",
-    "BERKELEY  28 MIN",
-    "CONCORD   19 MIN"
+    "CARQ BRDG 13 MIN",
+    "BERKELEY  30 MIN",
+    "CONCORD   20 MIN"
    ],
    "phase2": [],
-   "text": "CARQ BRDG 12 MIN / BERKELEY  28 MIN / CONCORD   19 MIN",
-   "messageLocal": "2026-11-22 13:34:38"
+   "text": "CARQ BRDG 13 MIN / BERKELEY  30 MIN / CONCORD   20 MIN",
+   "messageLocal": "2026-11-23 14:31:37"
   },
   {
    "id": "ca-cms-d04-30",
@@ -1279,13 +1211,13 @@
    "lat": 37.58855,
    "lon": -122.054022,
    "phase1": [
-    "MILPITAS  14 MIN",
-    "SJ ARPT   19 MIN",
-    "MENLO PRK 10 MIN"
+    "MILPITAS  17 MIN",
+    "SJ ARPT   33 MIN",
+    "MENLO PRK 12 MIN"
    ],
    "phase2": [],
-   "text": "MILPITAS  14 MIN / SJ ARPT   19 MIN / MENLO PRK 10 MIN",
-   "messageLocal": "2026-11-22 13:40:38"
+   "text": "MILPITAS  17 MIN / SJ ARPT   33 MIN / MENLO PRK 12 MIN",
+   "messageLocal": "2026-11-23 14:52:39"
   },
   {
    "id": "ca-cms-d04-34",
@@ -1304,7 +1236,7 @@
    ],
    "phase2": [],
    "text": "WET / SLIPPERY / ROADWAY / REDUCE SPEED",
-   "messageLocal": "2026-11-22 04:13:21"
+   "messageLocal": "2026-11-22 18:34:07"
   },
   {
    "id": "ca-cms-d04-36",
@@ -1342,7 +1274,7 @@
    ],
    "phase2": [],
    "text": "WET / SLIPPERY / ROADWAY / REDUCE SPEED",
-   "messageLocal": "2026-11-22 04:13:21"
+   "messageLocal": "2026-11-22 18:34:07"
   },
   {
    "id": "ca-cms-d04-39",
@@ -1375,12 +1307,31 @@
    "lon": -122.328882,
    "phase1": [
     "SFO ARPT  10 MIN",
-    "SF DWNTWN 28 MIN",
-    "MENLO PRK 11 MIN"
+    "SF DWNTWN 40 MIN",
+    "MENLO PRK 16 MIN"
    ],
    "phase2": [],
-   "text": "SFO ARPT  10 MIN / SF DWNTWN 28 MIN / MENLO PRK 11 MIN",
-   "messageLocal": "2026-11-22 14:50:39"
+   "text": "SFO ARPT  10 MIN / SF DWNTWN 40 MIN / MENLO PRK 16 MIN",
+   "messageLocal": "2026-11-23 14:55:39"
+  },
+  {
+   "id": "ca-cms-d04-51",
+   "district": "04",
+   "road": "I-80",
+   "direction": "West",
+   "place": "Vallejo",
+   "county": "Solano",
+   "locationName": "CM051-SOL80 W/B E/of REDWOOD PKWAY",
+   "lat": 38.117242,
+   "lon": -122.230372,
+   "phase1": [
+    "HWY 4      7 MIN",
+    "BERKELEY  21 MIN",
+    "CONCORD   17 MIN"
+   ],
+   "phase2": [],
+   "text": "HWY 4      7 MIN / BERKELEY  21 MIN / CONCORD   17 MIN",
+   "messageLocal": "2026-11-23 14:34:39"
   },
   {
    "id": "ca-cms-d04-52",
@@ -1393,13 +1344,32 @@
    "lat": 38.11705,
    "lon": -122.22999,
    "phase1": [
-    "VACAVILLE 18 MIN",
-    "SACRAMNTO 47 MIN",
-    "SEARS PT  17 MIN"
+    "VACAVILLE 19 MIN",
+    "SACRAMNTO 61 MIN",
+    "SEARS PT  16 MIN"
    ],
    "phase2": [],
-   "text": "VACAVILLE 18 MIN / SACRAMNTO 47 MIN / SEARS PT  17 MIN",
-   "messageLocal": "2026-11-22 11:58:37"
+   "text": "VACAVILLE 19 MIN / SACRAMNTO 61 MIN / SEARS PT  16 MIN",
+   "messageLocal": "2026-11-23 14:49:37"
+  },
+  {
+   "id": "ca-cms-d04-54",
+   "district": "04",
+   "road": "I-680",
+   "direction": "South",
+   "place": "Benicia",
+   "county": "Solano",
+   "locationName": "CMO54 SB 680 SOF BAYSHORE RD",
+   "lat": 38.061162,
+   "lon": -122.131454,
+   "phase1": [
+    "WALNUT CR 12 MIN",
+    "ANTIOCH   23 MIN",
+    "DUBLIN    27 MIN"
+   ],
+   "phase2": [],
+   "text": "WALNUT CR 12 MIN / ANTIOCH   23 MIN / DUBLIN    27 MIN",
+   "messageLocal": "2026-11-23 14:46:38"
   },
   {
    "id": "ca-cms-d04-60",
@@ -1412,13 +1382,13 @@
    "lat": 37.491427,
    "lon": -122.13683,
    "phase1": [
-    "FREMONT   11 MIN",
-    "HAYWARD   15 MIN",
-    "MILPITAS  19 MIN"
+    "FREMONT   15 MIN",
+    "HAYWARD   22 MIN",
+    "MILPITAS  23 MIN"
    ],
    "phase2": [],
-   "text": "FREMONT   11 MIN / HAYWARD   15 MIN / MILPITAS  19 MIN",
-   "messageLocal": "2026-11-22 13:04:38"
+   "text": "FREMONT   15 MIN / HAYWARD   22 MIN / MILPITAS  23 MIN",
+   "messageLocal": "2026-11-23 14:49:37"
   },
   {
    "id": "ca-cms-d04-70",
@@ -1437,7 +1407,7 @@
    ],
    "phase2": [],
    "text": "ROADWORK W-80 / BEFORE PLAZA / RIGHT LANE CLSD",
-   "messageLocal": "2026-11-22 06:41:47"
+   "messageLocal": "2026-11-23 11:27:59"
   },
   {
    "id": "ca-cms-d04-72",
@@ -1451,12 +1421,12 @@
    "lon": -122.33235,
    "phase1": [
     "HALF MOON 16 MIN",
-    "DALY CITY 15 MIN",
+    "DALY CITY 17 MIN",
     "HWY 84     8 MIN"
    ],
    "phase2": [],
-   "text": "HALF MOON 16 MIN / DALY CITY 15 MIN / HWY 84     8 MIN",
-   "messageLocal": "2026-11-22 12:34:39"
+   "text": "HALF MOON 16 MIN / DALY CITY 17 MIN / HWY 84     8 MIN",
+   "messageLocal": "2026-11-23 11:25:39"
   },
   {
    "id": "ca-cms-d04-74",
@@ -1469,13 +1439,13 @@
    "lat": 37.384348,
    "lon": -121.905145,
    "phase1": [
-    "S880/280   6 MIN",
-    "LOS GATOS 12 MIN",
-    "CUPERTINO 12 MIN"
+    "S880/280   8 MIN",
+    "LOS GATOS 17 MIN",
+    "CUPERTINO 16 MIN"
    ],
    "phase2": [],
-   "text": "S880/280   6 MIN / LOS GATOS 12 MIN / CUPERTINO 12 MIN",
-   "messageLocal": "2026-11-22 14:43:37"
+   "text": "S880/280   8 MIN / LOS GATOS 17 MIN / CUPERTINO 16 MIN",
+   "messageLocal": "2026-11-23 14:52:38"
   },
   {
    "id": "ca-cms-d04-76",
@@ -1507,13 +1477,13 @@
    "lat": 37.462634,
    "lon": -121.925516,
    "phase1": [
-    "FREMONT    7 MIN",
-    "HAYWARD   14 MIN",
-    "PALO ALTO 24 MIN"
+    "FREMONT   11 MIN",
+    "HAYWARD   25 MIN",
+    "PALO ALTO 28 MIN"
    ],
    "phase2": [],
-   "text": "FREMONT    7 MIN / HAYWARD   14 MIN / PALO ALTO 24 MIN",
-   "messageLocal": "2026-11-22 14:46:38"
+   "text": "FREMONT   11 MIN / HAYWARD   25 MIN / PALO ALTO 28 MIN",
+   "messageLocal": "2026-11-23 14:55:37"
   },
   {
    "id": "ca-cms-d04-78",
@@ -1526,13 +1496,13 @@
    "lat": 37.872333,
    "lon": -122.305192,
    "phase1": [
-    "CARQ BRDG 15 MIN",
-    "FAIRFIELD 28 MIN",
+    "CARQ BRDG 17 MIN",
+    "FAIRFIELD 34 MIN",
     "NOVATO    23 MIN"
    ],
    "phase2": [],
-   "text": "CARQ BRDG 15 MIN / FAIRFIELD 28 MIN / NOVATO    23 MIN",
-   "messageLocal": "2026-11-22 12:28:40"
+   "text": "CARQ BRDG 17 MIN / FAIRFIELD 34 MIN / NOVATO    23 MIN",
+   "messageLocal": "2026-11-23 14:49:37"
   },
   {
    "id": "ca-cms-d04-79",
@@ -1545,13 +1515,13 @@
    "lat": 37.711319,
    "lon": -122.395312,
    "phase1": [
-    "SF DWNTWN 10 MIN",
-    "OAKLAND   21 MIN",
-    "BERKELEY  22 MIN"
+    "SF DWNTWN 25 MIN",
+    "OAKLAND   38 MIN",
+    "BERKELEY  44 MIN"
    ],
    "phase2": [],
-   "text": "SF DWNTWN 10 MIN / OAKLAND   21 MIN / BERKELEY  22 MIN",
-   "messageLocal": "2026-11-22 14:50:39"
+   "text": "SF DWNTWN 25 MIN / OAKLAND   38 MIN / BERKELEY  44 MIN",
+   "messageLocal": "2026-11-23 14:55:39"
   },
   {
    "id": "ca-cms-d04-82",
@@ -1564,13 +1534,32 @@
    "lat": 37.389027,
    "lon": -121.989558,
    "phase1": [
-    "SJC ARPT   3 MIN",
-    "HWY 280    7 MIN",
-    "HWY 85    17 MIN"
+    "SJC ARPT   9 MIN",
+    "HWY 280   24 MIN",
+    "HWY 85    33 MIN"
    ],
    "phase2": [],
-   "text": "SJC ARPT   3 MIN / HWY 280    7 MIN / HWY 85    17 MIN",
-   "messageLocal": "2026-11-22 12:16:39"
+   "text": "SJC ARPT   9 MIN / HWY 280   24 MIN / HWY 85    33 MIN",
+   "messageLocal": "2026-11-23 14:55:39"
+  },
+  {
+   "id": "ca-cms-d04-84",
+   "district": "04",
+   "road": "SR-92",
+   "direction": "West",
+   "place": "San Mateo",
+   "county": "San Mateo",
+   "locationName": "CM084 WB 92 E. FOSTER CITY BLVD",
+   "lat": 37.569366,
+   "lon": -122.267473,
+   "phase1": [
+    "HALF MOON 21 MIN",
+    "SFO ARPT  10 MIN",
+    "PALO ALTO 18 MIN"
+   ],
+   "phase2": [],
+   "text": "HALF MOON 21 MIN / SFO ARPT  10 MIN / PALO ALTO 18 MIN",
+   "messageLocal": "2026-11-23 14:56:39"
   },
   {
    "id": "ca-cms-d04-85",
@@ -1583,13 +1572,13 @@
    "lat": 37.570889,
    "lon": -122.265089,
    "phase1": [
-    "HAYWARD   11 MIN",
-    "CASTRO VY 10 MIN",
-    "FREMONT   23 MIN"
+    "HAYWARD   16 MIN",
+    "CASTRO VY 14 MIN",
+    "FREMONT   35 MIN"
    ],
    "phase2": [],
-   "text": "HAYWARD   11 MIN / CASTRO VY 10 MIN / FREMONT   23 MIN",
-   "messageLocal": "2026-11-22 13:04:37"
+   "text": "HAYWARD   16 MIN / CASTRO VY 14 MIN / FREMONT   35 MIN",
+   "messageLocal": "2026-11-23 14:55:39"
   },
   {
    "id": "ca-cms-d04-90",
@@ -1602,13 +1591,13 @@
    "lat": 37.993725,
    "lon": -122.301053,
    "phase1": [
-    "BERKELEY  10 MIN",
-    "SF DWNTWN 27 MIN",
-    "OAKLAND   19 MIN"
+    "BERKELEY  13 MIN",
+    "SF DWNTWN 30 MIN",
+    "OAKLAND   20 MIN"
    ],
    "phase2": [],
-   "text": "BERKELEY  10 MIN / SF DWNTWN 27 MIN / OAKLAND   19 MIN",
-   "messageLocal": "2026-11-22 14:40:39"
+   "text": "BERKELEY  13 MIN / SF DWNTWN 30 MIN / OAKLAND   20 MIN",
+   "messageLocal": "2026-11-23 14:49:39"
   },
   {
    "id": "ca-cms-d04-91",
@@ -1621,13 +1610,13 @@
    "lat": 38.050491,
    "lon": -122.23111,
    "phase1": [
-    "BERKELEY  14 MIN",
-    "SF DWNTWN 33 MIN",
-    "OAK ARPT  31 MIN"
+    "BERKELEY  17 MIN",
+    "SF DWNTWN 35 MIN",
+    "OAK ARPT  36 MIN"
    ],
    "phase2": [],
-   "text": "BERKELEY  14 MIN / SF DWNTWN 33 MIN / OAK ARPT  31 MIN",
-   "messageLocal": "2026-11-22 14:31:40"
+   "text": "BERKELEY  17 MIN / SF DWNTWN 35 MIN / OAK ARPT  36 MIN",
+   "messageLocal": "2026-11-23 14:52:38"
   },
   {
    "id": "ca-cms-d04-96",
@@ -1641,12 +1630,12 @@
    "lon": -122.264101,
    "phase1": [
     "SF DWNTWN 15 MIN",
-    "SFO ARPT  30 MIN",
-    "OAK ARPT  10 MIN"
+    "SFO ARPT  29 MIN",
+    "OAK ARPT  14 MIN"
    ],
    "phase2": [],
-   "text": "SF DWNTWN 15 MIN / SFO ARPT  30 MIN / OAK ARPT  10 MIN",
-   "messageLocal": "2026-11-22 14:52:38"
+   "text": "SF DWNTWN 15 MIN / SFO ARPT  29 MIN / OAK ARPT  14 MIN",
+   "messageLocal": "2026-11-23 14:55:39"
   },
   {
    "id": "ca-cms-d04-97",
@@ -1659,13 +1648,13 @@
    "lat": 37.81619,
    "lon": -122.251545,
    "phase1": [
-    "SF DWNTWN 14 MIN",
-    "CARQ BRDG 22 MIN",
-    "WALNUT CR 14 MIN"
+    "SF DWNTWN 16 MIN",
+    "CARQ BRDG 34 MIN",
+    "WALNUT CR 21 MIN"
    ],
    "phase2": [],
-   "text": "SF DWNTWN 14 MIN / CARQ BRDG 22 MIN / WALNUT CR 14 MIN",
-   "messageLocal": "2026-11-22 14:34:39"
+   "text": "SF DWNTWN 16 MIN / CARQ BRDG 34 MIN / WALNUT CR 21 MIN",
+   "messageLocal": "2026-11-23 14:55:37"
   },
   {
    "id": "ca-cms-d04-99",
@@ -1679,12 +1668,31 @@
    "lon": -122.087356,
    "phase1": [
     "WALNUT CR  8 MIN",
-    "DUBLIN    21 MIN",
-    "ANTIOCH   13 MIN"
+    "DUBLIN    24 MIN",
+    "ANTIOCH   19 MIN"
    ],
    "phase2": [],
-   "text": "WALNUT CR  8 MIN / DUBLIN    21 MIN / ANTIOCH   13 MIN",
-   "messageLocal": "2026-11-22 13:22:39"
+   "text": "WALNUT CR  8 MIN / DUBLIN    24 MIN / ANTIOCH   19 MIN",
+   "messageLocal": "2026-11-23 14:52:38"
+  },
+  {
+   "id": "ca-cms-d04-103",
+   "district": "04",
+   "road": "I-205",
+   "direction": "West",
+   "place": "Tracy",
+   "county": "San Joaquin",
+   "locationName": "CM103- W205 JEO JCT-580",
+   "lat": 37.74148,
+   "lon": -121.513039,
+   "phase1": [
+    "LIVERMORE 14 MIN",
+    "DUBLIN    22 MIN",
+    "CASTRO VY 30 MIN"
+   ],
+   "phase2": [],
+   "text": "LIVERMORE 14 MIN / DUBLIN    22 MIN / CASTRO VY 30 MIN",
+   "messageLocal": "2026-11-23 14:04:39"
   },
   {
    "id": "ca-cms-d04-104",
@@ -1698,12 +1706,12 @@
    "lon": -121.509794,
    "phase1": [
     "LIVERMORE 14 MIN",
-    "DUBLIN    20 MIN",
-    "CASTRO VY 28 MIN"
+    "DUBLIN    21 MIN",
+    "CASTRO VY 29 MIN"
    ],
    "phase2": [],
-   "text": "LIVERMORE 14 MIN / DUBLIN    20 MIN / CASTRO VY 28 MIN",
-   "messageLocal": "2026-11-22 14:52:38"
+   "text": "LIVERMORE 14 MIN / DUBLIN    21 MIN / CASTRO VY 29 MIN",
+   "messageLocal": "2026-11-23 14:52:38"
   },
   {
    "id": "ca-cms-d04-109",
@@ -1716,13 +1724,13 @@
    "lat": 37.717766,
    "lon": -122.1331,
    "phase1": [
-    "DUBLIN    12 MIN",
-    "LIVERMORE 19 MIN",
+    "DUBLIN    16 MIN",
+    "LIVERMORE 25 MIN",
     "SM BRIDGE 21 MIN"
    ],
    "phase2": [],
-   "text": "DUBLIN    12 MIN / LIVERMORE 19 MIN / SM BRIDGE 21 MIN",
-   "messageLocal": "2026-11-22 14:40:38"
+   "text": "DUBLIN    16 MIN / LIVERMORE 25 MIN / SM BRIDGE 21 MIN",
+   "messageLocal": "2026-11-23 14:40:39"
   },
   {
    "id": "ca-cms-d04-110",
@@ -1735,13 +1743,13 @@
    "lat": 37.70131,
    "lon": -122.038432,
    "phase1": [
-    "HWY 13    10 MIN",
-    "RTE 24    18 MIN",
-    "SM BRIDGE 15 MIN"
+    "HWY 13    11 MIN",
+    "RTE 24    16 MIN",
+    "SM BRIDGE 14 MIN"
    ],
    "phase2": [],
-   "text": "HWY 13    10 MIN / RTE 24    18 MIN / SM BRIDGE 15 MIN",
-   "messageLocal": "2026-11-22 14:34:38"
+   "text": "HWY 13    11 MIN / RTE 24    16 MIN / SM BRIDGE 14 MIN",
+   "messageLocal": "2026-11-23 14:16:38"
   },
   {
    "id": "ca-cms-d04-111",
@@ -1754,13 +1762,32 @@
    "lat": 37.701836,
    "lon": -121.881554,
    "phase1": [
-    "CASTRO VY 10 MIN",
-    "SM BRIDGE 22 MIN",
-    "WALNUT CK 15 MIN"
+    "CASTRO VY 11 MIN",
+    "SM BRIDGE 23 MIN",
+    "WALNUT CK 20 MIN"
    ],
    "phase2": [],
-   "text": "CASTRO VY 10 MIN / SM BRIDGE 22 MIN / WALNUT CK 15 MIN",
-   "messageLocal": "2026-11-22 14:16:39"
+   "text": "CASTRO VY 11 MIN / SM BRIDGE 23 MIN / WALNUT CK 20 MIN",
+   "messageLocal": "2026-11-23 14:43:38"
+  },
+  {
+   "id": "ca-cms-d04-117",
+   "district": "04",
+   "road": "US-101",
+   "direction": "South",
+   "place": "Santa Rosa",
+   "county": "Sonoma",
+   "locationName": "CM117 Steele Ln",
+   "lat": 38.45913,
+   "lon": -122.726444,
+   "phase1": [
+    "ROHNRT PK  8 MIN",
+    "PETALUMA  16 MIN",
+    "NOVATO    51 MIN"
+   ],
+   "phase2": [],
+   "text": "ROHNRT PK  8 MIN / PETALUMA  16 MIN / NOVATO    51 MIN",
+   "messageLocal": "2026-11-23 14:52:39"
   },
   {
    "id": "ca-cms-d04-129",
@@ -1773,13 +1800,51 @@
    "lat": 37.573451,
    "lon": -121.886512,
    "phase1": [
-    "DUBLIN     9 MIN",
-    "WALNUT CR 22 MIN",
-    "ANTIOCH   41 MIN"
+    "DUBLIN    11 MIN",
+    "WALNUT CR 28 MIN",
+    "ANTIOCH   57 MIN"
    ],
    "phase2": [],
-   "text": "DUBLIN     9 MIN / WALNUT CR 22 MIN / ANTIOCH   41 MIN",
-   "messageLocal": "2026-11-22 13:55:38"
+   "text": "DUBLIN    11 MIN / WALNUT CR 28 MIN / ANTIOCH   57 MIN",
+   "messageLocal": "2026-11-23 14:53:40"
+  },
+  {
+   "id": "ca-cms-d04-133",
+   "district": "04",
+   "road": "I-680",
+   "direction": "North",
+   "place": "Martinez",
+   "county": "Contra Costa",
+   "locationName": "CM133-CC N680 ON BENICIA BRIDGE",
+   "lat": 38.031454,
+   "lon": -122.116587,
+   "phase1": [
+    "680/80/12 12 MIN",
+    "VACAVILLE 25 MIN",
+    "VALLEJO    7 MIN"
+   ],
+   "phase2": [],
+   "text": "680/80/12 12 MIN / VACAVILLE 25 MIN / VALLEJO    7 MIN",
+   "messageLocal": "2026-11-23 14:46:37"
+  },
+  {
+   "id": "ca-cms-d04-138",
+   "district": "04",
+   "road": "US-101",
+   "direction": "North",
+   "place": "Cotati",
+   "county": "Sonoma",
+   "locationName": "CM138 N101 AT RAILROAD AVENUE",
+   "lat": 38.30843,
+   "lon": -122.711936,
+   "phase1": [
+    "STA ROSA   9 MIN",
+    "WINDSOR   18 MIN",
+    "HEALDSBRG 22 MIN"
+   ],
+   "phase2": [],
+   "text": "STA ROSA   9 MIN / WINDSOR   18 MIN / HEALDSBRG 22 MIN",
+   "messageLocal": "2026-11-23 14:55:39"
   },
   {
    "id": "ca-cms-d04-149",
@@ -1793,31 +1858,12 @@
    "lon": -122.128909,
    "phase1": [
     "VACAVILLE 11 MIN",
-    "DAVIS     31 MIN",
-    "SACRAMNTO 39 MIN"
+    "DAVIS     41 MIN",
+    "SACRAMNTO 52 MIN"
    ],
    "phase2": [],
-   "text": "VACAVILLE 11 MIN / DAVIS     31 MIN / SACRAMNTO 39 MIN",
-   "messageLocal": "2026-11-22 13:28:39"
-  },
-  {
-   "id": "ca-cms-d04-155",
-   "district": "04",
-   "road": "I-880",
-   "direction": "North",
-   "place": "San Leandro",
-   "county": "Alameda",
-   "locationName": "CM155 NB880 NOF MARINA BLVD",
-   "lat": 37.714775,
-   "lon": -122.17195,
-   "phase1": [
-    "CRASH AHEAD",
-    "BROADWAY",
-    "2 RIGHT LNS BLKD"
-   ],
-   "phase2": [],
-   "text": "CRASH AHEAD / BROADWAY / 2 RIGHT LNS BLKD",
-   "messageLocal": "2026-11-22 13:39:43"
+   "text": "VACAVILLE 11 MIN / DAVIS     41 MIN / SACRAMNTO 52 MIN",
+   "messageLocal": "2026-11-23 14:49:38"
   },
   {
    "id": "ca-cms-d04-160",
@@ -1830,13 +1876,32 @@
    "lat": 37.165013,
    "lon": -121.666065,
    "phase1": [
-    "GILROY    12 MIN",
-    "SALINAS   41 MIN",
-    "LOS BANOS 58 MIN"
+    "GILROY    15 MIN",
+    "SALINAS   51 MIN",
+    "LOS BANOS 67 MIN"
    ],
    "phase2": [],
-   "text": "GILROY    12 MIN / SALINAS   41 MIN / LOS BANOS 58 MIN",
-   "messageLocal": "2026-11-22 12:43:44"
+   "text": "GILROY    15 MIN / SALINAS   51 MIN / LOS BANOS 67 MIN",
+   "messageLocal": "2026-11-23 14:56:45"
+  },
+  {
+   "id": "ca-cms-d04-161",
+   "district": "04",
+   "road": "US-101",
+   "direction": "North",
+   "place": "Morgan Hill",
+   "county": "Santa Clara",
+   "locationName": "CM161 Metcalf Road",
+   "lat": 37.22618,
+   "lon": -121.741491,
+   "phase1": [
+    "JCT 680   11 MIN",
+    "MILPITAS  17 MIN",
+    "PALO ALTO 33 MIN"
+   ],
+   "phase2": [],
+   "text": "JCT 680   11 MIN / MILPITAS  17 MIN / PALO ALTO 33 MIN",
+   "messageLocal": "2026-11-23 13:37:38"
   },
   {
    "id": "ca-cms-d04-165",
@@ -1849,70 +1914,59 @@
    "lat": 37.476612,
    "lon": -121.911285,
    "phase1": [
-    "HWY 84    10 MIN",
-    "HWY 580   17 MIN",
-    "WALNUT CK 31 MIN"
+    "HWY 84    14 MIN",
+    "HWY 580   23 MIN",
+    "WALNUT CK 42 MIN"
    ],
    "phase2": [],
-   "text": "HWY 84    10 MIN / HWY 580   17 MIN / WALNUT CK 31 MIN",
-   "messageLocal": "2026-11-22 14:46:38"
+   "text": "HWY 84    14 MIN / HWY 580   23 MIN / WALNUT CK 42 MIN",
+   "messageLocal": "2026-11-23 14:50:39"
   },
   {
-   "id": "ca-cms-d06-SV-015",
-   "district": "06",
-   "road": "I-5",
+   "id": "ca-cms-d05-V82",
+   "district": "05",
+   "road": "US-101",
    "direction": "North",
-   "place": "Kettleman City",
-   "county": "Kings",
-   "locationName": "15 - NB I-5 S/O RTE 41 (PM 13.5)",
-   "lat": 35.947469,
-   "lon": -119.92495,
+   "place": "San Juan Bautista",
+   "county": "San Benito",
+   "locationName": "82 - NB 101 South of Hwy 156 E (OH) SBT",
+   "lat": 36.858961,
+   "lon": -121.598227,
    "phase1": [
-    "GUSTY",
-    "WINDS",
-    "AHEAD"
+    "CRASH",
+    "156 EAST CLOSED",
+    "AT FAIRVIEW"
    ],
-   "phase2": [],
-   "text": "GUSTY / WINDS / AHEAD",
-   "messageLocal": "2026-11-19 12:49:05"
+   "phase2": [
+    "USE",
+    "ALTERNATE",
+    "ROUTE"
+   ],
+   "text": "CRASH / 156 EAST CLOSED / AT FAIRVIEW | USE / ALTERNATE / ROUTE",
+   "messageLocal": "2026-11-23 14:31:03"
   },
   {
-   "id": "ca-cms-d06-SV-017",
-   "district": "06",
-   "road": "SR-41",
-   "direction": "North",
-   "place": "Kettleman City",
-   "county": "Kings",
-   "locationName": "17 - NB RTE 41 S/O I-5 (PM 11.39)",
-   "lat": 35.931441,
-   "lon": -120.020408,
-   "phase1": [
-    "GUSTY",
-    "WINDS",
-    "AHEAD"
-   ],
-   "phase2": [],
-   "text": "GUSTY / WINDS / AHEAD",
-   "messageLocal": "2026-11-19 12:49:00"
-  },
-  {
-   "id": "ca-cms-d06-SV-020",
-   "district": "06",
-   "road": "I-5",
+   "id": "ca-cms-d05-V83",
+   "district": "05",
+   "road": "US-101",
    "direction": "South",
-   "place": "Coalinga",
-   "county": "Fresno",
-   "locationName": "20 - SB I-5 N/O RTE 269 (PM 2.98)",
-   "lat": 36.108315,
-   "lon": -120.132359,
+   "place": "San Juan Bautista",
+   "county": "San Benito",
+   "locationName": "83 - SB 101 North of Hwy 156 E (OH)SBT",
+   "lat": 36.876286,
+   "lon": -121.569175,
    "phase1": [
-    "GUSTY",
-    "WINDS",
-    "AHEAD"
+    "CRASH",
+    "156 EAST CLOSED",
+    "AT FAIRVIEW"
    ],
-   "phase2": [],
-   "text": "GUSTY / WINDS / AHEAD",
-   "messageLocal": "2026-11-19 12:49:00"
+   "phase2": [
+    "USE",
+    "ALTERNATE",
+    "ROUTE"
+   ],
+   "text": "CRASH / 156 EAST CLOSED / AT FAIRVIEW | USE / ALTERNATE / ROUTE",
+   "messageLocal": "2026-11-23 14:31:40"
   },
   {
    "id": "ca-cms-d06-SV-114",
@@ -1957,6 +2011,25 @@
    "messageLocal": "2026-11-16 22:10:13"
   },
   {
+   "id": "ca-cms-d07-726690",
+   "district": "07",
+   "road": "US-101",
+   "direction": "South",
+   "place": "Studio City",
+   "county": "Los Angeles",
+   "locationName": "N/O LAUREL CYN BLVD",
+   "lat": 34.156439,
+   "lon": -118.404927,
+   "phase1": [
+    "EAST 134",
+    "AT VINELAND AVE",
+    "LEFT LANE CLSD"
+   ],
+   "phase2": [],
+   "text": "EAST 134 / AT VINELAND AVE / LEFT LANE CLSD",
+   "messageLocal": null
+  },
+  {
    "id": "ca-cms-d07-726703",
    "district": "07",
    "road": "SR-91",
@@ -1966,25 +2039,6 @@
    "locationName": "DOWNEY AVE",
    "lat": 33.877263,
    "lon": -118.152699,
-   "phase1": [
-    "VINCENT THOMAS",
-    "BRIDGE CLOSED",
-    "USE ALT ROUTES"
-   ],
-   "phase2": [],
-   "text": "VINCENT THOMAS / BRIDGE CLOSED / USE ALT ROUTES",
-   "messageLocal": null
-  },
-  {
-   "id": "ca-cms-d07-726717",
-   "district": "07",
-   "road": "I-405",
-   "direction": "North",
-   "place": "Long Beach",
-   "county": "Los Angeles",
-   "locationName": "N/O LAKEWOOD",
-   "lat": 33.807196,
-   "lon": -118.150042,
    "phase1": [
     "VINCENT THOMAS",
     "BRIDGE CLOSED",
@@ -2025,11 +2079,11 @@
    "lon": -118.242066,
    "phase1": [
     "MINUTES TO",
-    "RTE 134..... 8",
-    "RTE 118..... 25"
+    "RTE 134..... 25",
+    "RTE 118..... 45"
    ],
    "phase2": [],
-   "text": "MINUTES TO / RTE 134..... 8 / RTE 118..... 25",
+   "text": "MINUTES TO / RTE 134..... 25 / RTE 118..... 45",
    "messageLocal": null
   },
   {
@@ -2052,41 +2106,20 @@
    "messageLocal": null
   },
   {
-   "id": "ca-cms-d07-726739",
+   "id": "ca-cms-d07-726743",
    "district": "07",
-   "road": "I-105",
+   "road": "I-10",
    "direction": "East",
-   "place": "Los Angeles",
+   "place": "South El Monte",
    "county": "Los Angeles",
-   "locationName": "W/O RTE 405",
-   "lat": 33.930947,
-   "lon": -118.380545,
+   "locationName": "SANTA ANITA AVE",
+   "lat": 34.068755,
+   "lon": -118.043871,
    "phase1": [
-    "VINCENT THOMAS",
-    "BRIDGE CLOSED",
-    "USE ALT ROUTES"
+    "[PB255,0,0]"
    ],
    "phase2": [],
-   "text": "VINCENT THOMAS / BRIDGE CLOSED / USE ALT ROUTES",
-   "messageLocal": null
-  },
-  {
-   "id": "ca-cms-d07-726740",
-   "district": "07",
-   "road": "I-105",
-   "direction": "East",
-   "place": "Hawthorne",
-   "county": "Los Angeles",
-   "locationName": "E/O CRENSHAW BLVD",
-   "lat": 33.925209,
-   "lon": -118.317935,
-   "phase1": [
-    "VINCENT THOMAS",
-    "BRIDGE CLOSED",
-    "USE ALT ROUTES"
-   ],
-   "phase2": [],
-   "text": "VINCENT THOMAS / BRIDGE CLOSED / USE ALT ROUTES",
+   "text": "[PB255,0,0]",
    "messageLocal": null
   },
   {
@@ -2101,11 +2134,11 @@
    "lon": -118.190129,
    "phase1": [
     "MINUTES TO",
-    "RTE 605..... 11",
-    "RTE 57...... 25"
+    "RTE 605..... 35",
+    "RTE 57...... 55"
    ],
    "phase2": [],
-   "text": "MINUTES TO / RTE 605..... 11 / RTE 57...... 25",
+   "text": "MINUTES TO / RTE 605..... 35 / RTE 57...... 55",
    "messageLocal": null
   },
   {
@@ -2139,10 +2172,10 @@
    "lon": -118.237819,
    "phase1": [
     "MINUTES TO",
-    "RTE 605..... 9"
+    "RTE 605..... 20"
    ],
    "phase2": [],
-   "text": "MINUTES TO / RTE 605..... 9",
+   "text": "MINUTES TO / RTE 605..... 20",
    "messageLocal": null
   },
   {
@@ -2195,11 +2228,11 @@
    "lon": -117.768133,
    "phase1": [
     "MINUTES TO",
-    "RTE 605..... 20",
-    "DOWNTOWN.... 35"
+    "RTE 605..... 14",
+    "DOWNTOWN.... 30"
    ],
    "phase2": [],
-   "text": "MINUTES TO / RTE 605..... 20 / DOWNTOWN.... 35",
+   "text": "MINUTES TO / RTE 605..... 14 / DOWNTOWN.... 30",
    "messageLocal": null
   },
   {
@@ -2214,11 +2247,11 @@
    "lon": -118.185026,
    "phase1": [
     "MINUTES TO",
-    "RTE 605..... 20",
-    "RTE 57...... 30"
+    "RTE 605..... 35",
+    "RTE 57...... 55"
    ],
    "phase2": [],
-   "text": "MINUTES TO / RTE 605..... 20 / RTE 57...... 30",
+   "text": "MINUTES TO / RTE 605..... 35 / RTE 57...... 55",
    "messageLocal": null
   },
   {
@@ -2271,10 +2304,10 @@
    "lon": -118.008517,
    "phase1": [
     "MINUTES TO",
-    "RTE 57...... 13"
+    "RTE 57...... 35"
    ],
    "phase2": [],
-   "text": "MINUTES TO / RTE 57...... 13",
+   "text": "MINUTES TO / RTE 57...... 35",
    "messageLocal": null
   },
   {
@@ -2297,62 +2330,6 @@
    "messageLocal": null
   },
   {
-   "id": "ca-cms-d07-775789",
-   "district": "07",
-   "road": "I-110",
-   "direction": "South",
-   "place": "Gardena",
-   "county": "Los Angeles",
-   "locationName": "REDONDO BEACH BLVD",
-   "lat": 33.89034,
-   "lon": -118.285975,
-   "phase1": [
-    "VINCENT THOMAS",
-    "BRIDGE CLOSED",
-    "USE ALT ROUTES"
-   ],
-   "phase2": [],
-   "text": "VINCENT THOMAS / BRIDGE CLOSED / USE ALT ROUTES",
-   "messageLocal": null
-  },
-  {
-   "id": "ca-cms-d07-775790",
-   "district": "07",
-   "road": "I-110",
-   "direction": "South",
-   "place": "Gardena",
-   "county": "Los Angeles",
-   "locationName": "EL SEGUNDO BLVD",
-   "lat": 33.911636,
-   "lon": -118.286993,
-   "phase1": [
-    "VINCENT THOMAS",
-    "BRIDGE CLOSED",
-    "USE ALT ROUTES"
-   ],
-   "phase2": [],
-   "text": "VINCENT THOMAS / BRIDGE CLOSED / USE ALT ROUTES",
-   "messageLocal": null
-  },
-  {
-   "id": "ca-cms-d07-776045",
-   "district": "07",
-   "road": "I-710",
-   "direction": "South",
-   "place": "Monterey Park",
-   "county": "Los Angeles",
-   "locationName": "N/O CESAR CHAVEZ AVE",
-   "lat": 34.049172,
-   "lon": -118.166962,
-   "phase1": [
-    "RIGHT LANE CLSD",
-    "AT ATLANIC BLVD"
-   ],
-   "phase2": [],
-   "text": "RIGHT LANE CLSD / AT ATLANIC BLVD",
-   "messageLocal": null
-  },
-  {
    "id": "ca-cms-d08-806905",
    "district": "08",
    "road": "I-10",
@@ -2364,11 +2341,11 @@
    "lon": -116.164629,
    "phase1": [
     "CA-6236 MIN",
-    "CA-6056 MIN"
+    "CA-6055 MIN"
    ],
    "phase2": [],
-   "text": "CA-6236 MIN / CA-6056 MIN",
-   "messageLocal": "2026-11-22 14:53:30"
+   "text": "CA-6236 MIN / CA-6055 MIN",
+   "messageLocal": "2026-11-23 14:57:48"
   },
   {
    "id": "ca-cms-d08-823045",
@@ -2381,12 +2358,12 @@
    "lat": 33.71024,
    "lon": -115.373882,
    "phase1": [
-    "CA-8648 MIN",
+    "CA-86OVER 120 MIN",
     "CA-6275 MIN"
    ],
    "phase2": [],
-   "text": "CA-8648 MIN / CA-6275 MIN",
-   "messageLocal": "2026-11-22 14:53:33"
+   "text": "CA-86OVER 120 MIN / CA-6275 MIN",
+   "messageLocal": "2026-11-23 14:57:50"
   },
   {
    "id": "ca-cms-d08-222",
@@ -2399,12 +2376,13 @@
    "lat": 33.608015,
    "lon": -114.550608,
    "phase1": [
-    "CA-17746 MIN",
-    "CA-8675 MIN"
+    "ROAD WORK",
+    "HWY-95 / WILSON",
+    "USE ALT RTE"
    ],
    "phase2": [],
-   "text": "CA-17746 MIN / CA-8675 MIN",
-   "messageLocal": "2026-11-22 14:53:33"
+   "text": "ROAD WORK / HWY-95 / WILSON / USE ALT RTE",
+   "messageLocal": "2026-11-23 06:46:01"
   },
   {
    "id": "ca-cms-d08-824146",
@@ -2418,11 +2396,11 @@
    "lon": -116.617895,
    "phase1": [
     "CA-24320 MIN",
-    "CA-6026 MIN"
+    "CA-6025 MIN"
    ],
    "phase2": [],
-   "text": "CA-24320 MIN / CA-6026 MIN",
-   "messageLocal": "2026-11-22 14:52:32"
+   "text": "CA-24320 MIN / CA-6025 MIN",
+   "messageLocal": "2026-11-23 14:57:50"
   },
   {
    "id": "ca-cms-d08-800011",
@@ -2435,11 +2413,11 @@
    "lat": 33.440663,
    "lon": -117.137989,
    "phase1": [
-    "SR-91 38 MIN"
+    "SR-91 45 MIN"
    ],
    "phase2": [],
-   "text": "SR-91 38 MIN",
-   "messageLocal": "2026-11-22 14:53:31"
+   "text": "SR-91 45 MIN",
+   "messageLocal": "2026-11-23 14:57:48"
   },
   {
    "id": "ca-cms-d08-800013",
@@ -2453,12 +2431,12 @@
    "lon": -117.534341,
    "phase1": [
     "VIA SR-91 TO",
-    "CA-71 11 MIN",
-    "CA-60 17 MIN"
+    "CA-71 12 MIN",
+    "CA-60 26 MIN"
    ],
    "phase2": [],
-   "text": "VIA SR-91 TO / CA-71 11 MIN / CA-60 17 MIN",
-   "messageLocal": "2026-11-22 14:53:30"
+   "text": "VIA SR-91 TO / CA-71 12 MIN / CA-60 26 MIN",
+   "messageLocal": "2026-11-23 14:57:47"
   },
   {
    "id": "ca-cms-d08-800014",
@@ -2473,11 +2451,11 @@
    "phase1": [
     "VIA SR-91 TO",
     "CA-71 12 MIN",
-    "I-215 19 MIN"
+    "I-215 29 MIN"
    ],
    "phase2": [],
-   "text": "VIA SR-91 TO / CA-71 12 MIN / I-215 19 MIN",
-   "messageLocal": "2026-11-22 14:49:30"
+   "text": "VIA SR-91 TO / CA-71 12 MIN / I-215 29 MIN",
+   "messageLocal": "2026-11-23 14:57:48"
   },
   {
    "id": "ca-cms-d08-800020",
@@ -2490,11 +2468,11 @@
    "lat": 34.019706,
    "lon": -117.490066,
    "phase1": [
-    "LA CNTY 14 MIN"
+    "LA CNTY 15 MIN"
    ],
    "phase2": [],
-   "text": "LA CNTY 14 MIN",
-   "messageLocal": "2026-11-22 14:53:30"
+   "text": "LA CNTY 15 MIN",
+   "messageLocal": "2026-11-23 14:57:48"
   },
   {
    "id": "ca-cms-d08-824147",
@@ -2508,11 +2486,11 @@
    "lon": -116.597613,
    "phase1": [
     "CA-24319 MIN",
-    "CA-6026 MIN"
+    "CA-6025 MIN"
    ],
    "phase2": [],
-   "text": "CA-24319 MIN / CA-6026 MIN",
-   "messageLocal": "2026-11-22 14:53:33"
+   "text": "CA-24319 MIN / CA-6025 MIN",
+   "messageLocal": "2026-11-23 14:57:51"
   },
   {
    "id": "ca-cms-d08-828685",
@@ -2544,12 +2522,12 @@
    "lat": 33.87315,
    "lon": -117.663619,
    "phase1": [
-    "I-15 8 MIN",
-    "I-215 21 MIN"
+    "I-15 13 MIN",
+    "I-215 34 MIN"
    ],
    "phase2": [],
-   "text": "I-15 8 MIN / I-215 21 MIN",
-   "messageLocal": "2026-11-22 14:53:29"
+   "text": "I-15 13 MIN / I-215 34 MIN",
+   "messageLocal": "2026-11-23 14:57:47"
   },
   {
    "id": "ca-cms-d08-8",
@@ -2563,12 +2541,12 @@
    "lon": -117.588619,
    "phase1": [
     "VIA I-15 TO",
-    "CA-60 13 MIN",
-    "CA-74 24 MIN"
+    "CA-60 19 MIN",
+    "CA-74 31 MIN"
    ],
    "phase2": [],
-   "text": "VIA I-15 TO / CA-60 13 MIN / CA-74 24 MIN",
-   "messageLocal": "2026-11-22 14:53:31"
+   "text": "VIA I-15 TO / CA-60 19 MIN / CA-74 31 MIN",
+   "messageLocal": "2026-11-23 14:57:49"
   },
   {
    "id": "ca-cms-d08-800026",
@@ -2582,12 +2560,12 @@
    "lon": -117.379859,
    "phase1": [
     "VIA I-215 TO",
-    "I-10 11 MIN",
-    "Devore 24 MIN"
+    "I-10 21 MIN",
+    "Devore 35 MIN"
    ],
    "phase2": [],
-   "text": "VIA I-215 TO / I-10 11 MIN / Devore 24 MIN",
-   "messageLocal": "2026-11-22 14:53:30"
+   "text": "VIA I-215 TO / I-10 21 MIN / Devore 35 MIN",
+   "messageLocal": "2026-11-23 14:57:48"
   },
   {
    "id": "ca-cms-d08-800024",
@@ -2600,11 +2578,11 @@
    "lat": 33.881906,
    "lon": -117.581927,
    "phase1": [
-    "OC CNTY 6 MIN"
+    "OC CNTY 5 MIN"
    ],
    "phase2": [],
-   "text": "OC CNTY 6 MIN",
-   "messageLocal": "2026-11-22 14:53:31"
+   "text": "OC CNTY 5 MIN",
+   "messageLocal": "2026-11-23 14:57:48"
   },
   {
    "id": "ca-cms-d08-800025",
@@ -2618,11 +2596,11 @@
    "lon": -117.503993,
    "phase1": [
     "CA-71 11 MIN",
-    "CA-60via15 16 MIN"
+    "CA-60via15 21 MIN"
    ],
    "phase2": [],
-   "text": "CA-71 11 MIN / CA-60via15 16 MIN",
-   "messageLocal": "2026-11-22 14:53:30"
+   "text": "CA-71 11 MIN / CA-60via15 21 MIN",
+   "messageLocal": "2026-11-23 14:57:47"
   },
   {
    "id": "ca-cms-d08-800006",
@@ -2636,12 +2614,12 @@
    "lon": -117.572078,
    "phase1": [
     "VIA I-15 TO",
-    "Devore 14 MIN",
-    "SR-91 16 MIN"
+    "Devore 24 MIN",
+    "SR-91 24 MIN"
    ],
    "phase2": [],
-   "text": "VIA I-15 TO / Devore 14 MIN / SR-91 16 MIN",
-   "messageLocal": "2026-11-22 14:53:29"
+   "text": "VIA I-15 TO / Devore 24 MIN / SR-91 24 MIN",
+   "messageLocal": "2026-11-23 14:57:47"
   },
   {
    "id": "ca-cms-d08-816978",
@@ -2654,12 +2632,12 @@
    "lat": 34.066392,
    "lon": -117.241033,
    "phase1": [
-    "CA-24329 MIN",
-    "CA-6239 MIN"
+    "CA-24324 MIN",
+    "CA-6241 MIN"
    ],
    "phase2": [],
-   "text": "CA-24329 MIN / CA-6239 MIN",
-   "messageLocal": "2026-11-22 14:53:31"
+   "text": "CA-24324 MIN / CA-6241 MIN",
+   "messageLocal": "2026-11-23 14:57:48"
   },
   {
    "id": "ca-cms-d08-000000",
@@ -2672,11 +2650,11 @@
    "lat": 34.066696,
    "lon": -117.465126,
    "phase1": [
-    "LA CNTY 15 MIN"
+    "LA CNTY 45 MIN"
    ],
    "phase2": [],
-   "text": "LA CNTY 15 MIN",
-   "messageLocal": "2026-11-22 14:53:31"
+   "text": "LA CNTY 45 MIN",
+   "messageLocal": "2026-11-23 14:57:49"
   },
   {
    "id": "ca-cms-d08-800009",
@@ -2689,12 +2667,12 @@
    "lat": 34.066922,
    "lon": -117.249897,
    "phase1": [
-    "I-1517 MIN",
-    "Devore17 MIN"
+    "I-1519 MIN",
+    "Devore20 MIN"
    ],
    "phase2": [],
-   "text": "I-1517 MIN / Devore17 MIN",
-   "messageLocal": "2026-11-22 14:53:29"
+   "text": "I-1519 MIN / Devore20 MIN",
+   "messageLocal": "2026-11-23 14:57:47"
   },
   {
    "id": "ca-cms-d08-800016",
@@ -2707,12 +2685,12 @@
    "lat": 34.112582,
    "lon": -117.524085,
    "phase1": [
-    "Devore12 MIN",
-    "US-39526 MIN"
+    "Devore14 MIN",
+    "US-39533 MIN"
    ],
    "phase2": [],
-   "text": "Devore12 MIN / US-39526 MIN",
-   "messageLocal": "2026-11-22 14:53:29"
+   "text": "Devore14 MIN / US-39533 MIN",
+   "messageLocal": "2026-11-23 14:57:47"
   },
   {
    "id": "ca-cms-d08-805804",
@@ -2725,12 +2703,12 @@
    "lat": 34.273602,
    "lon": -117.449104,
    "phase1": [
-    "SR-39515 MIN",
-    "I-4052 MIN"
+    "SR-39520 MIN",
+    "I-4057 MIN"
    ],
    "phase2": [],
-   "text": "SR-39515 MIN / I-4052 MIN",
-   "messageLocal": "2026-11-22 14:53:32"
+   "text": "SR-39520 MIN / I-4057 MIN",
+   "messageLocal": "2026-11-23 14:57:51"
   },
   {
    "id": "ca-cms-d08-80015",
@@ -2743,12 +2721,12 @@
    "lat": 34.112346,
    "lon": -117.525373,
    "phase1": [
-    "CA-9120 MIN",
-    "CA-7952 MIN"
+    "CA-9122 MIN",
+    "CA-7959 MIN"
    ],
    "phase2": [],
-   "text": "CA-9120 MIN / CA-7952 MIN",
-   "messageLocal": "2026-11-22 14:53:29"
+   "text": "CA-9122 MIN / CA-7959 MIN",
+   "messageLocal": "2026-11-23 14:57:47"
   },
   {
    "id": "ca-cms-d08-805751",
@@ -2762,11 +2740,11 @@
    "lon": -117.450714,
    "phase1": [
     "SR-9138 MIN",
-    "CA-7456 MIN"
+    "CA-7460 MIN"
    ],
    "phase2": [],
-   "text": "SR-9138 MIN / CA-7456 MIN",
-   "messageLocal": "2026-11-22 14:53:32"
+   "text": "SR-9138 MIN / CA-7460 MIN",
+   "messageLocal": "2026-11-23 14:57:50"
   },
   {
    "id": "ca-cms-d08-805806",
@@ -2797,12 +2775,12 @@
    "lat": 34.569058,
    "lon": -117.279544,
    "phase1": [
-    "SR-13821 MIN",
-    "Devore41 MIN"
+    "SR-13819 MIN",
+    "Devore32 MIN"
    ],
    "phase2": [],
-   "text": "SR-13821 MIN / Devore41 MIN",
-   "messageLocal": "2026-11-22 14:53:31"
+   "text": "SR-13819 MIN / Devore32 MIN",
+   "messageLocal": "2026-11-23 14:57:50"
   },
   {
    "id": "ca-cms-d08-805808",
@@ -2815,11 +2793,11 @@
    "lat": 34.901435,
    "lon": -116.908817,
    "phase1": [
-    "D ST  38 MIN"
+    "D ST  34 MIN"
    ],
    "phase2": [],
-   "text": "D ST  38 MIN",
-   "messageLocal": "2026-11-22 14:53:32"
+   "text": "D ST  34 MIN",
+   "messageLocal": "2026-11-23 14:57:49"
   },
   {
    "id": "ca-cms-d08-800017",
@@ -2832,12 +2810,12 @@
    "lat": 34.143838,
    "lon": -117.260642,
    "phase1": [
-    "Big Bear 57 MIN",
+    "Big Bear 59 MIN",
     "I-10 8 MIN"
    ],
    "phase2": [],
-   "text": "Big Bear 57 MIN / I-10 8 MIN",
-   "messageLocal": "2026-11-22 14:53:30"
+   "text": "Big Bear 59 MIN / I-10 8 MIN",
+   "messageLocal": "2026-11-23 14:57:47"
   },
   {
    "id": "ca-cms-d08-800018",
@@ -2850,12 +2828,12 @@
    "lat": 34.109074,
    "lon": -117.198691,
    "phase1": [
-    "Big Bear 56 MIN",
+    "Big Bear 58 MIN",
     "I-15 20 MIN"
    ],
    "phase2": [],
-   "text": "Big Bear 56 MIN / I-15 20 MIN",
-   "messageLocal": "2026-11-22 14:53:31"
+   "text": "Big Bear 58 MIN / I-15 20 MIN",
+   "messageLocal": "2026-11-23 14:57:48"
   },
   {
    "id": "ca-cms-d08-800029",
@@ -2868,12 +2846,12 @@
    "lat": 34.029702,
    "lon": -117.329224,
    "phase1": [
-    "I-210 10 MIN",
-    "Devore 16 MIN"
+    "I-210 13 MIN",
+    "Devore 20 MIN"
    ],
    "phase2": [],
-   "text": "I-210 10 MIN / Devore 16 MIN",
-   "messageLocal": "2026-11-17 12:05:59"
+   "text": "I-210 13 MIN / Devore 20 MIN",
+   "messageLocal": "2026-11-23 14:57:47"
   },
   {
    "id": "ca-cms-d08-800031",
@@ -2887,11 +2865,11 @@
    "lon": -117.344276,
    "phase1": [
     "VIA I-15 TO",
-    "CA-18 33 MIN"
+    "CA-18 40 MIN"
    ],
    "phase2": [],
-   "text": "VIA I-15 TO / CA-18 33 MIN",
-   "messageLocal": "2026-11-22 14:53:30"
+   "text": "VIA I-15 TO / CA-18 40 MIN",
+   "messageLocal": "2026-11-23 14:57:47"
   },
   {
    "id": "ca-cms-d08-800030",
@@ -2904,13 +2882,31 @@
    "lat": 34.097809,
    "lon": -117.302204,
    "phase1": [
-    "W91 MISSION INN",
-    "OFF RAMP CLOSED",
-    "USE ALT ROUTE"
+    "15 / 9136 MIN",
+    "60 / 91 15 MIN"
    ],
    "phase2": [],
-   "text": "W91 MISSION INN / OFF RAMP CLOSED / USE ALT ROUTE",
-   "messageLocal": "2026-11-21 15:30:43"
+   "text": "15 / 9136 MIN / 60 / 91 15 MIN",
+   "messageLocal": "2026-11-23 14:57:47"
+  },
+  {
+   "id": "ca-cms-d08-807605",
+   "district": "08",
+   "road": "I-40",
+   "direction": "West",
+   "place": "NEEDLES",
+   "county": "San Bernardino",
+   "locationName": "SBD 40 WB [149.00] E/O Five Mile Rd (38)",
+   "lat": 34.746869,
+   "lon": -114.560683,
+   "phase1": [
+    "CRASH",
+    "40-W /PARK RD",
+    "RT LN CLOSED"
+   ],
+   "phase2": [],
+   "text": "CRASH / 40-W /PARK RD / RT LN CLOSED",
+   "messageLocal": "2026-11-23 14:34:09"
   },
   {
    "id": "ca-cms-d08-800019",
@@ -2923,12 +2919,12 @@
    "lat": 34.030297,
    "lon": -117.592598,
    "phase1": [
-    "SR-91 17 MIN",
-    "Devore 34 MIN"
+    "SR-91 27 MIN",
+    "Devore 50 MIN"
    ],
    "phase2": [],
-   "text": "SR-91 17 MIN / Devore 34 MIN",
-   "messageLocal": "2026-11-22 14:53:30"
+   "text": "SR-91 27 MIN / Devore 50 MIN",
+   "messageLocal": "2026-11-23 14:57:48"
   },
   {
    "id": "ca-cms-d09-V10",
@@ -2943,11 +2939,11 @@
    "phase1": [
     "395 SNOW/ICE",
     "CHAINS REQUIRED",
-    "41 MILES AHEAD"
+    "48 MILES AHEAD"
    ],
    "phase2": [],
-   "text": "395 SNOW/ICE / CHAINS REQUIRED / 41 MILES AHEAD",
-   "messageLocal": "2026-11-21 23:55:02"
+   "text": "395 SNOW/ICE / CHAINS REQUIRED / 48 MILES AHEAD",
+   "messageLocal": "2026-11-22 15:00:03"
   },
   {
    "id": "ca-cms-d09-V14",
@@ -2962,11 +2958,11 @@
    "phase1": [
     "SNOW/ICE",
     "CHAINS REQUIRED",
-    "13 MILES AHEAD"
+    "20 MILES AHEAD"
    ],
    "phase2": [],
-   "text": "SNOW/ICE / CHAINS REQUIRED / 13 MILES AHEAD",
-   "messageLocal": "2026-11-20 13:00:02"
+   "text": "SNOW/ICE / CHAINS REQUIRED / 20 MILES AHEAD",
+   "messageLocal": "2026-11-22 15:00:01"
   },
   {
    "id": "ca-cms-d09-V15",
@@ -2981,11 +2977,11 @@
    "phase1": [
     "N 395 SNOW/ICE",
     "CHAINS REQUIRED",
-    "1 MILE AHEAD"
+    "14 MILES AHEAD"
    ],
    "phase2": [],
-   "text": "N 395 SNOW/ICE / CHAINS REQUIRED / 1 MILE AHEAD",
-   "messageLocal": "2026-11-22 07:15:02"
+   "text": "N 395 SNOW/ICE / CHAINS REQUIRED / 14 MILES AHEAD",
+   "messageLocal": "2026-11-22 15:00:02"
   },
   {
    "id": "ca-cms-d09-V17",
@@ -3003,7 +2999,7 @@
    ],
    "phase2": [],
    "text": "SNOW/ICE / USE CAUTION",
-   "messageLocal": "2026-11-21 17:35:01"
+   "messageLocal": "2026-11-22 18:20:02"
   },
   {
    "id": "ca-cms-d09-V20",
@@ -3018,11 +3014,11 @@
    "phase1": [
     "SNOW/ICE",
     "CHAINS REQUIRED",
-    "30 MILES AHEAD"
+    "32 MILES AHEAD"
    ],
    "phase2": [],
-   "text": "SNOW/ICE / CHAINS REQUIRED / 30 MILES AHEAD",
-   "messageLocal": "2026-11-22 14:45:03"
+   "text": "SNOW/ICE / CHAINS REQUIRED / 32 MILES AHEAD",
+   "messageLocal": "2026-11-23 13:10:01"
   },
   {
    "id": "ca-cms-d09-V21",
@@ -3116,15 +3112,32 @@
    "lat": 37.902583,
    "lon": -121.28547,
    "phase1": [
-    "W-4 TO CLOSE AT",
-    "TRACY BLVD",
-    "12/6 7AM-7PM"
+    "SLOW",
+    "TRAFFIC",
+    "AHEAD"
    ],
-   "phase2": [
-    "TUNE TO 1670 AM"
+   "phase2": [],
+   "text": "SLOW / TRAFFIC / AHEAD",
+   "messageLocal": "2026-11-23 14:55:07"
+  },
+  {
+   "id": "ca-cms-d10-V17",
+   "district": "10",
+   "road": "SR-120",
+   "direction": "East",
+   "place": "Manteca",
+   "county": "San Joaquin",
+   "locationName": "17 - EB 120 EO UNION",
+   "lat": 37.783114,
+   "lon": -121.217359,
+   "phase1": [
+    "SLOW",
+    "TRAFFIC",
+    "AHEAD"
    ],
-   "text": "W-4 TO CLOSE AT / TRACY BLVD / 12/6 7AM-7PM | TUNE TO 1670 AM",
-   "messageLocal": "2026-11-21 04:19:17"
+   "phase2": [],
+   "text": "SLOW / TRAFFIC / AHEAD",
+   "messageLocal": "2026-11-23 14:57:37"
   },
   {
    "id": "ca-cms-d10-V20",
@@ -3146,6 +3159,48 @@
    "messageLocal": "2026-11-21 09:55:01"
   },
   {
+   "id": "ca-cms-d10-V25",
+   "district": "10",
+   "road": "SR-99",
+   "direction": "North",
+   "place": "Stockton",
+   "county": "San Joaquin",
+   "locationName": "25 - NB 99 MORADA S/O 8 MILE RD",
+   "lat": 38.044993,
+   "lon": -121.258364,
+   "phase1": [
+    "ROADWORK AHEAD",
+    "LEFT LANE CLOSED",
+    "REDUCE SPEED"
+   ],
+   "phase2": [],
+   "text": "ROADWORK AHEAD / LEFT LANE CLOSED / REDUCE SPEED",
+   "messageLocal": "2026-11-23 09:25:02"
+  },
+  {
+   "id": "ca-cms-d10-V28",
+   "district": "10",
+   "road": "SR-99",
+   "direction": "North",
+   "place": "Atwater",
+   "county": "Merced",
+   "locationName": "28 - NB 99 N/O Westside Blvd",
+   "lat": 37.36418,
+   "lon": -120.658042,
+   "phase1": [
+    "SLOW",
+    "TRAFFIC",
+    "AHEAD"
+   ],
+   "phase2": [
+    "DENSE",
+    "FOG",
+    "ADVISORY"
+   ],
+   "text": "SLOW / TRAFFIC / AHEAD | DENSE / FOG / ADVISORY",
+   "messageLocal": "2026-11-23 02:30:30"
+  },
+  {
    "id": "ca-cms-d10-V35",
    "district": "10",
    "road": "I-5",
@@ -3156,17 +3211,12 @@
    "lat": 37.115404,
    "lon": -121.023155,
    "phase1": [
-    "GUSTY WINDS",
-    "OVER",
-    "PACHECO PASS"
+    "HWY 156 CLOSED",
+    "USE ALT ROUTE"
    ],
-   "phase2": [
-    "HEAVY RAIN",
-    "USE CAUTION",
-    "REDUCE SPEED"
-   ],
-   "text": "GUSTY WINDS / OVER / PACHECO PASS | HEAVY RAIN / USE CAUTION / REDUCE SPEED",
-   "messageLocal": "2026-11-18 09:43:47"
+   "phase2": [],
+   "text": "HWY 156 CLOSED / USE ALT ROUTE",
+   "messageLocal": "2026-11-23 14:30:01"
   },
   {
    "id": "ca-cms-d10-V36",
@@ -3205,29 +3255,6 @@
    "phase2": [],
    "text": "WESTLEY / REST AREA / CLOSED",
    "messageLocal": "2026-11-21 08:30:01"
-  },
-  {
-   "id": "ca-cms-d10-V38",
-   "district": "10",
-   "road": "SR-152",
-   "direction": "East",
-   "place": "Gustine",
-   "county": "Merced",
-   "locationName": "38 - EB 152 SAN LUIS RESERVOIR",
-   "lat": 37.062078,
-   "lon": -121.059912,
-   "phase1": [
-    "GUSTY",
-    "WIND",
-    "WARNING"
-   ],
-   "phase2": [
-    "OVER",
-    "PACHECO",
-    "PASS"
-   ],
-   "text": "GUSTY / WIND / WARNING | OVER / PACHECO / PASS",
-   "messageLocal": "2026-11-21 04:18:17"
   },
   {
    "id": "ca-cms-d10-V42",
@@ -3286,6 +3313,25 @@
    "messageLocal": "2026-11-21 15:10:02"
   },
   {
+   "id": "ca-cms-d10-V46",
+   "district": "10",
+   "road": "I-5",
+   "direction": "North",
+   "place": "Lathrop",
+   "county": "San Joaquin",
+   "locationName": "46 - NB I-5 S/O 120",
+   "lat": 37.780135,
+   "lon": -121.314064,
+   "phase1": [
+    "SLOW",
+    "TRAFFIC",
+    "AHEAD"
+   ],
+   "phase2": [],
+   "text": "SLOW / TRAFFIC / AHEAD",
+   "messageLocal": "2026-11-23 14:55:06"
+  },
+  {
    "id": "ca-cms-d10-V50",
    "district": "10",
    "road": "SR-4",
@@ -3299,9 +3345,31 @@
     "NO RESTRICTIONS",
     "CARRY CHAINS"
    ],
+   "phase2": [
+    "EBBETTS PASS",
+    "CLOSED"
+   ],
+   "text": "NO RESTRICTIONS / CARRY CHAINS | EBBETTS PASS / CLOSED",
+   "messageLocal": "2026-11-23 11:17:17"
+  },
+  {
+   "id": "ca-cms-d10-V60",
+   "district": "10",
+   "road": "I-580",
+   "direction": "East",
+   "place": "Livermore",
+   "county": "Alameda",
+   "locationName": "60 - EB 580 FLYNN ROAD",
+   "lat": 37.718524,
+   "lon": -121.670728,
+   "phase1": [
+    "SLOW",
+    "TRAFFIC",
+    "AHEAD"
+   ],
    "phase2": [],
-   "text": "NO RESTRICTIONS / CARRY CHAINS",
-   "messageLocal": "2026-11-21 14:35:02"
+   "text": "SLOW / TRAFFIC / AHEAD",
+   "messageLocal": "2026-11-23 14:55:26"
   },
   {
    "id": "ca-cms-d10-V66",
@@ -3361,7 +3429,7 @@
    ],
    "phase2": [],
    "text": "NO RESTRICTIONS / CARRY CHAINS",
-   "messageLocal": "2026-11-21 14:35:01"
+   "messageLocal": "2026-11-23 10:25:01"
   },
   {
    "id": "ca-cms-d10-V90",
@@ -3374,86 +3442,12 @@
    "lat": 36.935197,
    "lon": -121.387476,
    "phase1": [
-    "GUSTY",
-    "WIND",
-    "WARNING"
+    "HWY 156 CLOSED",
+    "USE ALT ROUTE"
    ],
-   "phase2": [
-    "OVER",
-    "PACHECO",
-    "PASS"
-   ],
-   "text": "GUSTY / WIND / WARNING | OVER / PACHECO / PASS",
-   "messageLocal": "2026-10-10 10:04:38"
-  },
-  {
-   "id": "ca-cms-d10-V91",
-   "district": "10",
-   "road": "SR-152",
-   "direction": "East",
-   "place": "Gilroy",
-   "county": "Santa Clara",
-   "locationName": "91 - EB SR152 E of San Felipe Rd",
-   "lat": 36.969971,
-   "lon": -121.416244,
-   "phase1": [
-    "GUSTY",
-    "WIND",
-    "WARNING"
-   ],
-   "phase2": [
-    "OVER",
-    "PACHECO",
-    "PASS"
-   ],
-   "text": "GUSTY / WIND / WARNING | OVER / PACHECO / PASS",
-   "messageLocal": "2026-10-09 23:25:16"
-  },
-  {
-   "id": "ca-cms-d10-V92",
-   "district": "10",
-   "road": "SR-152",
-   "direction": "East",
-   "place": "Hollister",
-   "county": "Santa Clara",
-   "locationName": "92 - EB SR 152 W of Casa De Fruta",
-   "lat": 36.977243,
-   "lon": -121.380935,
-   "phase1": [
-    "GUSTY",
-    "WIND",
-    "WARNING"
-   ],
-   "phase2": [
-    "OVER",
-    "PACHECO",
-    "PASS"
-   ],
-   "text": "GUSTY / WIND / WARNING | OVER / PACHECO / PASS",
-   "messageLocal": "2026-10-27 04:25:07"
-  },
-  {
-   "id": "ca-cms-d10-V93",
-   "district": "10",
-   "road": "SR-152",
-   "direction": "East",
-   "place": "Hollister",
-   "county": "Santa Clara",
-   "locationName": "93 - EB SR 152 E of Dinosaur Point Rd",
-   "lat": 37.067173,
-   "lon": -121.215477,
-   "phase1": [
-    "GUSTY",
-    "WIND",
-    "WARNING"
-   ],
-   "phase2": [
-    "OVER",
-    "PACHECO",
-    "PASS"
-   ],
-   "text": "GUSTY / WIND / WARNING | OVER / PACHECO / PASS",
-   "messageLocal": "2026-11-12 21:00:24"
+   "phase2": [],
+   "text": "HWY 156 CLOSED / USE ALT ROUTE",
+   "messageLocal": "2026-11-23 14:30:01"
   },
   {
    "id": "ca-cms-d10-V94",
@@ -3487,13 +3481,9 @@
     "TIOGA PASS",
     "CLOSED"
    ],
-   "phase2": [
-    "YOSEMITE PARK",
-    "CLOSED",
-    "USE HWY 140"
-   ],
-   "text": "TIOGA PASS / CLOSED | YOSEMITE PARK / CLOSED / USE HWY 140",
-   "messageLocal": "2026-11-20 06:33:25"
+   "phase2": [],
+   "text": "TIOGA PASS / CLOSED",
+   "messageLocal": "2026-11-23 08:40:02"
   },
   {
    "id": "ca-cms-d10-V98",
@@ -3544,11 +3534,11 @@
    "phase1": [
     "I-8 5 MIN",
     "I-5 9 MIN",
-    "BORDER 42 MIN"
+    "BORDER 49 MIN"
    ],
    "phase2": [],
-   "text": "I-8 5 MIN / I-5 9 MIN / BORDER 42 MIN",
-   "messageLocal": "2026-11-22 14:53:15"
+   "text": "I-8 5 MIN / I-5 9 MIN / BORDER 49 MIN",
+   "messageLocal": "2026-11-23 14:57:44"
   },
   {
    "id": "ca-cms-d11-1126201",
@@ -3561,13 +3551,13 @@
    "lat": 32.838457,
    "lon": -116.693724,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "EL CENTRO 69 MIN",
+    "SR-98 46 MIN",
+    "SR-79 4 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:54"
+   "text": "EL CENTRO 69 MIN / SR-98 46 MIN / SR-79 4 MIN",
+   "messageLocal": "2026-11-23 14:57:43"
   },
   {
    "id": "ca-cms-d11-1106506",
@@ -3580,13 +3570,13 @@
    "lat": 32.791321,
    "lon": -116.978069,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "I-15 9 MIN",
+    "I-805 10 MIN",
+    "I-5 14 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-22 01:52:05"
+   "text": "I-15 9 MIN / I-805 10 MIN / I-5 14 MIN",
+   "messageLocal": "2026-11-23 14:57:44"
   },
   {
    "id": "ca-cms-d11-1106508",
@@ -3599,13 +3589,12 @@
    "lat": 32.882304,
    "lon": -117.109988,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "I-8 9 MIN",
+    "I-5 16 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
+   "text": "I-8 9 MIN / I-5 16 MIN",
+   "messageLocal": "2026-11-23 14:57:42"
   },
   {
    "id": "ca-cms-d11-1107724",
@@ -3618,13 +3607,13 @@
    "lat": 32.919683,
    "lon": -117.237046,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "I-8 12 MIN",
+    "SR-94 17 MIN",
+    "SR-54 29 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:59"
+   "text": "I-8 12 MIN / SR-94 17 MIN / SR-54 29 MIN",
+   "messageLocal": "2026-11-23 14:56:43"
   },
   {
    "id": "ca-cms-d11-1126980",
@@ -3637,13 +3626,13 @@
    "lat": 32.667851,
    "lon": -117.048739,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "I-5 4 MIN",
+    "94 VIA I-5 9 MIN",
+    "BORDER 28 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:10:07"
+   "text": "I-5 4 MIN / 94 VIA I-5 9 MIN / BORDER 28 MIN",
+   "messageLocal": "2026-11-23 14:57:42"
   },
   {
    "id": "ca-cms-d11-1107727",
@@ -3656,13 +3645,13 @@
    "lat": 32.635856,
    "lon": -117.048054,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "SR-94 7 MIN",
+    "I-8 11 MIN",
+    "SR-52 16 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
+   "text": "SR-94 7 MIN / I-8 11 MIN / SR-52 16 MIN",
+   "messageLocal": "2026-11-23 14:57:42"
   },
   {
    "id": "ca-cms-d11-1107729",
@@ -3675,13 +3664,12 @@
    "lat": 32.842056,
    "lon": -117.092455,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "I-805 6 MIN",
+    "I-5 9 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:10:10"
+   "text": "I-805 6 MIN / I-5 9 MIN",
+   "messageLocal": "2026-11-23 14:57:42"
   },
   {
    "id": "ca-cms-d11-1106511",
@@ -3700,7 +3688,7 @@
    ],
    "phase2": [],
    "text": "I-8 5 MIN / SR-52 11 MIN / I-5 16 MIN",
-   "messageLocal": "2026-11-22 14:53:16"
+   "messageLocal": "2026-11-23 14:57:13"
   },
   {
    "id": "ca-cms-d11-1106512",
@@ -3713,13 +3701,13 @@
    "lat": 32.759141,
    "lon": -117.126649,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "SR-94 5 MIN",
+    "SR-54 10 MIN",
+    "BORDER 36 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
+   "text": "SR-94 5 MIN / SR-54 10 MIN / BORDER 36 MIN",
+   "messageLocal": "2026-11-23 14:57:11"
   },
   {
    "id": "ca-cms-d11-1112930",
@@ -3732,13 +3720,13 @@
    "lat": 32.698002,
    "lon": -117.13764,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "I-8 6 MIN",
+    "SR-52 12 MIN",
+    "SR-56 18 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
+   "text": "I-8 6 MIN / SR-52 12 MIN / SR-56 18 MIN",
+   "messageLocal": "2026-11-23 14:57:41"
   },
   {
    "id": "ca-cms-d11-1107736",
@@ -3751,13 +3739,12 @@
    "lat": 32.724266,
    "lon": -117.075822,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "DOWNTOWN 5 MIN",
+    "I-5 5 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:10:01"
+   "text": "DOWNTOWN 5 MIN / I-5 5 MIN",
+   "messageLocal": "2026-11-23 14:57:42"
   },
   {
    "id": "ca-cms-d11-1114081",
@@ -3770,13 +3757,13 @@
    "lat": 32.78131,
    "lon": -117.086587,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "I-805 3 MIN",
+    "SR-163 5 MIN",
+    "I-5 7 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
+   "text": "I-805 3 MIN / SR-163 5 MIN / I-5 7 MIN",
+   "messageLocal": "2026-11-23 14:57:41"
   },
   {
    "id": "ca-cms-d11-1115250",
@@ -3789,13 +3776,13 @@
    "lat": 33.145698,
    "lon": -117.104857,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "SR-56 13 MIN",
+    "SR-52 21 MIN",
+    "I-8 27 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
+   "text": "SR-56 13 MIN / SR-52 21 MIN / I-8 27 MIN",
+   "messageLocal": "2026-11-23 14:57:42"
   },
   {
    "id": "ca-cms-d11-1107732",
@@ -3808,13 +3795,12 @@
    "lat": 33.155121,
    "lon": -117.33776,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "SR-78 2 MIN",
+    "SR-76 5 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:55"
+   "text": "SR-78 2 MIN / SR-76 5 MIN",
+   "messageLocal": "2026-11-23 14:57:21"
   },
   {
    "id": "ca-cms-d11-1114633",
@@ -3827,13 +3813,13 @@
    "lat": 32.759926,
    "lon": -117.190619,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "I-15 6 MIN",
+    "SR-125 18 MIN",
+    "SR-67 21 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
+   "text": "I-15 6 MIN / SR-125 18 MIN / SR-67 21 MIN",
+   "messageLocal": "2026-11-23 14:57:41"
   },
   {
    "id": "ca-cms-d11-1107730",
@@ -3846,13 +3832,13 @@
    "lat": 32.663695,
    "lon": -117.109309,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "SR-94 5 MIN",
+    "I-8 10 MIN",
+    "SR-52 15 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:54"
+   "text": "SR-94 5 MIN / I-8 10 MIN / SR-52 15 MIN",
+   "messageLocal": "2026-11-23 14:57:43"
   },
   {
    "id": "ca-cms-d11-1116823",
@@ -3865,13 +3851,13 @@
    "lat": 32.979417,
    "lon": -117.253232,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "I-8 16 MIN",
+    "SR-94 21 MIN",
+    "SR-54 33 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:10:04"
+   "text": "I-8 16 MIN / SR-94 21 MIN / SR-54 33 MIN",
+   "messageLocal": "2026-11-23 14:57:42"
   },
   {
    "id": "ca-cms-d11-1117650",
@@ -3884,32 +3870,12 @@
    "lat": 32.745031,
    "lon": -117.187446,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "SR-52 7 MIN",
+    "SR-56 14 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
-  },
-  {
-   "id": "ca-cms-d11-1122081",
-   "district": "11",
-   "road": "I-15",
-   "direction": "North",
-   "place": "CCTV040",
-   "county": "San Diego County",
-   "locationName": "029-NB 15 JNO MIRAMAR RD [EXP]",
-   "lat": 32.895972,
-   "lon": -117.11577,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
+   "text": "SR-52 7 MIN / SR-56 14 MIN",
+   "messageLocal": "2026-11-23 14:57:16"
   },
   {
    "id": "ca-cms-d11-1117651",
@@ -3922,13 +3888,13 @@
    "lat": 32.810355,
    "lon": -117.113754,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "SR-52 3 MIN",
+    "SR-56 13 MIN",
+    "SR-78 25 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:54"
+   "text": "SR-52 3 MIN / SR-56 13 MIN / SR-78 25 MIN",
+   "messageLocal": "2026-11-23 14:57:43"
   },
   {
    "id": "ca-cms-d11-1118958",
@@ -3941,13 +3907,13 @@
    "lat": 32.891624,
    "lon": -117.207332,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "SR-56 4 MIN",
+    "SR-78 25 MIN",
+    "SR-76 27 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
+   "text": "SR-56 4 MIN / SR-78 25 MIN / SR-76 27 MIN",
+   "messageLocal": "2026-11-23 14:57:41"
   },
   {
    "id": "ca-cms-d11-1118281",
@@ -3960,13 +3926,12 @@
    "lat": 32.880038,
    "lon": -117.22822,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "SR-78 25 MIN",
+    "SR-76 28 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
+   "text": "SR-78 25 MIN / SR-76 28 MIN",
+   "messageLocal": "2026-11-23 14:57:41"
   },
   {
    "id": "ca-cms-d11-1120458",
@@ -3979,13 +3944,13 @@
    "lat": 32.737781,
    "lon": -117.114445,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "SR-52 8 MIN",
+    "I-5 13 MIN",
+    "SR-56 15 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
+   "text": "SR-52 8 MIN / I-5 13 MIN / SR-56 15 MIN",
+   "messageLocal": "2026-11-23 14:57:41"
   },
   {
    "id": "ca-cms-d11-1120574",
@@ -3998,146 +3963,13 @@
    "lat": 33.217788,
    "lon": -117.391075,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "SR-56 24 MIN",
+    "SR-52 31 MIN",
+    "I-8 36 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
-  },
-  {
-   "id": "ca-cms-d11-1120658",
-   "district": "11",
-   "road": "I-15",
-   "direction": "North",
-   "place": "CCTV044, CCTV045",
-   "county": "San Diego County",
-   "locationName": "035-NB 15 JNO SR56 [EXP]",
-   "lat": 32.968093,
-   "lon": -117.092987,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
-  },
-  {
-   "id": "ca-cms-d11-1120832",
-   "district": "11",
-   "road": "I-15",
-   "direction": "North",
-   "place": "CCTV081",
-   "county": "San Diego County",
-   "locationName": "036-NB 15 JNO CAMINO DEL NORTE [EXP]",
-   "lat": 32.998961,
-   "lon": -117.082684,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
-  },
-  {
-   "id": "ca-cms-d11-1120660",
-   "district": "11",
-   "road": "I-15",
-   "direction": "South",
-   "place": "None",
-   "county": "San Diego County",
-   "locationName": "037-SB 15 JNO CAMINO DEL NORTE [EXP]",
-   "lat": 32.999498,
-   "lon": -117.082933,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
-  },
-  {
-   "id": "ca-cms-d11-1120661",
-   "district": "11",
-   "road": "I-15",
-   "direction": "South",
-   "place": "CCTV085",
-   "county": "San Diego County",
-   "locationName": "038-SB 15 JNO RANCHO BERNARDO RD [EXP]",
-   "lat": 33.037903,
-   "lon": -117.07606,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-22 09:36:32"
-  },
-  {
-   "id": "ca-cms-d11-1120663",
-   "district": "11",
-   "road": "I-15",
-   "direction": "South",
-   "place": "CCTV088",
-   "county": "San Diego County",
-   "locationName": "040-SB 15 JNO VIA RANCHO PKWY [EXP]",
-   "lat": 33.07497,
-   "lon": -117.070541,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
-  },
-  {
-   "id": "ca-cms-d11-1121172",
-   "district": "11",
-   "road": "I-15",
-   "direction": "North",
-   "place": "CCTV038",
-   "county": "San Diego County",
-   "locationName": "041-NB 15 JSO MIRAMAR WY [EXP]",
-   "lat": 32.875163,
-   "lon": -117.107187,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
-  },
-  {
-   "id": "ca-cms-d11-1121456",
-   "district": "11",
-   "road": "SR-52",
-   "direction": "East",
-   "place": "CCTV117",
-   "county": "San Diego County",
-   "locationName": "043-EB 52 JWO CUYAMACA ST",
-   "lat": 32.835622,
-   "lon": -116.990928,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
+   "text": "SR-56 24 MIN / SR-52 31 MIN / I-8 36 MIN",
+   "messageLocal": "2026-11-23 14:57:43"
   },
   {
    "id": "ca-cms-d11-1121457",
@@ -4150,89 +3982,13 @@
    "lat": 32.833017,
    "lon": -116.982392,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "I-15 9 MIN",
+    "I-805 12 MIN",
+    "I-5 15 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
-  },
-  {
-   "id": "ca-cms-d11-1121475",
-   "district": "11",
-   "road": "I-15",
-   "direction": "North",
-   "place": "None",
-   "county": "San Diego County",
-   "locationName": "045-NB 15 NO SR52 [EXP]",
-   "lat": 32.85365,
-   "lon": -117.114958,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
-  },
-  {
-   "id": "ca-cms-d11-1121513",
-   "district": "11",
-   "road": "SR-163",
-   "direction": "North",
-   "place": "None",
-   "county": "San Diego County",
-   "locationName": "046-NB 163 JNO SR52 [EXP]",
-   "lat": 32.856434,
-   "lon": -117.114852,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-22 10:30:33"
-  },
-  {
-   "id": "ca-cms-d11-1121966",
-   "district": "11",
-   "road": "I-15",
-   "direction": "South",
-   "place": "CCTV042",
-   "county": "San Diego County",
-   "locationName": "048-SB 15 JNO MIRA MESA BLVD [EXP]",
-   "lat": 32.921494,
-   "lon": -117.115726,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
-  },
-  {
-   "id": "ca-cms-d11-1122080",
-   "district": "11",
-   "road": "I-15",
-   "direction": "South",
-   "place": "CCTV042",
-   "county": "San Diego County",
-   "locationName": "049-SB 15 JSO MERCY RD [EXP]",
-   "lat": 32.93229,
-   "lon": -117.113002,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
+   "text": "I-15 9 MIN / I-805 12 MIN / I-5 15 MIN",
+   "messageLocal": "2026-11-23 14:57:43"
   },
   {
    "id": "ca-cms-d11-1121553",
@@ -4245,51 +4001,12 @@
    "lat": 32.937376,
    "lon": -117.110765,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "SR-78 15 MIN",
+    "SR-76 30 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
-  },
-  {
-   "id": "ca-cms-d11-1121479",
-   "district": "11",
-   "road": "I-15",
-   "direction": "South",
-   "place": "CCTV043",
-   "county": "San Diego County",
-   "locationName": "051-SB 15 JSO POWAY RD [EXP]",
-   "lat": 32.943711,
-   "lon": -117.109144,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
-  },
-  {
-   "id": "ca-cms-d11-1122445",
-   "district": "11",
-   "road": "I-15",
-   "direction": "South",
-   "place": "CCTV044",
-   "county": "San Diego County",
-   "locationName": "052-SB 15 JSO SR56 [EXP]",
-   "lat": 32.960221,
-   "lon": -117.099083,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
+   "text": "SR-78 15 MIN / SR-76 30 MIN",
+   "messageLocal": "2026-11-23 14:57:42"
   },
   {
    "id": "ca-cms-d11-1121960",
@@ -4302,51 +4019,12 @@
    "lat": 33.089422,
    "lon": -117.079058,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "SR-78 4 MIN",
+    "SR-76 18 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
-  },
-  {
-   "id": "ca-cms-d11-1121962",
-   "district": "11",
-   "road": "I-15",
-   "direction": "South",
-   "place": "CCTV089",
-   "county": "San Diego County",
-   "locationName": "054-SB 15 JNO CITRACADO PKWY [EXP]",
-   "lat": 33.094438,
-   "lon": -117.085113,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
-  },
-  {
-   "id": "ca-cms-d11-1121964",
-   "district": "11",
-   "road": "I-15",
-   "direction": "South",
-   "place": "CCTV090",
-   "county": "San Diego County",
-   "locationName": "055-SB 15 NO VALLEY PKWY [EXP]",
-   "lat": 33.121696,
-   "lon": -117.102913,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
+   "text": "SR-78 4 MIN / SR-76 18 MIN",
+   "messageLocal": "2026-11-23 14:57:43"
   },
   {
    "id": "ca-cms-d11-1125254",
@@ -4359,13 +4037,11 @@
    "lat": 32.566778,
    "lon": -117.013986,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "BORDER 21 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:54"
+   "text": "BORDER 21 MIN",
+   "messageLocal": "2026-11-23 14:57:43"
   },
   {
    "id": "ca-cms-d11-1125430",
@@ -4378,13 +4054,13 @@
    "lat": 33.341941,
    "lon": -117.159374,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "SR-78 14 MIN",
+    "SR-56 25 MIN",
+    "SR-52 34 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
+   "text": "SR-78 14 MIN / SR-56 25 MIN / SR-52 34 MIN",
+   "messageLocal": "2026-11-23 14:57:17"
   },
   {
    "id": "ca-cms-d11-1125512",
@@ -4397,13 +4073,11 @@
    "lat": 32.954854,
    "lon": -117.147751,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "I-15 7 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:54"
+   "text": "I-15 7 MIN",
+   "messageLocal": "2026-11-23 14:57:42"
   },
   {
    "id": "ca-cms-d11-1125513",
@@ -4416,13 +4090,11 @@
    "lat": 32.949852,
    "lon": -117.201995,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "I-5 3 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
+   "text": "I-5 3 MIN",
+   "messageLocal": "2026-11-23 14:57:42"
   },
   {
    "id": "ca-cms-d11-1100060",
@@ -4435,13 +4107,11 @@
    "lat": 32.564006,
    "lon": -116.965063,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "BORDER 4 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
+   "text": "BORDER 4 MIN",
+   "messageLocal": "2026-11-23 14:57:41"
   },
   {
    "id": "ca-cms-d11-1126766",
@@ -4454,13 +4124,13 @@
    "lat": 32.7742,
    "lon": -115.523705,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "SAN DIEGO 104 MIN",
+    "SR-79 70 MIN",
+    "SR-94 46 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:54"
+   "text": "SAN DIEGO 104 MIN / SR-79 70 MIN / SR-94 46 MIN",
+   "messageLocal": "2026-11-23 14:57:19"
   },
   {
    "id": "ca-cms-d11-1127035",
@@ -4473,13 +4143,12 @@
    "lat": 32.858017,
    "lon": -116.932109,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "SR-78 27 MIN",
+    "SR-79 48 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-22 14:11:16"
+   "text": "SR-78 27 MIN / SR-79 48 MIN",
+   "messageLocal": "2026-11-23 14:57:42"
   },
   {
    "id": "ca-cms-d11-1100068",
@@ -4492,13 +4161,12 @@
    "lat": 32.96897,
    "lon": -116.970257,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "SR-78 15 MIN",
+    "SR-79 36 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:53"
+   "text": "SR-78 15 MIN / SR-79 36 MIN",
+   "messageLocal": "2026-11-23 14:57:42"
   },
   {
    "id": "ca-cms-d11-1127033",
@@ -4511,165 +4179,12 @@
    "lat": 32.776685,
    "lon": -117.052646,
    "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
+    "SR-67 9 MIN",
+    "SR-79 28 MIN"
    ],
    "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
-  },
-  {
-   "id": "ca-cms-d11-1126734",
-   "district": "11",
-   "road": "I-5",
-   "direction": "South",
-   "place": "None",
-   "county": "San Diego County",
-   "locationName": "600-SB 5 JNO SR905 (vCMS)",
-   "lat": 32.575805,
-   "lon": -117.081978,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
-  },
-  {
-   "id": "ca-cms-d11-1126735",
-   "district": "11",
-   "road": "I-805",
-   "direction": "South",
-   "place": "None",
-   "county": "San Diego County",
-   "locationName": "601-SB 805 @ SR905 (vCMS)",
-   "lat": 32.574635,
-   "lon": -117.039341,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
-  },
-  {
-   "id": "ca-cms-d11-1126759",
-   "district": "11",
-   "road": "I-8",
-   "direction": "East",
-   "place": "None",
-   "county": "Imperial County",
-   "locationName": "602-EB 8 @ DOGWOOD RD (vCMS)",
-   "lat": 32.773383,
-   "lon": -115.531089,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
-  },
-  {
-   "id": "ca-cms-d11-1127203",
-   "district": "11",
-   "road": "SR-86",
-   "direction": "North",
-   "place": "None",
-   "county": "Imperial County",
-   "locationName": "603-NB 86 @ BRAWLEY (vCMS)",
-   "lat": 32.978871,
-   "lon": -115.520086,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
-  },
-  {
-   "id": "ca-cms-d11-1127204",
-   "district": "11",
-   "road": "SR-98",
-   "direction": "East",
-   "place": "None",
-   "county": "Imperial County",
-   "locationName": "604-EB 98 @ CALEXICO (vCMS)",
-   "lat": 32.68136,
-   "lon": -115.498687,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
-  },
-  {
-   "id": "ca-cms-d11-1127205",
-   "district": "11",
-   "road": "I-8",
-   "direction": "East",
-   "place": "None",
-   "county": "San Diego County",
-   "locationName": "605-EB 8 EO MANZANITA RD (vCMS)",
-   "lat": 32.693761,
-   "lon": -116.313178,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
-  },
-  {
-   "id": "ca-cms-d11-1100314",
-   "district": "11",
-   "road": "I-8",
-   "direction": "East",
-   "place": "None",
-   "county": "San Diego County",
-   "locationName": "606-EB 8 WO I-5 INTERCHANGE (vCMS)",
-   "lat": 32.757861,
-   "lon": -117.216591,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
-  },
-  {
-   "id": "ca-cms-d11-1127206",
-   "district": "11",
-   "road": "SR-905",
-   "direction": "East",
-   "place": "None",
-   "county": "San Diego County",
-   "locationName": "608-EB 905 @ LA MEDIA RD (vCMS)",
-   "lat": 32.563975,
-   "lon": -116.966371,
-   "phase1": [
-    "IMPAIRED DRIVERS",
-    "MAKE WRONG",
-    "WAY DRIVERS"
-   ],
-   "phase2": [],
-   "text": "IMPAIRED DRIVERS / MAKE WRONG / WAY DRIVERS",
-   "messageLocal": "2026-11-21 19:09:52"
+   "text": "SR-67 9 MIN / SR-79 28 MIN",
+   "messageLocal": "2026-11-23 14:57:41"
   },
   {
    "id": "ca-cms-d12-1",
@@ -4683,12 +4198,12 @@
    "lon": -117.930172,
    "phase1": [
     "MINUTES TO:",
-    "RTE 55 10",
-    "RTE 405 18"
+    "RTE 55 11",
+    "RTE 405 19"
    ],
    "phase2": [],
-   "text": "MINUTES TO: / RTE 55 10 / RTE 405 18",
-   "messageLocal": "2026-11-22 14:52:30"
+   "text": "MINUTES TO: / RTE 55 11 / RTE 405 19",
+   "messageLocal": "2026-11-23 14:56:38"
   }
  ]
 }

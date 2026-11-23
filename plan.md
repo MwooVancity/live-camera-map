@@ -76,7 +76,7 @@ Run in parallel from day 1: keyword research (Google Keyword Planner or Ahrefs f
 - Caltrans: general info public domain, some photos copyrighted.
 - WSDOT photo reuse criteria are non-commercial.
 - National Highways (England) needs a separate paid commercial licence.
-- Argos Atlas traffic of ~500k visits/month is unconfirmed (one estimate site ranks it Tranco #666,409).
+- Argos Atlas traffic of ~500k visits/month: CONFIRMED by the owner in Ahrefs on 2026-11-23 (owner-reported; Claude has not yet read the Ahrefs report itself; replace with the real figures once read). The old Tranco estimate is superseded.
 Open each source's official terms page before setting any permission to `allowed`.
 
 ## 9. Out of scope for v1
@@ -194,4 +194,17 @@ Log:
 | 2026-11-22 | Our LA + I-405 pages vs Argos (ChatGPT, text pasted) | docs/decisions/review-2026-11-22-chatgpt-vs-argos.md | 2 of its defects were my paste errors |
 | 2026-11-23 | Day 4 search/discovery design for 200k cameras (ChatGPT) | docs/decisions/day4-search-design.md; rejected its per-camera pages | sizes UNVERIFIED, licences leads |
 | 2026-11-23 | Rank world camera feeds by count x licence x no key (ChatGPT) | docs/source-audits/chatgpt-world-feeds-2026-11-23.md; no counts verified; shortlist Finland, Spain, NSW, Singapore, Quebec | UNVERIFIED, live audit running |
+| 2026-11-23 | Read TfL, Calgary, NZTA terms in Chrome; emailed DGT; NSW decision | docs/source-audits/world-feed-audit-2026-11-23.md | Calgary VERIFIED, TfL needs registration, NZTA excluded |
 Next asks queued: (1) [DONE 2026-11-23: Day 4 search design], (2) which countries have the most licence-clean free camera feeds, ranked (ChatGPT, then we verify each licence), (3) keyword and page ideas per country (Gemini Deep Research when available).
+
+## 17. End game and traffic parity (owner 2026-11-23: Argos's ~500k visits/month is confirmed in Ahrefs; "do not miss a single traffic user they have")
+**End game:** the world's best live traffic-camera directory: every page answers its query better than the Argos page for the same query (licensed data, camera health, road conditions, corridors), covers every page type and keyword cluster Argos ranks for, and then passes their traffic. Measured by Search Console (ours) against the Ahrefs estimate (theirs), monthly. Revenue (ads, affiliate) switches on only where each source's licence allows it.
+**Traffic parity procedure (the Ahrefs data is the missing keyword research and page list from section 5/6):**
+1. Read Argos in Ahrefs (Site Explorer): Top pages, Organic keywords (with position and volume), organic traffic by country, top referring pages, and language split (EN vs ES). Claude reads it in Chrome from the owner's logged-in session (read only; no downloads without the owner OK), or the owner exports CSVs into research-private/ (gitignored).
+2. Cluster their ranking pages and keywords by type (country hub, region, city, road, guide, brand, map/app, other-language mirror). Brand and own-app searches are not capturable by pages: list them separately.
+3. For every cluster: our equivalent page URL, or a recorded gap with a valid reason (no licensed data, licence blocked, language not built, thin-page risk). Source of truth: data/traffic-parity.json (our mapping only: cluster names, type, our URL or gap reason, status; NO raw Ahrefs rows or volumes, because the export is paid-tool data and this repo is public).
+4. Gate: tests/parity/parity.test.mjs fails when a cluster has neither a built page nor a gap reason, and when a listed URL is not in the built site. Rule "traffic-parity" in ops/harness/rules.mjs is PENDING until the first Ahrefs read exists, then ENFORCED.
+5. Language: if the Ahrefs language split shows material Spanish (or other) traffic, build that language by the same silo and gates (supersedes the v1 "no Spanish" line; no machine-translated thin mirrors: real per-language data pages or none).
+6. Build order is by the traffic each gap represents, biggest first; sources by camera count x licence cleanliness (section 15).
+7. Re-read the Argos report monthly; new clusters become new rows. Search Console is the check that the pages actually rank.
+Edge cases: a cluster we cannot serve legally -> gap row with the reason, never a copied page; Argos traffic from the logged-in map app or brand -> listed as not capturable; Ahrefs numbers are estimates -> treat as direction, verify with Search Console; the export format changes -> parser fails closed.

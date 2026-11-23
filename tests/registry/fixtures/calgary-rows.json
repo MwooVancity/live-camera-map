@@ -1,0 +1,97 @@
+[
+ {
+  "camera_url": {
+   "url": "https://trafficcam.calgary.ca/loc0.jpg",
+   "description": "Camera 1"
+  },
+  "quadrant": "SW/SE",
+  "camera_location": "Glenmore Trail / Macleod Trail S",
+  "point": {
+   "type": "Point",
+   "coordinates": [
+    -114.0715855,
+    50.993989
+   ]
+  },
+  ":@computed_region_4a3i_ccfj": "1",
+  ":@computed_region_kxmf_bzkv": "120",
+  ":@computed_region_p8tp_5dkv": "5",
+  ":@computed_region_4b54_tmc4": "8"
+ },
+ {
+  "camera_url": {
+   "url": "https://trafficcam.calgary.ca/loc100.jpg",
+   "description": "Camera 101"
+  },
+  "quadrant": "NW",
+  "camera_location": "Stoney Trail / Beddington Trail NW",
+  "point": {
+   "type": "Point",
+   "coordinates": [
+    -114.1149257,
+    51.1565751
+   ]
+  },
+  ":@computed_region_4a3i_ccfj": "2",
+  ":@computed_region_kxmf_bzkv": "25",
+  ":@computed_region_p8tp_5dkv": "12",
+  ":@computed_region_4b54_tmc4": "3"
+ },
+ {
+  "camera_url": {
+   "url": "https://trafficcam.calgary.ca/loc121.jpg",
+   "description": "Camera 122"
+  },
+  "quadrant": "SE",
+  "camera_location": "Riverfront Avenue / 1 Street SE",
+  "point": {
+   "type": "Point",
+   "coordinates": [
+    -114.0600141,
+    51.0511313
+   ]
+  },
+  ":@computed_region_4a3i_ccfj": "3",
+  ":@computed_region_kxmf_bzkv": "21",
+  ":@computed_region_p8tp_5dkv": "7",
+  ":@computed_region_4b54_tmc4": "7"
+ },
+ {
+  "camera_url": {
+   "url": "https://trafficcam.calgary.ca/loc224.jpg",
+   "description": "Camera 225"
+  },
+  "quadrant": "SE",
+  "camera_location": "Riverfront Avenue / 1 Street SE",
+  "point": {
+   "type": "Point",
+   "coordinates": [
+    -114.0528993,
+    51.0492354
+   ]
+  },
+  ":@computed_region_4a3i_ccfj": "3",
+  ":@computed_region_kxmf_bzkv": "65",
+  ":@computed_region_p8tp_5dkv": "7",
+  ":@computed_region_4b54_tmc4": "7"
+ },
+ {
+  "camera_url": {
+   "url": "https://trafficcam.calgary.ca/loc208.jpg",
+   "description": "Camera 209"
+  },
+  "quadrant": "S",
+  "camera_location": "58 Ave & Centre St S",
+  "point": {
+   "type": "Point",
+   "coordinates": [
+    -114.0639256,
+    51.0014717
+   ]
+  },
+  ":@computed_region_4a3i_ccfj": "3",
+  ":@computed_region_kxmf_bzkv": "160",
+  ":@computed_region_p8tp_5dkv": "11",
+  ":@computed_region_4b54_tmc4": "10"
+ }
+]

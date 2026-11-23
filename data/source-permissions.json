@@ -4837,6 +4837,23 @@
       "needsHumanReview": true,
       "mustNotShip": false,
       "enabled": true
+    },
+    {
+      "id": "calgary-traffic-cameras",
+      "name": "Traffic Cameras, City of Calgary Open Data (Socrata dataset k7p9-kppz)",
+      "section": "Camera registry sources (read by ops/importers/calgary.mjs)",
+      "folder": "",
+      "licence": "Open Calgary Terms of Use (https://data.calgary.ca/stories/s/Open-Data-Terms/u45n-7awa, read in a browser by Claude 2026-11-23 and re-read as page text by the importer every run): Open Government Licence - City of Calgary v2.1: \"The Information Provider grants you a worldwide, royalty-free, perpetual, non-exclusive license to use the Information, including for commercial purposes, subject to the terms below.\" Attribution statement the licence requires: \"Contains information licensed under the Open Government Licence – City of Calgary.\" Exemptions on the same page: third party rights the provider cannot licence, and official logos. The licence covers the LIST (camera number, roads, position, picture address). Whether the picture files are \"Information\" under this licence is not stated, so image display, caching and redistribution stay unverified and we only link out. Feed access: the Socrata resource endpoint https://data.calgary.ca/resource/k7p9-kppz.json (robots.txt of data.calgary.ca read 2026-11-23: Crawl-delay 1, Disallows only browse/facet/odata/login/tiles style paths, not /resource/ and not /stories/; one request per run); the picture host trafficcam.calgary.ca answers 404 for /robots.txt (none published). The importer stops if the licence page loses the phrases \"including for commercial purposes\", \"Contains information licensed under the Open Government Licence\" or \"City of Calgary\".",
+      "commercialStatus": "allowed_per_doc",
+      "statusReason": "quoted text: licence to use the Information \"including for commercial purposes\", attribution required; applies to the camera list, pictures unverified (link-out only)",
+      "attribution": "Contains information licensed under the Open Government Licence – City of Calgary.",
+      "provenance": "https://data.calgary.ca/stories/s/Open-Data-Terms/u45n-7awa (licence) and https://data.calgary.ca/api/views/metadata/v1/k7p9-kppz (dataset record: attribution The City of Calgary, licence field 'See Terms of Use'), read 2026-11-23; docs/source-audits/world-feed-audit-2026-11-23.md",
+      "imageStatus": "unverified: image display, caching and redistribution not stated; link-out only",
+      "reviewedAt": "2026-11-23",
+      "reviewedBy": "claude-doc-read",
+      "needsHumanReview": true,
+      "mustNotShip": false,
+      "enabled": true
     }
   ]
 }

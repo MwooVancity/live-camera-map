@@ -273,7 +273,7 @@ test('country hubs hold their own data, not swapped names: the sources and count
 // ---- world sources: Finland (Fintraffic) and Quebec (MTMD), added 2026-11-23 ----
 const body = (route) => pages.get(route).replace(/<footer[\s\S]*<\/footer>/, ''); // the footer names every source on every page
 const finlandRoutes = [...pages.keys()].filter((r) => r.startsWith('/cameras/finland/'));
-const quebecRoutes = [...pages.keys()].filter((r) => /^\/cameras\/canada\/(?!british-columbia\/|toronto\/)[a-z-]+\/$/.test(r));
+const quebecRoutes = [...pages.keys()].filter((r) => /^\/cameras\/canada\/(?!british-columbia\/|toronto\/|calgary\/)[a-z-]+\/$/.test(r));
 test('Finland pages: world hub, country, region, 8 city pages; they name Fintraffic and never another source', () => {
   assert.equal(finlandRoutes.length, 1 + 1 + 8, 'country + region + 8 cities');
   for (const r of finlandRoutes) {
@@ -300,7 +300,7 @@ test('Finland city pages: every link goes to weathercam.digitraffic.fi as a link
 test('Quebec: 13 region hubs (Abitibi-Temiscamingue has 1 camera: no page), no city pages, every camera of the region listed once with a quebec511.info link', () => {
   assert.equal(quebecRoutes.length, 13);
   assert.ok(!pages.has('/cameras/canada/abitibi-temiscamingue/'));
-  assert.ok(![...pages.keys()].some((r) => /^\/cameras\/canada\/(?!british-columbia\/|toronto\/)[a-z-]+\/[a-z0-9-]+\/$/.test(r)), 'no Quebec city page: the feed has no place field');
+  assert.ok(![...pages.keys()].some((r) => /^\/cameras\/canada\/(?!british-columbia\/|toronto\/|calgary\/)[a-z-]+\/[a-z0-9-]+\/$/.test(r)), 'no Quebec city page: the feed has no place field');
   for (const r of quebecRoutes) {
     const slug = r.split('/')[3];
     const mine = cameras.filter((c) => c.regionSlug === slug);
@@ -335,6 +335,26 @@ test('Toronto: one region hub, no city pages, every camera listed once as a link
   assert.equal(new Set(mine.map((c) => c.name)).size, mine.length, 'no two labels alike');
   const canada = pages.get('/cameras/canada/');
   assert.ok(canada.includes('/cameras/canada/toronto/'), 'the country hub links to it');
+});
+test('Calgary: one region hub, no city pages, every camera listed once as a link to the City picture address, the exact required credit and the pictures-are-the-City\'s caveat printed, link-out only', () => {
+  const r = '/cameras/canada/calgary/';
+  const mine = cameras.filter((c) => c.regionSlug === 'calgary');
+  assert.ok(mine.length >= 100, 'the registry holds the Calgary list');
+  const html = pages.get(r);
+  assert.ok(html, 'page built');
+  assert.ok(html.includes(`data-count="${mine.length}"`) && html.includes(`All ${mine.length} cameras`), 'count');
+  const block = html.match(/<section data-block="cameras"[\s\S]*?<\/section>/)[0];
+  assert.equal((block.match(/<li>/g) || []).length, mine.length, 'list length');
+  for (const m of block.matchAll(/<li><a href="([^"]+)"/g)) assert.match(m[1], /^https:\/\/trafficcam\.calgary\.ca\/loc\d+\.jpg$/);
+  assert.ok(!/<(img|video|iframe|source)\b/i.test(block), 'no media tag in the list');
+  assert.ok(html.includes('Credit: Contains information licensed under the Open Government Licence – City of Calgary.'), 'the exact credit, one full stop');
+  assert.ok(!html.includes('Calgary..'), 'no doubled full stop');
+  assert.ok(/pictures belong to the City of Calgary/.test(html), 'the pictures are the City\'s');
+  assert.ok(/does not say whether the picture files themselves are covered/.test(html), 'image caveat');
+  assert.ok(![...pages.keys()].some((x) => x.startsWith(r) && x !== r), 'no Calgary city page: the feed has no place field');
+  assert.ok(!isNoindex(html), 'indexable');
+  assert.equal(new Set(mine.map((c) => c.name)).size, mine.length, 'no two labels alike');
+  assert.ok(pages.get('/cameras/canada/').includes('/cameras/canada/calgary/'), 'the country hub links to it');
 });
 test('country hub of Canada: BC and Quebec regions with their own text, and the one-camera Quebec region is counted in the total but said to have no page', () => {
   const html = pages.get('/cameras/canada/');

@@ -39,6 +39,7 @@ export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 7000, bud
   perSource: {
     drivebc: { concurrency: 3, hostDelayMs: 300, staleHours: 4 },
     'toronto-traffic': { concurrency: 2, hostDelayMs: 500, staleHours: 6 },
+    'calgary-traffic': { concurrency: 2, hostDelayMs: 500, staleHours: 6 }, // trafficcam.calgary.ca: no robots.txt (404) and no stated limit; same polite pace as Toronto, HEAD only
     digitraffic: { concurrency: 1, hostDelayMs: 1100, staleHours: 6, needValidators: true },
     'quebec-mtmd': { skip: 'host-blocks-automated-checks' },
   } };

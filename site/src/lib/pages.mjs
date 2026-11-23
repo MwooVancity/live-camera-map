@@ -3,6 +3,7 @@ import { countsBy, roadSlug, countryOf, REGION_COUNTRY } from '../../../ops/impo
 import { MIN_CAMERAS } from '../config.mjs';
 import { QC_REGIONS } from '../../../ops/importers/lib/quebec.mjs';
 import { TOR_REGION } from '../../../ops/importers/lib/toronto.mjs';
+import { CGY_REGION } from '../../../ops/importers/lib/calgary.mjs';
 
 // NFKD splits an accented letter into the letter plus a combining mark; the marks are removed first, otherwise "Hämeenlinna" became "ha-meenlinna".
 export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -59,9 +60,16 @@ export const REGIONS = {
     cityText: () => '',
     caveats: ['Each link goes to one live picture address on opendata.toronto.ca, the main view of that intersection; it is a link only, never shown here. The City lists up to four compass views (north, east, south, west) for an intersection and we name the ones it lists. The licence covers the list; it does not say whether the picture files themselves are covered.'],
   },
+  // Calgary: one region from the City's open list; each row is a place text "Road / Cross road" plus a quadrant word and the feed has no place field, so no city pages.
+  [CGY_REGION.slug]: {
+    sourceId: 'calgary-traffic', agency: 'City of Calgary', cityLimit: 0, guide: null, credit: true, list: 'traffic camera list', listAll: true,
+    placeText: (x) => sentence(`The City's list has no neighbourhood or place field: each camera is named by the roads it is at and a quadrant of the city (NW, NE, SW, SE), which is a part of the city and not a place name, so no camera here has a named place and there are no city pages; all ${x.total} cameras are listed below.`),
+    cityText: () => '',
+    caveats: ['The camera pictures belong to the City of Calgary and are not shown here. Each link goes to one live picture address on trafficcam.calgary.ca; it is a link only. The City says the cameras are for traffic monitoring, not enforcement, and footage is not recorded. The licence covers the list; it does not say whether the picture files themselves are covered.'],
+  },
 };
 // The credit sentence for a source that asks for one (its attribution line from sources.json, without a leading "Source:").
-export const creditLine = (source) => `Credit: ${String(source.attribution).replace(/^Source:\s*/i, '')}.`;
+export const creditLine = (source) => `Credit: ${String(source.attribution).replace(/^Source:\s*/i, '').replace(/\.$/, '')}.`; // one full stop whether or not the licence's own statement ends with one
 export const regionInfo = (slug) => REGIONS[slug] || { sourceId: null, agency: 'the official source', cityLimit: 5, guide: null };
 
 // Curated places: [{ region, city, n }]. Counted PER REGION, so the same place name in two regions never merges into one count
