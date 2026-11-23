@@ -26,7 +26,9 @@ test('hook blocks Bash writes in gev/, allows reads', () => {
 });
 
 // ---- page gate ----
-const page = (body, head = '') => `<!doctype html><html lang="en"><head><title>t</title>${head}</head><body>${body}</body></html>`;
+const SEARCH = '<div id="site-search" role="search"><form><input type="search"></form><noscript><a href="/cameras/">c</a> <a href="/roads/">r</a>.</noscript></div>';
+const pageNoSearch = (body, head = '') => `<!doctype html><html lang="en"><head><title>t</title>${head}</head><body>${body}</body></html>`;
+const page = (body, head = '') => pageNoSearch(SEARCH + body, head); // every fixture page carries the search box, like the real layout
 const a = (h, t = 'x') => `<a href="${h}">${t}</a>`;
 function site(mut = {}) {
   const d = mkdtempSync(join(tmpdir(), 'pg-'));
@@ -198,4 +200,21 @@ test('failing fixture: a camera list that claims a picture is fresh fails', () =
 test('failing fixture: a road page with a jump link to a missing direction list fails; one with no jump links fails', () => {
   assert.ok(gate(roadSite({ mut: (r, b) => b.replace('<h3 id="dir-north">', '<h3>') }), roadMd).some((e) => /jump link #dir-north has no target/.test(e)));
   assert.ok(gate(roadSite({ mut: (r, b) => b.replace('<a href="#dir-north">north</a>', '') }), roadMd).some((e) => /no jump links/.test(e)));
+});
+
+// ---- search box on every page (rule 'search-box') ----
+test('good fixture: every page has the search box, so the gate has no search error', () => assert.ok(!gate(site(), md).some((e) => /search box/.test(e))));
+test('failing fixture: a page with no search box fails', () => {
+  const errs = gate(site({ extra: (w) => w('map', pageNoSearch('<p>Map intro here.</p>' + a('/cameras/'))) }), md);
+  assert.ok(errs.some((e) => /^\/map\/: no search box/.test(e)), errs.join('\n'));
+});
+test('failing fixture: a search input without role="search" fails', () => {
+  const errs = gate(site({ city: (c, b) => pageNoSearch('<div><form><input type="search"></form><noscript><a href="/cameras/">c</a><a href="/roads/">r</a></noscript></div>' + b) }), md);
+  assert.ok(errs.some((e) => /no search box/.test(e)));
+});
+test('failing fixture: a search box with no <noscript> fallback to /cameras/ and /roads/ fails', () => {
+  const errs = gate(site({ city: (c, b) => pageNoSearch('<div role="search"><form><input type="search"></form></div>' + b) }), md);
+  assert.ok(errs.some((e) => /no <noscript> fallback/.test(e)));
+  const half = gate(site({ city: (c, b) => pageNoSearch('<div role="search"><input type="search"><noscript><a href="/cameras/">c</a></noscript></div>' + b) }), md);
+  assert.ok(half.some((e) => /no <noscript> fallback/.test(e)));
 });

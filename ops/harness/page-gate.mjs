@@ -40,8 +40,8 @@ export function gate(dist, pagesMd = '', now = new Date()) {
   for (const f of files) {
     const html = readFileSync(f, 'utf8');
     const route = toRoute(dist, f);
-    const links = new Set();
-    for (const m of html.matchAll(/<a\s[^>]*href=["']([^"']+)["']/gi)) { const n = normalize(m[1], route); if (n) links.add(n); }
+    const links = new Set(); // links inside <noscript> (the search fallback) are not site navigation, so they are not counted
+    for (const m of html.replace(/<noscript[\s\S]*?<\/noscript>/gi, ' ').matchAll(/<a\s[^>]*href=["']([^"']+)["']/gi)) { const n = normalize(m[1], route); if (n) links.add(n); }
     pages.set(route, { html, links, noindex: /<meta[^>]+name=["']robots["'][^>]+noindex/i.test(html) });
   }
   if (!pages.has('/')) errors.push('no / page built');
@@ -163,6 +163,13 @@ export function gate(dist, pagesMd = '', now = new Date()) {
       const share = shared / Math.min(a.size, b.size);
       if (share > 0.6) errors.push(`${group[i]} and ${group[j]} share ${(share * 100).toFixed(0)}% of sentences (near-duplicate)`);
     }
+  }
+
+  // 6) search box on EVERY page (rule 'search-box'): a role=search region, a search input, and a <noscript> fallback linking /cameras/ and /roads/
+  for (const [route, p] of pages) {
+    const ns = (p.html.match(/<noscript[\s\S]*?<\/noscript>/gi) || []).join(' ');
+    if (!/role=["']search["']/.test(p.html) || !/<input\b[^>]*type=["']search["']/i.test(p.html)) errors.push(`${route}: no search box (role="search" with an input type="search")`);
+    else if (!/href=["']\/cameras\/["']/.test(ns) || !/href=["']\/roads\/["']/.test(ns)) errors.push(`${route}: search box has no <noscript> fallback linking /cameras/ and /roads/`);
   }
 
   // 5) "Beats Argos by:" per indexable page

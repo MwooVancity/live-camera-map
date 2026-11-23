@@ -5,8 +5,8 @@
   "engines": { "node": ">=24" },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
-    "test": "node --test --test-concurrency=1 tests/gate.test.mjs tests/dist.test.mjs tests/live.test.mjs tests/health.test.mjs tests/roads.test.mjs tests/area.test.mjs"
+    "build": "node scripts/build-search.mjs && astro build",
+    "test": "node --test --test-concurrency=1 tests/search.relevance.test.mjs tests/search.test.mjs tests/gate.test.mjs tests/dist.test.mjs tests/live.test.mjs tests/health.test.mjs tests/roads.test.mjs tests/area.test.mjs"
   },
   "dependencies": {
     "astro": "5.18.1"

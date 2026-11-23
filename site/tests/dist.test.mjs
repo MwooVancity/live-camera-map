@@ -135,7 +135,10 @@ test('failing fixture: the sitemap check catches a noindex page that is listed',
 test('map page: works without JS, fallback when no engine, iframe src ends ?embed=1', () => {
   const map = pages.get('/map/');
   assert.ok(!/<iframe/.test(map) && map.includes('The map engine is not deployed yet'));
-  assert.ok(!/<script\b(?![^>]*ld\+json)/.test(map), 'map page needs no JS');
+  // JS only enhances (search box, /map/?lat= position): every script is data (ld+json, application/json) or a first-party module, and the lists below work without it.
+  assert.ok(!/<script\b(?![^>]*(ld\+json|application\/json|type="module"))/.test(map), 'map page needs no JS (only data and first-party module scripts allowed)');
+  assert.ok(!/<script\b[^>]*\bsrc="(?!\/)/.test(map), 'no third-party script');
+  assert.ok(/<noscript>/.test(map) && /<ul class="cols">/.test(map), 'the plain link lists and the search fallback are in the HTML');
   const out = mkdtempSync(join(tmpdir(), 'embed-'));
   execFileSync(process.execPath, ['node_modules/astro/astro.js', 'build', '--outDir', out], { env: { ...process.env, PUBLIC_GEV_EMBED_URL: 'https://gev.example/app?x=1#h' }, stdio: 'pipe' });
   const built = readFileSync(join(out, 'map', 'index.html'), 'utf8');

@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import { SITE_NAME } from '../../config.mjs';
 import { cameras, countsBy } from '../../lib/data.mjs';
 import { countryOf } from '../../../../ops/importers/lib/registry.mjs';
+import { buildEntries } from '../../lib/search-index.mjs';
 import { curatedPlaces, regionsWithPages, countriesWithPages, countryName, countryRoute, regionRoute, cityRoute, GUIDES } from '../../lib/pages.mjs';
 
 // Iframe src always ends in ?embed=1; empty env means the engine is not deployed yet.
@@ -13,6 +14,8 @@ const byRegion = countsBy(cameras, 'region');
 const regionName = (slug) => cameras.find((c) => c.regionSlug === slug).regionName;
 const names = regionsWithPages(cameras).map(regionName);
 const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names.at(-1)}` : names[0];
+// Pages near a position (for /map/?lat=&lon=): city and road pages only, [name, url, lat, lon, label].
+const near = buildEntries(cameras).filter((e) => e.kind === 'city' || e.kind === 'road').map((e) => [e.name, e.url, e.lat, e.lon, e.kind]);
 ---
 <Base title={`Traffic camera map | ${SITE_NAME}`} description={`Map of ${cameras.length} traffic cameras in ${list}. Each camera links to its official source. Browse by region or city below.`} route="/map/" crumbs={[{ name: 'Map', route: '/map/' }]}>
   <h1>Traffic camera map</h1>
@@ -20,6 +23,12 @@ const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names.at
   {embed
     ? <iframe class="map" title="Traffic camera map" src={embed} sandbox="allow-scripts allow-same-origin" referrerpolicy="no-referrer" loading="lazy"></iframe>
     : <p class="meta">The map engine is not deployed yet. The lists below work now.</p>}
+  <section id="map-here" hidden>
+    <h2>Map position</h2>
+    <p id="map-here-pos"></p>
+    <ul id="map-here-near"></ul>
+  </section>
+  <script type="application/json" id="map-near" set:html={JSON.stringify(near).replace(/</g, '\\u003c')}></script>
   <h2>Countries</h2>
   <ul>{countriesWithPages(cameras).map((c) => <li><a href={countryRoute(c)}>{countryName(c)} traffic cameras</a> ({countsBy(cameras, 'country')[c]})</li>)}</ul>
   <h2>Regions</h2>
@@ -30,4 +39,23 @@ const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names.at
   <p><a href="/roads/">Traffic cameras by road, in driving order</a></p>
   <h2>Guides</h2>
   <ul>{GUIDES.map((g) => <li><a href={`/guides/${g.slug}/`}>{g.title}</a></li>)}</ul>
+  <script>
+    import { parseMapParams, gevHash, nearest } from '../../lib/map-params.mjs';
+    const p = parseMapParams(location.search);
+    const frame = document.querySelector('iframe.map');
+    if (p && frame) {
+      // The engine reads its camera from the share hash (#v=2&lat=&lon=&alt=); the iframe keeps its ?embed=1 address.
+      frame.src = frame.getAttribute('src').split('#')[0] + gevHash(p);
+    } else if (p) {
+      const here = document.getElementById('map-here');
+      document.getElementById('map-here-pos').textContent = `Position: ${p.lat}, ${p.lon}. The map engine is not deployed yet; these are the nearest pages.`;
+      const ul = document.getElementById('map-here-near');
+      for (const { i, km } of nearest(JSON.parse(document.getElementById('map-near').textContent), p)) {
+        const li = document.createElement('li'), a = document.createElement('a');
+        a.href = i[1]; a.textContent = `${i[0]} (${i[4]})`;
+        li.append(a, ` ${Math.round(km)} km away`); ul.append(li);
+      }
+      here.hidden = false;
+    }
+  </script>
 </Base>

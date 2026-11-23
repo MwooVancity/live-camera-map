@@ -54,6 +54,10 @@ Every line carries "Beats Argos by:". The Argos pages for the same places were n
 - `/guides/how-drivebc-cameras-work/` Beats Argos by: says what the BC list contains, what we left out and why, exactly how a "place" is decided when DriveBC has no city field, what "facing" means, and that our checker cannot call a BC picture stale (the picture server sends no last-modified time), which Argos does not explain.
 - `/guides/camera-link-is-dead/` Beats Argos by: a short fix-it path for a dead link, tied to our own health statuses.
 
+## Features on every page (not pages)
+- Search box in the header of every page (`src/layouts/Base.astro`, `src/lib/search-core.mjs`, built by `scripts/build-search.mjs`, rule `search-box`). Beats Argos by: it finds a city, a road under any spelling ("I 405", "I-405", "Interstate 405", "Highway 1"), a region, a country, a small town that has no page of its own, or a camera by its name, from a prebuilt static index fetched only when the box is first focused; every result states its kind, region AND country (so two towns with one name are never confused), a town with no page opens the map at its position, a camera name leads to its city or road page or to the official source and never to a thin per-camera page, and with JavaScript off the box is replaced by plain links to /cameras/ and /roads/. Argos is not claimed to lack search: that was not checked, the claim is about what ours does.
+- `/map/?lat=&lon=&z=` (search result for a place with no page). Beats Argos by: the position is validated (never passed on unchecked), handed to the map engine as its verified share hash when the engine is deployed, and otherwise shown as coordinates with the three nearest city and road pages, so the link is useful before the engine exists.
+
 ## Not indexed
 - `/404.html` (noindex, not in sitemap).
 - Any city or region that falls below 3 cameras after a re-import.

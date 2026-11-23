@@ -16,12 +16,8 @@ const condDir = () => process.env.CONDITIONS_DIR || resolve(process.cwd(), '../d
 const permFile = () => process.env.PERMISSIONS_FILE || resolve(process.cwd(), '../data/source-permissions.json');
 const readOrNull = (f) => { try { return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : null; } catch { return null; } };
 
-export const distKm = (aLat, aLon, bLat, bLon) => {
-  const R = 6371, rad = Math.PI / 180;
-  const dLat = (bLat - aLat) * rad, dLon = (bLon - aLon) * rad;
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(aLat * rad) * Math.cos(bLat * rad) * Math.sin(dLon / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(h));
-};
+import { distKm } from './geo.mjs'; // the one distance function lives in geo.mjs (browser-safe); re-exported here for existing callers
+export { distKm };
 export const nearby = (items, c, km = RADIUS_KM) => items.filter((i) => Number.isFinite(i.lat) && Number.isFinite(i.lon) && distKm(c.lat, c.lon, i.lat, i.lon) <= km)
   .map((i) => ({ ...i, km: distKm(c.lat, c.lon, i.lat, i.lon) })).sort((a, b) => a.km - b.km);
 

@@ -34,6 +34,13 @@ const ld = JSON.stringify({
     section[data-block] { border-top:1px solid var(--line); margin-top:1.5rem; padding-top:.5rem; }
     ul.cols { columns:2 16rem; padding-left:1.2rem; } ul.cols li { break-inside:avoid; margin-bottom:.3rem; }
     footer { border-top:1px solid var(--line); margin-top:3rem; padding-top:1rem; padding-bottom:2rem; font-size:.9rem; color:var(--mut); }
+    #site-search { position:relative; flex:1 1 14rem; max-width:24rem; }
+    #site-search input { width:100%; box-sizing:border-box; padding:8px 10px; min-height:44px; font:inherit; color:var(--fg); background:var(--bg); border:1px solid var(--line); border-radius:6px; }
+    #site-search ul { position:absolute; left:0; right:0; top:100%; z-index:5; margin:4px 0 0; padding:0; list-style:none; background:var(--bg); border:1px solid var(--line); border-radius:6px; }
+    #site-search li a { display:flex; flex-wrap:wrap; align-items:center; column-gap:.3em; min-height:44px; box-sizing:border-box; overflow-wrap:anywhere; padding:8px 10px; color:var(--fg); text-decoration:none; }
+    #site-search li.on a, #site-search li a:hover { background:var(--line); }
+    #site-search li span { color:var(--mut); font-size:.9rem; }
+    .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
     iframe.map { width:100%; height:70vh; border:1px solid var(--line); }
   </style>
 </head>
@@ -43,6 +50,15 @@ const ld = JSON.stringify({
     <a href="/map/">Map</a>
     <a href="/cameras/">All cameras</a>
     <a href="/guides/how-caltrans-cameras-work/">Guides</a>
+    <div id="site-search" role="search">
+      <form hidden>
+        <label class="sr" for="site-search-box">Search cities, roads and places</label>
+        <input id="site-search-box" type="search" placeholder="Search a city, road or place" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="site-search-list" aria-autocomplete="list" />
+        <ul id="site-search-list" role="listbox" aria-label="Search results" hidden></ul>
+        <div class="sr" role="status" aria-live="polite"></div>
+      </form>
+      <noscript>Search needs JavaScript. <a href="/cameras/">Cameras by place</a> <a href="/roads/">Cameras by road</a></noscript>
+    </div>
   </header>
   <main>
     {crumbs.length > 0 && (
@@ -56,5 +72,9 @@ const ld = JSON.stringify({
     <p>Camera data: Caltrans (California Department of Transportation) for California and DriveBC (Government of British Columbia) for British Columbia. Each camera links to the official source. {SITE_NAME} shows no camera images, thumbnails or video: link-out only. California licence terms are not yet confirmed; the British Columbia camera list and road events are under the Open Government Licence - British Columbia, which does not say whether the pictures are covered.</p>
     <p>No ads, no tracking, no third-party scripts or fonts.</p>
   </footer>
+  <script>
+    import { initSearchUi } from '../lib/search-ui.mjs';
+    initSearchUi(document.getElementById('site-search'));
+  </script>
 </body>
 </html>
