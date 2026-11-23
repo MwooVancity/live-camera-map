@@ -173,3 +173,21 @@ Build order (replaces nothing in section 5; adds):
 - Edge cases: a country with no licence text -> unknown, disabled, link-out only; sources that need a key -> Mike todo; a source dies -> health checker marks unknown/unavailable, pages hide blocks.
 - DONE 2026-11-23: country level added (Argos pattern country -> region/city, our silo gate): /cameras/ -> /cameras/<country>/ -> /cameras/<country>/<region>/ -> city. Cities are NOT avoided: plan section 15 always said country hub -> region -> city; what was avoided is a flat region-only list. Region -> country table is REGION_COUNTRY in ops/importers/lib/registry.mjs. Roads stay /roads/<slug>/ (California-only), see docs/decisions/url-map.md.
 - DONE 2026-11-23: review fixes 1-8 from docs/decisions/review-2026-11-22-chatgpt-vs-argos.md on city and road pages: Greater <city> block (cameras within 30 km, `site/src/lib/area.mjs`, radius set in one place, both counts printed with the definition of near), 'in <city>' vs 'on the whole road' road counts, link-check line derived from the health function (the 'never run yet' contradiction is gone), conditions above the camera lists, road page jump links and per-camera last-checked time, three times kept apart on live blocks, status words defined once at the top of each camera list, 'estimated from camera positions' wording, clean camera labels (`site/src/lib/labels.mjs`), 'Do not use this page while driving' notice. Rules `reader-first-pages`, `greater-area`, `clean-labels`, `timestamps-apart` in ops/harness/rules.mjs. Not built on purpose: a featured-cameras section (padding without images).
+
+## 16. Ask ChatGPT (and Gemini) first: procedure (owner 2026-11-22 "to save my money and time"; also global CLAUDE.md "Offload heavy lifting")
+When: (a) before any plan-changing decision (global rule 2026-11-20), (b) for big research: source hunts, licence terms, competitor teardowns, keyword and page ideas, (c) for a second opinion on a finished page or architecture. Not for small lookups or code edits.
+Steps:
+1. Write ONE batched prompt per topic: goal in one line, the exact questions, "give a table", "mark UNVERIFIED anything you could not open", "say 'could not open' instead of guessing". Public URLs and generic descriptions only: no secrets, keys, personal details or private data. If the site blocks bots (staging does), paste the page text.
+2. Use a guest chat in Chrome (chatgpt.com or gemini.google.com/app). Never log in or enter credentials for Mike. If the browser is blocked, say so in one line and carry on; do not loop.
+3. Read the WHOLE answer (confirm it ends at its final line). Treat every fact as UNVERIFIED. Check the claims that will ship against the primary source (agency page, licence text, the code) before anything is built or any licence row is written.
+4. Where they disagree with this plan or each other, say where Claude agrees, where not, and why; report wrong claims back to them instead of silently substituting.
+5. Log it in the table below and save any long answer as a file in docs/source-audits/ or docs/decisions/ marked UNVERIFIED/VERIFIED.
+Log:
+| Date | Asked | Outcome | Verified? |
+|---|---|---|---|
+| 2026-11-21 | 3-round red-team of GEV fork / architecture | plan sections 2-3, docs/decisions/red-team-round3.md | partly |
+| 2026-11-22 | Session 3 results review | allowlist proxy, public-dev-server beta caveat | yes, in code |
+| 2026-11-22 | Adversarial review of staging site (Gemini + ChatGPT) | gaps list in Next; they could not open sub-pages (robots disallow) | Argos counts UNVERIFIED |
+| 2026-11-22 | Free camera/road feed hunt, 13 jurisdictions (ChatGPT) | docs/source-audits/chatgpt-feed-research-2026-11-22.md | Oregon, BC, Alberta, WSDOT verified; NY, Texas not |
+| 2026-11-22 | Our LA + I-405 pages vs Argos (ChatGPT, text pasted) | docs/decisions/review-2026-11-22-chatgpt-vs-argos.md | 2 of its defects were my paste errors |
+Next asks queued: (1) Day 4 search/discovery design for a world-scale camera map (ChatGPT), (2) which countries have the most licence-clean free camera feeds, ranked (ChatGPT, then we verify each licence), (3) keyword and page ideas per country (Gemini Deep Research when available).
