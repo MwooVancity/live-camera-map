@@ -153,6 +153,22 @@
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
       "mustNotShip": false
+    },
+    {
+      "id": "toronto-traffic-cameras",
+      "name": "Traffic Cameras, City of Toronto Open Data (CKAN datastore, dataset traffic-cameras)",
+      "section": "Camera registry sources (read by ops/importers/toronto.mjs)",
+      "folder": "",
+      "licence": "Dataset record (https://ckan0.cf.opendata.inter.prod-toronto.ca/api/3/action/package_show?id=traffic-cameras, HTTP 200 read 2026-11-23): license_id \"open-government-licence-toronto\". Licence page (https://open.toronto.ca/open-data-licence/, HTTP 200 read 2026-11-23): \"The Information Provider grants you a worldwide, royalty-free, perpetual, non-exclusive licence to use the Information, including for commercial purposes, subject to the terms below.\" and \"Copy, modify, publish, translate, adapt, distribute or otherwise use the Information in any medium, mode or format for any lawful purpose.\" Condition: acknowledge the source by the attribution statement the provider specifies and, where possible, link to the licence; the dataset specifies none, so the licence page statement applies: \"Contains information licensed under the Open Government Licence – Toronto.\" Exemptions on the same page: personal information, third party rights the provider cannot licence, the provider's names, crests and logos, and \"Information subject to other intellectual property rights\". The licence covers the LIST (camera number, roads, position, picture address). The dataset notes say the pictures are \"displayed on the City's website\"; they do not say whether the picture files are \"Information\" under this licence, so image display, caching and redistribution stay unverified and we only link out. Feed access: the CKAN datastore_search API (the portal robots.txt, https://ckan0.cf.opendata.inter.prod-toronto.ca/robots.txt, Allows /api/ and Disallows the /dataset/*/resource/*/download/* file path, so that path is not used); the picture host opendata.toronto.ca has no robots.txt of its own (HTTP 302 to www.toronto.ca, whose robots.txt names no /transportation/ path). The importer stops if the record's license_id changes or the two phrases \"including for commercial purposes\" and \"Contains information licensed under the Open Government Licence\" leave the licence page.",
+      "commercialStatus": "allowed_per_doc",
+      "statusReason": "quoted text: licence to use the Information \"including for commercial purposes\", attribution required; applies to the camera list, pictures unverified (link-out only)",
+      "attribution": "Contains information licensed under the Open Government Licence – Toronto (https://open.toronto.ca/open-data-licence/)",
+      "provenance": "https://open.toronto.ca/open-data-licence/ and https://ckan0.cf.opendata.inter.prod-toronto.ca/api/3/action/package_show?id=traffic-cameras, read 2026-11-23",
+      "imageStatus": "unverified: image display, caching and redistribution not stated; link-out only",
+      "reviewedAt": "2026-11-23",
+      "reviewedBy": "claude-doc-read",
+      "needsHumanReview": true,
+      "mustNotShip": false
     }
   ]
 }

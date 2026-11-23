@@ -106,3 +106,23 @@ test('feed-licence: flipping a feed row to unknown closes it (the importers read
 test('source doc and csv exist', () => {
   assert.ok(existsSync(resolve(root, 'docs/source-audits/source-inventory.csv')));
 });
+
+// ---- Regenerating the inventory never re-dates a row nobody changed (the run of 2026-11-23 re-dated ~290 rows) ----
+import { keepReviewDates } from '../../ops/audit/review-dates.mjs';
+test('review dates: an unchanged row keeps its own date, a changed or new row gets the new one', () => {
+  const prev = [{ id: 'a', licence: 'x', reviewedAt: '2026-11-22', enabled: true }, { id: 'b', licence: 'y', reviewedAt: '2026-11-22', enabled: true }];
+  const fresh = [{ enabled: false, reviewedAt: '2026-11-23', licence: 'x', id: 'a' }, { id: 'b', licence: 'y CHANGED', reviewedAt: '2026-11-23', enabled: true }, { id: 'c', licence: 'z', reviewedAt: '2026-11-23', enabled: true }];
+  const out = keepReviewDates(fresh, prev);
+  assert.equal(out[0].reviewedAt, '2026-11-22', 'same content (key order and enabled ignored) keeps its date');
+  assert.equal(out[1].reviewedAt, '2026-11-23', 'a changed row is dated today');
+  assert.equal(out[2].reviewedAt, '2026-11-23', 'a new row is dated today');
+  assert.equal(fresh[0].reviewedAt, '2026-11-23', 'the input is not changed');
+});
+test('review dates: no previous file (first run, unreadable) dates every row today; a previous row with no date does not match', () => {
+  const fresh = [{ id: 'a', licence: 'x', reviewedAt: '2026-11-23' }];
+  assert.deepEqual(keepReviewDates(fresh, null), fresh);
+  assert.deepEqual(keepReviewDates(fresh, [{ id: 'a', licence: 'x' }]), fresh);
+});
+test('review dates: every row in the real file has its own ISO date', () => {
+  assert.ok(sources.every((s) => /^\d{4}-\d\d-\d\d$/.test(s.reviewedAt)));
+});

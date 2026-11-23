@@ -35,7 +35,14 @@ jobs:
           node ops/importers/nws.mjs || echo "nws not fully refreshed (exit $?)"
       - name: Refresh British Columbia road events (DriveBC Open511; a failed run keeps the last good file and never fails the deploy)
         run: timeout 120 node ops/importers/drivebc.mjs --only=events || echo "BC events not refreshed (exit $?); the page block hides itself when its data is older than 15 minutes"
-      - name: Camera health check (previous result from the deployed site, 18 min time budget, Finland images 1100 ms apart, Quebec links never requested)
+      - name: Refresh the Toronto camera list (City of Toronto open data; the importer re-reads the licence id and licence sentence first; a failed or refused run keeps the committed list and never fails the deploy)
+        run: timeout 90 node ops/importers/toronto.mjs || echo "Toronto list not refreshed (exit $?); the committed list is used"
+      - name: Camera health check (previous result from the deployed site, 18 min time budget shared fairly by source)
+        # Fair budget (rule health-fair-budget): each source gets a share of the 18 min and of the 7000-request cap by its own polite pace
+        # (Finland images 1100 ms apart, Toronto 500 ms, DriveBC 300 ms, Caltrans 100 ms; Quebec links are never requested). Inside a source the
+        # cameras checked longest ago go first (never checked first); the others keep their previous result from previous-health.json, and a camera whose
+        # own last check is over 48 h old shows unknown. Each run prints per source "whole set every N runs = H h" (runs are 3 h apart). Today every
+        # source fits one run. The step cannot pass 22 min: the checker stops itself at 18 min, this timeout is the backstop inside the 32 min job limit.
         timeout-minutes: 22
         run: |
           curl --fail --silent --show-error --location --max-time 30 -o previous-health.json "$PUBLIC_SITE_URL/health.json" || { echo "no previous health.json (first run or fetch failed): starting fresh"; rm -f previous-health.json; }

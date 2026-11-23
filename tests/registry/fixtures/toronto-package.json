@@ -1,0 +1,12 @@
+{
+ "success": true,
+ "result": {
+  "id": "a3309088-5fd4-4d34-8297-77c8301840ac",
+  "name": "traffic-cameras",
+  "license_id": "open-government-licence-toronto",
+  "license_title": "open-government-licence-toronto",
+  "metadata_modified": "2026-10-29T14:38:51.433049",
+  "last_refreshed": "2026-02-20 18:58:02.283178",
+  "refresh_rate": "As available"
+ }
+}

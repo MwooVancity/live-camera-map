@@ -4,10 +4,11 @@
 // Run: node ops/audit/build-inventory.mjs
 // Status values: restricted | allowed_per_doc | unknown. Unknown FAILS CLOSED (enabled=false).
 // allowed_per_doc = the upstream doc names a permissive licence; NOT a legal opinion (needsHumanReview stays true).
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { isEnabled } from '../../tests/licensing/gate.mjs';
+import { keepReviewDates } from './review-dates.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const SRC = 'gev/DATA_SOURCES.md';
@@ -125,6 +126,13 @@ const out = rows.map((r) => {
   };
 });
 
+// A row keeps its own reviewedAt unless the row changed (PREV_PERMISSIONS=<file> names the file to compare with; default: the one being replaced).
+const prevFile = process.env.PREV_PERMISSIONS ? resolve(process.env.PREV_PERMISSIONS) : resolve(root, 'data/source-permissions.json');
+let prevRows = null;
+// Only a missing file (first run) means "no old dates"; an unreadable or BOM-prefixed one must stop the run, not silently re-date every row.
+if (existsSync(prevFile)) { try { prevRows = JSON.parse(readFileSync(prevFile, 'utf8').replace(/^﻿/, '')).sources; } catch (e) { throw new Error(`cannot read ${prevFile} to keep review dates: ${e.message}`); } }
+out.splice(0, out.length, ...keepReviewDates(out, prevRows));
+
 // Hand-read rows (sources not in gev/DATA_SOURCES.md). Appended so regenerating never drops them; `enabled` comes from the gate.
 for (const m of JSON.parse(readFileSync(resolve(root, 'data/source-permissions.manual.json'), 'utf8')).sources) {
   if (out.some((o) => o.id === m.id)) throw new Error(`manual row ${m.id} duplicates a generated id`);
@@ -133,7 +141,7 @@ for (const m of JSON.parse(readFileSync(resolve(root, 'data/source-permissions.m
 
 mkdirSync(resolve(root, 'docs/source-audits'), { recursive: true });
 mkdirSync(resolve(root, 'data'), { recursive: true });
-writeFileSync(resolve(root, 'data/source-permissions.json'), JSON.stringify({ generatedFrom: SRC, reviewedAt: REVIEWED_AT, sources: out }, null, 2) + '\n');
+writeFileSync(resolve(root, 'data/source-permissions.json'), JSON.stringify({ generatedFrom: SRC, reviewedAt: out.map((o) => o.reviewedAt).sort().at(-1), sources: out }, null, 2) + '\n');
 
 const q = (v) => `"${String(v).replace(/"/g, '""')}"`;
 const cols = ['id', 'name', 'section', 'commercialStatus', 'enabled', 'mustNotShip', 'licence', 'attribution', 'provenance', 'reviewedAt', 'needsHumanReview', 'statusReason'];

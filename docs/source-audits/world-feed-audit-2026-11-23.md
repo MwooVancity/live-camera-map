@@ -79,3 +79,108 @@ Ranking logic: Finland first (largest cleanly licensed). Quebec second. Spain ha
 3. Singapore: ask LTA/data.gov.sg why the traffic-images feed has 8 cameras and whether a fuller feed exists (optional; low value).
 4. Quebec: in a normal browser, open one quebec511.info camera link to confirm it loads for visitors (curl got 403).
 5. Approve setting each source's `permissions` row to allowed (never set by Claude).
+
+
+---
+
+# Second audit, 2026-11-23 about 17:20 UTC (round 2: 20 more candidates)
+
+Method as above: User-Agent `NearbyCams-build`, `curl --compressed`, no key, no account, no cookie. Counts computed by script on the saved response. Licence sentences quoted only where I read the official page text myself; anything that came from a search snippet is marked SEARCH-ONLY (UNVERIFIED). Nothing read from gev/ or argosatlas.com. Where an official site answered with a bot challenge or 403 (nzta.govt.nz pages, michigan.gov) I stopped and did not work around it.
+
+Scoring for the rank: VERIFIED value = real camera count x licence clarity (1.0 = licence sentence read on official page and it covers the dataset; 0.5 = official page names the licence but I could not read its terms or it does not clearly cover images; 0.25 = terms exist but restrict or are only seen second-hand; 0 = none found or conflict) x no key (0 if a key or account is needed).
+
+## Ranking, round 2
+
+| Rank | Source | Unique cameras | Coords | Link/image field | Key | Licence status | Score |
+|---|---|---|---|---|---|---|---|
+| 1 | UK TfL JamCams | 889 (810 flagged available) | 889 | 889 image URLs (jpg) + 889 video URLs (mp4); sample image 200 image/jpeg | none for this call (TfL recommends registering for rate limits) | OGL v2 linked on TfL open-data policy page; feed-specific conditions read: no cropping, no extra branding. The Transport Data Service terms page is JavaScript-only, so the terms text was NOT read | about 445 (PARTLY) |
+| 2 | Toronto Traffic Cameras | 336 | 336 | 336 image URLs; sample returned 200 image/jpeg | none | "Open Government Licence - Toronto": commercial use quoted, VERIFIED | about 336 (YES) |
+| 3 | Calgary Traffic Cameras | 222 | 222 | 222 image URLs; 3 of 3 sampled 200 image/jpeg, Last-Modified within seconds | none | Portal says "See Terms of Use"; licence name only from search snippet | about 111 (PARTLY) |
+| 4 | NZTA Traffic cameras (trafficnz.info) | 313 | 313 | 313 relative image paths; sample 200 image/jpeg | none for the call, but NZTA terms say registration accepts API terms | terms only SEARCH-ONLY; official pages blocked curl | about 78 (UNVERIFIED) |
+| 5 | Michigan MiDrive | 808 | 808 (lat/lon only inside an HTML link in a text field) | 808 image tags (HTML inside JSON); sample 200 image/jpeg after a redirect | none | NO licence or terms found; michigan.gov returned 403 | 0 (do not build) |
+| 6 | Germany Autobahn API | 0 | 0 | none | none | no official licence page found | 0 (feed empty) |
+| 7 | Norway Vegvesen DATEX CCTV | not counted | not counted | not counted | registration or key | NLOD named on data.norge.no | Mike-only |
+| 8 | Estonia Tark Tee | not counted | not counted | not counted | unknown | not found | blocked: no official feed URL found |
+| 9 | Netherlands NDW | no camera file in the real-time directory | 0 | 0 | none | n/a | 0 |
+| 10 | Japan MLIT river/road cameras | not counted | not counted | not counted | unknown | PDL 1.0 general MLIT terms only; camera service terms not read | blocked: no open feed found |
+| 11 to 20 | VicTraffic, Ireland TII, Czechia, Poland, Edmonton, Vancouver, MnDOT, VDOT, Georgia, Pennsylvania | 0 verified | | | see rows | | 0 |
+
+## UK, TfL JamCams (rank 1)
+- Command: `curl -s -L --compressed -A NearbyCams-build https://api.tfl.gov.uk/Place/Type/JamCam` -> HTTP 200, `application/json; charset=utf-8`, 1,144,842 bytes. Headers: `Cache-Control: public, must-revalidate, max-age=43200, s-maxage=86400`, `X-Cache: HIT` (so this endpoint can be up to a day stale; use TfL's own refresh rules).
+- Unique ids: 889 of 889 entries. Coords: 889. `imageUrl`: 889, `videoUrl`: 889, `view` (compass word such as "West"): 889. `available` = "true" for 810, so 79 are flagged not available. Name field `commonName` carries road and place ("A406 Billet Upass E"). No separate road or direction field beyond `view`.
+- Image check: `GET https://s3-eu-west-1.amazonaws.com/jamcams.tfl.gov.uk/00002.00865.jpg` -> 200 `image/jpeg`, 17,387 bytes, `Last-Modified: Mon, 23 Nov 2026 17:17:19 GMT` (about 2 minutes before the check). Strong health signal: image age is readable.
+- Per-property `modified` date was 2026-11-20 (metadata age, not image age).
+- Samples: JamCams_00002.00865 A406 Billet Upass E; JamCams_00001.02151 Romford Rd / Tennyson Rd; JamCams_00001.07450 Piccadilly Circus.
+- Licence: https://tfl.gov.uk/info-for/open-data-users/open-data-policy (200) links the Open Government Licence v2 (http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2/). https://tfl.gov.uk/info-for/open-data-users/our-open-data (200) lists "Live traffic camera images (CCTV)" with: "No additional branding (all TfL CCTV images already contain TfL branding)", "You must not crop images", "Content provider TfL Traffic Operations". https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service (200) says only "These terms and conditions apply to TfL's free Transport Data Service" in the rendered text I could read; the terms body did not load without JavaScript. SEARCH-ONLY (UNVERIFIED): licence is OGL v2 with TfL amendments, attribution "Powered by TfL Open Data".
+- Key: none needed for this call. Not verified: rate limits without a key, and whether the image bucket has its own terms.
+- Link-out fit: images carry TfL branding and must not be cropped, which is another reason to link out and never crop or embed.
+- Beats Argos by: a London page showing which of 889 cameras TfL itself flags unavailable plus image age from `Last-Modified` (unverified that Argos shows either).
+
+## Canada, Toronto Traffic Cameras (rank 2, cleanest licence)
+- Dataset package: `https://ckan0.cf.opendata.inter.prod-toronto.ca/api/3/action/package_show?id=traffic-cameras` -> 200, 11,729 bytes. `license_title` id `open-government-licence-toronto`. Dataset page https://open.toronto.ca/dataset/traffic-cameras/ (200) shows "Licence : Open Government Licence - Toronto". Package `refresh_rate` "As available", `last_refreshed` 2026-02-20 (location list), metadata modified 2026-10-29.
+- Feed: `.../resource/4a568300-c7f8-496d-b150-dff6f5dc6d4f/download/traffic-camera-list-4326.geojson` -> 200. 336 features, 336 unique REC_ID, 336 point coordinates (MultiPoint, one point each). Fields: REC_ID, MAINROAD, CROSSROAD, DIRECTION1..4 (up to four compass views), IMAGEURL (live jpg), REFURL1..4 (comparison images).
+- CORRECTION (checked by the build step, 2026-11-23): `https://ckan0.cf.opendata.inter.prod-toronto.ca/robots.txt` (HTTP 200) says `User-agent: *`, `Disallow: /dataset/*/resource/*/download/*` and `Allow: /api/`. The geojson download URL above is therefore Disallowed for robots; the importer reads the same 336 rows through `/api/3/action/datastore_search?resource_id=824d2986-2fe0-4513-bdfb-e37e2499e7a9&limit=1000` instead (HTTP 200, `total` 336, 253,225 bytes, geometry is a JSON string). The picture host `opendata.toronto.ca/robots.txt` answers 302 to www.toronto.ca, whose robots.txt names no /transportation/ path.
+- Image check: `https://opendata.toronto.ca/transportation/tmc/rescucameraimages/CameraImages/loc8001.jpg` -> 200 `image/jpeg` 111,178 bytes, `Last-Modified` 17:21:17 GMT (current). Only 1 sampled, not all 336.
+- Samples: 8001 York St / Bremner Blvd; other ids are in the geojson.
+- Licence (VERIFIED, https://open.toronto.ca/open-data-licence/, 200): "The Information Provider grants you a worldwide, royalty-free, perpetual, non-exclusive licence to use the Information, including for commercial purposes, subject to the terms below." Condition: acknowledge the source and, where possible, link to the licence. Not verified: whether camera images are "Information" under this licence (the IMAGEURL is a field of the licensed dataset, so probably yes; still, link out).
+- Key: none.
+- Beats Argos by: up to four labelled compass views per intersection (N/E/S/W) with one source and one licence.
+
+## Canada, Calgary Traffic Cameras (rank 3)
+- Command: `curl -s -L --compressed -A NearbyCams-build "https://data.calgary.ca/resource/k7p9-kppz.json?\$limit=5000"` (Socrata; the dollar sign is escaped for the shell) -> 200. 222 rows, 222 unique image URLs, 222 coordinates. Fields: camera_url (url + description "Camera 1"), quadrant, camera_location (road / cross road), point.
+- Images: 3 of 3 sampled `https://trafficcam.calgary.ca/loc0.jpg`, `loc100.jpg`, `loc101.jpg` -> 200 `image/jpeg`, Last-Modified 17:20:03 to 17:20:13 GMT (seconds old).
+- Metadata (https://data.calgary.ca/api/views/metadata/v1/k7p9-kppz, 200): attribution "The City of Calgary", `dataUpdatedAt` 2026-11-23T03:50Z, `license` "See Terms of Use". Description: "These cameras are solely for traffic monitoring and not enforcement. Camera footage is not recorded."
+- Licence: the Open Calgary terms page (https://data.calgary.ca/stories/s/Open-Data-Terms/u45n-7awa) is JavaScript-only; text not readable. SEARCH-ONLY (UNVERIFIED): "Open Government Licence - City of Calgary", and the City says open data may be used for any purpose subject to the Open Calgary Terms of Use. Mike-only or next step: read that page in a browser and paste the sentence.
+- Key: none.
+
+## New Zealand, NZTA traffic cameras (rank 4, UNVERIFIED licence)
+- Answer to "does a no-key feed exist": yes for the call. `curl -s -L --compressed -A NearbyCams-build https://trafficnz.info/service/traffic/rest/4/cameras/all` -> 200 `application/xml`, 331,607 bytes. 313 cameras, 313 unique ids, 313 coordinates, 313 `imageUrl` (relative, e.g. `/camera/714.jpg`). Fields: description (view and place, e.g. "South along Hinds Highway from Lagmhor Rd"), direction, highway, id, lat/lon, journey/leg names.
+- Image check: `https://trafficnz.info/camera/714.jpg` -> 200 `image/jpeg`, 76,791 bytes, Last-Modified 17:22:40 GMT.
+- Samples: 714 SH1 Southbound; 831 SH1 Northbound; 653 SH20 Northbound.
+- Terms: nzta.govt.nz pages (terms of use, traffic-cameras API page) returned an Incapsula bot-challenge stub (212 bytes) to curl; I did not work around it. SEARCH-ONLY (UNVERIFIED): the terms say registering means accepting API terms and grant "a personal, worldwide, royalty free, non-assignable and non-exclusive" licence; InfoConnect camera API described as closed to new accounts and decommissioned 1 October 2024. So the endpoint answers today but the permitted use is unconfirmed and a personal, non-assignable licence is a red flag for a public site. Do not build until someone reads the terms in a browser.
+
+## USA, Michigan MiDrive (rank 5, no licence)
+- `https://mdotjboss.state.mi.us/MiDrive/camera/list` -> 200 `application/json`, 548,748 bytes. 808 cameras, 808 unique ids (taken from the id in the image tag), 808 with lat/lon (inside an HTML "Go to" link in the `county` field), fields route, county, location, direction, image (a full HTML string with an `<img>` tag: untrusted markup, extract the URL, never inject).
+- Image: `https://micamerasimages.net/thumbs/semtoc_cam_253.flv.jpg?item=1` -> a redirect then 200 `image/jpeg`, 15,397 bytes, Last-Modified 17:23:32 GMT.
+- Licence: none found. `https://www.michigan.gov/mdot/travel/mi-drive` -> 403 (stopped, not bypassed). No open-data catalogue entry found. This is a private-looking JSON used by their own map, so it is NOT a documented public feed. Do not build. Mike-only: ask MDOT whether a documented, licensed feed exists.
+
+## Germany, Autobahn API (rank 6, empty)
+- `https://verkehr.autobahn.de/o/autobahn/` -> 200, lists 113 roads. I requested `.../<road>/services/webcam` for all 113 roads: 113 x HTTP 200, 0 failures, and every response was `{"webcam":[]}`. Total webcams: 0.
+- Official docs/licence: `https://www.autobahn.de/api` -> 404; I did not find an official licence page. The only documentation I found is the community project bundesAPI/autobahn-api (not official) and a PC-WELT report (third party, 2022, UNVERIFIED) that the Autobahn GmbH switched webcam images off for security reasons. Consistent with the empty arrays but not proof of cause.
+- Verdict: nothing to import now. Re-check monthly only if it is cheap (one request per road).
+
+## Norway, Statens vegvesen DATEX CCTV (Mike-only)
+- `https://datex-server-get-v3-1.atlas.vegvesen.no/datexapi/GetCCTVSiteTable/pullAsClient` -> HTTP 401, empty body: credentials required, confirmed.
+- Catalogue page https://data.norge.no/en/datasets/89fd8f16-3132-443a-8117-1ba71d95d6e0/cctv (200) says: "Access may still require registration and an API key request, as long as anyone can request such registration and/or API keys." Licence listed: https://data.norge.no/nlod/no (NLOD). Version of NLOD and whether images are covered not checked.
+- Mike-only: registering for access (I will not create accounts or keys).
+
+## Estonia, Transport Administration (blocked)
+- I could not find the official DATEX II endpoint or licence. https://tarktee.ee/ (200) is a JavaScript app with no readable text. The only text found is on a University of Tartu page (https://imo.ut.ee/en/smart-road-tark-tee-open-data/, 200, a third-party summary, not the agency): lists "Traffic camera images (updated every 10 minutes)" and "Locations of traffic cameras", DATEX II, contact tmc@transpordiamet.ee. No licence stated there. Mike-only (optional): email tmc@transpordiamet.ee for the endpoint and licence.
+
+## Netherlands, NDW (0)
+- `https://opendata.ndw.nu/` (200) real-time directory read in full: no camera file. `actueel_beeld.xml.gz` is the traffic-sign "current display" file, not camera images. A third-party forum post (https://data.europa.eu/dashboard/et/community/data-reusers/data-reuse/road-cameras-european-open-data-737-published-location-and-no, 200, UNVERIFIED) says the Netherlands publishes 26 camera locations with no images. Not a source.
+
+## Japan, MLIT (blocked)
+- https://www.river.go.jp/ (200) is a JavaScript app that lists "River camera" in its menu text but exposes no documented feed or terms in the HTML. https://www.river.or.jp/ (200) is the foundation site. SEARCH-ONLY (UNVERIFIED): MLIT said in 2021 that river camera images would be distributed through the 水防災オープンデータ提供サービス, and an e-Gov entry mentions paid distribution for rainfall radar. MLIT site terms say PDL 1.0 / CC BY 4.0 compatible for general content (search only). I could not confirm a free, no-key camera feed. Not built.
+
+## Others
+- Victoria (VicTraffic): no public camera feed found; data.vic.gov.au searches returned road-safety (enforcement) camera datasets only, which are not live traffic cameras and must not be used. `https://traffic.vicroads.vic.gov.au/` did not respond (curl code 000). Not built.
+- Queensland (not asked, quick probe): `https://api.qldtraffic.qld.gov.au/v1/webcams` -> 401, key required (Mike-only).
+- Ireland TII: `https://traffic.tii.ie/cams` and `/api/cameras` return a JavaScript app shell (HTML), not a feed. data.tii.ie is CC BY 4.0 for shapefiles and traffic counters (search-only) but I found no camera feed. Not built.
+- Czechia ŘSD (NDIC) and Poland GDDKiA: no open camera feed or licence found. https://www.rsd.cz/ did not respond (curl code 000). GDDKiA has a "Punkty kamerowe" layer inside its KPD map (search-only); no open camera API found. Not built.
+- Edmonton: Socrata catalogue search (domain data.edmonton.ca) returned no traffic camera dataset. Vancouver: portal search returned no camera dataset (the query filter looked unreliable, so absence is not proven). Not built.
+- Minnesota: `https://511mn.org/api/v2/get/cameras` returned the site's HTML app, not a feed; no open MnDOT camera dataset found. Virginia: my guessed VDOT URL gave 404 and `data.virginiadot.org` did not respond (code 000); the Virginia 511 service is key-based (UNVERIFIED). Georgia `511ga.org/api/v2/get/cameras` -> 400 "Invalid Key"; Pennsylvania `511pa.com/api/v2/get/cameras` -> 400 "Invalid Key": both Mike-only (key). Washington skipped as instructed.
+
+## Not verified this round
+- Image rights separate from metadata rights (all rows); robots.txt for every host; rate limits.
+- TfL Transport Data Service terms body; Calgary Open Calgary Terms body; NZTA terms body (all not readable without JavaScript or blocked).
+- Toronto and Calgary and NZTA image health beyond 1 to 3 sampled images; TfL beyond 1 image.
+- That any importer works; none written.
+- Whether other roads on Michigan, Minnesota, Virginia have documented feeds under different URLs than the ones I guessed; I only tried one URL each, so those rows say "not found", never "does not exist".
+
+## Mike-only list, round 2
+1. Read in a browser and paste: TfL terms https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service (does it cover JamCams, attribution wording); Open Calgary Terms of Use https://data.calgary.ca/stories/s/Open-Data-Terms/u45n-7awa; NZTA terms https://nzta.govt.nz/traffic-and-travel-information/use-our-data/terms-of-use (my tool was blocked).
+2. Norway: registration for DATEX credentials (key/account).
+3. Georgia 511GA, Pennsylvania 511PA, Queensland, Minnesota 511: keys (not requested).
+4. Email tmc@transpordiamet.ee (Estonia endpoint and licence); ask MDOT for a licensed Michigan feed.
+5. Approve any `permissions` row for Toronto, TfL, Calgary (never set by Claude).

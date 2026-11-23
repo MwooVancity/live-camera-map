@@ -1,5 +1,6 @@
 import { NEAR_KM, RADIUS_KM } from './live.mjs';
 import { MAX_AGE_MIN } from '../../../ops/importers/lib/conditions.mjs';
+import { MAX_CHECK_AGE_H } from '../../../ops/health/lib/age.mjs';
 // Guide text. Short, factual, about how THIS site works. Numbers come in through ctx (from the registry), never typed here.
 // ctx: { total, districts: ['10',...], failed: [...], dropped: {notInService, dupLocation}, date }
 export const GUIDE_BODY = {
@@ -13,6 +14,7 @@ export const GUIDE_BODY = {
     ] },
     { h: '"Last checked" and "last changed" are different', p: [
       'Last checked is when our checker last asked. Last changed is when the picture last looked different, judged only from the ETag, last-modified time or file size compared with our previous run. A quiet road at night can give an identical picture for hours, so an unchanged picture alone is not proof of a dead camera. That is why stale is its own status and not the same as unavailable.',
+      `A run has a fixed time and request budget shared fairly between sources, so it checks the cameras that were checked longest ago first and keeps the earlier result for the others. Each camera therefore says how long ago it was last checked (for example "last checked 5 h ago"). If our own last check of a camera is more than ${MAX_CHECK_AGE_H} hours old, its status is shown as unknown, not as the old result.`,
     ] },
     { h: 'Today', p: [
       x.healthAsof

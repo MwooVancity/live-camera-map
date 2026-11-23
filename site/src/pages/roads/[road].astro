@@ -61,7 +61,7 @@ const axisText = ord.northish ? 'south to north' : 'west to east';
     {ord.groups.map((g) => (<>
       <h3 id={dirId(g)}>{g.label} ({g.cams.length})</h3>
       <ol>{g.cams.map(({ camera: c }) => (
-        <li data-camera={c.id}><a href={c.officialUrl} rel="noopener" title={c.name}>{cleanLabel(c)}</a> <span class="meta">{[c.feedType === 'still' ? 'still image' : 'video'].filter(Boolean).join(', ')}.</span>{hb && <> <span class="meta" data-status={hb.statusOf(c.id)} title={`${MEANING[hb.statusOf(c.id)]}${hb.record(c.id)?.lastChecked ? '; last checked ' + when(hb.record(c.id).lastChecked) : ''}`}>Status: {hb.statusOf(c.id)}.</span>{hb.record(c.id)?.lastChecked && <span class="meta"> Last checked {when(hb.record(c.id).lastChecked)}.</span>}</>}</li>
+        <li data-camera={c.id}><a href={c.officialUrl} rel="noopener" title={c.name}>{cleanLabel(c)}</a> <span class="meta">{[c.feedType === 'still' ? 'still image' : 'video'].filter(Boolean).join(', ')}.</span>{hb && <> <span class="meta" data-status={hb.statusOf(c.id)} title={`${MEANING[hb.statusOf(c.id)]}${hb.record(c.id)?.lastChecked ? '; last checked ' + when(hb.record(c.id).lastChecked) : ''}`}>Status: {hb.statusOf(c.id)}.</span>{hb.checkedText(c.id) && <span class="meta"> {hb.checkedText(c.id)}.</span>}</>}</li>
       ))}</ol>
     </>))}
   </section>

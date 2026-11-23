@@ -104,7 +104,7 @@ const guides = isCA
     {hb && <p class="meta">Status words. {statusWords()}</p>}
     <ul>
       {sorted.map((c) => (
-        <li><a href={c.officialUrl} rel="noopener" title={c.name}>{cleanLabel(c)}</a> <span class="meta">{[c.road, c.direction, c.feedType === 'still' ? 'still image' : 'video'].filter(Boolean).join(', ')}.</span>{c.locationText && <span class="meta"> {c.locationText}</span>}{hb && <> <span class="meta" data-status={hb.statusOf(c.id)} title={`${MEANING[hb.statusOf(c.id)]}${hb.record(c.id)?.lastChecked ? '; last checked ' + when(hb.record(c.id).lastChecked) : ''}`}>Status: {hb.statusOf(c.id)}.</span></>}</li>
+        <li><a href={c.officialUrl} rel="noopener" title={c.name}>{cleanLabel(c)}</a> <span class="meta">{[c.road, c.direction, c.feedType === 'still' ? 'still image' : 'video'].filter(Boolean).join(', ')}.</span>{c.locationText && <span class="meta"> {c.locationText}</span>}{hb && <> <span class="meta" data-status={hb.statusOf(c.id)} title={`${MEANING[hb.statusOf(c.id)]}${hb.record(c.id)?.lastChecked ? '; last checked ' + when(hb.record(c.id).lastChecked) : ''}`}>Status: {hb.statusOf(c.id)}.</span>{hb.checkedText(c.id) && <span class="meta"> {hb.checkedText(c.id)}.</span>}</>}</li>
       ))}
     </ul>
   </section>

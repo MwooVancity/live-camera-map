@@ -2,6 +2,7 @@
 import { countsBy, roadSlug, countryOf, REGION_COUNTRY } from '../../../ops/importers/lib/registry.mjs';
 import { MIN_CAMERAS } from '../config.mjs';
 import { QC_REGIONS } from '../../../ops/importers/lib/quebec.mjs';
+import { TOR_REGION } from '../../../ops/importers/lib/toronto.mjs';
 
 // NFKD splits an accented letter into the letter plus a combining mark; the marks are removed first, otherwise "Hämeenlinna" became "ha-meenlinna".
 export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -51,6 +52,13 @@ export const REGIONS = {
     cityText: () => '',
     caveats: ['Each link goes to a video page on quebec511.info. That site answers automated requests with a bot-check page, so we never request those links and every camera here shows the status unknown by design, not broken. Direction is the word in the ministry\'s own description (for example "westward"); the road is read from the description only when it agrees with the feed\'s route number. The licence covers the list; it does not say whether the video is covered.'],
   }])),
+  // Toronto: one region from the City's open list; each row is an intersection of two streets and the feed has no place field, so no city pages.
+  [TOR_REGION.slug]: {
+    sourceId: 'toronto-traffic', agency: 'City of Toronto', cityLimit: 0, guide: null, credit: true, list: 'traffic camera list', listAll: true,
+    placeText: (x) => sentence(`The City's list has no neighbourhood or place field and names each camera as the meeting of two streets, so no camera here has a named place and there are no city pages; all ${x.total} cameras are listed below. A row names the compass views only when the City lists fewer than all four (north, east, south, west).`),
+    cityText: () => '',
+    caveats: ['Each link goes to one live picture address on opendata.toronto.ca, the main view of that intersection; it is a link only, never shown here. The City lists up to four compass views (north, east, south, west) for an intersection and we name the ones it lists. The licence covers the list; it does not say whether the picture files themselves are covered.'],
+  },
 };
 // The credit sentence for a source that asks for one (its attribution line from sources.json, without a leading "Source:").
 export const creditLine = (source) => `Credit: ${String(source.attribution).replace(/^Source:\s*/i, '')}.`;

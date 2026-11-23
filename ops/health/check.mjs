@@ -2,6 +2,9 @@
 // Usage: node ops/health/check.mjs [--previous <file|url>] [--registry <cameras.json>] [--out <health.json>]
 //   [--limit N] [--sample N] [--max-requests 7000] [--budget-min 18] [--concurrency 6] [--host-delay-ms 100]
 //   [--stale-hours 6] [--magic-all] [--source <sourceId>]   (--source checks one source only; with --sample it never writes health.json)
+//   [--max-check-age-h 48] [--run-every-h 3]   (a camera's own check older than the first is unknown; the second only turns runs into hours in the report)
+// Fair budget: each source gets a share of the time budget and request cap by its own polite pace; its cameras are checked oldest-last-checked first
+// (never checked first); the ones a run does not reach keep their previous record from --previous. Per source the report says how many runs one full cycle takes.
 // Throttling: per-source concurrency, minimum delay between requests per host, a global request cap, a hard time budget,
 // exponential backoff on 429/5xx, and a per-source circuit breaker (25 consecutive transport failures: the rest of that
 // source is 'unknown', never 'unavailable'). Defaults to HEAD only (headers); --magic-all also reads the 3-byte signature.
@@ -13,8 +16,15 @@ import { fileURLToPath } from 'node:url';
 import { writeJsonAtomic, readJsonOrNull } from '../importers/lib/registry.mjs';
 import { observe, Limit } from './lib/probe.mjs';
 import { classify } from './lib/classify.mjs';
+import { planRun, oldestFirst, cycleText } from './lib/plan.mjs';
+import { MAX_CHECK_AGE_H } from './lib/age.mjs';
 
+// Fair budget (rule 'health-fair-budget'): each source gets a share of the time budget and of the request cap by its own polite pace
+// (lib/plan.mjs); inside a source the cameras checked longest ago (never checked first) go first; the cameras a run does not reach keep
+// their previous record, and one whose own last check is older than maxCheckAgeH becomes 'unknown' (lib/age.mjs, also used by the site).
+// runEveryHours is the staging cron spacing ('17 */3 * * *'); it only turns "runs per full cycle" into hours for the report.
 export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 7000, budgetMs: 18 * 60000, breakerAt: 25, retries: 2, backoffMs: 1000, backoffMaxMs: 30000, timeoutMs: 15000, staleHours: 6, minBytes: 1000, maxUnknownShare: 0.2, magicAll: false,
+  maxCheckAgeH: MAX_CHECK_AGE_H, runEveryHours: 3, retrySlack: 0.9,
   // Per-source overrides (concurrency, hostDelayMs = minimum gap between requests to that source's host, staleHours).
   // drivebc: www.drivebc.ca publishes no rate limit and its API terms say limits may change without notice, so it gets its own
   // gentler pace (3 workers, 300 ms between requests = at most ~3 requests/s, HEAD only) and a 4 h stale limit (see docs/decisions/bc-health-stale-limit.md).
@@ -23,8 +33,12 @@ export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 7000, bud
   // It answers a camera with no picture with a grey "Image not available" JPEG (200, image/jpeg, no Last-Modified, no ETag): needValidators counts that as unavailable.
   // quebec-mtmd: quebec511.info answers automated requests with a Cloudflare bot-check page (403, Cf-Mitigated: challenge); we do not work around it (CLAUDE.md),
   // so `skip` sends no request at all and every Quebec camera is unknown by design (never unavailable, and not counted in the 20% unknown limit).
+  // toronto-traffic: opendata.toronto.ca publishes no rate limit and has no robots.txt of its own (it answers 302 to www.toronto.ca, whose
+  // robots.txt names no /transportation/ path; read 2026-11-23). The picture files carry Cache-Control max-age=60, so a request a second
+  // or two apart is far below what a browser page of them makes: 2 workers, 500 ms between requests (at most 2 a second), HEAD only.
   perSource: {
     drivebc: { concurrency: 3, hostDelayMs: 300, staleHours: 4 },
+    'toronto-traffic': { concurrency: 2, hostDelayMs: 500, staleHours: 6 },
     digitraffic: { concurrency: 1, hostDelayMs: 1100, staleHours: 6, needValidators: true },
     'quebec-mtmd': { skip: 'host-blocks-automated-checks' },
   } };
@@ -87,6 +101,17 @@ export async function run(opts) {
 
   const bySource = new Map();
   for (const c of cams) { if (!bySource.has(c.sourceId)) bySource.set(c.sourceId, []); bySource.get(c.sourceId).push(c); }
+  const ps = (id) => (cfg.perSource && cfg.perSource[id]) || {};
+  const plan = planRun([...bySource].map(([id, l]) => ({ id, total: l.length, delayMs: ps(id).hostDelayMs ?? cfg.hostDelayMs, skip: ps(id).skip })), cfg);
+  const stampMs = Date.parse(stamp), deferredIds = new Set();
+  // A camera this run does not reach: its previous record stays (status, lastChecked), unless it was never checked or its own check is too old.
+  const carry = (c) => {
+    deferredIds.add(c.id);
+    const p = prev[c.id], t = Date.parse((p && p.lastChecked) || '');
+    if (!Number.isFinite(t)) return unknownRec(c, 'never-checked');
+    if (stampMs - t > cfg.maxCheckAgeH * 3600000) return unknownRec(c, 'check-too-old');
+    return { ...p };
+  };
 
   const unknownRec = (c, reason) => {
     const p = prev[c.id] || {};
@@ -117,7 +142,11 @@ export async function run(opts) {
 
   await Promise.all([...bySource].map(async ([id, list]) => {
     const src = perSource[id] = { id, total: list.length, requests: 0, skipped: 0, consec: 0, open: false, staleHours: (cfg.perSource && cfg.perSource[id] && cfg.perSource[id].staleHours) || cfg.staleHours, skip: (cfg.perSource && cfg.perSource[id] && cfg.perSource[id].skip) || null, needValidators: Boolean(cfg.perSource && cfg.perSource[id] && cfg.perSource[id].needValidators) };
-    const ctx = ctxFor(src), queue = [...list];
+    // Skipped sources send nothing (every camera unknown by design). Others: the oldest-checked quota first, the rest carried forward.
+    const ordered = src.skip ? list : oldestFirst(list, prev), n = src.skip ? list.length : Math.min(ordered.length, plan[id].quota);
+    const ctx = ctxFor(src), queue = ordered.slice(0, n);
+    for (const c of ordered.slice(n)) rec[c.id] = carry(c);
+    src.scheduled = n;
     const conc = (cfg.perSource && cfg.perSource[id] && cfg.perSource[id].concurrency) || cfg.concurrency;
     await Promise.all(Array.from({ length: conc }, async () => { for (let c; (c = queue.shift());) rec[c.id] = await checkOne(c, src, ctx); }));
   }));
@@ -128,14 +157,17 @@ export async function run(opts) {
   for (const [id, s] of Object.entries(perSource)) {
     const n = Object.fromEntries(STATUSES.map((x) => [x, 0]));
     for (const c of bySource.get(id)) n[cameras[c.id].status]++;
-    summary[id] = { total: s.total, ...n, requests: s.requests, circuitOpen: s.open, staleHours: s.staleHours, ...(s.skip ? { skipped: s.skip } : {}) };
+    const dn = bySource.get(id).filter((c) => deferredIds.has(c.id)).length;
+    summary[id] = { total: s.total, ...n, requests: s.requests, circuitOpen: s.open, staleHours: s.staleHours, scheduled: s.skip ? 0 : s.scheduled, carriedForward: dn, cycleRuns: plan[id].runs, cycleHours: plan[id].hours, cycle: cycleText(id, s.skip ? null : plan[id], cfg.maxCheckAgeH), ...(s.skip ? { skipped: s.skip } : {}) };
   }
   const skippedIds = new Set(cams.filter((c) => perSource[c.sourceId].skip).map((c) => c.id)); // never probed on purpose: not a failure of this run
-  const unknownRun = cams.filter((c) => cameras[c.id].status === 'unknown' && !skippedIds.has(c.id)).length; // breaker, budget, cap and survived-429 alike
-  const checkable = total - skippedIds.size;
+  // Failures only: breaker, budget, cap and survived-429. A camera this run never scheduled (carried forward, or never checked yet) is not a failure;
+  // it is reported per source (carriedForward, cycle) and the page shows it as unknown once its own check is older than the limit.
+  const unknownRun = cams.filter((c) => cameras[c.id].status === 'unknown' && !skippedIds.has(c.id) && !deferredIds.has(c.id)).length;
+  const checkable = total - skippedIds.size - deferredIds.size;
   const share = checkable ? unknownRun / checkable : total ? 0 : 1;
   const runOk = total > 0 && !state.hit;
-  const doc = { generatedAt: stamp, runOk, requests: state.requests, elapsedMs: Date.now() - t0, staleHours: cfg.staleHours, perSource: summary, cameras };
+  const doc = { generatedAt: stamp, runOk, requests: state.requests, elapsedMs: Date.now() - t0, staleHours: cfg.staleHours, maxCheckAgeHours: cfg.maxCheckAgeH, perSource: summary, cameras };
   if (!runOk) doc.incomplete = state.hit ? `${state.hit === 'cap' ? 'request cap' : 'time budget'} reached` : 'no cameras';
   // Strip our private bookkeeping key from the published record.
   for (const c of Object.values(cameras)) { if (c.unknownReason) { c.reason = c.unknownReason; } delete c.unknownReason; }
@@ -148,6 +180,7 @@ export async function run(opts) {
   const line = partial && !isSample
     ? `PARTIAL run (runOk=${runOk}, ${(share * 100).toFixed(0)}% unknown from breaker/budget/cap): wrote ${name}, left health.json untouched`
     : `wrote ${name}`;
+  for (const s of Object.values(summary)) log(s.cycle);
   log(`${line}; ${total} cameras, ${state.requests} requests, ${((Date.now() - t0) / 1000).toFixed(1)} s`);
   return { path, name, doc, partial, share };
 }
@@ -169,7 +202,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const regFile = a.registry || join(root, 'data', 'camera-registry', 'cameras.json');
   const out = a.out ? resolve(a.out) : join(root, 'data', 'health', 'health.json');
   const num = (v, d) => (v === undefined ? d : Number(v));
-  const config = { concurrency: num(a.concurrency, CONFIG.concurrency), hostDelayMs: num(a['host-delay-ms'], CONFIG.hostDelayMs), maxRequests: num(a['max-requests'], CONFIG.maxRequests), budgetMs: num(a['budget-min'], CONFIG.budgetMs / 60000) * 60000, staleHours: num(a['stale-hours'], CONFIG.staleHours), magicAll: Boolean(a['magic-all']) };
+  const config = { concurrency: num(a.concurrency, CONFIG.concurrency), hostDelayMs: num(a['host-delay-ms'], CONFIG.hostDelayMs), maxRequests: num(a['max-requests'], CONFIG.maxRequests), budgetMs: num(a['budget-min'], CONFIG.budgetMs / 60000) * 60000, staleHours: num(a['stale-hours'], CONFIG.staleHours), maxCheckAgeH: num(a['max-check-age-h'], CONFIG.maxCheckAgeH), runEveryHours: num(a['run-every-h'], CONFIG.runEveryHours), magicAll: Boolean(a['magic-all']) };
   if (!existsSync(regFile)) { console.error(`registry not found: ${regFile}`); process.exit(2); }
   const log = (m) => console.log(m);
   const previous = await loadPrevious(a.previous, log);

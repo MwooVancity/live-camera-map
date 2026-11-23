@@ -1,0 +1,12 @@
+{
+ "generatedAt": "2026-11-23T17:36:31.224Z",
+ "source": "https://ckan0.cf.opendata.inter.prod-toronto.ca/api/3/action/datastore_search?resource_id=824d2986-2fe0-4513-bdfb-e37e2499e7a9&limit=1000",
+ "datasetModified": "2026-10-29T14:38:51.433049",
+ "listRefreshed": "2026-02-20 18:58:02.283178",
+ "licence": "open-government-licence-toronto",
+ "raw": 336,
+ "dropped": {
+  "dupLocation": 2
+ },
+ "total": 334
+}

@@ -134,3 +134,50 @@ test('built Quebec region page with a health file: every camera shows status unk
   assert.match(html, /unknown by design, not broken/);
   assert.deepEqual(gate(out, readFileSync('PAGES.md', 'utf8')), []);
 });
+
+// ---- Fair budget: a camera the checker carried forward shows its OWN check age; older than 48 h it is unknown (one function for counts and markers) ----
+import { statusOf, checkedText, MAX_CHECK_AGE_H } from '../src/lib/health.mjs';
+test('statusOf / tally / checkedText: a camera whose own last check is over 48 h old is unknown beside a fresh run; the text says how long ago', () => {
+  const h = (n) => new Date(Date.now() - n * 3600000).toISOString();
+  const cams = [{ id: 'a', road: 'R' }, { id: 'b', road: 'R' }, { id: 'c', road: 'R' }, { id: 'd', road: 'R' }];
+  const health = { generatedAt: h(1), runOk: true, cameras: {
+    a: { status: 'reachable', lastChecked: h(1) },
+    b: { status: 'reachable', lastChecked: h(5.5) }, // carried forward from an earlier run
+    c: { status: 'reachable', lastChecked: h(MAX_CHECK_AGE_H + 2) }, // too old: never shown as current
+    d: { status: 'unavailable', lastChecked: h(MAX_CHECK_AGE_H + 2) },
+  } };
+  assert.deepEqual(['a', 'b', 'c', 'd'].map((id) => statusOf(id, health)), ['reachable', 'reachable', 'unknown', 'unknown']);
+  assert.deepEqual(tally(cams, health), { reachable: 2, stale: 0, unavailable: 0, unknown: 2 });
+  const { block } = cityHealth(cams, health);
+  assert.deepEqual(block.counts, tally(cams, health), 'block counts come from the same function');
+  assert.deepEqual(block.roads[0].counts, block.counts, 'per-road counts too');
+  assert.equal(block.statusOf('c'), 'unknown');
+  assert.equal(block.checkedText('b'), 'last checked 5 h ago');
+  assert.equal(block.checkedText('c'), 'last checked 2 days ago');
+  assert.equal(checkedText('zzz', health), '', 'a camera with no record has no text');
+});
+
+test('whole-file rule is unchanged: the file older than 24 h gives no block at all, whatever its cameras say', () => {
+  const old = new Date(Date.now() - 30 * 3600000).toISOString();
+  const health = { generatedAt: old, runOk: true, cameras: { a: { status: 'reachable', lastChecked: old } } };
+  assert.equal(cityHealth([{ id: 'a', road: 'R' }], health).reason, 'stale');
+});
+
+test('built Toronto page: carried-forward cameras say how long ago they were checked; a camera over 48 h is unknown; the page gate passes', () => {
+  const tor = cameras.filter((c) => c.sourceId === 'toronto-traffic');
+  const cams = {};
+  cameras.forEach((c, i) => { cams[c.id] = { status: 'reachable', httpStatus: 200, lastChecked: ago(1), feedKind: 'still' }; });
+  tor.forEach((c, i) => { cams[c.id] = { status: 'reachable', httpStatus: 200, lastChecked: ago(i % 3 === 0 ? 60 : i % 3 === 1 ? 5.5 : 1), feedKind: 'still' }; });
+  const f = join(mkdtempSync(join(tmpdir(), 'hf-')), 'health.json');
+  writeFileSync(f, JSON.stringify({ generatedAt: ago(1), runOk: true, perSource: {}, cameras: cams }));
+  const { out, pages } = build(f);
+  const html = pages.get('/cameras/canada/toronto/');
+  const marks = [...html.matchAll(/data-status="([a-z]+)"/g)].map((m) => m[1]);
+  const want = (k) => tor.filter((_, i) => i % 3 === k).length;
+  assert.equal(marks.filter((s) => s === 'unknown').length, want(0), 'over 48 h: unknown');
+  assert.equal(marks.filter((s) => s === 'reachable').length, tor.length - want(0));
+  assert.equal((html.match(/last checked 5 h ago/g) || []).length, want(1));
+  assert.equal((html.match(/last checked 2 days ago/g) || []).length, want(0));
+  assert.ok(/Link check by us: last run /.test(html));
+  assert.deepEqual(gate(out, readFileSync('PAGES.md', 'utf8')), []);
+});

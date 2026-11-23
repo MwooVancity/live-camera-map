@@ -139,15 +139,18 @@ test('a 404 is unavailable but is not a transport failure (does not open the bre
   assert.equal(r.doc.perSource.t.circuitOpen, false);
 });
 
-test('request cap and time budget are respected', async () => {
-  handler = (req, res) => sendJpeg(res);
+// Rule health-fair-budget changed what a small cap means: the plan schedules only what fits (a share, not a failure), so a cap or time budget
+// is only HIT when retries or a slow server overrun the plan. Both failing fixtures below overrun it.
+test('request cap and time budget are respected when retries or a slow server overrun the plan', async () => {
+  handler = (req, res) => { res.writeHead(503); res.end(); };
   const cams = Array.from({ length: 12 }, (_, i) => cam(i));
-  const capped = await go(cams, { config: { maxRequests: 5, concurrency: 1 } });
-  assert.ok(seen.length <= 5);
+  const capped = await go(cams, { config: { maxRequests: 6, retrySlack: 1, concurrency: 1 } }); // plan: 6 cameras, each retried 2 times: the cap is hit
+  assert.ok(seen.length <= 6);
   assert.equal(capped.doc.runOk, false);
-  assert.equal(Object.values(capped.doc.cameras).filter((c) => c.reason === 'request-cap').length, 7);
-  const timed = await go(Array.from({ length: 60 }, (_, i) => cam(i)), { config: { budgetMs: 60, hostDelayMs: 30, concurrency: 2 } });
-  assert.ok(seen.length < 60, `time budget stopped the run (${seen.length} requests)`);
+  assert.ok(Object.values(capped.doc.cameras).some((c) => c.reason === 'request-cap'));
+  handler = (req, res) => setTimeout(() => sendJpeg(res), 40);
+  const timed = await go(Array.from({ length: 30 }, (_, i) => cam(i)), { config: { budgetMs: 100, hostDelayMs: 0, concurrency: 2 } });
+  assert.ok(seen.length < 30, `time budget stopped the run (${seen.length} requests)`);
   assert.equal(timed.doc.runOk, false);
   assert.ok(Object.values(timed.doc.cameras).some((c) => c.reason === 'time-budget'));
 });
@@ -157,7 +160,9 @@ test('a partial run never overwrites a good health.json', async () => {
   const outDir = mkdtempSync(join(tmpdir(), 'health-'));
   const good = JSON.stringify({ generatedAt: 'GOOD', runOk: true, cameras: {} });
   writeFileSync(join(outDir, 'health.json'), good);
-  const r = await go(Array.from({ length: 10 }, (_, i) => cam(i)), { outDir, config: { maxRequests: 3, concurrency: 1 } });
+  handler = (req, res) => { res.writeHead(429, { 'Retry-After': '0' }); res.end(); }; // a run that fails (throttled) is partial whatever the plan
+  const r = await go(Array.from({ length: 10 }, (_, i) => cam(i)), { outDir });
+  handler = (req, res) => sendJpeg(res);
   assert.equal(readFileSync(join(outDir, 'health.json'), 'utf8'), good);
   assert.equal(r.name, 'health.partial.json');
   assert.ok(existsSync(join(outDir, 'health.partial.json')));
@@ -366,4 +371,123 @@ test('skip: unknowns that are NOT by design still count (a survived 429 on a nor
 test('the real Quebec config skips quebec-mtmd and no Quebec link is ever requested', () => {
   assert.equal(CONFIG.perSource['quebec-mtmd'].skip, 'host-blocks-automated-checks');
   assert.ok(REAL_CAMS.filter((x) => x.sourceId === 'quebec-mtmd').every((x) => x.officialUrl.startsWith('https://www.quebec511.info/')));
+});
+
+// ---- Fair budget (rule health-fair-budget): oldest-checked first, a share per source, carry-forward, max age ----
+import { planRun, oldestFirst, cycleText } from '../../ops/health/lib/plan.mjs';
+import { effectiveStatus, checkedAgoText, MAX_CHECK_AGE_H } from '../../ops/health/lib/age.mjs';
+const iso = (h) => new Date(Date.now() - h * 3600000).toISOString();
+const rec = (h, status = 'reachable') => ({ status, httpStatus: 200, lastChecked: iso(h), lastSuccess: iso(h), consecutiveFailures: 0, feedKind: 'still', fingerprint: 'x' });
+
+test('fair budget: oldestFirst puts never-checked cameras first, then the longest ago, ties in registry order, input untouched', () => {
+  const cams = ['a', 'b', 'c', 'd', 'e'].map((x) => ({ id: x }));
+  const before = cams.map((c) => c.id).join();
+  const out = oldestFirst(cams, { a: rec(1), b: rec(30), c: rec(30), e: { status: 'unknown', lastChecked: null } }).map((c) => c.id);
+  assert.deepEqual(out, ['d', 'e', 'b', 'c', 'a']);
+  assert.equal(cams.map((c) => c.id).join(), before);
+});
+
+test('fair budget: planRun gives a small source what it needs, splits the rest equally, never starves one, and sends nothing to a skipped one', () => {
+  const p = planRun([{ id: 'big1', total: 5000, delayMs: 0 }, { id: 'big2', total: 5000, delayMs: 0 }, { id: 'small', total: 5, delayMs: 0 }, { id: 'blocked', total: 700, delayMs: 0, skip: 'x' }],
+    { budgetMs: 60000, maxRequests: 1000, retrySlack: 1 });
+  assert.equal(p.small.quota, 5);
+  assert.equal(p.big1.quota, 497);
+  assert.equal(p.big2.quota, 498);
+  assert.equal(p.blocked.quota, 0);
+  assert.ok(p.big1.quota + p.big2.quota + p.small.quota <= 1000);
+  assert.equal(p.big1.runs, Math.ceil(5000 / 497));
+  assert.equal(p.small.hours, 3);
+});
+
+test("fair budget: a source's polite pace limits its share of the TIME budget (workers do not multiply the host spacing)", () => {
+  const p = planRun([{ id: 'slow', total: 805, delayMs: 1100 }], { budgetMs: 10 * 60000, maxRequests: 7000, retrySlack: 1 });
+  assert.equal(p.slow.quota, Math.floor(600000 / 1100));
+  assert.equal(p.slow.runs, 2);
+  assert.equal(p.slow.hours, 6);
+  assert.match(cycleText('digitraffic', p.slow, 48), /^digitraffic: whole set every 2 runs = 6 h$/);
+  assert.match(cycleText('x', { quota: 1, runs: 20, hours: 60 }, 48), /longer than the 48 h limit/);
+  assert.match(cycleText('quebec-mtmd', { quota: 0 }, 48), /never probed/);
+});
+
+test('fair budget: a run checks the oldest-checked cameras first and carries the others forward unchanged', async () => {
+  handler = (req, res) => sendJpeg(res);
+  const cams = Array.from({ length: 6 }, (_, i) => cam(i));
+  const previous = { cameras: { 't-0': rec(2), 't-1': rec(40), 't-2': rec(10), 't-3': rec(30), 't-4': rec(5) } }; // t-5 never checked
+  const r = await go(cams, { previous, config: { maxRequests: 4, retrySlack: 0.75, concurrency: 1 } }); // 3 cameras this run
+  assert.deepEqual(seen.map((s) => s.url).sort(), ['/c1.jpg', '/c3.jpg', '/c5.jpg'], 'never checked, then 40 h, then 30 h');
+  assert.equal(r.rec(2).lastChecked, previous.cameras['t-2'].lastChecked, 'carried forward: check time kept');
+  assert.equal(r.rec(2).status, 'reachable');
+  assert.equal(r.rec(0).lastChecked, previous.cameras['t-0'].lastChecked);
+  assert.equal(r.doc.perSource.t.scheduled, 3);
+  assert.equal(r.doc.perSource.t.carriedForward, 3);
+  assert.equal(r.doc.perSource.t.cycleRuns, 2);
+  assert.equal(r.doc.perSource.t.cycle, 't: whole set every 2 runs = 6 h');
+  assert.equal(r.doc.runOk, true);
+});
+
+test('fair budget: a camera not reached whose own last check is older than 48 h becomes unknown (reason kept); 47 h stays', async () => {
+  handler = (req, res) => sendJpeg(res);
+  const cams = Array.from({ length: 4 }, (_, i) => cam(i));
+  const previous = { cameras: { 't-0': rec(1), 't-1': rec(1), 't-2': rec(MAX_CHECK_AGE_H - 1), 't-3': rec(MAX_CHECK_AGE_H - 2) } };
+  const r = await go(cams, { previous, config: { maxRequests: 2, retrySlack: 0.7, concurrency: 1 } }); // 1 camera this run: the oldest, t-2
+  assert.deepEqual(seen.map((s) => s.url), ['/c2.jpg']);
+  assert.equal(r.rec(3).status, 'reachable', '46 h old and not reached stays current');
+  const stale = await go(cams, { previous: { cameras: { ...previous.cameras, 't-3': rec(MAX_CHECK_AGE_H + 5) } }, config: { maxRequests: 2, retrySlack: 0.7, concurrency: 1 } });
+  assert.deepEqual(seen.map((s) => s.url), ['/c3.jpg'], 'the 53 h camera is now the oldest and is checked first');
+  const stale2 = await go(cams, { previous: { cameras: { ...previous.cameras, 't-0': rec(MAX_CHECK_AGE_H + 5), 't-3': rec(MAX_CHECK_AGE_H + 4) } }, config: { maxRequests: 2, retrySlack: 0.7, concurrency: 1 } });
+  assert.equal(stale2.rec(3).status, 'unknown');
+  assert.equal(stale2.rec(3).reason, 'check-too-old');
+  assert.ok(stale2.rec(3).lastChecked, 'its old check time is kept so the page can say how long ago');
+  assert.equal(stale2.doc.runOk, true);
+  assert.equal(stale2.partial, false, 'unscheduled cameras are not a failure of the run');
+  assert.ok(stale.doc.runOk);
+});
+
+test('fair budget: no source is starved when a big one could eat the whole request cap', async () => {
+  handler = (req, res) => sendJpeg(res);
+  const cams = [...Array.from({ length: 60 }, (_, i) => cam(i, `/big${i}.jpg`, 'big')), ...Array.from({ length: 60 }, (_, i) => cam(i, `/mid${i}.jpg`, 'mid')), ...Array.from({ length: 4 }, (_, i) => cam(i, `/sm${i}.jpg`, 'small'))];
+  const r = await go(cams, { config: { maxRequests: 40, retrySlack: 1, concurrency: 2 } });
+  const n = (re) => seen.filter((s) => re.test(s.url)).length;
+  assert.equal(n(/sm/), 4, 'the small source is checked whole');
+  assert.equal(n(/big/), 18);
+  assert.equal(n(/mid/), 18);
+  assert.equal(r.doc.perSource.small.carriedForward, 0);
+  assert.equal(r.doc.perSource.big.carriedForward, 42);
+});
+
+test('fair budget: with no previous file the cameras not reached are unknown (never-checked), and a failing run still never overwrites a good health.json', async () => {
+  handler = (req, res) => { res.writeHead(429, { 'Retry-After': '0' }); res.end(); };
+  const outDir = mkdtempSync(join(tmpdir(), 'health-'));
+  const good = JSON.stringify({ generatedAt: 'GOOD', runOk: true, cameras: {} });
+  writeFileSync(join(outDir, 'health.json'), good);
+  const r = await go(Array.from({ length: 10 }, (_, i) => cam(i)), { outDir, config: { maxRequests: 6, retrySlack: 1 } });
+  assert.equal(r.name, 'health.partial.json');
+  assert.equal(readFileSync(join(outDir, 'health.json'), 'utf8'), good);
+  assert.ok(Object.values(r.doc.cameras).filter((c) => c.reason === 'never-checked').length >= 1);
+});
+
+test('fair budget: the shared age rule (checker and page use the same functions)', () => {
+  const now = Date.now();
+  assert.equal(effectiveStatus(rec(5), now), 'reachable');
+  assert.equal(effectiveStatus(rec(49), now), 'unknown');
+  assert.equal(effectiveStatus({ status: 'reachable' }, now), 'unknown', 'no check time and no fallback');
+  assert.equal(effectiveStatus({ status: 'reachable' }, now, now - 3600000), 'reachable', 'falls back to the run time');
+  assert.equal(effectiveStatus({ status: 'nonsense', lastChecked: iso(1) }, now), 'unknown');
+  assert.equal(effectiveStatus(rec(1, 'unavailable'), now), 'unavailable');
+  assert.equal(checkedAgoText(rec(5.9), now), 'last checked 5 h ago');
+  assert.equal(checkedAgoText(rec(0.2), now), 'last checked less than 1 h ago');
+  assert.equal(checkedAgoText(rec(72.5), now), 'last checked 3 days ago');
+  assert.equal(checkedAgoText({ status: 'unknown', lastChecked: null }, now), '');
+});
+
+test("fair budget: with the REAL registry and config every probed source is scheduled, and the report names each source's full cycle", () => {
+  const by = {};
+  for (const c of REAL_CAMS) by[c.sourceId] = (by[c.sourceId] || 0) + 1;
+  const ps = (id) => CONFIG.perSource[id] || {};
+  const p = planRun(Object.entries(by).map(([id, total]) => ({ id, total, delayMs: ps(id).hostDelayMs ?? CONFIG.hostDelayMs, skip: ps(id).skip })), CONFIG);
+  for (const [id, n] of Object.entries(by)) {
+    if (ps(id).skip) { assert.equal(p[id].quota, 0, id); continue; }
+    assert.ok(p[id].quota > 0, `${id} is scheduled`);
+    assert.ok(p[id].hours <= CONFIG.maxCheckAgeH, `${id}: ${cycleText(id, p[id], CONFIG.maxCheckAgeH)} must stay inside the ${CONFIG.maxCheckAgeH} h limit (${n} cameras)`);
+  }
 });
