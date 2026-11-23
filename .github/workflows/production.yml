@@ -65,6 +65,7 @@ jobs:
           npm test
         working-directory: site
       - run: node ops/harness/page-gate.mjs site/dist site/PAGES.md
+      - run: node --test tests/parity/parity.test.mjs
       - name: Build the site to deploy (hidden from search unless the repository variable LAUNCH is live)
         env:
           PUBLIC_NOINDEX: ${{ vars.LAUNCH == 'live' && '0' || '1' }}
