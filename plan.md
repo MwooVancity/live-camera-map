@@ -190,4 +190,5 @@ Log:
 | 2026-11-22 | Adversarial review of staging site (Gemini + ChatGPT) | gaps list in Next; they could not open sub-pages (robots disallow) | Argos counts UNVERIFIED |
 | 2026-11-22 | Free camera/road feed hunt, 13 jurisdictions (ChatGPT) | docs/source-audits/chatgpt-feed-research-2026-11-22.md | Oregon, BC, Alberta, WSDOT verified; NY, Texas not |
 | 2026-11-22 | Our LA + I-405 pages vs Argos (ChatGPT, text pasted) | docs/decisions/review-2026-11-22-chatgpt-vs-argos.md | 2 of its defects were my paste errors |
-Next asks queued: (1) Day 4 search/discovery design for a world-scale camera map (ChatGPT), (2) which countries have the most licence-clean free camera feeds, ranked (ChatGPT, then we verify each licence), (3) keyword and page ideas per country (Gemini Deep Research when available).
+| 2026-11-23 | Day 4 search/discovery design for 200k cameras (ChatGPT) | docs/decisions/day4-search-design.md; rejected its per-camera pages | sizes UNVERIFIED, licences leads |
+Next asks queued: (1) [DONE 2026-11-23: Day 4 search design], (2) which countries have the most licence-clean free camera feeds, ranked (ChatGPT, then we verify each licence), (3) keyword and page ideas per country (Gemini Deep Research when available).
