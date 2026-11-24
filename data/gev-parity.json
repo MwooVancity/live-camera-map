@@ -419,10 +419,10 @@
    "category": "story",
    "where": "src/stories/catalog.js",
    "evidence": "bhote-koshi-nepal-scene area+tMin/tMax+moments",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "route-check"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "feat-gap|story layer facts with data sources (opensky, adsb.lol, celestrak, ucs, usgs, tomtom)|src/stories/catalog.js",
@@ -515,10 +515,10 @@
    "category": "scene",
    "where": "src/scenes/recipes.js",
    "evidence": "installAlongsideSceneId bhote-koshi-flood",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "route-check"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "feat-gap|scene pack recipe: bhote koshi evidence sequence (v12 append pack)|src/scenes/recipes.js",
@@ -527,10 +527,10 @@
    "category": "scene",
    "where": "src/scenes/recipes.js",
    "evidence": "BHOTE_KOSHI_NEPAL_BASE_RECIPE expandNepalEvidencePack",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "route-check"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "feat-gap|nepal shot: upper valley collapse with autoplay evidence media|src/scenes/recipes.js",
@@ -623,10 +623,10 @@
    "category": "scene",
    "where": "src/scenes/recipes.js",
    "evidence": "legacySceneBootstrap 8-shot cameraPath",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "route-check"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "feat-gap|nepal presentation rule: photoreal falls back to esri if unavailable|src/scenes/packs/nepal.js",
@@ -2219,10 +2219,10 @@
    "category": "voice-action",
    "where": "src/voice/actionSchemas.js",
    "evidence": "provider enum",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "route-check"
+   "reason": "Mapillary needs /api/mapillary/* (not allowlisted) and a client token we do not set; Panoramax and KartaView are browser-direct",
+   "by": "override"
   },
   {
    "key": "feat-gap|voice action: adjust_camera_zoom (in/out, little/medium/lot)|src/voice/actionSchemas.js",
@@ -3263,10 +3263,10 @@
    "category": "query-tool",
    "where": "src/tools/queries/events.js",
    "evidence": "name get_bhote_koshi_flood",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "route-check"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "feat-gap|query tool: get_regional_brief|src/tools/queries/environment.js",
@@ -4991,10 +4991,10 @@
    "category": "layer",
    "where": "data/layerState.js",
    "evidence": "LAYER_STATE_REGISTRY entry",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "route-check"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "feat2|layer bhote-koshi-locator (share token z)|data/layerState.js",
@@ -5003,10 +5003,10 @@
    "category": "layer",
    "where": "data/layerState.js",
    "evidence": "LAYER_STATE_REGISTRY entry",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "route-check"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "feat2|layer bikeshare (share token b)|data/layerState.js",
@@ -5795,10 +5795,10 @@
    "category": "other",
    "where": "view/index.js",
    "evidence": "VIEW_STREET_LEVEL_PROVIDERS",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "route-check"
+   "reason": "Mapillary needs /api/mapillary/* (not allowlisted) and a client token we do not set; Panoramax and KartaView are browser-direct",
+   "by": "override"
   },
   {
    "key": "feat2|street-level provider kartaview|view/index.js",
@@ -6023,10 +6023,10 @@
    "category": "story",
    "where": "stories/storyMeta.js",
    "evidence": "META entry",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "route-check"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "feat2|story gev:flights-radar|stories/storyMeta.js",
@@ -6095,10 +6095,10 @@
    "category": "scene",
    "where": "scenes/recipes.js",
    "evidence": "scene recipe id",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "route-check"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "feat2|scene recipe flights-radar: global flights radar|scenes/recipes.js",
@@ -6875,10 +6875,10 @@
    "category": "tool",
    "where": "tools/queries/",
    "evidence": "defineTool name",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "no file in this folder calls a blocked /api route: runs inside the /map/ embed",
-   "by": "route-check-folder"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "feat2|query tool get_earthquakes|tools/queries/",
@@ -9695,10 +9695,10 @@
    "category": "layer",
    "where": "68",
    "evidence": "Clouds, rain radar, lightning density and cyclone tracks with forecast cones.",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "clouds, radar, lightning only; cyclone tracks excluded (NHC unknown)",
-   "by": "agent"
+   "reason": "route /api/cyclones (matches this feature's name) is on the proxy neverAllowed list",
+   "by": "route-name-match"
   },
   {
    "key": "readme|scrub cloud imagery backwards in time (4d)|68",
@@ -9719,10 +9719,10 @@
    "category": "tool",
    "where": "71",
    "evidence": "Draw a bounding box around a fire and it'll retrieve the Sentinel-2 images, draped on the 3D terrain.",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "NASA GIBS allowed_per_doc, browser-direct",
-   "by": "agent"
+   "reason": "route /api/terrain/heights (matches this feature's name) is not in the proxy allowlist",
+   "by": "route-name-match"
   },
   {
    "key": "readme|transit vehicle trails (boston bus)|72",
@@ -9779,10 +9779,10 @@
    "category": "tool",
    "where": "78",
    "evidence": "Draw outlines, sketch paths, drop your annotations on the map.",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "feature of the GEV app, runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "route /api/rail/paths/ (matches this feature's name) is on the proxy neverAllowed list",
+   "by": "route-name-match"
   },
   {
    "key": "readme|cockpit view riding a tracked flight with terrain hold|85",
@@ -9899,10 +9899,10 @@
    "category": "visual",
    "where": "92",
    "evidence": "Tactical heads-up display with intelligence-style telemetry.",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "visual style only",
-   "by": "agent"
+   "reason": "route /api/military-installations (matches this feature's name) is on the proxy neverAllowed list",
+   "by": "route-name-match"
   },
   {
    "key": "readme|global context one-switch staging|93",
@@ -10043,10 +10043,10 @@
    "category": "tool",
    "where": "102",
    "evidence": "other names use Google when configured, then Photon and Nominatim.",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "Photon only; Google search blocked",
-   "by": "agent"
+   "reason": "route /api/google/text-search (matches this feature's name) is on the proxy neverAllowed list",
+   "by": "route-name-match"
   },
   {
    "key": "readme|shareable director scenes (files or bundles)|103",
@@ -10103,10 +10103,10 @@
    "category": "mode",
    "where": "172",
    "evidence": "Choose Live Contacts, Space Missions, Environmental, or Explore Manually from the first-run panel.",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "panel shows; blocked layers stay empty",
-   "by": "agent"
+   "reason": "route /api/drone-airspace (matches this feature's name) is not in the proxy allowlist",
+   "by": "route-name-match"
   },
   {
    "key": "readme|npm run doctor setup check|167",
@@ -10391,10 +10391,10 @@
    "category": "other",
    "where": "367",
    "evidence": "frame rate · Esc out. Trackpad pinch zooms the globe.",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "feature of the GEV app, runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "route /api/cctv/frame (matches this feature's name) is on the proxy neverAllowed list",
+   "by": "route-name-match"
   },
   {
    "key": "readme|shortcut: esc out|367",
@@ -11003,10 +11003,10 @@
    "category": "layer",
    "where": "440",
    "evidence": "Esri satellite imagery, Google Photorealistic 3D, OSM, plus additional ion-hosted stacks",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "OSM basemap only; Esri, Google 3D, ion off",
-   "by": "agent"
+   "reason": "route /api/google/text-search (matches this feature's name) is on the proxy neverAllowed list",
+   "by": "route-name-match"
   },
   {
    "key": "readme|layer: live flights (opensky + adsb.lol)|441",
@@ -11231,10 +11231,10 @@
    "category": "layer",
    "where": "453",
    "evidence": "coverage on the streets, image cones, an embedded viewer with full-screen EXPAND.",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "Mapillary needs token; Google off",
-   "by": "agent"
+   "reason": "Mapillary needs /api/mapillary/* (not allowlisted) and a client token we do not set; Panoramax and KartaView are browser-direct",
+   "by": "override"
   },
   {
    "key": "readme|layer: radio with analog tuner|454",
@@ -11617,8 +11617,8 @@
    "evidence": "Client Token (MLY|…). Paste it into POWER UP → Mapillary",
    "status": "gap",
    "ourUrl": null,
-   "reason": "needs a Mapillary client token",
-   "by": "agent"
+   "reason": "Mapillary needs /api/mapillary/* (not allowlisted) and a client token we do not set; Panoramax and KartaView are browser-direct",
+   "by": "override"
   },
   {
    "key": "readme|street level google street view (open street view)|498",
@@ -11915,10 +11915,10 @@
    "category": "api",
    "where": "584",
    "evidence": "Street Level coverage and photos. A public client token by design",
-   "status": "excluded",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "owner API key setup, not a visitor feature",
-   "by": "agent"
+   "reason": "Mapillary needs /api/mapillary/* (not allowlisted) and a client token we do not set; Panoramax and KartaView are browser-direct",
+   "by": "override"
   },
   {
    "key": "readme|api key: world news api (daily read cap)|585",
@@ -12217,8 +12217,8 @@
    "evidence": "path literal at line 61",
    "status": "gap",
    "ourUrl": null,
-   "reason": "calls /api/terrain/heights, /api/overpass: not in the proxy allowlist; reachable only after a licence row passes",
-   "by": "route-check"
+   "reason": "height lookups use /api/terrain/heights, which is not in the proxy allowlist (terrain tiles may still load)",
+   "by": "override"
   },
   {
    "key": "server|http /api/overpass|server/providers/common/same-site.js",
@@ -12385,8 +12385,8 @@
    "evidence": "path literal at line 95",
    "status": "gap",
    "ourUrl": null,
-   "reason": "calls /api/mapillary/status, /api/mapillary/tiles: not in the proxy allowlist; reachable only after a licence row passes",
-   "by": "route-check"
+   "reason": "Mapillary needs /api/mapillary/* (not allowlisted) and a client token we do not set; Panoramax and KartaView are browser-direct",
+   "by": "override"
   },
   {
    "key": "server|http /api/mapillary/tiles|server/providers/mapillary.js",
@@ -12397,8 +12397,8 @@
    "evidence": "path literal at line 97",
    "status": "gap",
    "ourUrl": null,
-   "reason": "calls /api/mapillary/status, /api/mapillary/tiles: not in the proxy allowlist; reachable only after a licence row passes",
-   "by": "route-check"
+   "reason": "Mapillary needs /api/mapillary/* (not allowlisted) and a client token we do not set; Panoramax and KartaView are browser-direct",
+   "by": "override"
   },
   {
    "key": "server|http /api/military-installations|server/providers/military-installations.js",
@@ -12767,10 +12767,10 @@
    "category": "route",
    "where": "server/providers/terrain.js",
    "evidence": "path literal at line 280",
-   "status": "excluded",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "calls /api/overpass, /api/military-installations, /api/terrain/heights: on the proxy neverAllowed list (licence unknown or restricted)",
-   "by": "route-check"
+   "reason": "height lookups use /api/terrain/heights, which is not in the proxy allowlist (terrain tiles may still load)",
+   "by": "override"
   },
   {
    "key": "server|http /api/tomtom|server/providers/traffic.js",
@@ -13093,8 +13093,8 @@
    "evidence": "tool definition name: get_bhote_koshi_flood",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "MCP tool, /mcp never allowed",
-   "by": "agent"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "server|mcp tool get_earthquakes|src/tools/queries/hazards.js",
@@ -14065,8 +14065,8 @@
    "evidence": "import { readResponseBytesCapped } from '../common/http.js';",
    "status": "gap",
    "ourUrl": null,
-   "reason": "needs a Mapillary token, route not allowlisted",
-   "by": "agent"
+   "reason": "Mapillary needs /api/mapillary/* (not allowlisted) and a client token we do not set; Panoramax and KartaView are browser-direct",
+   "by": "override"
   },
   {
    "key": "server|provider mapillary/trim|server/providers/mapillary/trim.js",
@@ -14077,8 +14077,8 @@
    "evidence": "import { PbfReader, PbfWriter } from 'pbf';",
    "status": "gap",
    "ourUrl": null,
-   "reason": "needs a Mapillary token, route not allowlisted",
-   "by": "agent"
+   "reason": "Mapillary needs /api/mapillary/* (not allowlisted) and a client token we do not set; Panoramax and KartaView are browser-direct",
+   "by": "override"
   },
   {
    "key": "server|provider mapillary|server/providers/mapillary.js",
@@ -14089,8 +14089,8 @@
    "evidence": "import { sameSiteGated } from './common/same-site.js';",
    "status": "gap",
    "ourUrl": null,
-   "reason": "calls /api/mapillary/status, /api/mapillary/tiles: not in the proxy allowlist; reachable only after a licence row passes",
-   "by": "route-check"
+   "reason": "Mapillary needs /api/mapillary/* (not allowlisted) and a client token we do not set; Panoramax and KartaView are browser-direct",
+   "by": "override"
   },
   {
    "key": "server|provider military-installations/cache|server/providers/military-installations/cache.js",
@@ -15349,8 +15349,8 @@
    "evidence": "public static file",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "Bhote Koshi event pack CC BY-NC, must not ship",
-   "by": "agent"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "server|asset events/bhote-koshi-2026/post.webp|public/events/bhote-koshi-2026/post.webp",
@@ -15361,8 +15361,8 @@
    "evidence": "public static file",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "Bhote Koshi event pack CC BY-NC, must not ship",
-   "by": "agent"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "server|asset events/bhote-koshi-2026/pre.webp|public/events/bhote-koshi-2026/pre.webp",
@@ -15373,8 +15373,8 @@
    "evidence": "public static file",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "Bhote Koshi event pack CC BY-NC, must not ship",
-   "by": "agent"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "server|asset events/bhote-koshi-2026/readme.md|public/events/bhote-koshi-2026/README.md",
@@ -15385,8 +15385,8 @@
    "evidence": "public static file",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "Bhote Koshi event pack CC BY-NC, must not ship",
-   "by": "agent"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "server|asset icons/icon-180.png|public/icons/icon-180.png",
@@ -17327,10 +17327,10 @@
    "category": "script",
    "where": "scripts/fixtures/street-level/mapillaryGraph.mjs",
    "evidence": "import { readFileSync } from 'node:fs';",
-   "status": "excluded",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "build, test, QA or maintenance script, not a visitor feature",
-   "by": "agent"
+   "reason": "Mapillary needs /api/mapillary/* (not allowlisted) and a client token we do not set; Panoramax and KartaView are browser-direct",
+   "by": "override"
   },
   {
    "key": "server|script fixtures/street-level/panoramax.mjs|scripts/fixtures/street-level/panoramax.mjs",
@@ -22309,8 +22309,8 @@
    "evidence": "read in 6 file(s), e.g. build/vite.js, server/providers/mapillary/tiles.js",
    "status": "gap",
    "ourUrl": null,
-   "reason": "needs a Mapillary token, route not allowlisted",
-   "by": "agent"
+   "reason": "Mapillary needs /api/mapillary/* (not allowlisted) and a client token we do not set; Panoramax and KartaView are browser-direct",
+   "by": "override"
   },
   {
    "key": "server|env node_test_context|src/ui/streetLevelMetaLocale.test.mjs",
@@ -23087,10 +23087,10 @@
    "category": "live",
    "where": "23",
    "evidence": "Street Level coverage and viewer",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
-   "by": "agent"
+   "reason": "Mapillary needs /api/mapillary/* (not allowlisted) and a client token we do not set; Panoramax and KartaView are browser-direct",
+   "by": "override"
   },
   {
    "key": "sources|google street view|24",
@@ -23435,10 +23435,10 @@
    "category": "live",
    "where": "52",
    "evidence": "European shipwrecks layer",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
-   "by": "agent"
+   "reason": "route /api/shipwrecks (matches this feature's name) is not in the proxy allowlist",
+   "by": "route-name-match"
   },
   {
    "key": "sources|wikidata — shipwrecks|53",
@@ -23447,10 +23447,10 @@
    "category": "live",
    "where": "53",
    "evidence": "Worldwide shipwrecks layer",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
-   "by": "agent"
+   "reason": "route /api/shipwrecks (matches this feature's name) is not in the proxy allowlist",
+   "by": "route-name-match"
   },
   {
    "key": "sources|inciweb|54",
@@ -23459,10 +23459,10 @@
    "category": "live",
    "where": "54",
    "evidence": "Incident card links to official pages",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
-   "by": "agent"
+   "reason": "route /api/fire-perimeters/inciweb/publication/${encodeURIComponent (matches this feature's name) is not in the proxy allowlist",
+   "by": "route-name-match"
   },
   {
    "key": "sources|faa special use airspace|55",
@@ -23471,10 +23471,10 @@
    "category": "live",
    "where": "55",
    "evidence": "Prohibited and restricted airspace polygons",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
-   "by": "agent"
+   "reason": "route /api/drone-airspace (matches this feature's name) is not in the proxy allowlist",
+   "by": "route-name-match"
   },
   {
    "key": "sources|inaturalist api|56",
@@ -23495,10 +23495,10 @@
    "category": "live",
    "where": "57",
    "evidence": "Salish Sea marine mammal sightings",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
-   "by": "agent"
+   "reason": "route /api/acartia/sightings (matches this feature's name) is not in the proxy allowlist",
+   "by": "route-name-match"
   },
   {
    "key": "sources|openfreemap / openmaptiles|58",
@@ -25007,10 +25007,10 @@
    "category": "basemap",
    "where": "183",
    "evidence": "Terrain and ellipsoidal-height lookups",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
-   "by": "agent"
+   "reason": "route /api/terrain/heights (matches this feature's name) is not in the proxy allowlist",
+   "by": "route-name-match"
   },
   {
    "key": "sources|openseamap|184",
@@ -25907,10 +25907,10 @@
    "category": "library",
    "where": "372",
    "evidence": "Natural event dataset",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
-   "by": "agent"
+   "reason": "route /api/ghostmaps/events (matches this feature's name) is on the proxy neverAllowed list",
+   "by": "route-name-match"
   },
   {
    "key": "sources|north carolina statewide imagery (2023)|373",
@@ -25991,10 +25991,10 @@
    "category": "library",
    "where": "379",
    "evidence": "Tide station dataset",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
-   "by": "agent"
+   "reason": "route /api/radio/stations (matches this feature's name) is on the proxy neverAllowed list",
+   "by": "route-name-match"
   },
   {
    "key": "sources|digitale orthophotos nrw (dop 10 cm)|380",
@@ -26317,8 +26317,8 @@
    "evidence": "Nepal flood event scene imagery and river path",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "Bhote Koshi pack CC BY-NC, mustNotShip, denied by proxy",
-   "by": "agent"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "sources|datacenters (4,352)|417",
@@ -26351,10 +26351,10 @@
    "category": "static",
    "where": "419",
    "evidence": "Military area name index",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
-   "by": "agent"
+   "reason": "route /api/military-installations (matches this feature's name) is on the proxy neverAllowed list",
+   "by": "route-name-match"
   },
   {
    "key": "sources|ukraine outline (rail layer no-positions rule)|420",
@@ -26363,10 +26363,10 @@
    "category": "static",
    "where": "420",
    "evidence": "Border polygon blocking rail positions in Ukraine",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
-   "by": "agent"
+   "reason": "route /api/news/outline (matches this feature's name) is on the proxy neverAllowed list",
+   "by": "route-name-match"
   },
   {
    "key": "sources|québec cctv source catalog (1,120 locations)|421",
@@ -26375,10 +26375,10 @@
    "category": "camera",
    "where": "421",
    "evidence": "Bundled Québec camera location catalog",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
-   "by": "agent"
+   "reason": "route /api/ghostmaps/catalog (matches this feature's name) is on the proxy neverAllowed list",
+   "by": "route-name-match"
   },
   {
    "key": "sources|world camera image subset (2,230 locations)|422",
@@ -26435,10 +26435,10 @@
    "category": "static",
    "where": "426",
    "evidence": "Named physical region polygons",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
-   "by": "agent"
+   "reason": "route /api/inaturalist/grid (matches this feature's name) is on the proxy neverAllowed list",
+   "by": "route-name-match"
   },
   {
    "key": "sources|datasf analysis neighborhoods (41 polygons)|427",
@@ -26459,10 +26459,10 @@
    "category": "static",
    "where": "428",
    "evidence": "Country and admin-1 polygons",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
-   "by": "agent"
+   "reason": "route /api/inaturalist/grid (matches this feature's name) is on the proxy neverAllowed list",
+   "by": "route-name-match"
   },
   {
    "key": "sources|natural earth disputed areas (11 features)|429",
@@ -26471,10 +26471,10 @@
    "category": "static",
    "where": "429",
    "evidence": "Disputed area polygons",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
-   "by": "agent"
+   "reason": "route /api/osm/features (matches this feature's name) is on the proxy neverAllowed list",
+   "by": "route-name-match"
   },
   {
    "key": "sources|natural earth populated places (7,342 points)|430",
@@ -26483,10 +26483,10 @@
    "category": "static",
    "where": "430",
    "evidence": "Populated place names and ranks",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
-   "by": "agent"
+   "reason": "route /api/inaturalist/grid (matches this feature's name) is on the proxy neverAllowed list",
+   "by": "route-name-match"
   },
   {
    "key": "sources|wikidata cities (31,827 settlements)|431",
@@ -27023,10 +27023,10 @@
    "category": "other",
    "where": "src/app/layers/firms.js",
    "evidence": "export firmsServices",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder firms calls /api/firms: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|fleet models|src/app/layers/fleetModels.js",
@@ -27071,10 +27071,10 @@
    "category": "other",
    "where": "src/app/layers/gnss.js",
    "evidence": "export createApplicationGnssIntegrity",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder gnss calls /api/gnss-integrity: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|local adsb|src/app/layers/localAdsb.js",
@@ -27143,10 +27143,10 @@
    "category": "other",
    "where": "src/app/layers/osmPlaces.js",
    "evidence": "export createApplicationOsmPlaces",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder osmPlaces calls /api/overpass/status, /api/osm/features: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|overlay host|src/app/layers/overlayHost.js",
@@ -27167,10 +27167,10 @@
    "category": "other",
    "where": "src/app/layers/perimeters.js",
    "evidence": "export createApplicationFirePerimeters",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder perimeters calls /api/fire-perimeters/inciweb/publication/${encodeURIComponent, /api/fire-perimeters/inciweb/index, /api/fire-perimeters: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|radio|src/app/layers/radio.js",
@@ -27239,10 +27239,10 @@
    "category": "other",
    "where": "src/app/layers/shipwrecks.js",
    "evidence": "export createApplicationShipwrecks",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder shipwrecks calls /api/shipwrecks: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|street level|src/app/layers/streetLevel.js",
@@ -27275,10 +27275,10 @@
    "category": "other",
    "where": "src/app/layers/traffic.js",
    "evidence": "export createApplicationTraffic",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder traffic calls /api/tomtom/status, /api/tomtom/flow/{z}/{x}/{y}.pbf, /api/tomtom/flow/*/*/*.pbf: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|transit|src/app/layers/transit.js",
@@ -27995,10 +27995,10 @@
    "category": "other",
    "where": "src/data/bhoteKoshiEmbeddedMedia.js",
    "evidence": "export bhoteEventText",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "src|bhote koshi event|src/data/bhoteKoshiEvent.js",
@@ -28007,10 +28007,10 @@
    "category": "other",
    "where": "src/data/bhoteKoshiEvent.js",
    "evidence": "export BHOTE_KOSHI_LAYER_ID",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "src|bhote koshi flood path|src/data/bhoteKoshiFloodPath.js",
@@ -28019,10 +28019,10 @@
    "category": "other",
    "where": "src/data/bhoteKoshiFloodPath.js",
    "evidence": "export BHOTE_KOSHI_FLOOD_PATH",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "src|bhote koshi incident places|src/data/bhoteKoshiIncidentPlaces.js",
@@ -28031,10 +28031,10 @@
    "category": "other",
    "where": "src/data/bhoteKoshiIncidentPlaces.js",
    "evidence": "export INCIDENT_OVERVIEW_PLACES",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "src|bhote koshi locator|src/data/bhoteKoshiLocator.js",
@@ -28043,10 +28043,10 @@
    "category": "other",
    "where": "src/data/bhoteKoshiLocator.js",
    "evidence": "export BHOTE_KOSHI_LOCATOR_OVERLAY_SOURCE_ID",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "src|bhote koshi shot paths|src/data/bhoteKoshiShotPaths.js",
@@ -28055,10 +28055,10 @@
    "category": "other",
    "where": "src/data/bhoteKoshiShotPaths.js",
    "evidence": "export SOURCE_PATH_BEAT_IDS",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "src|bikeshare|src/data/bikeshare.js",
@@ -29819,10 +29819,10 @@
    "category": "other",
    "where": "src/data/terrainHeights.js",
    "evidence": "",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "height lookups use /api/terrain/heights, which is not in the proxy allowlist (terrain tiles may still load)",
+   "by": "override"
   },
   {
    "key": "src|terrain heights proxy|src/data/terrainHeightsProxy.js",
@@ -29831,10 +29831,10 @@
    "category": "other",
    "where": "src/data/terrainHeightsProxy.js",
    "evidence": "export TERRAIN_POINT_PRECISION",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "height lookups use /api/terrain/heights, which is not in the proxy allowlist (terrain tiles may still load)",
+   "by": "override"
   },
   {
    "key": "src|tile budget|src/data/tileBudget.js",
@@ -31775,10 +31775,10 @@
    "category": "camera",
    "where": "src/layers/cctv/source.js",
    "evidence": "export createCctvSource",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "routes /api/cctv/sources, /api/cctv/health allowed by proxy route cctv-sources",
-   "by": "route-check"
+   "reason": "its layer folder cctv calls /api/cctv/frame, /api/cctv/media: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|source policy|src/layers/cctv/sourcePolicy.js",
@@ -31823,10 +31823,10 @@
    "category": "camera",
    "where": "src/layers/cctv/videoPlayback.js",
    "evidence": "export createLeaseId",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder cctv calls /api/cctv/frame, /api/cctv/media: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|index|src/layers/cyclones/index.js",
@@ -32003,10 +32003,10 @@
    "category": "layer",
    "where": "src/layers/firms/anchors.js",
    "evidence": "export FIRE_ANCHOR_LIFT_M",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder firms calls /api/firms: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|cards|src/layers/firms/cards.js",
@@ -32015,10 +32015,10 @@
    "category": "layer",
    "where": "src/layers/firms/cards.js",
    "evidence": "export createCards",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder firms calls /api/firms: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|heat imagery|src/layers/firms/heatImagery.js",
@@ -32027,10 +32027,10 @@
    "category": "layer",
    "where": "src/layers/firms/heatImagery.js",
    "evidence": "export HEAT_IMAGERY_Z",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder firms calls /api/firms: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|index|src/layers/firms/index.js",
@@ -32039,10 +32039,10 @@
    "category": "layer",
    "where": "src/layers/firms/index.js",
    "evidence": "export createFirmsHelpers",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder firms calls /api/firms: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|ingestion|src/layers/firms/ingestion.js",
@@ -32051,10 +32051,10 @@
    "category": "layer",
    "where": "src/layers/firms/ingestion.js",
    "evidence": "export createIngestion",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder firms calls /api/firms: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|lifecycle|src/layers/firms/lifecycle.js",
@@ -32063,10 +32063,10 @@
    "category": "layer",
    "where": "src/layers/firms/lifecycle.js",
    "evidence": "export FIRMS_CELL_SET_PREFIX",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder firms calls /api/firms: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|model|src/layers/firms/model.js",
@@ -32075,10 +32075,10 @@
    "category": "layer",
    "where": "src/layers/firms/model.js",
    "evidence": "export createModel",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder firms calls /api/firms: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|policy|src/layers/firms/policy.js",
@@ -32087,10 +32087,10 @@
    "category": "layer",
    "where": "src/layers/firms/policy.js",
    "evidence": "export REFRESH_INTERVAL_MS",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder firms calls /api/firms: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|queries|src/layers/firms/queries.js",
@@ -32099,10 +32099,10 @@
    "category": "layer",
    "where": "src/layers/firms/queries.js",
    "evidence": "export createQueries",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder firms calls /api/firms: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|rendering|src/layers/firms/rendering.js",
@@ -32111,10 +32111,10 @@
    "category": "layer",
    "where": "src/layers/firms/rendering.js",
    "evidence": "export createRendering",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder firms calls /api/firms: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|selection|src/layers/firms/selection.js",
@@ -32123,10 +32123,10 @@
    "category": "layer",
    "where": "src/layers/firms/selection.js",
    "evidence": "export createSelection",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder firms calls /api/firms: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|source|src/layers/firms/source.js",
@@ -32147,10 +32147,10 @@
    "category": "layer",
    "where": "src/layers/firms/state.js",
    "evidence": "export createFirmsState",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder firms calls /api/firms: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|viewport|src/layers/firms/viewport.js",
@@ -32159,10 +32159,10 @@
    "category": "layer",
    "where": "src/layers/firms/viewport.js",
    "evidence": "export createViewport",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder firms calls /api/firms: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|clock follow|src/layers/flights/clockFollow.js",
@@ -32471,10 +32471,10 @@
    "category": "layer",
    "where": "src/layers/gnss/index.js",
    "evidence": "export GNSS_SET_PREFIX",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder gnss calls /api/gnss-integrity: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|records|src/layers/gnss/records.js",
@@ -32483,10 +32483,10 @@
    "category": "layer",
    "where": "src/layers/gnss/records.js",
    "evidence": "export GNSS_NIC_THRESHOLD",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder gnss calls /api/gnss-integrity: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|source|src/layers/gnss/source.js",
@@ -32507,10 +32507,10 @@
    "category": "layer",
    "where": "src/layers/installations/classLabel.js",
    "evidence": "export installationTitle",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder installations calls /api/military-installations, /api/google/text-search: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|controls|src/layers/installations/controls.js",
@@ -32519,10 +32519,10 @@
    "category": "layer",
    "where": "src/layers/installations/controls.js",
    "evidence": "export createControls",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder installations calls /api/military-installations, /api/google/text-search: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|index|src/layers/installations/index.js",
@@ -32531,10 +32531,10 @@
    "category": "layer",
    "where": "src/layers/installations/index.js",
    "evidence": "export createInstallationsLayer",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder installations calls /api/military-installations, /api/google/text-search: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|ingestion|src/layers/installations/ingestion.js",
@@ -32543,10 +32543,10 @@
    "category": "layer",
    "where": "src/layers/installations/ingestion.js",
    "evidence": "export retainNamedHandoff",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder installations calls /api/military-installations, /api/google/text-search: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|lifecycle|src/layers/installations/lifecycle.js",
@@ -32555,10 +32555,10 @@
    "category": "layer",
    "where": "src/layers/installations/lifecycle.js",
    "evidence": "export createLifecycle",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder installations calls /api/military-installations, /api/google/text-search: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|model|src/layers/installations/model.js",
@@ -32567,10 +32567,10 @@
    "category": "layer",
    "where": "src/layers/installations/model.js",
    "evidence": "export createModel",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder installations calls /api/military-installations, /api/google/text-search: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|named markers|src/layers/installations/namedMarkers.js",
@@ -32579,10 +32579,10 @@
    "category": "layer",
    "where": "src/layers/installations/namedMarkers.js",
    "evidence": "export namedPointId",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder installations calls /api/military-installations, /api/google/text-search: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|policy|src/layers/installations/policy.js",
@@ -32591,10 +32591,10 @@
    "category": "layer",
    "where": "src/layers/installations/policy.js",
    "evidence": "export LAYER_ID",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder installations calls /api/military-installations, /api/google/text-search: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|rendering|src/layers/installations/rendering.js",
@@ -32603,10 +32603,10 @@
    "category": "layer",
    "where": "src/layers/installations/rendering.js",
    "evidence": "export createRendering",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder installations calls /api/military-installations, /api/google/text-search: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|selection|src/layers/installations/selection.js",
@@ -32615,10 +32615,10 @@
    "category": "layer",
    "where": "src/layers/installations/selection.js",
    "evidence": "export createSelection",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder installations calls /api/military-installations, /api/google/text-search: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|source|src/layers/installations/source.js",
@@ -32639,10 +32639,10 @@
    "category": "layer",
    "where": "src/layers/installations/state.js",
    "evidence": "export createState",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder installations calls /api/military-installations, /api/google/text-search: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|viewport|src/layers/installations/viewport.js",
@@ -32651,10 +32651,10 @@
    "category": "layer",
    "where": "src/layers/installations/viewport.js",
    "evidence": "export createViewport",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder installations calls /api/military-installations, /api/google/text-search: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|camera|src/layers/launches/camera.js",
@@ -33311,10 +33311,10 @@
    "category": "layer",
    "where": "src/layers/perimeters/cards.js",
    "evidence": "export PERIMETER_OVERLAY_SOURCE_ID",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder perimeters calls /api/fire-perimeters/inciweb/publication/${encodeURIComponent, /api/fire-perimeters/inciweb/index, /api/fire-perimeters: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|inciweb|src/layers/perimeters/inciweb.js",
@@ -33335,10 +33335,10 @@
    "category": "layer",
    "where": "src/layers/perimeters/index.js",
    "evidence": "export containmentColor",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder perimeters calls /api/fire-perimeters/inciweb/publication/${encodeURIComponent, /api/fire-perimeters/inciweb/index, /api/fire-perimeters: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|records|src/layers/perimeters/records.js",
@@ -33347,10 +33347,10 @@
    "category": "layer",
    "where": "src/layers/perimeters/records.js",
    "evidence": "export normalizeFirePerimeterSnapshot",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder perimeters calls /api/fire-perimeters/inciweb/publication/${encodeURIComponent, /api/fire-perimeters/inciweb/index, /api/fire-perimeters: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|source|src/layers/perimeters/source.js",
@@ -34331,10 +34331,10 @@
    "category": "layer",
    "where": "src/layers/shipwrecks/cards.js",
    "evidence": "export ERA_LABELS",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder shipwrecks calls /api/shipwrecks: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|eras|src/layers/shipwrecks/eras.js",
@@ -34343,10 +34343,10 @@
    "category": "layer",
    "where": "src/layers/shipwrecks/eras.js",
    "evidence": "export SHIPWRECK_ERAS",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder shipwrecks calls /api/shipwrecks: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|index|src/layers/shipwrecks/index.js",
@@ -34355,10 +34355,10 @@
    "category": "layer",
    "where": "src/layers/shipwrecks/index.js",
    "evidence": "export SHIPWRECKS_LAYER_ID",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder shipwrecks calls /api/shipwrecks: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|period|src/layers/shipwrecks/period.js",
@@ -34367,10 +34367,10 @@
    "category": "layer",
    "where": "src/layers/shipwrecks/period.js",
    "evidence": "export recordYear",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder shipwrecks calls /api/shipwrecks: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|records|src/layers/shipwrecks/records.js",
@@ -34379,10 +34379,10 @@
    "category": "layer",
    "where": "src/layers/shipwrecks/records.js",
    "evidence": "export EMODNET_WFS_URL",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder shipwrecks calls /api/shipwrecks: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|source|src/layers/shipwrecks/source.js",
@@ -35087,10 +35087,10 @@
    "category": "layer",
    "where": "src/layers/traffic/animation.js",
    "evidence": "export createAnimation",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder traffic calls /api/tomtom/status, /api/tomtom/flow/{z}/{x}/{y}.pbf, /api/tomtom/flow/*/*/*.pbf: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|controls|src/layers/traffic/controls.js",
@@ -35099,10 +35099,10 @@
    "category": "layer",
    "where": "src/layers/traffic/controls.js",
    "evidence": "export createControls",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder traffic calls /api/tomtom/status, /api/tomtom/flow/{z}/{x}/{y}.pbf, /api/tomtom/flow/*/*/*.pbf: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|flow|src/layers/traffic/flow.js",
@@ -35147,10 +35147,10 @@
    "category": "layer",
    "where": "src/layers/traffic/footprint.js",
    "evidence": "export convexFootprint",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder traffic calls /api/tomtom/status, /api/tomtom/flow/{z}/{x}/{y}.pbf, /api/tomtom/flow/*/*/*.pbf: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|index|src/layers/traffic/index.js",
@@ -35159,10 +35159,10 @@
    "category": "layer",
    "where": "src/layers/traffic/index.js",
    "evidence": "export createTrafficLayer",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder traffic calls /api/tomtom/status, /api/tomtom/flow/{z}/{x}/{y}.pbf, /api/tomtom/flow/*/*/*.pbf: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|ingestion|src/layers/traffic/ingestion.js",
@@ -35171,10 +35171,10 @@
    "category": "layer",
    "where": "src/layers/traffic/ingestion.js",
    "evidence": "export cacheRoadSnapshot",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder traffic calls /api/tomtom/status, /api/tomtom/flow/{z}/{x}/{y}.pbf, /api/tomtom/flow/*/*/*.pbf: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|lifecycle|src/layers/traffic/lifecycle.js",
@@ -35183,10 +35183,10 @@
    "category": "layer",
    "where": "src/layers/traffic/lifecycle.js",
    "evidence": "export createLifecycle",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder traffic calls /api/tomtom/status, /api/tomtom/flow/{z}/{x}/{y}.pbf, /api/tomtom/flow/*/*/*.pbf: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|model|src/layers/traffic/model.js",
@@ -35207,10 +35207,10 @@
    "category": "layer",
    "where": "src/layers/traffic/policy.js",
    "evidence": "export ACTIVATION_ALTITUDE",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder traffic calls /api/tomtom/status, /api/tomtom/flow/{z}/{x}/{y}.pbf, /api/tomtom/flow/*/*/*.pbf: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|rendering|src/layers/traffic/rendering.js",
@@ -35219,10 +35219,10 @@
    "category": "layer",
    "where": "src/layers/traffic/rendering.js",
    "evidence": "export createRendering",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder traffic calls /api/tomtom/status, /api/tomtom/flow/{z}/{x}/{y}.pbf, /api/tomtom/flow/*/*/*.pbf: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|retention|src/layers/traffic/retention.js",
@@ -35231,10 +35231,10 @@
    "category": "layer",
    "where": "src/layers/traffic/retention.js",
    "evidence": "export DOT_CHANGE_BUDGET",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder traffic calls /api/tomtom/status, /api/tomtom/flow/{z}/{x}/{y}.pbf, /api/tomtom/flow/*/*/*.pbf: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|road modes|src/layers/traffic/roadModes.js",
@@ -35243,10 +35243,10 @@
    "category": "layer",
    "where": "src/layers/traffic/roadModes.js",
    "evidence": "export TRAFFIC_ROAD_MODES",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder traffic calls /api/tomtom/status, /api/tomtom/flow/{z}/{x}/{y}.pbf, /api/tomtom/flow/*/*/*.pbf: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|source|src/layers/traffic/source.js",
@@ -35279,10 +35279,10 @@
    "category": "layer",
    "where": "src/layers/traffic/style.js",
    "evidence": "export createStyle",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder traffic calls /api/tomtom/status, /api/tomtom/flow/{z}/{x}/{y}.pbf, /api/tomtom/flow/*/*/*.pbf: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|surface|src/layers/traffic/surface.js",
@@ -35291,10 +35291,10 @@
    "category": "layer",
    "where": "src/layers/traffic/surface.js",
    "evidence": "export trafficSurfaceKey",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder traffic calls /api/tomtom/status, /api/tomtom/flow/{z}/{x}/{y}.pbf, /api/tomtom/flow/*/*/*.pbf: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|timing|src/layers/traffic/timing.js",
@@ -35303,10 +35303,10 @@
    "category": "layer",
    "where": "src/layers/traffic/timing.js",
    "evidence": "export createTiming",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder traffic calls /api/tomtom/status, /api/tomtom/flow/{z}/{x}/{y}.pbf, /api/tomtom/flow/*/*/*.pbf: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|viewport|src/layers/traffic/viewport.js",
@@ -35315,10 +35315,10 @@
    "category": "layer",
    "where": "src/layers/traffic/viewport.js",
    "evidence": "export createViewport",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "reason": "its layer folder traffic calls /api/tomtom/status, /api/tomtom/flow/{z}/{x}/{y}.pbf, /api/tomtom/flow/*/*/*.pbf: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|cockpit subject|src/layers/transit/cockpitSubject.js",
@@ -38953,8 +38953,8 @@
    "evidence": "export DEFAULT_MAX_CACHE_ENTRIES",
    "status": "gap",
    "ourUrl": null,
-   "reason": "calls /api/terrain/heights: not in the proxy allowlist; reachable only after a licence row passes",
-   "by": "route-check"
+   "reason": "height lookups use /api/terrain/heights, which is not in the proxy allowlist (terrain tiles may still load)",
+   "by": "override"
   },
   {
    "key": "src|follow|src/share/follow.js",
@@ -42037,8 +42037,8 @@
    "evidence": "export useBhoteKoshiPanelStore",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "must not ship: /mcp blocked, TeleGeography or Bhote Koshi CC BY-NC pack",
-   "by": "agent"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "src|cctv|src/ui/stores/cctv.js",
@@ -42587,10 +42587,10 @@
    "category": "visual",
    "where": "src/ui/styles/bhote-koshi.css",
    "evidence": "Bhote Koshi 2026 event reconstruction */",
-   "status": "in-map",
-   "ourUrl": "/map/",
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "agent"
+   "status": "excluded",
+   "ourUrl": null,
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "src|cctv|src/ui/styles/cctv.css",
@@ -46283,10 +46283,10 @@
    "category": "panel",
    "where": "ui/views/panels/BhoteKoshiPanel.vue",
    "evidence": "BHOTE KOSHI OUTBURST FLOOD",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "route-check"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "ui-features|before/after imagery split slider|ui/views/panels/ImagerySplitView.vue",
@@ -48563,10 +48563,10 @@
    "category": "option",
    "where": "src/ui/views/panels/StreetLevelPanel.vue",
    "evidence": "sl-provider-chips; voice schema lists four providers",
-   "status": "in-map",
+   "status": "gap",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "route-check"
+   "reason": "Mapillary needs /api/mapillary/* (not allowlisted) and a client token we do not set; Panoramax and KartaView are browser-direct",
+   "by": "override"
   },
   {
    "key": "ui-gap|street level imagery filter: all / 360 / flat|src/ui/views/panels/StreetLevelPanel.vue",
@@ -50375,10 +50375,10 @@
    "category": "panel",
    "where": "src/ui/views/panels/BhoteKoshiPanel.vue",
    "evidence": "story beats, before/after split, field reports",
-   "status": "in-map",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "app code with no /api route: runs inside the /map/ embed",
-   "by": "route-check"
+   "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list",
+   "by": "override"
   },
   {
    "key": "ui-gap|weather panel: active weather products and observed history|src/ui/weather/WeatherReadout.vue",
@@ -52071,6 +52071,18 @@
    "ourUrl": null,
    "reason": "app code with no /api route: runs inside the /map/ embed",
    "by": "route-check"
+  },
+  {
+   "key": "mechanical|route|/api/cctv/health",
+   "inventory": "mechanical",
+   "feature": "route /api/cctv/health",
+   "category": "route",
+   "where": "src/layers/cctv/source.js",
+   "evidence": "route literal found by the mechanical scan",
+   "status": "in-map",
+   "ourUrl": null,
+   "reason": "allowed by proxy route cctv-sources",
+   "by": "mechanical"
   },
   {
    "key": "mechanical|route|/api/vessels/track",

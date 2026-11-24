@@ -81,13 +81,36 @@ for (const r of d.rows) {
   if ((r.status === 'gap' || r.status === 'excluded') && String(r.reason || '').trim().length < 8) r.reason = r.reason === 'docs' ? 'documentation file, not a visitor feature' : `${r.reason || 'no reason'}: needs a longer reason`;
   if (r.status === 'in-site' && /ontario|alberta/i.test(`${r.feature} ${r.evidence}`)) Object.assign(r, { status: 'gap', ourUrl: null, reason: 'Ontario and Alberta 511 are pending an API key and agreement (plan section 1); we have no cameras from them yet' }); // verifier catch 2026-11-24
 }
+// Second-order dependencies (verifier round 2, 2026-11-24: 9 of 60 in-map rows over-claimed because the blocked route lives in a sibling file).
+// Rule A: all files of one layer folder (src/layers/<n>/ or src/app/layers/<n>.js) share the worst verdict of that folder.
+// Rule B: a source or README row marked in-map is downgraded when a blocked /api route name contains a significant word of its feature name.
+const STOP = new Set(['layer', 'layers', 'street', 'level', 'sources', 'source', 'data', 'live', 'real', 'global', 'public', 'open', 'maps', 'model', 'models', 'feature', 'search', 'places', 'places', 'panel', 'views', 'provider', 'nearest', 'service']);
+const allRoutes = new Map();
+const walkRoutes = (dir) => { for (const n of readdirSync(dir)) { if (n === 'node_modules' || n === 'dist' || n === '.git') continue; const p = join(dir, n); if (statSync(p).isDirectory()) walkRoutes(p); else if (/\.(js|mjs|ts|vue)$/.test(n) && !/\.test\./.test(n)) for (const x of fileVerdict(readFileSync(p, 'utf8')).routes) if (x.verdict !== 'allowed' && !allRoutes.has(x.route)) allRoutes.set(x.route, x); } };
+for (const top of ['src', 'server']) walkRoutes(join(gevDir, top));
+let propagated = 0;
+const layerOf = (w) => { const f = String(w || '').replace(/^gev[\\/]/, '').replace(/\\/g, '/'); let m = f.match(/^(?:src\/)?layers\/([^/]+)\//); if (m) return `src/layers/${m[1]}`; m = f.match(/^(?:src\/)?app\/layers\/([^/.]+)\.js$/); if (m && existsSync(join(gevDir, `src/layers/${m[1]}`))) return `src/layers/${m[1]}`; return null; };
+for (const r of d.rows) {
+  if (r.status !== 'in-map') continue;
+  const lf = layerOf(r.where);
+  if (lf) {
+    const v = folderVerdict(lf);
+    if (v && (v.never.length || v.denied.length)) { Object.assign(r, { status: v.never.length ? 'excluded' : 'gap', reason: `its layer folder ${lf.replace('src/layers/', '')} calls ${(v.never.length ? v.never : v.denied).slice(0, 3).join(', ')}: ${v.never.length ? 'on the proxy neverAllowed list' : 'not in the proxy allowlist'}`, by: 'layer-folder' }); propagated++; continue; }
+  }
+  if (r.inventory === 'sources' || r.inventory === 'readme') {
+    const words = (String(r.feature).toLowerCase().match(/[a-z]{5,}/g) || []).filter((w) => !STOP.has(w));
+    const hits = [...allRoutes.values()].filter((x) => words.some((w) => x.route.toLowerCase().includes(w)));
+    if (hits.length) { const never = hits.some((x) => x.verdict === 'never'); Object.assign(r, { status: never ? 'excluded' : 'gap', reason: `route ${hits[0].route.replace(/\$\{[^}]*\}/g, '*')} (matches this feature's name) is ${never ? 'on the proxy neverAllowed list' : 'not in the proxy allowlist'}`, by: 'route-name-match' }); propagated++; }
+  }
+}
+console.log(`second-order downgrades: ${propagated}`);
 // Human-checked overrides win over everything above.
 const ovFile = join(import.meta.dirname, '..', '..', 'data', 'gev-parity-overrides.json');
 let overridden = 0;
 if (existsSync(ovFile)) {
   for (const o of JSON.parse(readFileSync(ovFile, 'utf8')).overrides) {
     const re = new RegExp(o.match, 'i');
-    for (const r of d.rows) if (r.inventory === o.inventory && re.test(r.feature)) { Object.assign(r, { status: o.status, reason: o.reason, ourUrl: o.ourUrl ?? null, by: 'override' }); overridden++; }
+    for (const r of d.rows) if ((!o.inventory || r.inventory === o.inventory) && re.test(r.feature)) { Object.assign(r, { status: o.status, reason: o.reason, ourUrl: o.ourUrl ?? null, by: 'override' }); overridden++; }
   }
 }
 console.log(`overrides applied to ${overridden} rows`);

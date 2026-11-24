@@ -11,6 +11,9 @@
     { "inventory": "readme", "match": "live flights \\(opensky|military flights", "status": "excluded", "reason": "OpenSky is restricted; /api/flights and /api/military are on the proxy neverAllowed list; adsb.lol is allowed_per_doc but has no allowlisted route" },
     { "inventory": "readme", "match": "utilities panel", "status": "gap", "reason": "partial: Draw and Import run in the embed; Directions needs /api/route and Places needs a blocked route (neither is in the proxy allowlist)" },
     { "inventory": "readme", "match": "mapped installations", "status": "gap", "reason": "works only through a browser-direct OpenFreeMap fallback; /api/military-installations is blocked by the proxy" },
+    { "match": "bhote.?koshi", "status": "excluded", "reason": "the Bhote Koshi event pack is CC BY-NC 4.0 (deny-bhote-koshi-events, mustNotShip) and /events/ is on the proxy neverAllowed list" },
+    { "match": "terrain height|terrain/heights|ellipsoidal", "status": "gap", "reason": "height lookups use /api/terrain/heights, which is not in the proxy allowlist (terrain tiles may still load)" },
+    { "match": "street level.*mapillary|mapillary", "status": "gap", "reason": "Mapillary needs /api/mapillary/* (not allowlisted) and a client token we do not set; Panoramax and KartaView are browser-direct" },
     { "inventory": "sources", "match": "nasa isslive telemetry", "status": "gap", "reason": "off by default and no terms of use are published for the feed; the proxy has no route for it" }
   ]
 }
