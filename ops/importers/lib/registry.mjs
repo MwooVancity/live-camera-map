@@ -12,7 +12,7 @@ import { LN_REGION, LN_COUNTRY } from './tfl.mjs';
 
 export const CA_BOUNDS = { latMin: 32.3, latMax: 42.1, lonMin: -124.6, lonMax: -114.0 };
 // Optional text field (one source gives it, another does not): the source's own words for where the camera is. Text only, never a picture.
-export const OPTIONAL_FIELDS = ['locationText'];
+export const OPTIONAL_FIELDS = ['locationText', 'firstSeen']; // firstSeen: ISO time this camera id first appeared in our registry (set by commitSource, never by an importer)
 export const FORBIDDEN_FIELDS = ['thumbnail', 'imageUrl', 'image', 'imageData', 'streamUrl', 'previewUrl'];
 export const CAMERA_FIELDS = ['id', 'sourceId', 'name', 'road', 'direction', 'city', 'regionSlug', 'regionName',
   'lat', 'lon', 'feedType', 'officialUrl', 'officialUrlLastVerified', 'lastSeen'];
@@ -77,6 +77,7 @@ export function validateCamera(c) {
   for (const f of CAMERA_FIELDS) if (!(f in c)) p.push(`missing ${f}`);
   for (const f of FORBIDDEN_FIELDS) if (f in c) p.push(`forbidden field ${f}`);
   for (const f of Object.keys(c)) if (!CAMERA_FIELDS.includes(f) && !OPTIONAL_FIELDS.includes(f)) p.push(`unknown field ${f}`);
+  if ('firstSeen' in c && !(typeof c.firstSeen === 'string' && Number.isFinite(Date.parse(c.firstSeen)))) p.push('bad firstSeen');
   if ('locationText' in c && (typeof c.locationText !== 'string' || !c.locationText || c.locationText.length > 300)) p.push('bad locationText');
   if (typeof c.id !== 'string' || !c.id.startsWith(`${c.sourceId}-`)) p.push('id not prefixed by sourceId');
   if (!Number.isFinite(c.lat) || c.lat < -90 || c.lat > 90) p.push('bad lat');

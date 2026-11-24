@@ -15,3 +15,9 @@ Method: read gev/DATA_SOURCES.md (read only), then one polite request per feed a
 | Houston TranStar, FL511, NYC DOT | | | no licence, personal use only, agreement needed | STAY CLOSED |
 
 Also found: GEV keeps a curated export `config/cctv_sources.world-image-cameras.json` (read only) that names the cameras behind its Oregon and Japan rows: another lead file for the same two sources.
+
+## Addendum (same day)
+| Source | Read today | Verdict |
+|---|---|---|
+| DelDOT (Delaware) | https://tmc.deldot.gov/json/videocamera.json: 200 application/json, 190,633 bytes, 374 cameras, each with id, title and HLS/RTMP video URLs (video, not still pictures); robots.txt 404; the agency map page https://deldot.gov/map/ answers 200; deldot.gov/terms-of-use/ answers 404, no licence or reuse text found | CLOSED by our fail-closed gate (no licence grant found). Next: email DelDOT for written permission; a camera there links to a live video, so the credit and link target need the agency's wording |
+| Catalonia dataset licence | datos.gob.es API search for the camera dataset returned nothing | still unread; 36 own cameras, low yield, park until the Spanish DGT reply |

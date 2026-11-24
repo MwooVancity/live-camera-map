@@ -24,6 +24,13 @@ export async function fetchJson(url, headers = {}) {
   try { return JSON.parse(body); } catch (e) { throw new Error(`invalid JSON from source: ${e.message}`); }
 }
 
+// A camera id seen before keeps its first-seen time (rows from before this field existed use their lastSeen); a new id gets its own lastSeen.
+export function stampFirstSeen(cams, old) {
+  const was = new Map(old.map((o) => [o.id, o.firstSeen || o.lastSeen]));
+  for (const c of cams) c.firstSeen = was.get(c.id) || c.lastSeen;
+  return cams;
+}
+
 // Validate, guard, then write cameras.json (own rows only), sources.json and the report. Never overwrites good with incomplete.
 // raw = how many source records were read; kept = cams.length after normalise + dedupe.
 export function commitSource({ outDir, sourceId, sourceRow, cams, raw, report, reportFile, log = console.log, label = sourceId }) {
@@ -31,6 +38,7 @@ export function commitSource({ outDir, sourceId, sourceRow, cams, raw, report, r
   const camPath = join(outDir, 'cameras.json');
   const all0 = readJsonOrNull(camPath);
   const old = ownRows(all0, sourceId);
+  stampFirstSeen(cams, old);
   const bad = cams.filter((c) => validateCamera(c).length);
   let reason = null;
   if (registryUnreadable(camPath)) reason = 'cameras.json exists but is not a readable list; fix it first (other sources would be lost)';
