@@ -18,8 +18,14 @@ jobs:
       - run: git -C gev checkout "$(cut -d' ' -f1 ops/upstream-base.txt)"
       - run: node tests/immutability/check.mjs
       - run: cp ops/deploy/.env.example ops/deploy/.env
-      - name: Compose up (build image, vite build, vite preview, wait for healthy)
-        run: $COMPOSE up -d --build --wait --wait-timeout 600
+      - name: Compose up (build image, vite build, vite preview, wait for healthy), sampling container memory every 2 s
+        run: |
+          # Peak RAM of the gev container during `vite build` and after (ChatGPT's missing-fact list, 2026-11-24): decides 1 GB vs 2 GB.
+          ( while true; do docker stats --no-stream --format '{{.Name}} {{.MemUsage}}' >> mem-samples.txt 2>/dev/null; sleep 2; done ) &
+          sampler=$!
+          $COMPOSE up -d --build --wait --wait-timeout 600
+          kill $sampler || true
+          awk '/gev/ { v=$2; u=v; gsub(/[0-9.]/,"",u); n=v; gsub(/[A-Za-z]/,"",n); m=(u=="GiB")?n*1024:(u=="MiB")?n:(u=="kiB"||u=="KiB")?n/1024:0; if (m>mx) mx=m; c++ } END { printf "gev container peak memory seen: %.0f MiB over %d samples (build included)\n", mx, c }' mem-samples.txt
       - name: Memory (host and container) right after start
         run: |
           free -m
