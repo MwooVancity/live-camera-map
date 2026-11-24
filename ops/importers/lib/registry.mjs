@@ -11,6 +11,7 @@ import { NSW_REGION, NSW_COUNTRY } from './nsw.mjs';
 import { TW_REGION, TW_COUNTRY } from './taiwan.mjs';
 import { IA_REGION, IA_COUNTRY } from './iowa.mjs';
 import { A22_REGION, A22_COUNTRY } from './a22.mjs';
+import { LA_REGION, LA_COUNTRY } from './brla.mjs';
 import { LN_REGION, LN_COUNTRY } from './tfl.mjs';
 
 export const CA_BOUNDS = { latMin: 32.3, latMax: 42.1, lonMin: -124.6, lonMax: -114.0 };
@@ -107,6 +108,7 @@ export const REGION_COUNTRY = {
   [TW_REGION.slug]: TW_COUNTRY, // Taiwan: one region, the Highway Bureau provincial-road CCTV list (road code and kilometre mark kept as text, no city field, so no city pages)
   [IA_REGION.slug]: IA_COUNTRY, // Iowa: one region, the Iowa DOT's own camera list (route kept as road, DOT type and function kept as text, no city field, so no city pages)
   [A22_REGION.slug]: A22_COUNTRY, // A22 Brenner motorway (Italy): one region, Autobrennero's own webcams from the Open Data Hub (kilometre mark and carriageway side kept as text, no city field, so no city pages)
+  [LA_REGION.slug]: LA_COUNTRY, // Louisiana: one source, LADOTD cameras in Greater Baton Rouge as listed by the City of Baton Rouge open data portal (511LA camera code kept as the name, no city field, so no city pages; the region page says it is Greater Baton Rouge only)
   [TX_REGION.slug]: TX_COUNTRY,// Texas: one source, the City of Austin's own list (no city field, so no city pages; the region page says it is Austin only)
 };
 export const countryOf = (regionSlug) => REGION_COUNTRY[regionSlug] || null;

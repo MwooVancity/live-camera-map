@@ -313,6 +313,22 @@
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
       "mustNotShip": false
+    },
+    {
+      "id": "brla-dotd-cameras",
+      "name": "Traffic Camera, Louisiana DOTD cameras in Greater Baton Rouge, City of Baton Rouge open data (Socrata dataset 6z6u-ts44)",
+      "section": "Camera registry sources (read by ops/importers/brla.mjs)",
+      "folder": "",
+      "licence": "Dataset record (https://data.brla.gov/api/views/6z6u-ts44.json, read 2026-11-24 and re-read by the importer every run): license {\"name\":\"Public Domain\"}; attribution \"LA Department of Transportation and Development (DOTD)\"; description \"Point geometry with attributes displaying Louisiana Department of Transportation and Development traffic cameras in the Greater Baton Rouge, Louisiana area.\"; owner \"Open Data BR\". OWNER MUST SEE: \"Public Domain\" is a tag chosen on the City of Baton Rouge open data portal for data it attributes to LADOTD; it is NOT a licence read from LADOTD or the State of Louisiana, and we found no LADOTD statement that grants or bans reuse of the camera list. The per-camera link (https://511la.org/map/Cctv/<code>--<view>) is on 511la.org, whose disclaimer page https://511la.org/about/disclaimer (read 2026-11-24 in a browser; it is headed \"LADOTD My 511 Reports Terms of Use\") is a warranty and liability notice only: \"The Louisiana Department of Transportation and Development (LADOTD) further does not warrant the accuracy, completeness, or timeliness of the materials within the LADOTD My 511 technology\" and \"LADOTD assumes no liability or responsibility for any errors or omissions in the content of the LADOTD My 511 technology\". It has no reuse grant and no ban on listing or linking; https://511la.org/terms showed only a page header. The importer re-checks only the dataset record on data.brla.gov (id, licence name, attribution, description); the 511la.org disclaimer is NOT re-read by code (the importer never contacts 511la.org), so a change there would not be seen.",
+      "commercialStatus": "allowed_per_doc",
+      "statusReason": "quoted text: the City portal tags the camera list Public Domain and attributes it to LADOTD; that tag is the portal's, not LADOTD's (state-owned data), and 511la.org's disclaimer neither grants nor bans reuse; applies to the camera list (id, position, link) only; needs human review",
+      "attribution": "Source: LA Department of Transportation and Development (DOTD), Traffic Camera dataset, via City of Baton Rouge open data (data.brla.gov), tagged Public Domain by the City portal.",
+      "provenance": "https://data.brla.gov/api/views/6z6u-ts44.json and https://data.brla.gov/resource/6z6u-ts44.json (118 rows, id, image_view, the_geom), https://511la.org/about/disclaimer, read 2026-11-24; data.brla.gov/robots.txt asks Crawl-delay 1 and disallows only /browse?..., /api/odata/, /api/collocate* and one /views/INLINE path (the dataset record and list paths are open); 511la.org/robots.txt disallows /my511/, /map/map*/, /bundles/, /list/getdata/, /eventdetails/, /error/ (/map/Cctv/ is not disallowed), but our code never requests 511la.org",
+      "imageStatus": "unverified: the image_view link is itself the picture address (a HEAD answers 200 image/jpeg with Content-Length 0, and a made-up camera code also answers 200, 2026-11-24); nothing states whether the pictures may be displayed, cached or redistributed; link-out only, health checker skips the host (status unknown by design)",
+      "reviewedAt": "2026-11-24",
+      "reviewedBy": "claude-doc-read",
+      "needsHumanReview": true,
+      "mustNotShip": false
     }
   ]
 }

@@ -12,6 +12,7 @@ import { NSW_REGION } from '../../../ops/importers/lib/nsw.mjs';
 import { TW_REGION } from '../../../ops/importers/lib/taiwan.mjs';
 import { IA_REGION } from '../../../ops/importers/lib/iowa.mjs';
 import { A22_REGION } from '../../../ops/importers/lib/a22.mjs';
+import { LA_REGION } from '../../../ops/importers/lib/brla.mjs';
 
 // NFKD splits an accented letter into the letter plus a combining mark; the marks are removed first, otherwise "Hämeenlinna" became "ha-meenlinna".
 export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -125,6 +126,13 @@ export const REGIONS = {
     placeText: (x) => sentence(`The list has no city or place field: each of the ${x.total} cameras is named as Autobrennero names it (a toll station or junction on the A22 from Brennero to the A1 near Modena) and carries its kilometre mark and the side of the carriageway as text, so there are no city pages.`),
     cityText: () => '',
     caveats: ['The camera pictures belong to Autostrada del Brennero and are not shown here. Each link goes to one still picture address on www.autobrennero.it; it is a link only. Live status is not checked: that host answers automated requests with a bot challenge, so every camera here shows the status unknown by design, not broken. The Open Data Hub tags the camera list CC0 but says that tag does not extend to the picture behind the link. Autostrada del Brennero S.p.A. does not endorse this site.'],
+  },
+  // Louisiana: one source, the LADOTD cameras in Greater Baton Rouge as listed by the City of Baton Rouge open data portal; the list has no name, road or city field, so the 511LA camera code is the name and there are no city pages.
+  [LA_REGION.slug]: {
+    sourceId: 'brla-dotd', agency: 'Louisiana DOTD, via City of Baton Rouge open data', cityLimit: 0, guide: null, credit: true, list: 'DOTD camera list', listAll: true,
+    placeText: (x) => sentence(`These are the Greater Baton Rouge cameras only, not a list for the whole state of Louisiana: the City of Baton Rouge's open list of Louisiana DOTD cameras has no name, road or city field, so each of the ${x.total} cameras is named by its 511LA camera code (for example b24--1) and there are no city pages.`),
+    cityText: () => '',
+    caveats: ['The camera pictures belong to the Louisiana Department of Transportation and Development and are not shown here. Each link goes to one 511LA camera address on 511la.org; it is a link only, and live status is not checked, so every camera here shows the status unknown by design, not broken. The City of Baton Rouge open data portal tags the list Public Domain and names LADOTD as the source; that is the city portal\'s tag on state-owned data, not a licence we read from LADOTD, and 511LA\'s own disclaimer is a warranty and liability notice that does not say whether the pictures may be reused. LADOTD does not endorse this site.'],
   },
   // Texas: one source, the City of Austin's own list. Region page is Austin only (the registry has no other Texas source); the feed has no city field and lists cameras in the City's extra-territorial jurisdiction too, so no city is invented.
   [TX_REGION.slug]: {

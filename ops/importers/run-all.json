@@ -14,6 +14,7 @@
     { "id": "nsw", "script": "nsw.mjs", "timeoutSec": 90 },
     { "id": "taiwan", "script": "taiwan.mjs", "timeoutSec": 90, "required": false, "why": "Taiwan government hosts may refuse foreign cloud runners; not yet tried from CI (2026-11-24), so a failure only warns and the committed rows stay" },
     { "id": "iowa", "script": "iowa.mjs", "timeoutSec": 90 },
-    { "id": "a22", "script": "a22.mjs", "timeoutSec": 90 }
+    { "id": "a22", "script": "a22.mjs", "timeoutSec": 90 },
+    { "id": "brla", "script": "brla.mjs", "timeoutSec": 90 }
   ]
 }
