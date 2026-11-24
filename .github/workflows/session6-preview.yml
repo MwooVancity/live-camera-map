@@ -28,6 +28,17 @@ jobs:
         run: node tests/security/methods.mjs http://127.0.0.1:8080 "$HOSTNAME_UNDER_TEST"
       - name: Preview checks (source exposure, gzip, cache, api, embed)
         run: node tests/deploy/preview-checks.mjs http://127.0.0.1:8080 "$HOSTNAME_UNDER_TEST"
+      - name: Restricted data built into /assets/ must be refused by the proxy (real file names from the build)
+        run: |
+          names=$($COMPOSE exec -T gev ls dist/assets | grep -E '^(cable-geo|landing-point-geo|ucs_satellites|imaging_sensors|cctv_ground_heights|ucsSatellites|imagingSensors)-' || true)
+          echo "restricted files in the build:"; echo "$names"
+          test -n "$names" || { echo "no restricted file names found: the carve-out list may be stale"; exit 1; }
+          bad=0
+          for n in $names; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -H "Host: $HOSTNAME_UNDER_TEST" "http://127.0.0.1:8080/assets/$n")
+            echo "$code /assets/$n"; test "$code" = "403" || bad=1
+          done
+          test "$bad" = "0"
       - name: Critical probe and healthcheck
         run: |
           node tests/security/probe.mjs http://127.0.0.1:8080 "$HOSTNAME_UNDER_TEST" preview

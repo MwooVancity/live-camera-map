@@ -500,6 +500,11 @@
       "basis": "static-boot",
       "reason": "GEV public/ files: css, svg icons, manifest; quebec-cameras.json is the Québec CCTV catalog row (allowed_per_doc, DATA_SOURCES.md:421)"
     },
+    "built-assets": {
+      "basis": "static-boot",
+      "reason": "vite build output (assets, cesium) the browser needs to boot in preview mode; the restricted data files vite bundles into /assets/ (TeleGeography cable-geo and landing-point-geo, UCS, imaging sensors, cctv ground heights) are refused by deny-built-restricted-data; bhote chunk code is the same accepted gap BK-1",
+      "knownGap": "BK-1"
+    },
     "public-dirs": {
       "basis": "static-boot",
       "reason": "public/icons and public/models (ISS and Tiangong glb, fleet): GEV project files, MIT; /events removed in session 4"
