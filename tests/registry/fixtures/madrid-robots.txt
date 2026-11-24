@@ -1,0 +1,93 @@
+# ---------------------------------------------------
+# Crawlers agresivos conocidos (sitio entero cerrado)
+# ---------------------------------------------------
+User-agent: 123People
+User-agent: findestars
+User-agent: MyOnID
+User-agent: peekyou
+User-agent: Pipl
+User-agent: rapleaf
+User-agent: snitch
+User-agent: spock
+User-agent: tweepz
+User-agent: wink
+User-agent: Yasni
+User-agent: yoname
+User-agent: yourtraces
+User-agent: zoominfo
+User-agent: magpie-crawler
+User-agent: BUbiNG
+User-agent: dotbot
+User-agent: SMTBot
+User-agent: AhrefsBot
+User-agent: YandexBot
+User-agent: MJ12bot
+User-agent: SeaMonkey
+User-agent: Exabot
+User-agent: Baiduspider
+User-agent: SemrushBot
+Disallow: /
+
+# ---------------------------------------------------
+# Criterio:
+#  - Fichas dataset/resource OK (sitemap / consulta)
+#  - Descargas masivas NO
+#  - Filtros / consultas masivas a Solr NO
+# ---------------------------------------------------
+User-agent: *
+
+# --- Descargas de ficheros ---
+Disallow: /dataset/*/resource/*/download
+Disallow: /dataset/*/resource/*/download/
+Disallow: /resource/*/download
+Disallow: /resource/*/download/
+
+# --- API / datastore (extracción + package_search → Solr) ---
+Disallow: /api/
+Disallow: /datastore/
+
+# --- Previews/vistas embebidas (coste alto) ---
+Disallow: /dataset/*/resource/*/view
+Disallow: /dataset/*/resource/*/view/
+Disallow: /dataset/*/resource/*/preview
+Disallow: /dataset/*/resource/*/preview/
+
+# --- Administración ---
+Disallow: /admin/
+Disallow: /user/
+Disallow: /dashboard/
+Disallow: /activity/
+Disallow: /revision/
+Disallow: /dataset/*/history
+Disallow: /dataset/*/activity
+
+# --- Solr vía UI: búsquedas, filtros, facetas, paginación ---
+# (sustituye al "/*?" global: misma proteccion, sin tumbar URLs limpias)
+Disallow: /dataset?q=
+Disallow: /dataset?tags=
+Disallow: /dataset?groups=
+Disallow: /dataset?organization=
+Disallow: /dataset?res_format=
+Disallow: /dataset?license=
+Disallow: /dataset?sort=
+Disallow: /dataset?order=
+Disallow: /dataset?facet=
+Disallow: /dataset?facet.field=
+Disallow: /datasets?
+Disallow: /dataset?
+Disallow: /*?page=
+Disallow: /*&page=
+Disallow: /*?q=
+Disallow: /*&q=
+
+# Fichas canónicas del catálogo (HTML)
+Allow: /dataset/
+
+# Federacion Open Data (harvesting RDF/DCAT)
+Allow: /catalog.rdf
+Allow: /catalog.xml
+Allow: /*.rdf$
+
+Crawl-delay: 10
+
+Sitemap: https://datos.madrid.es/sitemap.xml

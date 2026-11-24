@@ -15,9 +15,9 @@
   {
    "country": "spain",
    "argosPlacePages": 49,
-   "ourCameras": 0,
-   "status": "blocked",
-   "next": "TECHNICALLY READY, LICENCE CONFLICT (VERIFIED 2026-11-24): feed https://nap.dgt.es/datex2/v3/dgt/DevicePublication/camaras_datex2_v37.xml is keyless with 1,980 cameras and stable picture paths https://etraffic.dgt.es/camarasEtraffic/<id>.jpg, and the dataset page says Creative Commons Attribution, BUT the dgt.es legal notice says unauthorised \"comercialización\" of its works infringes DGT rights and has no reuse grant. Do not build until DGT answers our email of 2026-11-23 (nap@dgt.es) that the dataset CC BY terms govern; then build from the Iowa pattern",
+   "ourCameras": 357,
+   "status": "partial",
+   "next": "MADRID CITY BUILT 2026-11-24 (ops/importers/madrid.mjs, 357 city cameras, dataset licence CC BY 4.0 and City reuse conditions allow commercial reuse with credit; the City legal notice excludes images, so pictures are link-out only, owner review pending). DGT NATIONAL FEED STAYS BLOCKED: TECHNICALLY READY, LICENCE CONFLICT (VERIFIED 2026-11-24): feed https://nap.dgt.es/datex2/v3/dgt/DevicePublication/camaras_datex2_v37.xml is keyless with 1,980 cameras and stable picture paths https://etraffic.dgt.es/camarasEtraffic/<id>.jpg, and the dataset page says Creative Commons Attribution, BUT the dgt.es legal notice says unauthorised \"comercialización\" of its works infringes DGT rights and has no reuse grant. Do not build until DGT answers our email of 2026-11-23 (nap@dgt.es) that the dataset CC BY terms govern; then build from the Iowa pattern",
    "note": null,
    "owner": "Mike pastes the reply"
   },

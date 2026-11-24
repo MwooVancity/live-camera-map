@@ -13,6 +13,7 @@ import { TW_REGION } from '../../../ops/importers/lib/taiwan.mjs';
 import { IA_REGION } from '../../../ops/importers/lib/iowa.mjs';
 import { A22_REGION } from '../../../ops/importers/lib/a22.mjs';
 import { LA_REGION } from '../../../ops/importers/lib/brla.mjs';
+import { MADRID_REGION } from '../../../ops/importers/lib/madrid.mjs';
 
 // NFKD splits an accented letter into the letter plus a combining mark; the marks are removed first, otherwise "Hämeenlinna" became "ha-meenlinna".
 export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -133,6 +134,13 @@ export const REGIONS = {
     placeText: (x) => sentence(`These are the Greater Baton Rouge cameras only, not a list for the whole state of Louisiana: the City of Baton Rouge's open list of Louisiana DOTD cameras has no name, road or city field, so each of the ${x.total} cameras is named by its 511LA camera code (for example b24--1) and there are no city pages.`),
     cityText: () => '',
     caveats: ['The camera pictures belong to the Louisiana Department of Transportation and Development and are not shown here. Each link goes to one 511LA camera address on 511la.org; it is a link only, and live status is not checked, so every camera here shows the status unknown by design, not broken. The City of Baton Rouge open data portal tags the list Public Domain and names LADOTD as the source; that is the city portal\'s tag on state-owned data, not a licence we read from LADOTD, and 511LA\'s own disclaimer is a warranty and liability notice that does not say whether the pictures may be reused. LADOTD does not endorse this site.'],
+  },
+  // Madrid: one source, the City of Madrid's own traffic camera list (357 fixed cameras); the list has no road or city field, so the City's uppercase description is the name, the camera number is kept as text, and there are no city pages. Not the DGT national feed (a separate source, not built).
+  [MADRID_REGION.slug]: {
+    sourceId: 'madrid-camaras', agency: 'Ayuntamiento de Madrid', cityLimit: 0, guide: null, credit: true, list: 'Madrid camera list', listAll: true,
+    placeText: (x) => sentence(`These are the City of Madrid's own fixed traffic cameras only, not a list for the whole Madrid region or for Spain: the City's list has no road or city field, so each of the ${x.total} cameras is named as the City names it (for example PLAZA DE CASTILLA (NORTE)) with its five-digit camera number kept as text, and there are no city pages.`),
+    cityText: () => '',
+    caveats: ['The camera pictures belong to the Ayuntamiento de Madrid and are not shown here. Each link goes to one still picture address on informo.madrid.es; it is a link only. The City publishes the camera list under Creative Commons Attribution 4.0 with credit to the City, and its general reuse conditions allow commercial reuse; its legal notice says that reuse criterion does not apply to images, videos or other multimedia, so we do not show or copy any picture. The picture status is checked by one request per picture and shown as last checked. We do not suggest the Ayuntamiento de Madrid sponsors or supports this site.'],
   },
   // Texas: one source, the City of Austin's own list. Region page is Austin only (the registry has no other Texas source); the feed has no city field and lists cameras in the City's extra-territorial jurisdiction too, so no city is invented.
   [TX_REGION.slug]: {

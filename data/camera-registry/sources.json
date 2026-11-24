@@ -338,5 +338,25 @@
   "license": "Public Domain (a tag set by the City of Baton Rouge open data portal on LADOTD-owned data; not a licence read from LADOTD)",
   "licenseUrl": "https://data.brla.gov/d/6z6u-ts44",
   "reviewedAt": "2026-11-24"
+ },
+ {
+  "id": "madrid-camaras",
+  "name": "Madrid traffic cameras (Ayuntamiento de Madrid open data, Tráfico. Cámaras)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "datos.madrid.es robots.txt asks Crawl-delay 10: four requests per run 10 s apart (dataset page, terms, legal notice, KML); the health checker HEADs informo.madrid.es pictures one worker 250 ms apart (informo.madrid.es robots.txt answers 404, no rules)",
+   "docsUrl": "https://datos.madrid.es/dataset/202088-0-trafico-camaras"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Origen de los datos: Ayuntamiento de Madrid, Tráfico. Cámaras (datos.madrid.es), CC BY 4.0.",
+  "license": "Creative Commons Attribution 4.0 International (CC BY 4.0) per the dataset page; Ayuntamiento de Madrid general reuse conditions allow commercial and non-commercial reuse with credit; the legal notice says this reuse criterion does not apply to images, videos or other multimedia",
+  "licenseUrl": "https://datos.madrid.es/dataset/202088-0-trafico-camaras",
+  "reviewedAt": "2026-11-24"
  }
 ]

@@ -130,7 +130,7 @@ test('real data: no image fields while image_display is not allowed', () => {
 });
 
 test('real sources.json: every source has all four permissions, none set to allowed', () => {
-  assert.deepEqual(sources.map((s) => s.id).sort(), ['alberta-511', 'caltrans', 'digitraffic', 'drivebc', 'ontario-511', 'quebec-mtmd', 'toronto-traffic'].concat('calgary-traffic', 'hongkong-traffic', 'iceland-vegagerdin', 'austin-traffic', 'tfl-jamcams', 'nsw-live-traffic', 'taiwan-thb', 'iowa-dot', 'a22-brennero', 'brla-dotd').sort());
+  assert.deepEqual(sources.map((s) => s.id).sort(), ['alberta-511', 'caltrans', 'digitraffic', 'drivebc', 'ontario-511', 'quebec-mtmd', 'toronto-traffic'].concat('calgary-traffic', 'hongkong-traffic', 'iceland-vegagerdin', 'austin-traffic', 'tfl-jamcams', 'nsw-live-traffic', 'taiwan-thb', 'iowa-dot', 'a22-brennero', 'brla-dotd', 'madrid-camaras').sort());
   for (const s of sources) {
     for (const k of ['metadata_commercial', 'image_display', 'image_caching', 'image_redistribution']) {
       assert.equal(s.permissions[k], 'unverified', `${s.id}.${k}`);
@@ -142,7 +142,7 @@ test('real sources.json: every source has all four permissions, none set to allo
 test('real data: region count equals the camera count of that source', () => {
   assert.equal(countsBy(allCams, 'region').california, cams.length);
   assert.equal(countsBy(allCams, 'region')['british-columbia'], allCams.filter((c) => c.sourceId === 'drivebc').length);
-  assert.equal(allCams.length, cams.length + ['drivebc', 'digitraffic', 'quebec-mtmd', 'toronto-traffic', 'calgary-traffic', 'hongkong-traffic', 'iceland-vegagerdin', 'austin-traffic', 'tfl-jamcams', 'nsw-live-traffic', 'taiwan-thb', 'iowa-dot', 'a22-brennero', 'brla-dotd'].reduce((s, id) => s + allCams.filter((c) => c.sourceId === id).length, 0), 'every row belongs to a known source');
+  assert.equal(allCams.length, cams.length + ['drivebc', 'digitraffic', 'quebec-mtmd', 'toronto-traffic', 'calgary-traffic', 'hongkong-traffic', 'iceland-vegagerdin', 'austin-traffic', 'tfl-jamcams', 'nsw-live-traffic', 'taiwan-thb', 'iowa-dot', 'a22-brennero', 'brla-dotd', 'madrid-camaras'].reduce((s, id) => s + allCams.filter((c) => c.sourceId === id).length, 0), 'every row belongs to a known source');
 });
 
 test('real data: every region in the registry has a country row, and the country counts add up to the camera count', () => {

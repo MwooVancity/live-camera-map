@@ -329,6 +329,22 @@
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
       "mustNotShip": false
+    },
+    {
+      "id": "madrid-camaras-cameras",
+      "name": "Madrid traffic cameras, Ayuntamiento de Madrid open data (dataset 202088-0-trafico-camaras, KML)",
+      "section": "Camera registry sources (read by ops/importers/madrid.mjs)",
+      "folder": "",
+      "licence": "Dataset page (https://datos.madrid.es/dataset/202088-0-trafico-camaras, read 2026-11-24 and re-read by the importer every run): \"Licencia Creative Commons Attribution 4.0 International (CC BY 4.0)\"; description \"Información relativa a las cámaras fijas de tráfico instaladas en la ciudad de Madrid\"; responsible \"Dirección General de Gestión y Vigilancia de la Circulación\". The same record is listed on the Spanish national access point (https://nap.dgt.es/dataset/trafico-camaras, publisher Ayuntamiento de Madrid, \"Creative Commons Attribution\"), which we did not use as the licence. Reuse conditions (https://datos.madrid.es/pages/condiciones-generales-ayuntamiento-de-madrid, read 2026-11-24 and re-read every run): \"Las presentes condiciones generales permiten la reutilización de los documentos y datos sometidos a ellas para fines comerciales y no comerciales\" (these general conditions permit reuse of the documents and data for commercial and non-commercial purposes); \"Debe citarse la fuente de los documentos objeto de la reutilización\" with the suggested credit \"Origen de los datos: Ayuntamiento de Madrid\"; \"No se podrá indicar, insinuar o sugerir que el Ayuntamiento de Madrid participa, patrocina o apoya la reutilización que se lleve a cabo con la información\"; also \"Está prohibido desnaturalizar el sentido de la información\" and the dataset is used at the reuser's own risk. Condiciones de uso page (https://datos.madrid.es/pages/condiciones-de-uso, read 2026-11-24): \"Las condiciones generales permiten la reutilización de los documentos para fines comerciales y no comerciales.\" OWNER MUST SEE: the portal legal notice (https://datos.madrid.es/pages/aviso-legal, read 2026-11-24 and re-read every run) says \"Este criterio de reutilización no se aplica, salvo que expresamente se establezca lo contrario, ni a imágenes, vídeos u otros contenidos multimedia\": that sentence is in the notice about the portal's own content; the dataset itself is tagged CC BY 4.0 and its description says the file lists the camera positions and also includes a capture of the camera images every five minutes, but we found no sentence that says the pictures may be displayed, cached or redistributed, so images stay unverified and we link out only. Robots: https://datos.madrid.es/robots.txt (read 2026-11-24) asks Crawl-delay 10 and disallows /api/, /datastore/ and /dataset/*/resource/*/download, not the /egob/catalogo/ KML path, which answers 301 to https://informo.madrid.es/informo/tmadrid/CCTV.kml; https://informo.madrid.es/robots.txt answers 404 (no rules). Argos Atlas also lists Madrid as CC BY 4.0: a lead only, not our licence.",
+      "commercialStatus": "allowed_per_doc",
+      "statusReason": "quoted text: the dataset page says CC BY 4.0 and the City general reuse conditions say reuse for commercial and non-commercial purposes is permitted with the source cited and no suggestion of City sponsorship; applies to the camera list; the picture permission is not stated (the legal notice excludes images and multimedia from its own reuse criterion); needs human review",
+      "attribution": "Origen de los datos: Ayuntamiento de Madrid, Tráfico. Cámaras (datos.madrid.es), CC BY 4.0.",
+      "provenance": "https://datos.madrid.es/dataset/202088-0-trafico-camaras, https://datos.madrid.es/pages/condiciones-generales-ayuntamiento-de-madrid, https://datos.madrid.es/pages/condiciones-de-uso and https://datos.madrid.es/pages/aviso-legal, read 2026-11-24; datos.madrid.es/robots.txt and informo.madrid.es/robots.txt; https://nap.dgt.es/dataset/trafico-camaras",
+      "imageStatus": "unverified: no sentence read says the camera pictures (https://informo.madrid.es/cameras/Camara<Numero>.jpg, a HEAD answers 200 image/jpeg, a made-up number 404, 2026-11-24) may be displayed, cached or redistributed; link-out only, the health checker sends one HEAD per picture, one worker 250 ms apart",
+      "reviewedAt": "2026-11-24",
+      "reviewedBy": "claude-doc-read",
+      "needsHumanReview": true,
+      "mustNotShip": false
     }
   ]
 }
