@@ -123,6 +123,7 @@ export function pageList(cams, cities, registryDate, roads = [], dates = {}) {
   const out = [
     { route: '/', kind: 'home', count: cams.length, indexable: true, lastmod: registryDate },
     { route: '/map/', kind: 'map', count: cams.length, indexable: true, lastmod: registryDate },
+    { route: '/status/', kind: 'status', count: cams.length, indexable: true, lastmod: registryDate },
     { route: '/cameras/', kind: 'hub', count: cams.length, indexable: isIndexable(cams.length), lastmod: registryDate },
   ];
   const byCountry = countsBy(cams, 'country');

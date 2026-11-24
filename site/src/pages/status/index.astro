@@ -1,0 +1,43 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SITE_NAME } from '../../config.mjs';
+import { cameras, sources, registryDate } from '../../lib/data.mjs';
+import { loadHealth, tally, cityHealth, STATUSES, statusWords } from '../../lib/health.mjs';
+
+const hf = loadHealth();
+const { block, reason } = cityHealth(cameras, hf);
+const when = (iso) => iso.slice(0, 16).replace('T', ' ') + ' UTC';
+const rows = sources
+  .map((s) => ({ s, cams: cameras.filter((c) => c.sourceId === s.id) }))
+  .filter((r) => r.cams.length)
+  .map((r) => ({ ...r, n: block ? tally(r.cams, hf) : null, run: hf?.perSource?.[r.s.id] }))
+  .sort((a, b) => b.cams.length - a.cams.length || a.s.name.localeCompare(b.s.name));
+---
+<Base title={`Camera network status: which official links work | ${SITE_NAME}`} description={`Per-source results of our own link check across ${cameras.length} official traffic camera links${block ? `, last run ${when(block.asof)}` : ''}.`} route="/status/" crumbs={[{ name: 'Network status', route: '/status/' }]}>
+  <h1>Camera network status</h1>
+  <p>Every camera here is a link to an official source. We check each link ourselves and show the result per source. A camera link that answers is not proof the road is clear; it only means the official page or picture is there. See <a href="/guides/how-to-read-last-checked-status/">how to read these statuses</a>.</p>
+  {block ? (
+    <section data-block="network-health" data-source="World Traffic Cameras health checker" data-asof={block.asof} data-count={block.total}>
+      <h2>{block.total - block.counts.unknown === 0 ? 'No camera checked in the last run' : `${block.counts.reachable} of ${block.total - block.counts.unknown} checked cameras reachable`}</h2>
+      <p>Last run {when(block.asof)}: {block.counts.reachable} reachable, {block.counts.stale} stale, {block.counts.unavailable} unavailable, {block.counts.unknown} unknown (not checked in time), out of {block.total} cameras. The headline counts only cameras we actually checked.</p>
+      <table>
+        <thead><tr><th>Source</th><th>Cameras</th><th>Reachable</th><th>Stale</th><th>Unavailable</th><th>Unknown</th><th>Whole source checked every</th></tr></thead>
+        <tbody>
+          {rows.map((r) => <tr><td>{r.s.name}</td><td>{r.cams.length}</td>{STATUSES.map((st) => <td>{r.n[st]}</td>)}<td>{r.run?.cycleHours ? `${r.run.cycleHours} h` : 'not reported'}</td></tr>)}
+        </tbody>
+      </table>
+      <p class="meta">{statusWords()}</p>
+    </section>
+  ) : (
+    <section data-block="network-health" data-source="World Traffic Cameras health checker" data-asof="not-checked">
+      <h2>Not checked recently</h2>
+      <p>{reason === 'stale' ? 'Our last link check is more than 24 hours old, so we show no counts rather than old ones.' : 'We have not run our link checker yet, so we do not know which links work today.'} The {cameras.length} cameras below are listed by source only.</p>
+      <ul>{rows.map((r) => <li>{r.s.name}: {r.cams.length} cameras.</li>)}</ul>
+    </section>
+  )}
+  <section data-block="status-sources" data-basis="registry" data-count={cameras.length} data-source="Official camera registries" data-asof={registryDate}>
+    <h2>Where the links come from</h2>
+    <ul>{rows.map((r) => <li>{r.s.name}: {r.cams.length} cameras.</li>)}</ul>
+  </section>
+  <p><a href="/cameras/">All countries and regions</a> | <a href="/map/">Open the map</a></p>
+</Base>

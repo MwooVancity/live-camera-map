@@ -413,3 +413,12 @@ test('city filters: a city with more than 8 cameras has the filter form and one 
   }
   assert.ok(withForm > 0, 'no city page has the filter form');
 });
+
+test('status page: in the sitemap, linked from home, no health table without a fresh health file, headline never counts unchecked cameras as working', () => {
+  const html = pages.get('/status/');
+  assert.ok(html, 'no /status/ page');
+  assert.ok(pages.get('/').includes('href="/status/"'), 'home does not link /status/');
+  assert.ok(readFileSync(join(DIST, 'sitemap.xml'), 'utf8').includes(`${SITE_URL}/status/`), 'not in the sitemap');
+  if (/data-asof="not-checked"/.test(html)) assert.ok(!html.includes('<table>'), 'a table of counts with no health file');
+  else assert.match(html, /checked cameras reachable|No camera checked/);
+});

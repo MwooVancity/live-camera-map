@@ -71,7 +71,7 @@ Cameras: Caltrans 3,263; DriveBC 1,036; Finland 805; Quebec 672; Toronto 334; Ca
 ## Next (section 3): steps Claude works in order, without asking
 An item is done only when each Edge-cases line names a passing test or a recorded guard.
 
-1. **Strategy debate DONE 2026-11-23** (outcome in section 9 log). Build from it: network-status page from our own health data, original research pieces, browser-local saved cameras and routes, agency outreach after launch.
+1. **Strategy debate DONE 2026-11-23** (outcome in section 9 log). DONE 2026-11-23: network-status page `/status/` (per-source health table, headline counts only checked cameras, no counts without a fresh health file; test in dist.test.mjs). Still to build: original research pieces, browser-local saved cameras and routes, agency outreach after launch.
    Edge cases: chat gone or blocked -> one line, carry on. Answer cut off -> no judgement until read to the end. Its claims stay UNVERIFIED until checked on the primary source.
 2. **WAITING 2026-11-23 (needs the map app plus proxy running; no docker on this machine, so the share e2e runs only in CI, which needs the host first, item 5): Shareable map links (Session 9).** The map app already ships share links; the proxy allows /share/<code>; no share e2e test exists yet. Moves: shares of `/map/` links are our viral engine. Use GEV's native `/share/<code>`; times in UTC.
    Beats Argos by: free, no sign-in, every view shareable with visible freshness.
