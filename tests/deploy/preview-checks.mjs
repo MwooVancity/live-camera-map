@@ -40,7 +40,7 @@ check('home 200 with a hashed asset', home.status === 200 && !!m, `status ${home
 // 3) Compression and caching on the hashed bundle (the measured gaps).
 if (m) {
   const a = await get(m[0], { 'Accept-Encoding': 'gzip' });
-  check('bundle is gzip-compressed', a.headers['content-encoding'] === 'gzip', `content-encoding ${a.headers['content-encoding']} bytes ${a.body.length}`);
+  check('bundle is gzip-compressed', a.headers['content-encoding'] === 'gzip', `status ${a.status} content-encoding ${a.headers['content-encoding']} bytes ${a.body.length}${a.status === 0 ? ' error ' + a.body.toString() : ''}`);
   check('bundle has a one-year immutable cache', /max-age=31536000/.test(a.headers['cache-control'] || '') && /immutable/.test(a.headers['cache-control'] || ''), `cache-control ${a.headers['cache-control']}`);
 }
 check('html is not cached for a year', !/max-age=31536000/.test(home.headers['cache-control'] || ''), `cache-control ${home.headers['cache-control']}`);
