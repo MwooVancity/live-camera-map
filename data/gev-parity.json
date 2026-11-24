@@ -1441,7 +1441,7 @@
    "evidence": "api.planespotters.net photos, openVesselPhoto",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "its file calls /api/flights${params.size, /api/flights/track, /api/adsbdb/*/${encodeURIComponent, /api/military: on the proxy neverAllowed list",
+   "reason": "its file calls /api/flights${params.size, /api/flights/track, /api/adsbdb/*/${encodeURIComponent, /api/vessels: on the proxy neverAllowed list",
    "by": "route-check"
   },
   {
@@ -8173,7 +8173,7 @@
    "evidence": "file in sources/live",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "its file calls /api/flights${params.size, /api/flights/track, /api/adsbdb/*/${encodeURIComponent, /api/military: on the proxy neverAllowed list",
+   "reason": "its file calls /api/flights${params.size, /api/flights/track, /api/adsbdb/*/${encodeURIComponent, /api/vessels: on the proxy neverAllowed list",
    "by": "route-check"
   },
   {
@@ -9719,10 +9719,10 @@
    "category": "tool",
    "where": "71",
    "evidence": "Draw a bounding box around a fire and it'll retrieve the Sentinel-2 images, draped on the 3D terrain.",
-   "status": "gap",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "route /api/terrain/heights (matches this feature's name) is not in the proxy allowlist",
-   "by": "route-name-match"
+   "reason": "NASA GIBS allowed_per_doc, browser-direct",
+   "by": "agent"
   },
   {
    "key": "readme|transit vehicle trails (boston bus)|72",
@@ -11017,7 +11017,7 @@
    "evidence": "11,000+ live aircraft + route history",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "OpenSky is restricted; /api/flights and /api/military are on the proxy neverAllowed list; adsb.lol is allowed_per_doc but has no allowlisted route",
+   "reason": "civilian flights come from OpenSky (restricted; /api/flights is served by opensky.js and is on the proxy neverAllowed list); needs written commercial permission (plan section 1 item 14) or a feed of our own",
    "by": "override"
   },
   {
@@ -11027,9 +11027,9 @@
    "category": "layer",
    "where": "442",
    "evidence": "ADS-B military traffic in amber, emergency broadcasts in red",
-   "status": "excluded",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "OpenSky is restricted; /api/flights and /api/military are on the proxy neverAllowed list; adsb.lol is allowed_per_doc but has no allowlisted route",
+   "reason": "OPENED 2026-11-24 (plan item 19a): /api/military is served by adsb.lol (allowed_per_doc) and is now allowlisted; trails via /api/military/track stay closed because tracks.js also calls OpenSky",
    "by": "override"
   },
   {
@@ -12143,9 +12143,9 @@
    "category": "route",
    "where": "server/providers/aircraft/adsb-lol.js",
    "evidence": "path literal at line 81",
-   "status": "excluded",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "calls /api/military: on the proxy neverAllowed list (licence unknown or restricted)",
+   "reason": "routes /api/military allowed by proxy route military-aircraft",
    "by": "route-check"
   },
   {
@@ -12229,7 +12229,7 @@
    "evidence": "path literal at line 61",
    "status": "gap",
    "ourUrl": null,
-   "reason": "calls /api/terrain/heights, /api/overpass: not in the proxy allowlist; reachable only after a licence row passes",
+   "reason": "calls /api/overpass: not in the proxy allowlist; reachable only after a licence row passes",
    "by": "route-check"
   },
   {
@@ -12263,9 +12263,9 @@
    "category": "route",
    "where": "server/providers/firePerimeters.js",
    "evidence": "path literal at line 235",
-   "status": "gap",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "calls /api/fire-perimeters: not in the proxy allowlist; reachable only after a licence row passes",
+   "reason": "routes /api/fire-perimeters allowed by proxy route fire-perimeters",
    "by": "route-check"
   },
   {
@@ -12683,9 +12683,9 @@
    "category": "route",
    "where": "server/providers/shipwrecks.js",
    "evidence": "path literal at line 212",
-   "status": "gap",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "calls /api/shipwrecks: not in the proxy allowlist; reachable only after a licence row passes",
+   "reason": "routes /api/shipwrecks allowed by proxy route shipwrecks",
    "by": "route-check"
   },
   {
@@ -12745,7 +12745,7 @@
    "evidence": "path literal at line 88",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "calls /api/overpass, /api/military-installations, /api/terrain/heights: on the proxy neverAllowed list (licence unknown or restricted)",
+   "reason": "calls /api/overpass, /api/military-installations: on the proxy neverAllowed list (licence unknown or restricted)",
    "by": "route-check"
   },
   {
@@ -12757,7 +12757,7 @@
    "evidence": "path literal at line 89",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "calls /api/overpass, /api/military-installations, /api/terrain/heights: on the proxy neverAllowed list (licence unknown or restricted)",
+   "reason": "calls /api/overpass, /api/military-installations: on the proxy neverAllowed list (licence unknown or restricted)",
    "by": "route-check"
   },
   {
@@ -13427,9 +13427,9 @@
    "category": "provider",
    "where": "server/providers/aircraft/adsb-lol.js",
    "evidence": "import {",
-   "status": "excluded",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "calls /api/military: on the proxy neverAllowed list (licence unknown or restricted)",
+   "reason": "routes /api/military allowed by proxy route military-aircraft",
    "by": "route-check"
   },
   {
@@ -13753,7 +13753,7 @@
    "evidence": "import { admitSameSiteRequest } from '../../../src/localRequestGate.mjs';",
    "status": "gap",
    "ourUrl": null,
-   "reason": "calls /api/terrain/heights, /api/overpass: not in the proxy allowlist; reachable only after a licence row passes",
+   "reason": "calls /api/overpass: not in the proxy allowlist; reachable only after a licence row passes",
    "by": "route-check"
   },
   {
@@ -13847,9 +13847,9 @@
    "category": "provider",
    "where": "server/providers/firePerimeters.js",
    "evidence": "import { normalizeFirePerimeterSnapshot } from '../../src/layers/perimeters/records.js';",
-   "status": "gap",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "calls /api/fire-perimeters: not in the proxy allowlist; reachable only after a licence row passes",
+   "reason": "routes /api/fire-perimeters allowed by proxy route fire-perimeters",
    "by": "route-check"
   },
   {
@@ -14711,9 +14711,9 @@
    "category": "provider",
    "where": "server/providers/shipwrecks.js",
    "evidence": "import {",
-   "status": "gap",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "calls /api/shipwrecks: not in the proxy allowlist; reachable only after a licence row passes",
+   "reason": "routes /api/shipwrecks allowed by proxy route shipwrecks",
    "by": "route-check"
   },
   {
@@ -14785,7 +14785,7 @@
    "evidence": "import path from 'node:path';",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "calls /api/overpass, /api/military-installations, /api/terrain/heights: on the proxy neverAllowed list (licence unknown or restricted)",
+   "reason": "calls /api/overpass, /api/military-installations: on the proxy neverAllowed list (licence unknown or restricted)",
    "by": "route-check"
   },
   {
@@ -17809,7 +17809,7 @@
    "evidence": "Camera-panel browser acceptance with controlled sources, images and terrain. */",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "calls /api/cctv/frame/, /api/terrain/heights, /api/openai/hud-summary: on the proxy neverAllowed list (licence unknown or restricted)",
+   "reason": "calls /api/cctv/frame/, /api/openai/hud-summary: on the proxy neverAllowed list (licence unknown or restricted)",
    "by": "route-check"
   },
   {
@@ -17821,7 +17821,7 @@
    "evidence": "",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "calls /api/terrain/heights, /api/cctv/frame/${encodeURIComponent: on the proxy neverAllowed list (licence unknown or restricted)",
+   "reason": "calls /api/cctv/frame/${encodeURIComponent: on the proxy neverAllowed list (licence unknown or restricted)",
    "by": "route-check"
   },
   {
@@ -17845,7 +17845,7 @@
    "evidence": "",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "calls /api/vessels, /api/military, /api/flights, /api/flights/track: on the proxy neverAllowed list (licence unknown or restricted)",
+   "reason": "calls /api/vessels, /api/flights, /api/flights/track, /api/openai/hud-summary: on the proxy neverAllowed list (licence unknown or restricted)",
    "by": "route-check"
   },
   {
@@ -17881,7 +17881,7 @@
    "evidence": "",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "calls /api/flights, /api/military: on the proxy neverAllowed list (licence unknown or restricted)",
+   "reason": "calls /api/flights: on the proxy neverAllowed list (licence unknown or restricted)",
    "by": "route-check"
   },
   {
@@ -17989,7 +17989,7 @@
    "evidence": "",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "calls /api/flights, /api/military, /api/flights/track, /api/military/track: on the proxy neverAllowed list (licence unknown or restricted)",
+   "reason": "calls /api/flights, /api/flights/track, /api/military/track: on the proxy neverAllowed list (licence unknown or restricted)",
    "by": "route-check"
   },
   {
@@ -18073,7 +18073,7 @@
    "evidence": "",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "calls /api/terrain/heights, /api/flights, /api/flights/track: on the proxy neverAllowed list (licence unknown or restricted)",
+   "reason": "calls /api/flights, /api/flights/track: on the proxy neverAllowed list (licence unknown or restricted)",
    "by": "route-check"
   },
   {
@@ -18131,9 +18131,9 @@
    "category": "script",
    "where": "scripts/qa-flyroute-cinema.mjs",
    "evidence": "",
-   "status": "gap",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "calls /api/terrain/heights: not in the proxy allowlist; reachable only after a licence row passes",
+   "reason": "routes /api/terrain/heights allowed by proxy route terrain-heights",
    "by": "route-check"
   },
   {
@@ -18181,7 +18181,7 @@
    "evidence": "",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "calls /api/gbfs/, /api/flights, /api/military, /api/vessels: on the proxy neverAllowed list (licence unknown or restricted)",
+   "reason": "calls /api/gbfs/, /api/flights, /api/vessels: on the proxy neverAllowed list (licence unknown or restricted)",
    "by": "route-check"
   },
   {
@@ -18241,7 +18241,7 @@
    "evidence": "",
    "status": "gap",
    "ourUrl": null,
-   "reason": "calls /api/gnss-integrity, /api/fire-perimeters/inciweb, /api/fire-perimeters: not in the proxy allowlist; reachable only after a licence row passes",
+   "reason": "calls /api/gnss-integrity, /api/fire-perimeters/inciweb: not in the proxy allowlist; reachable only after a licence row passes",
    "by": "route-check"
   },
   {
@@ -18263,9 +18263,9 @@
    "category": "script",
    "where": "scripts/qa-height-datum.mjs",
    "evidence": "",
-   "status": "gap",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "calls /api/terrain/heights: not in the proxy allowlist; reachable only after a licence row passes",
+   "reason": "routes /api/terrain/heights allowed by proxy route terrain-heights",
    "by": "route-check"
   },
   {
@@ -23435,10 +23435,10 @@
    "category": "live",
    "where": "52",
    "evidence": "European shipwrecks layer",
-   "status": "gap",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "route /api/shipwrecks (matches this feature's name) is not in the proxy allowlist",
-   "by": "route-name-match"
+   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
+   "by": "agent"
   },
   {
    "key": "sources|wikidata — shipwrecks|53",
@@ -23447,10 +23447,10 @@
    "category": "live",
    "where": "53",
    "evidence": "Worldwide shipwrecks layer",
-   "status": "gap",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "route /api/shipwrecks (matches this feature's name) is not in the proxy allowlist",
-   "by": "route-name-match"
+   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
+   "by": "agent"
   },
   {
    "key": "sources|inciweb|54",
@@ -23497,7 +23497,7 @@
    "evidence": "Salish Sea marine mammal sightings",
    "status": "gap",
    "ourUrl": null,
-   "reason": "route /api/acartia/sightings (matches this feature's name) is not in the proxy allowlist",
+   "reason": "route /api/acartia (matches this feature's name) is not in the proxy allowlist",
    "by": "route-name-match"
   },
   {
@@ -25007,10 +25007,10 @@
    "category": "basemap",
    "where": "183",
    "evidence": "Terrain and ellipsoidal-height lookups",
-   "status": "gap",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "route /api/terrain/heights (matches this feature's name) is not in the proxy allowlist",
-   "by": "route-name-match"
+   "reason": "allowlisted proxy route, bundled data, or browser-direct (see BD-1 in plan item 6)",
+   "by": "agent"
   },
   {
    "key": "sources|openseamap|184",
@@ -27169,7 +27169,7 @@
    "evidence": "export createApplicationFirePerimeters",
    "status": "gap",
    "ourUrl": null,
-   "reason": "its layer folder perimeters calls /api/fire-perimeters/inciweb/publication/${encodeURIComponent, /api/fire-perimeters/inciweb/index, /api/fire-perimeters: not in the proxy allowlist",
+   "reason": "its layer folder perimeters calls /api/fire-perimeters/inciweb/publication/${encodeURIComponent: not in the proxy allowlist",
    "by": "layer-folder"
   },
   {
@@ -27239,10 +27239,10 @@
    "category": "other",
    "where": "src/app/layers/shipwrecks.js",
    "evidence": "export createApplicationShipwrecks",
-   "status": "gap",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "its layer folder shipwrecks calls /api/shipwrecks: not in the proxy allowlist",
-   "by": "layer-folder"
+   "reason": "app code with no /api route: runs inside the /map/ embed",
+   "by": "agent"
   },
   {
    "key": "src|street level|src/app/layers/streetLevel.js",
@@ -31595,10 +31595,10 @@
    "category": "camera",
    "where": "src/layers/cctv/ground.js",
    "evidence": "export createGround",
-   "status": "gap",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "calls /api/terrain/heights: not in the proxy allowlist; reachable only after a licence row passes",
-   "by": "route-check"
+   "reason": "its layer folder cctv calls /api/cctv/frame, /api/cctv/media: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|heading confidence|src/layers/cctv/headingConfidence.js",
@@ -33313,7 +33313,7 @@
    "evidence": "export PERIMETER_OVERLAY_SOURCE_ID",
    "status": "gap",
    "ourUrl": null,
-   "reason": "its layer folder perimeters calls /api/fire-perimeters/inciweb/publication/${encodeURIComponent, /api/fire-perimeters/inciweb/index, /api/fire-perimeters: not in the proxy allowlist",
+   "reason": "its layer folder perimeters calls /api/fire-perimeters/inciweb/publication/${encodeURIComponent: not in the proxy allowlist",
    "by": "layer-folder"
   },
   {
@@ -33325,7 +33325,7 @@
    "evidence": "export resolveInciwebNodeLink",
    "status": "gap",
    "ourUrl": null,
-   "reason": "calls /api/fire-perimeters/inciweb/publication/${encodeURIComponent, /api/fire-perimeters/inciweb/index: not in the proxy allowlist; reachable only after a licence row passes",
+   "reason": "calls /api/fire-perimeters/inciweb/publication/${encodeURIComponent: not in the proxy allowlist; reachable only after a licence row passes",
    "by": "route-check"
   },
   {
@@ -33337,7 +33337,7 @@
    "evidence": "export containmentColor",
    "status": "gap",
    "ourUrl": null,
-   "reason": "its layer folder perimeters calls /api/fire-perimeters/inciweb/publication/${encodeURIComponent, /api/fire-perimeters/inciweb/index, /api/fire-perimeters: not in the proxy allowlist",
+   "reason": "its layer folder perimeters calls /api/fire-perimeters/inciweb/publication/${encodeURIComponent: not in the proxy allowlist",
    "by": "layer-folder"
   },
   {
@@ -33349,7 +33349,7 @@
    "evidence": "export normalizeFirePerimeterSnapshot",
    "status": "gap",
    "ourUrl": null,
-   "reason": "its layer folder perimeters calls /api/fire-perimeters/inciweb/publication/${encodeURIComponent, /api/fire-perimeters/inciweb/index, /api/fire-perimeters: not in the proxy allowlist",
+   "reason": "its layer folder perimeters calls /api/fire-perimeters/inciweb/publication/${encodeURIComponent: not in the proxy allowlist",
    "by": "layer-folder"
   },
   {
@@ -33361,8 +33361,8 @@
    "evidence": "export createWfigsPerimeterSource",
    "status": "gap",
    "ourUrl": null,
-   "reason": "calls /api/fire-perimeters: not in the proxy allowlist; reachable only after a licence row passes",
-   "by": "route-check"
+   "reason": "its layer folder perimeters calls /api/fire-perimeters/inciweb/publication/${encodeURIComponent: not in the proxy allowlist",
+   "by": "layer-folder"
   },
   {
    "key": "src|catalog model|src/layers/radio/catalogModel.js",
@@ -33731,10 +33731,10 @@
    "category": "layer",
    "where": "src/layers/rail/policy.js",
    "evidence": "export RAIL_SELECTED_OVERLAY_SOURCE_ID",
-   "status": "gap",
+   "status": "excluded",
    "ourUrl": null,
-   "reason": "calls /api/terrain/heights: not in the proxy allowlist; reachable only after a licence row passes",
-   "by": "route-check"
+   "reason": "its layer folder rail calls /api/rail, /api/rail/updates, /api/rail/*/${encodeURIComponent: on the proxy neverAllowed list",
+   "by": "layer-folder"
   },
   {
    "key": "src|rendering|src/layers/rail/rendering.js",
@@ -34331,10 +34331,10 @@
    "category": "layer",
    "where": "src/layers/shipwrecks/cards.js",
    "evidence": "export ERA_LABELS",
-   "status": "gap",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "its layer folder shipwrecks calls /api/shipwrecks: not in the proxy allowlist",
-   "by": "layer-folder"
+   "reason": "app code with no /api route: runs inside the /map/ embed",
+   "by": "agent"
   },
   {
    "key": "src|eras|src/layers/shipwrecks/eras.js",
@@ -34343,10 +34343,10 @@
    "category": "layer",
    "where": "src/layers/shipwrecks/eras.js",
    "evidence": "export SHIPWRECK_ERAS",
-   "status": "gap",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "its layer folder shipwrecks calls /api/shipwrecks: not in the proxy allowlist",
-   "by": "layer-folder"
+   "reason": "app code with no /api route: runs inside the /map/ embed",
+   "by": "agent"
   },
   {
    "key": "src|index|src/layers/shipwrecks/index.js",
@@ -34355,10 +34355,10 @@
    "category": "layer",
    "where": "src/layers/shipwrecks/index.js",
    "evidence": "export SHIPWRECKS_LAYER_ID",
-   "status": "gap",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "its layer folder shipwrecks calls /api/shipwrecks: not in the proxy allowlist",
-   "by": "layer-folder"
+   "reason": "app code with no /api route: runs inside the /map/ embed",
+   "by": "agent"
   },
   {
    "key": "src|period|src/layers/shipwrecks/period.js",
@@ -34367,10 +34367,10 @@
    "category": "layer",
    "where": "src/layers/shipwrecks/period.js",
    "evidence": "export recordYear",
-   "status": "gap",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "its layer folder shipwrecks calls /api/shipwrecks: not in the proxy allowlist",
-   "by": "layer-folder"
+   "reason": "app code with no /api route: runs inside the /map/ embed",
+   "by": "agent"
   },
   {
    "key": "src|records|src/layers/shipwrecks/records.js",
@@ -34379,10 +34379,10 @@
    "category": "layer",
    "where": "src/layers/shipwrecks/records.js",
    "evidence": "export EMODNET_WFS_URL",
-   "status": "gap",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "its layer folder shipwrecks calls /api/shipwrecks: not in the proxy allowlist",
-   "by": "layer-folder"
+   "reason": "app code with no /api route: runs inside the /map/ embed",
+   "by": "agent"
   },
   {
    "key": "src|source|src/layers/shipwrecks/source.js",
@@ -34391,9 +34391,9 @@
    "category": "layer",
    "where": "src/layers/shipwrecks/source.js",
    "evidence": "export createShipwrecksSource",
-   "status": "gap",
+   "status": "in-map",
    "ourUrl": null,
-   "reason": "calls /api/shipwrecks: not in the proxy allowlist; reachable only after a licence row passes",
+   "reason": "routes /api/shipwrecks allowed by proxy route shipwrecks",
    "by": "route-check"
   },
   {
@@ -36157,7 +36157,7 @@
    "evidence": "export WILDLIFE_GRID_CONCURRENCY",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "calls /api/inaturalist/grid, /api/inaturalist/observations, /api/acartia/sightings: on the proxy neverAllowed list (licence unknown or restricted)",
+   "reason": "calls /api/inaturalist/grid, /api/inaturalist/observations: on the proxy neverAllowed list (licence unknown or restricted)",
    "by": "route-check"
   },
   {
@@ -38941,7 +38941,7 @@
    "evidence": "export createApplicationRequestServices",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "calls /api/overpass, /api/terrain/heights, /api/regional-brief, /api/openai/hud-summary: on the proxy neverAllowed list (licence unknown or restricted)",
+   "reason": "calls /api/overpass, /api/regional-brief, /api/openai/hud-summary: on the proxy neverAllowed list (licence unknown or restricted)",
    "by": "route-check"
   },
   {
@@ -39241,7 +39241,7 @@
    "evidence": "export fetchOpenVesselPhoto",
    "status": "excluded",
    "ourUrl": null,
-   "reason": "calls /api/flights${params.size, /api/flights/track, /api/adsbdb/*/${encodeURIComponent, /api/military: on the proxy neverAllowed list (licence unknown or restricted)",
+   "reason": "calls /api/flights${params.size, /api/flights/track, /api/adsbdb/*/${encodeURIComponent, /api/vessels: on the proxy neverAllowed list (licence unknown or restricted)",
    "by": "route-check"
   },
   {
@@ -52082,6 +52082,30 @@
    "status": "in-map",
    "ourUrl": null,
    "reason": "allowed by proxy route cctv-sources",
+   "by": "mechanical"
+  },
+  {
+   "key": "mechanical|route|/api/fire-perimeters/inciweb/index",
+   "inventory": "mechanical",
+   "feature": "route /api/fire-perimeters/inciweb/index",
+   "category": "route",
+   "where": "src/layers/perimeters/inciweb.js",
+   "evidence": "route literal found by the mechanical scan",
+   "status": "in-map",
+   "ourUrl": null,
+   "reason": "allowed by proxy route fire-perimeters",
+   "by": "mechanical"
+  },
+  {
+   "key": "mechanical|route|/api/acartia/sightings",
+   "inventory": "mechanical",
+   "feature": "route /api/acartia/sightings",
+   "category": "route",
+   "where": "src/layers/wildlifeSightings/source.js",
+   "evidence": "route literal found by the mechanical scan",
+   "status": "in-map",
+   "ourUrl": null,
+   "reason": "allowed by proxy route wildlife-sightings",
    "by": "mechanical"
   },
   {

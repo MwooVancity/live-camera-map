@@ -708,6 +708,31 @@
       "basis": "static-boot",
       "reason": "per-camera health status of loaded cameras, no media"
     },
+    "wildlife-sightings": {
+      "basis": "enabled-source",
+      "sourceIds": ["acartia-acartia-io-api-v1-sightings-current"],
+      "reason": "acartia.js calls only acartia.io/api/v1/sightings/current and answers only /sightings; CC BY 4.0, allowed_per_doc, enabled. iNaturalist (restricted) is another route and stays closed. Plan item 19c, 2026-11-24."
+    },
+    "shipwrecks": {
+      "basis": "enabled-source",
+      "sourceIds": ["wikidata-shipwrecks-query-wikidata-org-sparql", "emodnet-human-activities-ship-wrecks-ows-emodnet-humanactivities-eu-wfs-layer-em"],
+      "reason": "shipwrecks.js calls only Wikidata SPARQL (CC0) and EMODnet (CC BY 4.0); allowed_per_doc, enabled. Plan item 19c, 2026-11-24."
+    },
+    "terrain-heights": {
+      "basis": "enabled-source",
+      "sourceIds": ["re-earth-terrain-mapterhorn"],
+      "reason": "terrain.js:17 calls only terrain.reearth.land (Mapterhorn CC BY 4.0, geoid EGM2008 public domain); allowed_per_doc, enabled. Restricted CCTV ground heights stay denied by deny-cctv-ground-heights. Plan item 19c, 2026-11-24."
+    },
+    "fire-perimeters": {
+      "basis": "enabled-source",
+      "sourceIds": ["nifc-wfigs-wildland-fire-interagency-geospatial-services-arcgis-feature-service", "inciweb-inciweb-wildfire-gov"],
+      "reason": "firePerimeters.js calls only services3.arcgis.com (NIFC WFIGS) and inciweb.wildfire.gov; both US public domain, allowed_per_doc, enabled. Plan item 19b, 2026-11-24."
+    },
+    "military-aircraft": {
+      "basis": "enabled-source",
+      "sourceIds": ["adsb-lol"],
+      "reason": "exact /api/military only: gev/server/providers/aircraft/adsb-lol.js:128 fetches api.adsb.lol/v2/mil (adsb.lol, allowed_per_doc, enabled). /api/military/track (tracks.js also calls OpenSky) and /api/military-installations stay on neverAllowed. Plan item 19a, 2026-11-24."
+    },
     "weather": {
       "basis": "enabled-source",
       "sourceIds": [
