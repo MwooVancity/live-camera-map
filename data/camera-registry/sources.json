@@ -258,5 +258,25 @@
   "license": "Creative Commons Attribution 4.0 (Transport for NSW Open Data Hub data licence)",
   "licenseUrl": "https://opendata.transport.nsw.gov.au/datalicence",
   "reviewedAt": "2026-11-24"
+ },
+ {
+  "id": "taiwan-thb",
+  "name": "Provincial road CCTV list (Highway Bureau, MOTC, Taiwan)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one request for the list per run (terms: not more often than every 60 seconds); picture links are never requested by the health checker (a HEAD request to the picture host answers 404, and one GET per camera is too heavy)",
+   "docsUrl": "https://thbapp.thb.gov.tw/opendata/"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Source: Highway Bureau, MOTC, Taiwan (thbapp.thb.gov.tw/opendata), provincial road CCTV list.",
+  "license": "Highway Bureau, MOTC open traffic data notice: free public use, original source must be stated as the Bureau",
+  "licenseUrl": "https://thbapp.thb.gov.tw/opendata/",
+  "reviewedAt": "2026-11-24"
  }
 ]

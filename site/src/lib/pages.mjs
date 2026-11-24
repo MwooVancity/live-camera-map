@@ -9,6 +9,7 @@ import { IS_REGION } from '../../../ops/importers/lib/iceland.mjs';
 import { TX_REGION } from '../../../ops/importers/lib/austin.mjs';
 import { LN_REGION } from '../../../ops/importers/lib/tfl.mjs';
 import { NSW_REGION } from '../../../ops/importers/lib/nsw.mjs';
+import { TW_REGION } from '../../../ops/importers/lib/taiwan.mjs';
 
 // NFKD splits an accented letter into the letter plus a combining mark; the marks are removed first, otherwise "Hämeenlinna" became "ha-meenlinna".
 export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -101,6 +102,13 @@ export const REGIONS = {
     placeText: (x) => sentence(`Transport for NSW's list has no suburb or place field: each camera is named as the agency names it, usually a road and a suburb in brackets, and carries the agency's own sentence on where it looks and an agency area code (for example SYD_SOUTH), which is an area of the agency and not a place name, so there are no city pages; all ${x.total} cameras are listed below.`),
     cityText: () => '',
     caveats: ['The camera pictures belong to Transport for NSW and are not shown here. Each link goes to one still picture address on webcams.transport.nsw.gov.au (one on data.livetraffic.com); it is a link only. That host answers automated requests with a placeholder page, so we never request the pictures and every camera here shows the status unknown by design, not broken. The Open Data Hub licence covers the data; it does not say whether the picture files themselves are covered, and we do not suggest Transport for NSW endorses this site.'],
+  },
+  // Taiwan: one region from the Highway Bureau's own provincial-road CCTV list; the Chinese description is the name, the road code and kilometre mark are kept as text, no place field, so no city pages.
+  [TW_REGION.slug]: {
+    sourceId: 'taiwan-thb', agency: 'Highway Bureau, Ministry of Transportation and Communications (Taiwan)', cityLimit: 0, guide: null, credit: true, list: 'provincial road CCTV list', listAll: true,
+    placeText: (x) => sentence(`The Bureau's list has no city or place field: each camera is named as the Bureau names it, in Chinese, usually a road and an interchange span or a kilometre mark with a direction letter, and carries the Bureau's own road code (for example 台9線) and kilometre mark as text, so there are no city pages; all ${x.total} cameras are listed below.`),
+    cityText: () => '',
+    caveats: ['The camera pictures belong to the Highway Bureau and are not shown here. Each link goes to one still picture address on cctv-ss01 to cctv-ss08.thb.gov.tw; it is a link only. Live status is not checked: the picture host does not answer the usual status request, so every camera here shows the status unknown by design, not broken. The list covers the Bureau\'s provincial roads only, not the national freeways. The Bureau lets the public use its traffic data free of charge if the Bureau is named as the original source, and says the data is for reference only; its notice does not say whether the picture files are covered, and we do not suggest the Bureau endorses this site.'],
   },
   // Texas: one source, the City of Austin's own list. Region page is Austin only (the registry has no other Texas source); the feed has no city field and lists cameras in the City's extra-territorial jurisdiction too, so no city is invented.
   [TX_REGION.slug]: {

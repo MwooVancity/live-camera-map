@@ -5087,6 +5087,23 @@
       "needsHumanReview": true,
       "mustNotShip": false,
       "enabled": true
+    },
+    {
+      "id": "taiwan-thb-cameras",
+      "name": "Provincial road CCTV list, Highway Bureau, Ministry of Transportation and Communications, Taiwan (opendataCCTVs.xml)",
+      "section": "Camera registry sources (read by ops/importers/taiwan.mjs)",
+      "folder": "",
+      "licence": "Highway Bureau (THB, MOTC) open traffic data notice \"交通資料庫 注意事項\" at https://thbapp.thb.gov.tw/opendata/ (Chinese; read by Claude 2026-11-24 and re-read as page text by the importer every run). Quoted: (purpose) \"交通資訊內容免費對外開放使用\" = the traffic information content is opened free of charge for external use; (item 1) \"資料提供免費下載使用\" = the data is provided for free download and use; (item 3) \"資料僅供參考\" = the data is for reference only; (item 4) \"下載資料內容或加值後對外提供時，應說明原始資料來源為本局\" = when the downloaded content or value-added content is provided externally, the original data source must be stated as the Bureau; (item 5) \"使用者重複擷取資料週期不得小於60秒\" = a user may not re-fetch the data at an interval shorter than 60 seconds; (item 6) \"本資料庫資料不得進行任何違反中華民國法律之使用及應用\" = the data may not be used in any way that breaks the law of the Republic of China. The notice does not mention commercial use, in either direction, and sets no non-commercial limit: it is a free public-use notice with a source-credit condition (UNVERIFIED whether ads count; flagged for the owner). Feed: https://cctv-maintain.thb.gov.tw/opendataCCTVs.xml (no key, XML, linked from the notice as \"下載CCTV資料\", 2,354 CCTV elements on 2026-11-24, UpdateInterval 86400 s; one request per run, so item 5 is met); cctv-maintain.thb.gov.tw/robots.txt answers 404 (no rules, treated as no robots file). Only elements whose VideoImageURL is https on cctv-ss01 to cctv-ss08.thb.gov.tw are kept. Credit line printed on every page that shows the cameras: \"Source: Highway Bureau, MOTC, Taiwan (thbapp.thb.gov.tw/opendata), provincial road CCTV list.\" The importer stops if the notice page loses any of the four sentences for the purpose, item 1, item 4 or item 5.",
+      "commercialStatus": "allowed_per_doc",
+      "statusReason": "quoted text: the Bureau opens its traffic information free of charge for public use and download, with no non-commercial limit, on the condition that the Bureau is named as the original source; commercial use is neither granted nor barred in words (needs human review); applies to the camera list, pictures unverified (link-out only)",
+      "attribution": "Source: Highway Bureau, MOTC, Taiwan (thbapp.thb.gov.tw/opendata), provincial road CCTV list.",
+      "provenance": "https://thbapp.thb.gov.tw/opendata/ and the feed URL above, read 2026-11-24",
+      "imageStatus": "unverified: the notice does not say whether the camera picture files on cctv-ss01 to cctv-ss08.thb.gov.tw are covered; the picture host answers a HEAD request with 404 and a GET with the JPEG (about 15 KB); image display, caching and redistribution not stated; link-out only",
+      "reviewedAt": "2026-11-24",
+      "reviewedBy": "claude-doc-read",
+      "needsHumanReview": true,
+      "mustNotShip": false,
+      "enabled": true
     }
   ]
 }

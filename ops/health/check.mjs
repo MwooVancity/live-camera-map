@@ -47,6 +47,8 @@ export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 12000, bu
     digitraffic: { concurrency: 1, hostDelayMs: 1100, staleHours: 6, needValidators: true },
     'quebec-mtmd': { skip: 'host-blocks-automated-checks' },
     'nsw-live-traffic': { skip: 'host-blocks-automated-checks' }, // webcams.transport.nsw.gov.au answers our client with an HTML placeholder (0 of 15 sampled returned an image, docs/source-audits/world-feed-audit-2026-11-23.md): no request, every NSW camera unknown by design
+    // taiwan-thb: cctv-ss01..08.thb.gov.tw answers a HEAD request with 404 (a GET returns the JPEG, about 15 KB), so the usual HEAD check would mark every camera down. 2,354 GETs of about 15 KB each per run is too heavy for the free CI budget: no request, every Taiwan camera unknown by design (the page says live status is not checked). Revisit with a GET-based sampled check.
+    'taiwan-thb': { skip: 'host-blocks-automated-checks' },
   } };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const STATUSES = ['reachable', 'stale', 'unavailable', 'unknown'];

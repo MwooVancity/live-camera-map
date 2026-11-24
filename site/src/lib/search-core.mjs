@@ -10,7 +10,7 @@ export const KIND_LABEL = { city: 'City', town: 'Place', road: 'Road', region: '
 // Row layout (compact arrays, one per entry). A shard has its country in its header; a global-lookup row carries it at index 9.
 export const F = { id: 0, kind: 1, name: 2, norm: 3, region: 4, road: 5, lat: 6, lon: 7, url: 8, country: 9 };
 
-export const normalize = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/['’`]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+export const normalize = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/['’`]/g, '').replace(/[^a-z0-9㐀-鿿]+/g, ' ').trim(); // Chinese characters are kept so a Taiwan camera name (all Chinese, no Latin letters) still has an index key; every other script is dropped as before
 
 // The ONE road alias function. Input: a normalized query. Output: canonical road keys, e.g. 'interstate 405' -> ['i 405'], 'highway 1' -> ['sr 1', 'us 1'].
 // Digits may be partial ('interstate 4' -> ['i 4'], matched as a prefix of 'i 405'). Not a road shape -> [].
