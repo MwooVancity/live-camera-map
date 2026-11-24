@@ -10,6 +10,7 @@ import { loadPlan } from '../../ops/importers/run-all.mjs';
 const DIR = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'ops', 'importers');
 const EXEMPT = {
   'run-all.mjs': 'the runner itself',
+  'new-source.mjs': 'the scaffold for new sources, not an importer',
   'caltrans.mjs': 'large static list, imported by hand (3,263 cameras; its conditions feed is in run-all)',
   'digitraffic.mjs': 'imported by hand, 1 request a minute pace on its pictures',
   'drivebc.mjs': 'camera list imported by hand; only its events part runs every deploy (drivebc-events)',
