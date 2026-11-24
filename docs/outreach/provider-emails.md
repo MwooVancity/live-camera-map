@@ -13,3 +13,4 @@ Thank you.
 3. OpenSky Network (civilian flights): written commercial permission (GEV /api/flights is restricted until then).
 4. Japan MLIT river cameras: ask for an approved way to fetch (the site blocks bots).
 5. DGT Spain, TfL: only if registration stalls.
+6. King County GIS (Road Services cameras, 125): terms say copy and use freely "with one exception: no one is permitted to sell this information"; open-data terms give a "limited, revocable license" with attribution. Ask: does ad-supported link-out of the camera list count as selling?
