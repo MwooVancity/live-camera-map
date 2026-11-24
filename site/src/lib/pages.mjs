@@ -11,6 +11,7 @@ import { LN_REGION } from '../../../ops/importers/lib/tfl.mjs';
 import { NSW_REGION } from '../../../ops/importers/lib/nsw.mjs';
 import { TW_REGION } from '../../../ops/importers/lib/taiwan.mjs';
 import { IA_REGION } from '../../../ops/importers/lib/iowa.mjs';
+import { A22_REGION } from '../../../ops/importers/lib/a22.mjs';
 
 // NFKD splits an accented letter into the letter plus a combining mark; the marks are removed first, otherwise "Hämeenlinna" became "ha-meenlinna".
 export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -117,6 +118,13 @@ export const REGIONS = {
     placeText: (x) => sentence(`The Iowa DOT's list has no city or place field: each camera is named as the DOT names it, usually a route and a mile marker (for example I-80 @ MM 114.2), and carries the DOT's own type (Iowa DOT, RWIS road weather station or rest area) and function as text, so there are no city pages; all ${x.total} cameras are listed below. A weather station or rest area with several views has one link per view.`),
     cityText: () => '',
     caveats: ['The camera pictures belong to the Iowa Department of Transportation and are not shown here. Each link goes to one still picture address on atmsqf.iowadot.gov; it is a link only, and the DOT\'s live video streams are not linked. The DOT licenses the camera list under Creative Commons Attribution 4.0 with credit to the DOT; that licence covers the data, and we do not suggest the DOT endorses this site.'],
+  },
+  // A22 Brenner motorway (Italy): one region from Autobrennero's own webcams as listed by the Open Data Hub; kilometre mark and carriageway side are kept as text, no city field, so no city pages.
+  [A22_REGION.slug]: {
+    sourceId: 'a22-brennero', agency: 'Autostrada del Brennero (A22), via the Open Data Hub', cityLimit: 0, guide: null, credit: true, list: 'A22 webcam list', listAll: true,
+    placeText: (x) => sentence(`The list has no city or place field: each of the ${x.total} cameras is named as Autobrennero names it (a toll station or junction on the A22 from Brennero to the A1 near Modena) and carries its kilometre mark and the side of the carriageway as text, so there are no city pages.`),
+    cityText: () => '',
+    caveats: ['The camera pictures belong to Autostrada del Brennero and are not shown here. Each link goes to one still picture address on www.autobrennero.it; it is a link only. Live status is not checked: that host answers automated requests with a bot challenge, so every camera here shows the status unknown by design, not broken. The Open Data Hub tags the camera list CC0 but says that tag does not extend to the picture behind the link. Autostrada del Brennero S.p.A. does not endorse this site.'],
   },
   // Texas: one source, the City of Austin's own list. Region page is Austin only (the registry has no other Texas source); the feed has no city field and lists cameras in the City's extra-territorial jurisdiction too, so no city is invented.
   [TX_REGION.slug]: {

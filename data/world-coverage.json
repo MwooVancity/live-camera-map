@@ -42,9 +42,9 @@
   {
    "country": "italy",
    "argosPlacePages": 22,
-   "ourCameras": 0,
-   "status": "small",
-   "next": "Autostrade per l'Italia claims about 4,000 webcams in a viewer, no open licence established; A22 Brenner (13 cameras, CC0) is the small clean source",
+   "ourCameras": 13,
+   "status": "partial",
+   "next": "A22 Brenner BUILT 2026-11-24 (ops/importers/a22.mjs, 13 cameras, record licence CC0, Hub says CC0 does not cover the pictures, owner review pending). Next: Autostrade per l'Italia claims about 4,000 webcams in a viewer, no open licence established; email or licence read needed",
    "note": null,
    "owner": null
   },

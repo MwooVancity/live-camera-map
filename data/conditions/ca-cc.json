@@ -1,7 +1,7 @@
 {
  "feed": "cc",
  "sourceId": "caltrans-cc",
- "generatedAt": "2026-11-23T22:58:05.489Z",
+ "generatedAt": "2026-11-24T23:07:35.533Z",
  "timeNote": "statusLocal/messageLocal are America/Los_Angeles local time; start/end/recordedAt are UTC",
  "perDistrict": {
   "10": {
@@ -12262,10 +12262,10 @@
    "locationName": "Crestview MTCE Stn. / 8 Mi. N of Jct. 203 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _(15)8 _ (14)20 _ (10)48",
    "lat": 37.7507,
    "lon": -118.983,
-   "status": "R-1",
-   "inEffect": true,
-   "text": "Chains are required on all vehicles except passenger vehicles and light-duty trucks under 6,000 pounds gross weight and equipped with snow tires on at least two drive wheels.  Chains must be carried by vehicles using snow tires.  All vehicles towing trailers must have chains on one drive axle.  Trailers with brakes must have chains on at least one axle.",
-   "statusLocal": "2026-11-18 12:30:23"
+   "status": "R-0",
+   "inEffect": false,
+   "text": "No chain controls are in effect at this time.",
+   "statusLocal": "2026-11-23 15:14:08"
   },
   {
    "id": "ca-cc-d09-9-MNO-395-34-S-D33",
@@ -12292,10 +12292,10 @@
    "locationName": "Hartly Springs / 2 Mi. S of S Jct. 158 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (20)36",
    "lat": 37.79215,
    "lon": -119.03457,
-   "status": "R-1",
-   "inEffect": true,
-   "text": "Chains are required on all vehicles except passenger vehicles and light-duty trucks under 6,000 pounds gross weight and equipped with snow tires on at least two drive wheels.  Chains must be carried by vehicles using snow tires.  All vehicles towing trailers must have chains on one drive axle.  Trailers with brakes must have chains on at least one axle.",
-   "statusLocal": "2026-11-18 12:19:58"
+   "status": "R-0",
+   "inEffect": false,
+   "text": "No chain controls are in effect at this time.",
+   "statusLocal": "2026-11-23 15:20:51"
   },
   {
    "id": "ca-cc-d09-9-MNO-395-40.2-S-D39",
@@ -12307,10 +12307,10 @@
    "locationName": "S Jct. 158 _ _ _ _ _ _ _ _  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (20)34",
    "lat": 37.81206,
    "lon": -119.05299,
-   "status": "R-1",
-   "inEffect": true,
-   "text": "Chains are required on all vehicles except passenger vehicles and light-duty trucks under 6,000 pounds gross weight and equipped with snow tires on at least two drive wheels.  Chains must be carried by vehicles using snow tires.  All vehicles towing trailers must have chains on one drive axle.  Trailers with brakes must have chains on at least one axle.",
-   "statusLocal": "2026-11-18 12:57:50"
+   "status": "R-0",
+   "inEffect": false,
+   "text": "No chain controls are in effect at this time.",
+   "statusLocal": "2026-11-23 16:29:30"
   },
   {
    "id": "ca-cc-d09-9-MNO-395-40.4-N-D40",
@@ -12787,10 +12787,10 @@
    "locationName": "Sand House / 8 Mi. S of Lee Vining ) _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (20)32",
    "lat": 37.83755,
    "lon": -119.07508,
-   "status": "R-1",
-   "inEffect": true,
-   "text": "Chains are required on all vehicles except passenger vehicles and light-duty trucks under 6,000 pounds gross weight and equipped with snow tires on at least two drive wheels.  Chains must be carried by vehicles using snow tires.  All vehicles towing trailers must have chains on one drive axle.  Trailers with brakes must have chains on at least one axle.",
-   "statusLocal": "2026-11-18 12:43:22"
+   "status": "R-0",
+   "inEffect": false,
+   "text": "No chain controls are in effect at this time.",
+   "statusLocal": "2026-11-24 09:41:14"
   },
   {
    "id": "ca-cc-d09-9-MNO-395-R44.2-S-D43",
@@ -13882,10 +13882,10 @@
    "locationName": "TAMARACK",
    "lat": 38.43934,
    "lon": -120.07671,
-   "status": "R-2",
-   "inEffect": true,
-   "text": "Chains or traction devices are required on all vehicles except four wheel / all wheel drive vehicles with snow-tread tires on all four wheels.  Four wheel / all wheel drive vehicles must carry traction devices in chain control areas.",
-   "statusLocal": "2026-11-22 19:02:10"
+   "status": "R-0",
+   "inEffect": false,
+   "text": "No chain controls are in effect at this time.",
+   "statusLocal": "2026-11-23 18:32:05"
   },
   {
    "id": "ca-cc-d10-10-CAL-26-24.4-E-01E",

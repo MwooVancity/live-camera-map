@@ -298,5 +298,25 @@
   "license": "Creative Commons Attribution 4.0 International (dataset licence); Iowa DOT GIS Data Terms of Use",
   "licenseUrl": "https://iowadot.gov/policies_and_statements/terms-of-use#gis",
   "reviewedAt": "2026-11-24"
+ },
+ {
+  "id": "a22-brennero",
+  "name": "A22 Brenner motorway webcams (Autostrada del Brennero, via the Open Data Hub)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one list request per run; picture links are not requested by the health checker (www.autobrennero.it answers automated requests with a Cloudflare challenge)",
+   "docsUrl": "https://docs.opendatahub.com/licensing"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Source: Autostrada del Brennero S.p.A. (A22), via the Open Data Hub (NOI Techpark), CC0.",
+  "license": "CC0 per record (Open Data Hub LicenseInfo, licence holder Autostrada del Brennero); the Hub says this does not extend to the picture behind Webcamurl",
+  "licenseUrl": "https://docs.opendatahub.com/licensing",
+  "reviewedAt": "2026-11-24"
  }
 ]

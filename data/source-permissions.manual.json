@@ -297,6 +297,22 @@
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
       "mustNotShip": false
+    },
+    {
+      "id": "a22-brennero-cameras",
+      "name": "A22 Brenner motorway webcams, Autostrada del Brennero via the Open Data Hub tourism API (WebcamInfo?source=a22)",
+      "section": "Camera registry sources (read by ops/importers/a22.mjs)",
+      "folder": "",
+      "licence": "Each record's LicenseInfo (read 2026-11-24 from https://tourism.opendatahub.com/v1/WebcamInfo?pagesize=20&source=a22, 13 records): License \"CC0\", ClosedData false, LicenseHolder \"https://www.autobrennero.it/\"; the importer re-checks this on every record. Open Data Hub licensing page https://docs.opendatahub.com/licensing (read 2026-11-24 and re-read by the importer every run): \"The Open Data Hub provides open, freely accessible data under permissive licenses\"; \"CC0 : The data is in the public domain and can be freely reused without restrictions\"; and the stricter sentence: \"The LicenseInfo block applies only to the parent data node (the one identified by an Id ). It does not extend to child nodes such as Streamurl or Webcamurl , which may link to external resources governed by different licensing terms.\" OWNER MUST SEE: the record licence covers the camera list (id, name, position, picture address); it expressly does not cover the picture behind Webcamurl. Autobrennero publishes no terms of its own for the pictures that we found.",
+      "commercialStatus": "allowed_per_doc",
+      "statusReason": "quoted text: the Hub tags each webcam record CC0 (public domain, free reuse) and its licensing page says so; applies to the camera list only, not the pictures (the Hub says so itself); needs human review",
+      "attribution": "Source: Autostrada del Brennero S.p.A. (A22), via the Open Data Hub (NOI Techpark), CC0.",
+      "provenance": "https://tourism.opendatahub.com/v1/WebcamInfo?pagesize=20&source=a22 and https://docs.opendatahub.com/licensing, read 2026-11-24; tourism.opendatahub.com/robots.txt and docs.opendatahub.com/robots.txt answer 404 (no rules); www.autobrennero.it/robots.txt answers a Cloudflare challenge page to automated requests (Cf-Mitigated: challenge), so that host is never requested by our code",
+      "imageStatus": "unverified: the Hub says its record licence does not extend to Webcamurl; the picture host www.autobrennero.it blocks automated requests (HTTP 403 Cloudflare challenge on a HEAD of /WebCamImg/km68.jpg, 2026-11-24); ImageGallery[0].License is null in the records; image display, caching and redistribution not stated; link-out only",
+      "reviewedAt": "2026-11-24",
+      "reviewedBy": "claude-doc-read",
+      "needsHumanReview": true,
+      "mustNotShip": false
     }
   ]
 }
