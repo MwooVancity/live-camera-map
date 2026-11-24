@@ -16,3 +16,6 @@ Asked: free, commercially usable, keyless, stable-link, machine-readable road ca
 | Everything else (Italy, India, Japan, Netherlands, France, Czechia, Poland, Estonia, Austria, Switzerland, most US states) | "could not open" | n/a | No evidence either way |
 
 Net result: no new buildable source. Wrong claim reported: the Autobahn API has no cameras. Next real unblockers are owner steps (TfL and Norway and Sweden registration, DGT reply).
+
+## California city, county and port cameras (research agent 2026-11-24, UNVERIFIED by Claude beyond the agent's own opened pages)
+No qualifying open-data camera list. Confirmed empty by catalog search: San Francisco (data.sf.gov, 0 results), Los Angeles (data.lacity.org, no camera dataset), San Diego (data.sandiego.gov, 124 datasets, only police body-worn cameras and traffic counts). Failed fetches, so NOT confirmed absent: Sacramento, Long Beach, San Jose (its layer is speed/red-light enforcement, not live cameras). Not checked: Oakland, Orange County, Riverside, Fresno, the ports. Result: Caltrans stays the only California camera source until a city publishes a list or is asked directly.

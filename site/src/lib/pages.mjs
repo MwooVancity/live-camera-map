@@ -24,6 +24,7 @@ export const GUIDES = [
   { slug: 'how-to-read-a-road-page', title: 'How to read a road page (driving order, nearest cameras)', date: '2026-11-22' },
   { slug: 'how-drivebc-cameras-work', title: 'How British Columbia (DriveBC) traffic cameras work', date: '2026-11-22', region: 'british-columbia' },
   { slug: 'what-caltrans-chain-controls-mean', title: 'What Caltrans chain controls (R-1, R-2, R-3) mean', date: '2026-11-24' },
+  { slug: 'what-caltrans-lane-closures-mean', title: 'What Caltrans lane closures mean (types, duration, end dates)', date: '2026-11-24' },
   { slug: 'camera-link-is-dead', title: 'What to do if a camera link is dead', date: '2026-11-22' },
 ];
 

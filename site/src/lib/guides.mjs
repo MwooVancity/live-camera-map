@@ -131,6 +131,19 @@ export const GUIDE_BODY = {
       'The chart lists "W" as "No Restrictions - Watch for snow on pavement". That is a separate code from R-0. These are Caltrans definitions and are not legal advice. For what the law requires on a given road, use the official Caltrans source.',
     ] },
   ],
+  'what-caltrans-lane-closures-mean': () => [
+    { h: 'What a closure row says', p: [
+      'Caltrans publishes lane closures through its Lane Closure System feed. Its field descriptions (cwwp2.dot.ca.gov/documentation/lcs/lcs-field-description.htm) define each value. The type of closure is one of "Lane / Full / One-way / Alternating", described as the "Type of closure being performed". We show the type as Caltrans reports it.',
+      'The lanes closed field is described as "Lanes of the roadway to be closed", for example "2, RShoulder" for lane 2 and the right shoulder.',
+    ] },
+    { h: 'How long a closure lasts', p: [
+      'Caltrans groups closure duration as "Standard" (lanes closed and reopened at the same times on each day of the closure period), "Long Term" (closed continuously, 24 hours a day) or "Intermittent" (source: cwwp2.dot.ca.gov/documentation/lcs/lcs-facility-tow-charts.htm).',
+      'Closure start and end times are given "in PST or PDT". When a closure has no known end, Caltrans sets the end date to 2999-12-31 at 23:59:00, so a date that far away means "no end announced", not a real date.',
+    ] },
+    { h: 'What to do with it', p: [
+      'A closure row on a city or road page lists up to three cameras of the same road nearby, so you can open the official camera link and look. Closures change during the day. For a trip, check the official Caltrans source again just before you go, and do not use any page while driving.',
+    ] },
+  ],
   'camera-link-is-dead': (x) => [
     { h: 'First, check what you actually got', p: [
       'A blank page, an error message or a picture that never changes can each mean something different. If the page itself loads but the picture is old, the camera may be offline; if the address fails to load, the source may have moved the file.',

@@ -54,6 +54,7 @@ Every line carries "Beats Argos by:". The Argos pages for the same places were n
 - `/guides/how-to-read-a-road-page/` Beats Argos by: says why we order cameras by position and not by the Caltrans postmile or milepost (checked on I-5, I-405 and US-101: the postmile restarts at every county line and the milepost is not one scale across districts), and what nearest camera means, which Argos does not explain.
 - `/guides/how-drivebc-cameras-work/` Beats Argos by: says what the BC list contains, what we left out and why, exactly how a "place" is decided when DriveBC has no city field, what "facing" means, and that our checker cannot call a BC picture stale (the picture server sends no last-modified time), which Argos does not explain.
 - `/guides/what-caltrans-chain-controls-mean/` Beats Argos by: the official Caltrans R-0 to R-3 definitions quoted word for word from the Caltrans chart (URL shown), next to the live chain-control rows on our city and road pages.
+- `/guides/what-caltrans-lane-closures-mean/` Beats Argos by: official Caltrans field definitions for closure type, duration and the 2999-12-31 no-end-date value, quoted with their source pages, tied to the closure rows and nearest cameras on our pages.
 - `/guides/camera-link-is-dead/` Beats Argos by: a short fix-it path for a dead link, tied to our own health statuses.
 
 ## Features on every page (not pages)
