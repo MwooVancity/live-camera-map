@@ -15,6 +15,7 @@ export const RULES = [
   { id: 'block-proof', text: 'Every data block on a page names its source and as-of time.', enforcedBy: ['ops/harness/page-gate.mjs'] },
   { id: 'one-number-one-source', text: 'Every count on a page equals the registry count.', enforcedBy: null },
   { id: 'beats-argos', text: 'Every page and block states "Beats Argos by: ..." in its PAGES.md entry.', enforcedBy: ['ops/harness/page-gate.mjs'] },
+  { id: 'chatgpt-gap-check', text: 'Every prompt to ChatGPT ends with the gap-check block (what is missing from my situation or prompt), the reply is resolved with tools before acting, and the plan.md section 9 row carries a MISSING: line.', enforcedBy: ['ops/harness/hook-prompt.mjs', 'ops/harness/harness.test.mjs'] },
   { id: 'prompt-line0', text: 'Line 0 is printed every request.', enforcedBy: ['ops/harness/hook-prompt.mjs'] },
   { id: 'commit-gate', text: 'A commit runs preflight, harness selftest and the unit tests.', enforcedBy: ['.githooks/pre-commit'] },
   { id: 'no-near-duplicate', text: 'No two landing pages share more than 60% of their sentences.', enforcedBy: ['ops/harness/page-gate.mjs'] },

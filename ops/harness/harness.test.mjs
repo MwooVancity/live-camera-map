@@ -1,7 +1,7 @@
 // Proves each harness gate can FAIL (and that the good fixture passes). Run: node --test ops/harness/harness.test.mjs
 import test from 'node:test';
 import assert from 'node:assert';
-import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { decide } from './hook-pretool.mjs';
@@ -241,4 +241,18 @@ test('prompt hook prints Line 0 and the ask-ChatGPT-every-chance rule', () => {
   assert.match(out, /LINE 0/);
   assert.match(out, /ASK CHATGPT EVERY CHANCE/);
   assert.match(out, /never bypass/);
+  assert.match(out, /GAP CHECK/);
+  assert.match(out, /Do not fill gaps with guesses/);
+});
+
+// Gap check (owner 2026-11-24): every ChatGPT row in plan.md section 9 dated 2026-11-25 or later lists what was MISSING from our prompt.
+test('plan.md section 9: ChatGPT rows from 2026-11-25 carry a MISSING: line', () => {
+  const plan = readFileSync(new URL('../../plan.md', import.meta.url), 'utf8');
+  const bad = [];
+  for (const line of plan.split(/\r?\n/)) {
+    const m = /^\| (\d{4}-\d{2}-\d{2}) \|/.exec(line);
+    if (!m || m[1] < '2026-11-25' || !/ChatGPT/.test(line)) continue;
+    if (!line.includes('MISSING:')) bad.push(line.slice(0, 80));
+  }
+  assert.deepEqual(bad, [], 'ChatGPT rows without a MISSING: line');
 });
