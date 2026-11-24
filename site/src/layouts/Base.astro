@@ -32,6 +32,12 @@ const ld = JSON.stringify({
     a { color:var(--link); }
     nav.crumbs { font-size:.9rem; color:var(--mut); margin:12px 0; }
     h1 { line-height:1.2; } h2 { margin-top:2rem; }
+    :global(button), :global(select) { font: inherit; min-height: 44px; padding: 6px 12px; } /* thumb-sized controls on phones: Save buttons, filters */
+    :global(table) { display:block; max-width:100%; overflow-x:auto; border-collapse:collapse; } /* wide tables scroll inside their own box, never the page */
+    :global(th), :global(td) { padding:4px 10px 4px 0; text-align:left; vertical-align:top; }
+    :global(.filters) { display:flex; flex-wrap:wrap; gap:10px 16px; align-items:center; margin:12px 0; }
+    :global(.filters label) { display:flex; flex-direction:column; gap:4px; font-size:0.9rem; }
+    :global([data-camera-list] li) { margin-bottom: 8px; }
     .cta { display:inline-block; background:var(--cta); color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none; font-weight:600; }
     .meta { color:var(--mut); font-size:.9rem; }
     section[data-block] { border-top:1px solid var(--line); margin-top:1.5rem; padding-top:.5rem; }
