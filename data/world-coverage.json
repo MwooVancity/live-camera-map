@@ -125,7 +125,7 @@
    "argosPlacePages": 14,
    "ourCameras": 0,
    "status": "blocked",
-   "next": "GDDKiA publishes camera imagery in a viewer; find out whether camera locations can be reused (registration was needed in hunt round 1)",
+   "next": "dane.gov.pl search \"kamery GDDKiA\" in a browser 2026-11-24 gave 8 datasets; the 5 titles I read are thermal-camera and pose-algorithm science data, none a road-camera list (the other 3 unread). No GDDKiA camera dataset found: email GDDKiA for a camera catalogue with coordinates and reuse licence, or read the GDDKiA camera viewer terms (hunt round 1: registration needed)",
    "note": "docs/source-audits/world-hunt-2026-11-24.md",
    "owner": null
   },
