@@ -37,3 +37,10 @@ test('WCAG AA contrast (4.5:1) for every text pair the theme uses', () => {
   const pairs = [['fg on bg', v('fg'), bg], ['fg on panel', v('fg'), panel], ['link on bg', v('link'), bg], ['link on panel', v('link'), panel], ['muted on bg', v('mut'), bg], ['muted on panel', v('mut'), panel], ['button text on cta', v('ctatext'), v('cta')]];
   for (const [name, a, b] of pairs) assert.ok(contrast(a, b) >= 4.5, `${name} is ${contrast(a, b).toFixed(2)}:1`);
 });
+
+test('phone header: nav links, search and buttons keep 44 px touch targets (measured 390 px: header 109 px, all targets 44, no sideways scroll)', () => {
+  const phone = /@media \(max-width:600px\)\s*\{([^}]*\{[^}]*\}[^}]*)+\}/.exec(base)?.[0] ?? '';
+  assert.match(phone, /header a \{[^}]*min-height:44px/, 'header links under 600 px');
+  assert.match(base, /#site-search input \{[^}]*min-height:44px/, 'search input');
+  assert.match(base, /:global\(button\), :global\(select\) \{[^}]*min-height: 44px/, 'buttons and selects');
+});
