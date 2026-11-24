@@ -410,24 +410,6 @@
       ]
     },
     {
-      "id": "radio",
-      "title": "Radio Browser (unknown)",
-      "mechanism": "server-proxied",
-      "routes": [
-        {
-          "route": "/api/radio/*",
-          "evidence": "gev/server/providers/radio.js"
-        }
-      ],
-      "probePaths": [
-        "/api/radio",
-        "/api/radio/stations",
-        "/api/radio/click"
-      ],
-      "proxyEnforced": true,
-      "permissionIds": []
-    },
-    {
       "id": "live-misc",
       "title": "Other live sources with unknown permission (Google Street View and 3D tiles, adsbdb, planespotters, AISStream, CelesTrak, Launch Library, Esri imagery, ECCC GeoMet, GDELT, Liveuamap, World News API, TomTom)",
       "mechanism": "mixed: server-proxied (blocked at proxy) and browser-direct (Esri, ECCC AQHI, Street View; not stoppable at proxy)",
@@ -656,6 +638,13 @@
         "wri-global-power-plants"
       ],
       "reason": "same ids"
+    },
+    "radio-stations": {
+      "basis": "enabled-source",
+      "sourceIds": [
+        "radio-browser"
+      ],
+      "reason": "exact GET /api/radio/stations; the POST /click vote route stays closed. Radio Browser row owner-approved 2026-11-24 (data/owner-approvals.json). Plan item 22."
     }
   },
   "libraryDisabledIds": [
@@ -845,9 +834,6 @@
         "toulon-mistral-feed-rdtpm-toulon-ratpdev-com",
         "tours-fil-bleu-data-filbleu-fr"
       ],
-      "radio": [
-        "radio-browser"
-      ],
       "live-misc": [
         "google-street-view-maps-javascript-api",
         "google-map-tiles-api-photorealistic-3d-tiles-places-geocoding",
@@ -917,6 +903,9 @@
         "maritime-chokepoints-imf-portwatch-imf-portwatch-chokepoints-services9-arcgis-co",
         "port-disruptions-imf-portwatch-imf-portwatch-disruptions-services9-arcgis-com"
       ]
-    }
+    },
+    "opened": [
+      "radio (stations)"
+    ]
   }
 }
