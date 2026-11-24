@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "gev-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "gev", "run", "dev", "--", "--port", "5173", "--host", "127.0.0.1"],
+      "port": 5173
+    },
+    {
+      "name": "site-dist",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "4321", "--directory", "site/dist"],
+      "port": 4321
+    }
+  ]
+}
