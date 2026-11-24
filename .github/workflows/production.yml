@@ -53,6 +53,7 @@ jobs:
           timeout 90 node ops/importers/iceland.mjs || echo "Iceland list not refreshed (exit $?)"
           timeout 90 node ops/importers/austin.mjs || echo "Austin list not refreshed (exit $?)"
           timeout 90 node ops/importers/tfl.mjs || echo "London list not refreshed (exit $?)"
+          timeout 90 node ops/importers/nsw.mjs || echo "New South Wales list not refreshed (exit $?)"
       - name: Camera health check (fair budget by source, previous result from the live site or, on the first run, from staging)
         timeout-minutes: 22
         run: |

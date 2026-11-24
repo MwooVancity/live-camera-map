@@ -177,11 +177,11 @@
   {
    "country": "australia",
    "argosPlacePages": 9,
-   "ourCameras": 0,
-   "status": "blocked",
-   "next": "NSW stale, Queensland needs key and licence read; Victoria not investigated",
+   "ourCameras": 250,
+   "status": "partial",
+   "next": "NSW built 2026-11-24 (Transport for NSW Live Traffic, 250 cameras, CC BY 4.0, link-out; picture host blocks automated checks so health is unknown by design). Next: Queensland (needs key and licence read), Victoria (not investigated)",
    "note": null,
-   "owner": "Claude / Mike key"
+   "owner": "Claude"
   },
   {
    "country": "croatia",

@@ -238,5 +238,25 @@
   "license": "Open Government Licence v2.0 with Transport for London amendments (TfL transport data service terms)",
   "licenseUrl": "https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service",
   "reviewedAt": "2026-11-24"
+ },
+ {
+  "id": "nsw-live-traffic",
+  "name": "Live Traffic Cameras (Transport for NSW)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one request for the list per run; picture links are not requested by the health checker (the picture host answers automated requests with a placeholder page)",
+   "docsUrl": "https://opendata.transport.nsw.gov.au/dataset/live-traffic-cameras"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Source: Transport for NSW, Live Traffic Cameras, CC BY 4.0.",
+  "license": "Creative Commons Attribution 4.0 (Transport for NSW Open Data Hub data licence)",
+  "licenseUrl": "https://opendata.transport.nsw.gov.au/datalicence",
+  "reviewedAt": "2026-11-24"
  }
 ]

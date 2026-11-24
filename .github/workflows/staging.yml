@@ -48,6 +48,8 @@ jobs:
         run: timeout 90 node ops/importers/austin.mjs || echo "Austin list not refreshed (exit $?); the committed list is used"
       - name: Refresh the London camera list (Transport for London JamCams; three requests; the importer re-reads the terms page sentences and robots.txt first; a failed or refused run keeps the committed list and never fails the deploy)
         run: timeout 90 node ops/importers/tfl.mjs || echo "London list not refreshed (exit $?); the committed list is used"
+      - name: Refresh the New South Wales camera list (Transport for NSW Live Traffic cameras; three requests; the importer re-reads the Data Licence page sentences first; robots.txt answers 403 so no rules are read; a failed or refused run keeps the committed list and never fails the deploy)
+        run: timeout 90 node ops/importers/nsw.mjs || echo "New South Wales list not refreshed (exit $?); the committed list is used"
       - name: Camera health check (previous result from the deployed site, 18 min time budget shared fairly by source)
         # Fair budget (rule health-fair-budget): each source gets a share of the 18 min and of the 10000-request cap by its own polite pace
         # (Finland images 1100 ms apart, Toronto 500 ms, DriveBC 300 ms, Caltrans 100 ms; Quebec links are never requested). Inside a source the

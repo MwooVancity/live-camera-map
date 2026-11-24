@@ -46,6 +46,7 @@ export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 12000, bu
     'austin-traffic':{ concurrency: 1, hostDelayMs: 250, staleHours: 6 }, // cctv.austinmobility.io: robots.txt is an S3 AccessDenied body (no rules) and no stated limit; one worker, 250 ms apart (at most 4 a second), HEAD only; about 823 pictures take about 3.5 minutes
     digitraffic: { concurrency: 1, hostDelayMs: 1100, staleHours: 6, needValidators: true },
     'quebec-mtmd': { skip: 'host-blocks-automated-checks' },
+    'nsw-live-traffic': { skip: 'host-blocks-automated-checks' }, // webcams.transport.nsw.gov.au answers our client with an HTML placeholder (0 of 15 sampled returned an image, docs/source-audits/world-feed-audit-2026-11-23.md): no request, every NSW camera unknown by design
   } };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const STATUSES = ['reachable', 'stale', 'unavailable', 'unknown'];

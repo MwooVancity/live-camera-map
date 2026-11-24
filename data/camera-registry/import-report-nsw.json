@@ -1,0 +1,8 @@
+{
+ "generatedAt": "2026-11-24T21:05:48.111Z",
+ "source": "https://data.livetraffic.com/cameras/traffic-cam.json",
+ "licenceUrl": "https://opendata.transport.nsw.gov.au/datalicence",
+ "raw": 250,
+ "dropped": {},
+ "total": 250
+}

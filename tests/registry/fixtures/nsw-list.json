@@ -1,0 +1,99 @@
+{
+ "type": "FeatureCollection",
+ "rights": {
+  "copyright": "Transport for NSW",
+  "licence": "https://opendata.transport.nsw.gov.au/dataset/live-traffic-cameras"
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "id": "023651ee-389c-4677-978e-d39b6c24c1e7",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.10533,
+     -34.02977
+    ]
+   },
+   "properties": {
+    "region": "SYD_SOUTH",
+    "title": "5 Ways (Miranda)",
+    "view": "5 Ways at The Boulevarde looking west towards Sutherland.",
+    "direction": "W",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/5_ways_miranda.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "9ca3da77-7d9c-4820-a23a-df48d4712522",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.161891,
+     -33.933667
+    ]
+   },
+   "properties": {
+    "region": "SYD_MET",
+    "title": "Airport Drive (Mascot)",
+    "view": "Airport Drive at Marsh Street looking east towards the city.",
+    "direction": "E",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/airport_dr_mascot.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "ddc95b81-9225-45e7-98b1-e54e369522a6",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.203629,
+     -33.868728
+    ]
+   },
+   "properties": {
+    "region": "SYD_MET",
+    "title": "King St & Sussex St (Sydney)",
+    "view": "King Street looking east towards the city.",
+    "direction": "E",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/king_st_&_sussex_st_sydney.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "deed2090-7deb-429d-8cf7-0b247c17f653",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     150.2315,
+     -33.582099
+    ]
+   },
+   "properties": {
+    "region": "REG_WEST",
+    "title": "Great Western Highway (Victoria Pass)",
+    "view": "Transport for NSW is carrying out work at Victoria Pass to reinstate this section of the Great Western Highway and reconnect the Blue Mountains with the Central West. While the work is underway, the Live Traffic NSW camera at this location will be switched off. Project specific images provided above will be updated as work progresses.",
+    "direction": "E",
+    "href": "https://data.livetraffic.com/cameras/victoriapass_11.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "d29d6804-de4e-46b6-9913-32efc76cebe6",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     153.126775,
+     -30.283807
+    ]
+   },
+   "properties": {
+    "region": "Regional North",
+    "title": "Pacific Highway & Orlando Street (Coffs Harbour)",
+    "view": "Pacific Highway at Orlando Street looking north towards Grafton.",
+    "direction": "N",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/pacific_highway_&_orlando_st_coffs_harbour.jpeg"
+   }
+  }
+ ]
+}

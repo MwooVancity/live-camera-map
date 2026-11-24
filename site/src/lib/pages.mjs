@@ -8,6 +8,7 @@ import { HK_REGION } from '../../../ops/importers/lib/hongkong.mjs';
 import { IS_REGION } from '../../../ops/importers/lib/iceland.mjs';
 import { TX_REGION } from '../../../ops/importers/lib/austin.mjs';
 import { LN_REGION } from '../../../ops/importers/lib/tfl.mjs';
+import { NSW_REGION } from '../../../ops/importers/lib/nsw.mjs';
 
 // NFKD splits an accented letter into the letter plus a combining mark; the marks are removed first, otherwise "Hämeenlinna" became "ha-meenlinna".
 export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -93,6 +94,13 @@ export const REGIONS = {
     placeText: (x) => sentence(`TfL's list has no borough or place field: each camera is named as TfL names it, usually the roads it is at, and every one is in London, so there are no city pages; all ${x.total} available cameras are listed below. Cameras TfL marks as not available are left out.`),
     cityText: () => '',
     caveats: ['The camera pictures belong to Transport for London and are not shown here. Each link goes to one still picture address on s3-eu-west-1.amazonaws.com/jamcams.tfl.gov.uk; it is a link only. TfL\'s licence covers its data; it does not mention the picture files, and we do not suggest TfL endorses this site.'],
+  },
+  // New South Wales: one region from Transport for NSW's own Live Traffic list; each row carries the agency's view sentence and area code as text, and the feed has no place field, so no city pages.
+  [NSW_REGION.slug]: {
+    sourceId: 'nsw-live-traffic', agency: 'Transport for NSW', cityLimit: 0, guide: null, credit: true, list: 'Live Traffic camera list', listAll: true,
+    placeText: (x) => sentence(`Transport for NSW's list has no suburb or place field: each camera is named as the agency names it, usually a road and a suburb in brackets, and carries the agency's own sentence on where it looks and an agency area code (for example SYD_SOUTH), which is an area of the agency and not a place name, so there are no city pages; all ${x.total} cameras are listed below.`),
+    cityText: () => '',
+    caveats: ['The camera pictures belong to Transport for NSW and are not shown here. Each link goes to one still picture address on webcams.transport.nsw.gov.au (one on data.livetraffic.com); it is a link only. That host answers automated requests with a placeholder page, so we never request the pictures and every camera here shows the status unknown by design, not broken. The Open Data Hub licence covers the data; it does not say whether the picture files themselves are covered, and we do not suggest Transport for NSW endorses this site.'],
   },
   // Texas: one source, the City of Austin's own list. Region page is Austin only (the registry has no other Texas source); the feed has no city field and lists cameras in the City's extra-territorial jurisdiction too, so no city is invented.
   [TX_REGION.slug]: {

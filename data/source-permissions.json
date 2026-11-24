@@ -5070,6 +5070,23 @@
       "needsHumanReview": true,
       "mustNotShip": false,
       "enabled": true
+    },
+    {
+      "id": "nsw-live-traffic-cameras",
+      "name": "Live Traffic Cameras, Transport for NSW (Live Traffic GeoJSON camera list)",
+      "section": "Camera registry sources (read by ops/importers/nsw.mjs)",
+      "folder": "",
+      "licence": "Transport for NSW Open Data Hub \"Data Licence\" page (https://opendata.transport.nsw.gov.au/datalicence, linked from the dataset page https://opendata.transport.nsw.gov.au/dataset/live-traffic-cameras which says \"License Creative Commons Attribution\"; read by Claude 2026-11-24 and re-read as page text by the importer every run): \"Unless otherwise stated, the data on the Open Data Hub is made available under the Open Data Policy and is licensed under a Creative Commons Attribution 4.0 License.\" and \"The Creative Commons Attribution license for the datasets allows for redistribution and reuse of a licensed work on the condition that Transport for NSW is attributed as the source.\" The full licence is at http://creativecommons.org/licenses/by/4.0/legalcode (CC BY 4.0, a licence that allows commercial use with attribution); the page also asks users to read the Terms, Privacy Policy and Acceptable Use Policy PDFs (not read by Claude: UNVERIFIED, flagged for the owner). Feed: https://data.livetraffic.com/cameras/traffic-cam.json (no key, GeoJSON, 250 features on 2026-11-24, top-level rights {copyright: \"Transport for NSW\", licence: the dataset page}); data.livetraffic.com/robots.txt answers 403 (no rules readable, treated as no robots file). Only features whose picture link is on https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/ or https://data.livetraffic.com/cameras/ are kept. Credit line printed on every page that shows the cameras: \"Source: Transport for NSW, Live Traffic Cameras, CC BY 4.0.\" The importer stops if the licence page loses the phrases \"licensed under a Creative Commons Attribution 4.0 License\", \"on the condition that Transport for NSW is attributed as the source\" or \"Creative Commons Attribution 4.0\".",
+      "commercialStatus": "allowed_per_doc",
+      "statusReason": "quoted text: the Open Data Hub data is licensed under Creative Commons Attribution 4.0 (a licence that allows commercial use) on the condition that Transport for NSW is attributed as the source; applies to the camera list, pictures unverified (link-out only)",
+      "attribution": "Source: Transport for NSW, Live Traffic Cameras, CC BY 4.0.",
+      "provenance": "https://opendata.transport.nsw.gov.au/datalicence, https://opendata.transport.nsw.gov.au/dataset/live-traffic-cameras and the feed URL above, read 2026-11-24",
+      "imageStatus": "unverified: the licence page does not say whether the camera picture files on webcams.transport.nsw.gov.au are covered by the data licence; the picture host answers automated requests with a placeholder page (docs/source-audits/world-feed-audit-2026-11-23.md); image display, caching and redistribution not stated; link-out only",
+      "reviewedAt": "2026-11-24",
+      "reviewedBy": "claude-doc-read",
+      "needsHumanReview": true,
+      "mustNotShip": false,
+      "enabled": true
     }
   ]
 }
