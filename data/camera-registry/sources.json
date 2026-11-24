@@ -278,5 +278,25 @@
   "license": "Highway Bureau, MOTC open traffic data notice: free public use, original source must be stated as the Bureau",
   "licenseUrl": "https://thbapp.thb.gov.tw/opendata/",
   "reviewedAt": "2026-11-24"
+ },
+ {
+  "id": "iowa-dot",
+  "name": "Traffic Cameras (Iowa Department of Transportation, ArcGIS)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "a count query and two list pages per run; no limit stated by the host; picture links are checked by the health checker at most 4 a second",
+   "docsUrl": "https://www.arcgis.com/home/item.html?id=c4063f200a7b4da5826e2ac86c677cf5"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Source: Iowa Department of Transportation, Traffic Cameras, CC BY 4.0.",
+  "license": "Creative Commons Attribution 4.0 International (dataset licence); Iowa DOT GIS Data Terms of Use",
+  "licenseUrl": "https://iowadot.gov/policies_and_statements/terms-of-use#gis",
+  "reviewedAt": "2026-11-24"
  }
 ]

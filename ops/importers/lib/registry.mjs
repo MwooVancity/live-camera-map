@@ -9,6 +9,7 @@ import { IS_REGION, IS_COUNTRY } from './iceland.mjs';
 import { TX_REGION, TX_COUNTRY } from './austin.mjs';
 import { NSW_REGION, NSW_COUNTRY } from './nsw.mjs';
 import { TW_REGION, TW_COUNTRY } from './taiwan.mjs';
+import { IA_REGION, IA_COUNTRY } from './iowa.mjs';
 import { LN_REGION, LN_COUNTRY } from './tfl.mjs';
 
 export const CA_BOUNDS = { latMin: 32.3, latMax: 42.1, lonMin: -124.6, lonMax: -114.0 };
@@ -103,6 +104,7 @@ export const REGION_COUNTRY = {
   [LN_REGION.slug]: LN_COUNTRY, // London: one region, TfL's own JamCam list (city is London for every row, but the region page lists them all, no city pages)
   [NSW_REGION.slug]: NSW_COUNTRY, // New South Wales: one region, Transport for NSW's own Live Traffic list (region code kept as text, no city field, so no city pages)
   [TW_REGION.slug]: TW_COUNTRY, // Taiwan: one region, the Highway Bureau provincial-road CCTV list (road code and kilometre mark kept as text, no city field, so no city pages)
+  [IA_REGION.slug]: IA_COUNTRY, // Iowa: one region, the Iowa DOT's own camera list (route kept as road, DOT type and function kept as text, no city field, so no city pages)
   [TX_REGION.slug]: TX_COUNTRY,// Texas: one source, the City of Austin's own list (no city field, so no city pages; the region page says it is Austin only)
 };
 export const countryOf = (regionSlug) => REGION_COUNTRY[regionSlug] || null;

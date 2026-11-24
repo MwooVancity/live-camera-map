@@ -17,7 +17,7 @@
    "argosPlacePages": 49,
    "ourCameras": 0,
    "status": "blocked",
-   "next": "DGT production NAP camera dataset (DATEX2 v3.7, CC BY, excludes Catalonia and Basque Country per ChatGPT, UNVERIFIED by me: nap.dgt.es answers 200); the separate locations record is on nap-test.dgt.es only (ChatGPT): find the exact dataset URL on nap.dgt.es, read the XML, check for stable per-camera links; our DGT email is pending",
+   "next": "BUILD NEXT (VERIFIED 2026-11-24 by curl): https://nap.dgt.es/dataset/camaras-dgt-datex2-v3-7 lists licence \"Free of charge\" and excludes Catalonia and the Basque Country; feed https://nap.dgt.es/datex2/v3/dgt/DevicePublication/camaras_datex2_v37.xml answers 200 keyless, 3.7 MB, 1,980 camera devices with id, road, latitude and longitude, picture path https://etraffic.dgt.es/camarasEtraffic/<id>.jpg (stable per id, image/jpeg 200); etraffic robots allows all. Open: read the licence text on the dataset page (CC BY claimed by ChatGPT, UNVERIFIED), read DGT legal notice, then importer (one agent, after the Iowa commit) with licence row; our DGT email of 2026-11-23 still pending",
    "note": null,
    "owner": "Mike pastes the reply"
   },

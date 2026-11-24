@@ -1,6 +1,6 @@
 // Camera health checker. Reads data/camera-registry/cameras.json, writes data/health/health.json (generated, gitignored).
 // Usage: node ops/health/check.mjs [--previous <file|url>] [--registry <cameras.json>] [--out <health.json>]
-//   [--limit N] [--sample N] [--max-requests 12000] [--budget-min 18] [--concurrency 6] [--host-delay-ms 100]
+//   [--limit N] [--sample N] [--max-requests 14000] [--budget-min 18] [--concurrency 6] [--host-delay-ms 100]
 //   [--stale-hours 6] [--magic-all] [--source <sourceId>]   (--source checks one source only; with --sample it never writes health.json)
 //   [--max-check-age-h 48] [--run-every-h 3]   (a camera's own check older than the first is unknown; the second only turns runs into hours in the report)
 // Fair budget: each source gets a share of the time budget and request cap by its own polite pace; its cameras are checked oldest-last-checked first
@@ -23,7 +23,7 @@ import { MAX_CHECK_AGE_H } from './lib/age.mjs';
 // (lib/plan.mjs); inside a source the cameras checked longest ago (never checked first) go first; the cameras a run does not reach keep
 // their previous record, and one whose own last check is older than maxCheckAgeH becomes 'unknown' (lib/age.mjs, also used by the site).
 // runEveryHours is the staging cron spacing ('17 */3 * * *'); it only turns "runs per full cycle" into hours for the report.
-export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 12000, budgetMs: 18 * 60000, breakerAt: 25, retries: 2, backoffMs: 1000, backoffMaxMs: 30000, timeoutMs: 15000, staleHours: 6, minBytes: 1000, maxUnknownShare: 0.2, magicAll: false,
+export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 14000, budgetMs: 18 * 60000, breakerAt: 25, retries: 2, backoffMs: 1000, backoffMaxMs: 30000, timeoutMs: 15000, staleHours: 6, minBytes: 1000, maxUnknownShare: 0.2, magicAll: false,
   maxCheckAgeH: MAX_CHECK_AGE_H, runEveryHours: 3, retrySlack: 0.9,
   // Per-source overrides (concurrency, hostDelayMs = minimum gap between requests to that source's host, staleHours).
   // drivebc: www.drivebc.ca publishes no rate limit and its API terms say limits may change without notice, so it gets its own
@@ -49,6 +49,7 @@ export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 12000, bu
     'nsw-live-traffic': { skip: 'host-blocks-automated-checks' }, // webcams.transport.nsw.gov.au answers our client with an HTML placeholder (0 of 15 sampled returned an image, docs/source-audits/world-feed-audit-2026-11-23.md): no request, every NSW camera unknown by design
     // taiwan-thb: cctv-ss01..08.thb.gov.tw answers a HEAD request with 404 (a GET returns the JPEG, about 15 KB), so the usual HEAD check would mark every camera down. 2,354 GETs of about 15 KB each per run is too heavy for the free CI budget: no request, every Taiwan camera unknown by design (the page says live status is not checked). Revisit with a GET-based sampled check.
     'taiwan-thb': { skip: 'host-blocks-automated-checks' },
+    'iowa-dot': { concurrency: 1, hostDelayMs: 250, staleHours: 6 }, // atmsqf.iowadot.gov: robots.txt 404 (no rules), no stated limit, a HEAD answers 200 image/jpeg (read 2026-11-24); one worker, 250 ms apart (at most 4 a second), HEAD only; 1,253 pictures take about 5 minutes (they run beside the other hosts, so the run time is still set by Finland, about 15 minutes of the 18 minute budget). The request cap was raised from 12000 to 14000 on 2026-11-24 when this list took the planned requests to 10,037: the health test needs 1.2 x the probed cameras under the cap for retries; cycling (a source checked every 2nd or 3rd run) is the next lever, not another raise
   } };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const STATUSES = ['reachable', 'stale', 'unavailable', 'unknown'];

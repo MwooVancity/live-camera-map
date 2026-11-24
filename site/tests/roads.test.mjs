@@ -179,7 +179,7 @@ test('built road pages: one per curated road plus the hub, counts equal countsBy
   const hf = healthFile();
   const { out, pages } = build({ ...env, HEALTH_FILE: hf });
   const roads = curatedRoads(cameras);
-  const byRoad = countsBy(cameras, 'road');
+  const byRoad = countsBy(cameras.filter((c) => c.regionSlug === 'california'), 'road'); // road pages are California-only; Iowa also has an I-80 and an I-35
   assert.ok(pages.has('/roads/'));
   const hub = pages.get('/roads/');
   for (const road of roads) {

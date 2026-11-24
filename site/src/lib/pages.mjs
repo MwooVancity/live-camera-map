@@ -10,6 +10,7 @@ import { TX_REGION } from '../../../ops/importers/lib/austin.mjs';
 import { LN_REGION } from '../../../ops/importers/lib/tfl.mjs';
 import { NSW_REGION } from '../../../ops/importers/lib/nsw.mjs';
 import { TW_REGION } from '../../../ops/importers/lib/taiwan.mjs';
+import { IA_REGION } from '../../../ops/importers/lib/iowa.mjs';
 
 // NFKD splits an accented letter into the letter plus a combining mark; the marks are removed first, otherwise "Hämeenlinna" became "ha-meenlinna".
 export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -110,6 +111,13 @@ export const REGIONS = {
     cityText: () => '',
     caveats: ['The camera pictures belong to the Highway Bureau and are not shown here. Each link goes to one still picture address on cctv-ss01 to cctv-ss08.thb.gov.tw; it is a link only. Live status is not checked: the picture host does not answer the usual status request, so every camera here shows the status unknown by design, not broken. The list covers the Bureau\'s provincial roads only, not the national freeways. The Bureau lets the public use its traffic data free of charge if the Bureau is named as the original source, and says the data is for reference only; its notice does not say whether the picture files are covered, and we do not suggest the Bureau endorses this site.'],
   },
+  // Iowa: one region from the Iowa DOT's own camera list; the route (I-80, US 20) is the road, the DOT's type and function labels are kept as text, the layer has no place field, so no city pages.
+  [IA_REGION.slug]: {
+    sourceId: 'iowa-dot', agency: 'Iowa Department of Transportation', cityLimit: 0, guide: null, credit: true, list: 'traffic camera list', listAll: true,
+    placeText: (x) => sentence(`The Iowa DOT's list has no city or place field: each camera is named as the DOT names it, usually a route and a mile marker (for example I-80 @ MM 114.2), and carries the DOT's own type (Iowa DOT, RWIS road weather station or rest area) and function as text, so there are no city pages; all ${x.total} cameras are listed below. A weather station or rest area with several views has one link per view.`),
+    cityText: () => '',
+    caveats: ['The camera pictures belong to the Iowa Department of Transportation and are not shown here. Each link goes to one still picture address on atmsqf.iowadot.gov; it is a link only, and the DOT\'s live video streams are not linked. The DOT licenses the camera list under Creative Commons Attribution 4.0 with credit to the DOT; that licence covers the data, and we do not suggest the DOT endorses this site.'],
+  },
   // Texas: one source, the City of Austin's own list. Region page is Austin only (the registry has no other Texas source); the feed has no city field and lists cameras in the City's extra-territorial jurisdiction too, so no city is invented.
   [TX_REGION.slug]: {
     sourceId: 'austin-traffic', agency: 'City of Austin', cityLimit: 0, guide: null, credit: true, list: 'traffic camera list', listAll: true,
@@ -142,6 +150,7 @@ export const curatedCities = (cams, limit) => curatedPlaces(cams, limit).map((p)
 export function curatedRoads(cams, limit = 10) {
   const by = new Map();
   for (const c of cams) {
+    if (c.regionSlug !== 'california') continue; // road pages are California-only: another region's route (Iowa I-80, I-35) must never become a California road page, a sitemap row or take a place in the ten
     const k = roadSlug(c.road);
     if (!k) continue;
     const e = by.get(k) || { n: 0, spell: {} };

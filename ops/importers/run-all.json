@@ -12,6 +12,7 @@
     { "id": "austin", "script": "austin.mjs", "timeoutSec": 90 },
     { "id": "tfl", "script": "tfl.mjs", "timeoutSec": 90, "required": false, "why": "tfl.gov.uk answers its terms page with 403 to GitHub runners (CI run 45488938553, 2026-11-24); not worked around: the committed London rows stay, refresh by hand from a home machine" },
     { "id": "nsw", "script": "nsw.mjs", "timeoutSec": 90 },
-    { "id": "taiwan", "script": "taiwan.mjs", "timeoutSec": 90, "required": false, "why": "Taiwan government hosts may refuse foreign cloud runners; not yet tried from CI (2026-11-24), so a failure only warns and the committed rows stay" }
+    { "id": "taiwan", "script": "taiwan.mjs", "timeoutSec": 90, "required": false, "why": "Taiwan government hosts may refuse foreign cloud runners; not yet tried from CI (2026-11-24), so a failure only warns and the committed rows stay" },
+    { "id": "iowa", "script": "iowa.mjs", "timeoutSec": 90 }
   ]
 }

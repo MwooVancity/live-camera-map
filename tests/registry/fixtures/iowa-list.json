@@ -1,0 +1,287 @@
+{
+ "objectIdFieldName": "FID",
+ "globalIdFieldName": "",
+ "geometryType": "esriGeometryPoint",
+ "fields": [
+  {
+   "name": "device_id",
+   "type": "esriFieldTypeInteger",
+   "alias": "device_id",
+   "sqlType": "sqlTypeInteger",
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "Desc_",
+   "type": "esriFieldTypeString",
+   "alias": "Desc_",
+   "sqlType": "sqlTypeNVarchar",
+   "length": 2147483647,
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "UpdateDate",
+   "type": "esriFieldTypeInteger",
+   "alias": "UpdateDate",
+   "sqlType": "sqlTypeInteger",
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "UpdateTime",
+   "type": "esriFieldTypeInteger",
+   "alias": "UpdateTime",
+   "sqlType": "sqlTypeInteger",
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "UTCoffset",
+   "type": "esriFieldTypeInteger",
+   "alias": "UTCoffset",
+   "sqlType": "sqlTypeInteger",
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "linear_reference",
+   "type": "esriFieldTypeDouble",
+   "alias": "linear_reference",
+   "sqlType": "sqlTypeFloat",
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "Route",
+   "type": "esriFieldTypeString",
+   "alias": "Route",
+   "sqlType": "sqlTypeNVarchar",
+   "length": 2147483647,
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "ImageName",
+   "type": "esriFieldTypeString",
+   "alias": "ImageName",
+   "sqlType": "sqlTypeNVarchar",
+   "length": 2147483647,
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "ImageURL",
+   "type": "esriFieldTypeString",
+   "alias": "ImageURL",
+   "sqlType": "sqlTypeNVarchar",
+   "length": 2147483647,
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "VideoURL",
+   "type": "esriFieldTypeString",
+   "alias": "VideoURL",
+   "sqlType": "sqlTypeNVarchar",
+   "length": 2147483647,
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "ORG",
+   "type": "esriFieldTypeString",
+   "alias": "ORG",
+   "sqlType": "sqlTypeNVarchar",
+   "length": 2147483647,
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "latitude",
+   "type": "esriFieldTypeDouble",
+   "alias": "latitude",
+   "sqlType": "sqlTypeFloat",
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "longitude",
+   "type": "esriFieldTypeDouble",
+   "alias": "longitude",
+   "sqlType": "sqlTypeFloat",
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "Type",
+   "type": "esriFieldTypeString",
+   "alias": "Type",
+   "sqlType": "sqlTypeNVarchar",
+   "length": 2147483647,
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "FID",
+   "type": "esriFieldTypeOID",
+   "alias": "FID",
+   "sqlType": "sqlTypeInteger",
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "REGION",
+   "type": "esriFieldTypeString",
+   "alias": "Region",
+   "sqlType": "sqlTypeOther",
+   "length": 100,
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "RECORDED",
+   "type": "esriFieldTypeString",
+   "alias": "Is Camera Recorded?",
+   "sqlType": "sqlTypeOther",
+   "length": 1,
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "COMMON_ID",
+   "type": "esriFieldTypeString",
+   "alias": "Common Camera ID",
+   "sqlType": "sqlTypeOther",
+   "length": 25,
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "FUNCTION",
+   "type": "esriFieldTypeString",
+   "alias": "Function",
+   "sqlType": "sqlTypeOther",
+   "length": 256,
+   "domain": null,
+   "defaultValue": null
+  }
+ ],
+ "features": [
+  {
+   "attributes": {
+    "device_id": 59663024,
+    "Desc_": "I-80 @ MM 114.2",
+    "UpdateDate": 20261124,
+    "UpdateTime": 64300,
+    "UTCoffset": -600,
+    "linear_reference": 114.24669255994516,
+    "Route": "I-80",
+    "ImageName": "I-80 @ MM 114.2",
+    "ImageURL": "https://atmsqf.iowadot.gov/SNAPSHOTS/PUBLIC/Metro/80tv114hd.jpeg",
+    "VideoURL": "https://video3.iowadot.gov:8888/ankeny/80tv114lb/playlist.m3u8",
+    "ORG": "IADOT",
+    "latitude": 41.553252,
+    "longitude": -93.93048,
+    "Type": "Iowa DOT",
+    "FID": 945742,
+    "REGION": "I-80",
+    "RECORDED": "Y",
+    "COMMON_ID": "80TV114",
+    "FUNCTION": "General"
+   }
+  },
+  {
+   "attributes": {
+    "device_id": 59663001,
+    "Desc_": "RWIS - I-80 MM 155 @ Colfax",
+    "UpdateDate": 20261124,
+    "UpdateTime": 64259,
+    "UTCoffset": -600,
+    "linear_reference": 154.19365593651162,
+    "Route": "I-80",
+    "ImageName": "R53: West View",
+    "ImageURL": "https://atmsqf.iowadot.gov/snapshots/public/RWIS/RWIS_53-00.jpg",
+    "VideoURL": null,
+    "ORG": "IADOT",
+    "latitude": 41.689,
+    "longitude": -93.2597,
+    "Type": "RWIS",
+    "FID": 945744,
+    "REGION": "RWIS Cameras",
+    "RECORDED": "E",
+    "COMMON_ID": "RWIS_53",
+    "FUNCTION": "RWIS"
+   }
+  },
+  {
+   "attributes": {
+    "device_id": 59663001,
+    "Desc_": "RWIS - I-80 MM 155 @ Colfax",
+    "UpdateDate": 20261124,
+    "UpdateTime": 64259,
+    "UTCoffset": -600,
+    "linear_reference": 154.19365593651162,
+    "Route": "I-80",
+    "ImageName": "R53: East View",
+    "ImageURL": "https://atmsqf.iowadot.gov/snapshots/Public/RWIS/RWIS_53-02.jpg",
+    "VideoURL": null,
+    "ORG": "IADOT",
+    "latitude": 41.689,
+    "longitude": -93.2597,
+    "Type": "RWIS",
+    "FID": 945746,
+    "REGION": "RWIS Cameras",
+    "RECORDED": "E",
+    "COMMON_ID": "RWIS_53",
+    "FUNCTION": "RWIS"
+   }
+  },
+  {
+   "attributes": {
+    "device_id": 59663802,
+    "Desc_": "Weigh Station - I-80 WB MM 151 near Mitchellville",
+    "UpdateDate": 20261124,
+    "UpdateTime": 64300,
+    "UTCoffset": -600,
+    "linear_reference": 150.27233740390744,
+    "Route": "I-80",
+    "ImageName": "JS80WB151 - Center",
+    "ImageURL": "https://atmsqf.iowadot.gov/snapshots/Public/RestAreas/JS80WB151-CENTER.jpg",
+    "VideoURL": null,
+    "ORG": "IADOT",
+    "latitude": 41.682462,
+    "longitude": -93.334343,
+    "Type": "Rest Area/Parking",
+    "FID": 945758,
+    "REGION": "JS80WB151 Weigh Station - I-80 WB MM 151 near Mitchellville",
+    "RECORDED": "E",
+    "COMMON_ID": "JS80WB151",
+    "FUNCTION": "Rest Area"
+   }
+  },
+  {
+   "attributes": {
+    "device_id": 59662995,
+    "Desc_": "WWD - I-35 @ MM 92.6 (1st St - Ankeny)",
+    "UpdateDate": 20261124,
+    "UpdateTime": 64300,
+    "UTCoffset": -600,
+    "linear_reference": 92.64257381688724,
+    "Route": "I-35",
+    "ImageName": "WWD - I-35 @ MM 92.6 (1st St - Ankeny)",
+    "ImageURL": "https://atmsqf.iowadot.gov/SNAPSHOTS/PUBLIC/Metro/wwdtv072hd.jpeg",
+    "VideoURL": "https://video4.iowadot.gov:8888/ankeny/wwdtv072lb/playlist.m3u8",
+    "ORG": "IADOT",
+    "latitude": 41.732438,
+    "longitude": -93.576679,
+    "Type": "Iowa DOT",
+    "FID": 945771,
+    "REGION": "WWD",
+    "RECORDED": "Y",
+    "COMMON_ID": "WWDTV072",
+    "FUNCTION": "WWD"
+   }
+  }
+ ]
+}
