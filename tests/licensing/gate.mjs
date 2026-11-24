@@ -3,8 +3,9 @@ export const MAX_REVIEW_AGE_DAYS = 180;
 
 export function isEnabled(s, today = new Date()) {
   if (!s || s.mustNotShip) return false;
-  if (s.commercialStatus !== 'allowed_per_doc') return false; // unknown, restricted, anything else: closed
-  if (!s.attribution || !String(s.attribution).trim()) return false;
+  if (s.commercialStatus === 'allowed_per_owner') { if (!s.ownerApprovedAt || Number.isNaN(Date.parse(s.ownerApprovedAt))) return false; } // owner approval needs its date (data/owner-approvals.json)
+  else if (s.commercialStatus !== 'allowed_per_doc') return false; // unknown, restricted, anything else: closed
+  if (!s.attribution || !String(s.attribution).trim() || /^[-—n/a\s]*$/i.test(String(s.attribution))) return false; // a dash or n/a is no attribution (same rule as build-inventory)
   if (!s.provenance || !String(s.provenance).trim()) return false;
   if (!s.licence || !String(s.licence).trim()) return false;
   const t = Date.parse(s.reviewedAt);

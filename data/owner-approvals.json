@@ -1,0 +1,6 @@
+{
+  "approvedAt": "2026-11-24",
+  "by": "Mike (owner), in chat 2026-11-24: \"Everything is confirmed approved. I want everything in gev\"",
+  "scope": "Every row whose commercialStatus is unknown (licence unclear in the doc). NEVER a restricted row and never a mustNotShip row: ads make the site commercial, so non-commercial and agreement-only data stays closed until the licensor allows it.",
+  "doc": "Read by ops/audit/build-inventory.mjs. An approved row becomes commercialStatus allowed_per_owner and is enabled only if it also has attribution, provenance, licence text and a review date. Roll back by deleting this file and regenerating."
+}

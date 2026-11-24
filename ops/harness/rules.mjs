@@ -4,7 +4,7 @@
 export const RULES = [
   { id: 'gev-immutable', text: 'Nothing under gev/ is edited, created, deleted or moved.', enforcedBy: ['ops/harness/hook-pretool.mjs', 'tests/immutability/check.mjs', '.github/workflows/immutability.yml'] },
   { id: 'no-secrets', text: 'No secret in git, HTML or logs.', enforcedBy: ['ops/audit/scan-summary.mjs'] },
-  { id: 'licence-gate', text: 'A source is enabled only if allowed_per_doc, attributed, reviewed under 180 days ago, and not mustNotShip.', enforcedBy: ['tests/licensing/gate.mjs', 'tests/licensing/licensing.test.mjs'] },
+  { id: 'licence-gate', text: 'A source is enabled only if allowed_per_doc (or owner-approved with a date), attributed, reviewed under 180 days ago, and not mustNotShip.', enforcedBy: ['tests/licensing/gate.mjs', 'tests/licensing/licensing.test.mjs'] },
   { id: 'restricted-unreachable', text: 'No restricted or unknown source is reachable by a visitor through the proxy.', enforcedBy: ['tests/exclusion/exclusion.test.mjs', 'tests/exclusion/proxy-proof.mjs'] },
   { id: 'proxy-allowlist', text: 'The proxy allows only listed routes and methods; credential setup is never reachable.', enforcedBy: ['tests/security/methods.mjs', 'tests/security/probe.mjs'] },
   { id: 'deploy-lint', text: 'GEV port is never published, trusted peers none, no secret in compose.', enforcedBy: ['tests/deploy/compose-lint.test.mjs'] },

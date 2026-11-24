@@ -36,6 +36,7 @@ const strip = (s) => s.replace(/\*\*/g, '').replace(/\[([^\]]*)\]\([^)]*\)/g, '$
 
 // Rows the doc parser cannot read but Claude verified on the primary page (evidence in the reason; Mike still confirms before ads).
 const VERIFIED_ALLOWED = [[/^NOAA NHC \/ CPHC advisories/, 'verified 2026-11-23 on https://www.weather.gov/disclaimer: NWS web pages are in the public domain, usable without charge for any lawful purpose, no endorsement implied (NHC page itself not opened)']];
+const OWNER = existsSync(resolve(root, 'data/owner-approvals.json')) ? JSON.parse(readFileSync(resolve(root, 'data/owner-approvals.json'), 'utf8')) : null;
 function classify(name, licence, commercialCol) {
   for (const [re, why] of VERIFIED_ALLOWED) if (re.test(name)) return { status: 'allowed_per_doc', why, mustNotShip: false };
   for (const [re, why, mustNotShip] of FORCED_RESTRICTED) {
@@ -109,8 +110,10 @@ const out = rows.map((r) => {
     cls.mustNotShip = true;
   }
   const attributionOk = r.attribution.length > 0 && !/^[-—n/a]*$/i.test(r.attribution);
-  // Fail closed: enabled only when permissive per doc AND attribution AND provenance AND review date are all present.
-  const enabled = cls.status === 'allowed_per_doc' && attributionOk && Boolean(REVIEWED_AT);
+  let ownerApprovedAt;
+  if (cls.status === 'unknown' && OWNER) { cls.status = 'allowed_per_owner'; cls.why = `owner approval ${OWNER.approvedAt} (data/owner-approvals.json); licence was unclear in the doc`; ownerApprovedAt = OWNER.approvedAt; }
+  // Fail closed: enabled only when permissive per doc (or owner-approved) AND attribution AND provenance AND review date are all present.
+  const enabled = (cls.status === 'allowed_per_doc' || cls.status === 'allowed_per_owner') && attributionOk && Boolean(REVIEWED_AT);
   return {
     id,
     name: r.name,
@@ -124,6 +127,7 @@ const out = rows.map((r) => {
     reviewedAt: REVIEWED_AT,
     reviewedBy: 'claude-doc-parse',
     needsHumanReview: true,
+    ...(ownerApprovedAt ? { ownerApprovedAt } : {}),
     mustNotShip: cls.mustNotShip,
     enabled: cls.mustNotShip ? false : enabled,
   };

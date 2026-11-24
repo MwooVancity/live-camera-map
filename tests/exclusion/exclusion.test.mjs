@@ -19,7 +19,7 @@ const real = {
   envText: read('ops/deploy/gev-exclusion.env'),
 };
 const METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'];
-const isAllowedPerm = (s) => s.commercialStatus === 'allowed_per_doc' && s.enabled === true && s.mustNotShip !== true;
+const isAllowedPerm = (s) => (s.commercialStatus === 'allowed_per_doc' || s.commercialStatus === 'allowed_per_owner') && s.enabled === true && s.mustNotShip !== true;
 
 // ---- nginx model: the regex lines of each map block, exactly as nginx reads them ----
 function mapLines(text, header) {
@@ -152,7 +152,7 @@ test('real config: no restricted/unknown source is reachable, every route justif
 
 test('every restricted/unknown/mustNotShip permission row is classified into an exclusion group', () => {
   const bad = real.perms.filter((s) => !isAllowedPerm(s));
-  assert.ok(bad.length > 100, 'expected the 160+ non-allowed rows');
+  assert.ok(bad.length >= 15, 'expected the 15+ restricted rows that owner approval never covers (2026-11-24: unknown rows were approved, restricted stay closed)');
   const grouped = new Set(real.map.groups.flatMap((g) => g.permissionIds));
   assert.deepEqual(bad.filter((s) => !grouped.has(s.id)).map((s) => s.id), []);
   for (const need of ['opensky-network', 'google-news-rss']) assert.ok(grouped.has(need), need);

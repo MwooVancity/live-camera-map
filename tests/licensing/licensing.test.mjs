@@ -35,7 +35,7 @@ test('inventory: stored enabled flag matches the gate (no hand edits)', () => {
   assert.deepEqual(bad.map((s) => s.id), []);
 });
 test('inventory: nothing unknown or restricted is enabled', () => {
-  assert.deepEqual(sources.filter((s) => s.enabled && s.commercialStatus !== 'allowed_per_doc').map((s) => s.id), []);
+  assert.deepEqual(sources.filter((s) => s.enabled && !['allowed_per_doc', 'allowed_per_owner'].includes(s.commercialStatus)).map((s) => s.id), []);
 });
 test('inventory: every enabled source has attribution, provenance, review date', () => {
   const bad = sources.filter((s) => s.enabled && !(s.attribution && s.provenance && s.reviewedAt));

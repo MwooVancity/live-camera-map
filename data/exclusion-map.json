@@ -335,8 +335,6 @@
       "proxyEnforced": true,
       "note": "Unknown = disabled. Satellite layers that need the two browser-fetched packs will fail soft (retryable loaders); not verified in a browser.",
       "permissionIds": [
-        "ucs-satellite-database-ucs-satellite-database-5-1-2023-3-564-records-operator-ow",
-        "imaging-sensor-pack-46-earth-observation-platforms-swath-resolution",
         "cctv-ground-heights-3-445-cameras"
       ]
     },
@@ -385,23 +383,7 @@
         "CCTV-NOSWITCH"
       ],
       "note": "Images and streams are proxy-blocked for every pack. Metadata via /api/cctv/sources is only env-blocked.",
-      "permissionIds": [
-        "city-of-austin-open-data",
-        "txdot-its-its-txdot-gov",
-        "city-of-tallinn-ristmikud-tallinn-ee",
-        "transpordiamet-tarktee",
-        "stadt-warendorf-webcam",
-        "caltrans-cwwp2-dot-ca-gov",
-        "deldot-video-deldot-gov",
-        "tfl-open-data-jamcams",
-        "servei-catal-de-tr-nsit-ajuntament-de-barcelona-ajuntament-de-terrassa",
-        "king-county-road-services-services-arcgis-com-king-county-gis",
-        "wsdot-data-wsdot-wa-gov",
-        "hong-kong-transport-department-data-gov-hk",
-        "webcam-romania-giroc-webcamromania-ro-w4-webcamromania-ro",
-        "statens-vegvesen-catalog-ogckart-sn1-atlas-vegvesen-no-frames-kamera-atlas-vegve",
-        "lithuania-road-cameras-via-lietuva-cctv-lithuania-eismoinfo-lt"
-      ]
+      "permissionIds": []
     },
     {
       "id": "transit-bike-rail",
@@ -423,73 +405,8 @@
       ],
       "proxyEnforced": true,
       "permissionIds": [
-        "gbfs-lyft-bcycle-social-bicycles-pbsc",
-        "bike-share-toronto-toronto-publicbikesystem-net",
-        "bike-ita-tembici-publicbikesystem-net-seven-brazilian-cities-santiago-and-bogot",
         "bicimad-madrid-publicbikesystem-net",
-        "oslo-bergen-trondheim-bysykkel-urban-sharing-gbfs-urbansharing-com",
-        "kolumbus-farte-bysykkel-entur-mobility-api-entur-io-mobility-v2-gbfs",
-        "jcdecaux-cyclocity-api-cyclocity-fr",
-        "mbta-massdot-cdn-mbta-com",
-        "capmetro-data-texas-gov",
-        "metro-transit-metropolitan-council",
-        "ovapi-stichting-opengeo",
-        "entur-api-entur-io",
-        "translink-queensland-government",
-        "hsl-realtime-hsl-fi",
-        "ttc-bustime-ttc-ca",
-        "miway-miapp-ca",
-        "hamilton-hsr-opendata-hamilton-ca",
-        "durham-region-transit-drtonline-durhamregiontransit-com",
-        "guelph-transit-glphtrpcloud-com",
-        "kingston-transit-api-cityofkingston-ca",
-        "barrie-transit-myridebarrie-ca",
-        "yrt-viva-rtu-york-ca",
-        "burlington-transit-opendata-burlington-ca",
-        "metro-north-api-endpoint-mta-info-rrgtfsfeeds-s3-amazonaws-com",
-        "lirr-api-endpoint-mta-info-rrgtfsfeeds-s3-amazonaws-com",
-        "mbta-rail-cdn-mbta-com",
-        "septa-regional-rail-www3-septa-org-github-com",
-        "septa-trolleys-www3-septa-org-github-com",
-        "marc-mdotmta-gtfs-rt-s3-amazonaws-com-feeds-mta-maryland-gov",
-        "tri-rail-gtfsr-tri-rail-com-gtfs-tri-rail-com",
-        "rtd-open-data-rtd-denver-com-www-rtd-denver-com",
-        "capmetro-metrorail-data-texas-gov",
-        "metro-light-rail-svc-metrotransit-org",
-        "lynx-gtfsrealtime-ridetransit-org",
-        "grt-ion-webapps-regionofwaterloo-ca",
-        "vy-api-entur-io-storage-googleapis-com",
-        "go-ahead-api-entur-io-storage-googleapis-com",
-        "flytoget-api-entur-io-storage-googleapis-com",
-        "sj-nord-api-entur-io-storage-googleapis-com",
-        "seattle-streetcar-s3-amazonaws-com-metro-kingcounty-gov",
-        "connector-streetcar-tmgtfsprd-sorttrpcloud-com-www-go-metro-com",
-        "bordeaux-tram-bdx-mecatran-com",
-        "prague-pid-api-golemio-cz",
-        "warsaw-buses-and-trams-mkuran-pl",
-        "bordeaux-tbm-bdx-mecatran-com",
-        "pozna-buses-and-trams-ztm-poznan-pl",
-        "edmonton-transit-service-gtfs-edmonton-ca",
-        "victoria-regional-transit-bct-tmix-se",
-        "krak-w-buses-gtfs-ztp-krakow-pl",
-        "krak-w-trams-gtfs-ztp-krakow-pl",
-        "vilnius-public-transport-stops-lt",
-        "bucharest-public-transport-gtfs-tpbi-ro",
-        "rome-public-transport-romamobilita-it",
-        "turin-gtt-percorsieorari-gtt-to-it",
-        "venice-actv-buses-tpl-actv-it",
-        "venice-actv-waterbuses-tpl-actv-it",
-        "adelaide-metro-gtfs-adelaidemetro-com-au-2",
-        "marta-buses-gtfs-rt-itsmarta-com",
-        "denver-rtd-open-data-rtd-denver-com",
-        "cluj-napoca-ctp-cluj-rt-feed-gtfs-ro",
-        "ia-i-ctp-iasi-rt-feed-gtfs-ro",
-        "rzesz-w-city-transport-mpkrzeszow-pl",
-        "m-laga-emt-gtfs-emtmalaga-es",
-        "carris-lisbon-city-gateway-carris-pt",
-        "rouen-astuce-api-mrn-cityway-fr",
-        "toulon-mistral-feed-rdtpm-toulon-ratpdev-com",
-        "tours-fil-bleu-data-filbleu-fr"
+        "hamilton-hsr-opendata-hamilton-ca"
       ]
     },
     {
@@ -508,9 +425,7 @@
         "/api/radio/click"
       ],
       "proxyEnforced": true,
-      "permissionIds": [
-        "radio-browser"
-      ]
+      "permissionIds": []
     },
     {
       "id": "live-misc",
@@ -540,23 +455,7 @@
       "gaps": [
         "BD-1"
       ],
-      "permissionIds": [
-        "google-street-view-maps-javascript-api",
-        "google-map-tiles-api-photorealistic-3d-tiles-places-geocoding",
-        "adsbdb-api-adsbdb-com",
-        "planespotters-net-api-planespotters-net-pub-photos-hex-hex",
-        "aisstream-io",
-        "celestrak",
-        "the-space-devs-launch-library-2-v2-3",
-        "esri-world-imagery-arcgis-online-tile-service",
-        "environment-and-climate-change-canada-msc-geomet-ogc-api",
-        "news-server-gev-news-origin-optional-none-by-default",
-        "gdelt-2-0-events-and-gkg-data-gdeltproject-org-gdeltv2-no-key-used-only-without-",
-        "liveuamap-a-liveuamap-com-api-liveuamap-api-key-optional-paid-used-only-without-",
-        "world-news-api-api-worldnewsapi-com-search-news-worldnewsapi-key-optional-used-o",
-        "tomtom-traffic-api-flow-vector-tiles",
-        "gdelt-project-doc-2-0"
-      ]
+      "permissionIds": []
     },
     {
       "id": "library-tiles-not-allowed",
@@ -580,52 +479,7 @@
       "gaps": [
         "BD-1"
       ],
-      "permissionIds": [
-        "arizona-statewide-imagery-2017-az-statewide-imagery-azgeo-az-gov",
-        "bismarck-mandan-north-dakota-aerial-photography-bismarck-mandan-nd-ndgishub-nd-g",
-        "topplusopen-basemap-bkg-bkg-topplus-open-sgx-geodatenzentrum-de",
-        "connecticut-statewide-imagery-2019-ct-statewide-imagery-cteco-uconn-edu",
-        "dakota-county-minnesota-air-photo-dakota-county-mn-gisimg-co-dakota-mn-us",
-        "delaware-statewide-imagery-2024-de-statewide-imagery-imagery-firstmap-delaware-g",
-        "eesti-ortofoto-maa-amet-ee-maa-amet-ortofoto-tiles-maaamet-ee",
-        "grand-forks-north-dakota-aerial-photography-grand-forks-nd-ndgishub-nd-gov",
-        "japan-standard-map-gsi-gsi-japan-map-cyberjapandata-gsi-go-jp",
-        "japan-aerial-photos-gsi-gsi-japan-photo-cyberjapandata-gsi-go-jp",
-        "iowa-statewide-imagery-2023-ia-statewide-imagery-ortho-gis-iastate-edu",
-        "france-aerial-photos-ign-ign-orthophotos-france-data-geopf-fr",
-        "illinois-statewide-imagery-il-statewide-imagery-data-isgs-illinois-edu",
-        "surface-water-occurrence-jrc-jrc-surface-water-storage-googleapis-com",
-        "kansas-statewide-imagery-2021-ks-statewide-imagery-services-kgs-ku-edu",
-        "lake-county-indiana-aerial-imagery-lake-county-in-tiles-arcgis-com",
-        "lawrence-kansas-aerial-photos-lawrence-ks-tiles-arcgis-com",
-        "lee-county-florida-aerial-imagery-lee-county-fl-gisimageserver-leegov-com",
-        "loudoun-county-virginia-imagery-loudoun-county-va-logis-loudoun-gov",
-        "louisville-lojic-kentucky-imagery-louisville-lojic-ky-services-lojic-org",
-        "massachusetts-statewide-imagery-ma-statewide-imagery-tiles-arcgis-com",
-        "maris-imagery-mississippi-maris-ms-tiles-arcgis-com",
-        "maryland-statewide-imagery-md-statewide-imagery-mdgeodata-md-gov",
-        "maine-statewide-imagery-me-statewide-imagery-gis-maine-gov",
-        "michigan-statewide-imagery-2024-mi-statewide-imagery-imagery-michigan-gov",
-        "mountain-village-colorado-orthoimagery-mountain-village-co-tiles-arcgis-com",
-        "mississippi-statewide-imagery-ms-statewide-imagery-tiles-arcgis-com",
-        "north-central-texas-nctcog-ortho-nctcog-tx-mapitimage-tarrantcounty-com",
-        "north-dakota-statewide-imagery-2013-nd-statewide-imagery-ndgishub-nd-gov",
-        "new-orleans-regional-planning-commission-imagery-new-orleans-rpc-la-tiles-arcgis",
-        "new-hampshire-statewide-imagery-2022-nh-statewide-imagery-nhgeodata-unh-edu",
-        "new-jersey-statewide-imagery-2015-nj-statewide-imagery-maps-nj-gov",
-        "digitale-orthophotos-nrw-dop-10-cm-nrw-dop-www-wms-nrw-de",
-        "northwest-arkansas-benton-washington-county-imagery-nwa-benton-washington-ar-til",
-        "oakland-county-michigan-ortho-imagery-oakland-county-mi-gisservices-oakgov-com",
-        "ortofotomapa-polski-gugik-pl-ortofotomapa-mapy-geoportal-gov-pl",
-        "portland-metro-rlis-oregon-aerial-photos-portland-metro-or-utility-arcgis-com",
-        "rhode-island-statewide-imagery-2019-ri-statewide-imagery-tiles-arcgis-com",
-        "switzerland-aerial-photos-swissimage-10-cm-swisstopo-swissimage-wmts-geo-admin-c",
-        "union-county-ohio-aerial-imagery-union-county-oh-www7-co-union-oh-us",
-        "virginia-statewide-imagery-va-statewide-imagery-vginmaps-vdem-virginia-gov",
-        "orthophotos-de-wallonie-wallonie-ortho-geoservices-wallonie-be",
-        "wisconsin-statewide-imagery-2020-wi-statewide-imagery-di-wisdot-img-arcgis-com",
-        "west-virginia-statewide-imagery-wv-statewide-imagery-services-wvgis-wvu-edu"
-      ]
+      "permissionIds": []
     },
     {
       "id": "library-datasets-not-allowed",
@@ -647,12 +501,7 @@
       "envEnforced": [
         "GEV_LIBRARY_DISABLE"
       ],
-      "permissionIds": [
-        "amsterdam-traffic-and-anpr-camera-positions-amsterdam-traffic-cameras-api-data-a",
-        "disaster-alerts-gdacs-gdacs-disaster-alerts-www-gdacs-org",
-        "maritime-chokepoints-imf-portwatch-imf-portwatch-chokepoints-services9-arcgis-co",
-        "port-disruptions-imf-portwatch-imf-portwatch-disruptions-services9-arcgis-com"
-      ]
+      "permissionIds": []
     }
   ],
   "routeJustification": {
@@ -708,32 +557,46 @@
     },
     "wildlife-sightings": {
       "basis": "enabled-source",
-      "sourceIds": ["acartia-acartia-io-api-v1-sightings-current"],
+      "sourceIds": [
+        "acartia-acartia-io-api-v1-sightings-current"
+      ],
       "reason": "acartia.js calls only acartia.io/api/v1/sightings/current and answers only /sightings; CC BY 4.0, allowed_per_doc, enabled. iNaturalist (restricted) is another route and stays closed. Plan item 19c, 2026-11-24."
     },
     "shipwrecks": {
       "basis": "enabled-source",
-      "sourceIds": ["wikidata-shipwrecks-query-wikidata-org-sparql", "emodnet-human-activities-ship-wrecks-ows-emodnet-humanactivities-eu-wfs-layer-em"],
+      "sourceIds": [
+        "wikidata-shipwrecks-query-wikidata-org-sparql",
+        "emodnet-human-activities-ship-wrecks-ows-emodnet-humanactivities-eu-wfs-layer-em"
+      ],
       "reason": "shipwrecks.js calls only Wikidata SPARQL (CC0) and EMODnet (CC BY 4.0); allowed_per_doc, enabled. Plan item 19c, 2026-11-24."
     },
     "terrain-heights": {
       "basis": "enabled-source",
-      "sourceIds": ["re-earth-terrain-mapterhorn"],
+      "sourceIds": [
+        "re-earth-terrain-mapterhorn"
+      ],
       "reason": "terrain.js:17 calls only terrain.reearth.land (Mapterhorn CC BY 4.0, geoid EGM2008 public domain); allowed_per_doc, enabled. Restricted CCTV ground heights stay denied by deny-cctv-ground-heights. Plan item 19c, 2026-11-24."
     },
     "fire-perimeters": {
       "basis": "enabled-source",
-      "sourceIds": ["nifc-wfigs-wildland-fire-interagency-geospatial-services-arcgis-feature-service", "inciweb-inciweb-wildfire-gov"],
+      "sourceIds": [
+        "nifc-wfigs-wildland-fire-interagency-geospatial-services-arcgis-feature-service",
+        "inciweb-inciweb-wildfire-gov"
+      ],
       "reason": "firePerimeters.js calls only services3.arcgis.com (NIFC WFIGS) and inciweb.wildfire.gov; both US public domain, allowed_per_doc, enabled. Plan item 19b, 2026-11-24."
     },
     "military-aircraft": {
       "basis": "enabled-source",
-      "sourceIds": ["adsb-lol"],
+      "sourceIds": [
+        "adsb-lol"
+      ],
       "reason": "exact /api/military only: gev/server/providers/aircraft/adsb-lol.js:128 fetches api.adsb.lol/v2/mil (adsb.lol, allowed_per_doc, enabled). /api/military/track (tracks.js also calls OpenSky) and /api/military-installations stay on neverAllowed. Plan item 19a, 2026-11-24."
     },
     "cyclones": {
       "basis": "enabled-source",
-      "sourceIds": ["noaa-nhc-cphc-advisories-www-nhc-noaa-gov-currentstorms-json-the-mapservices-wea"],
+      "sourceIds": [
+        "noaa-nhc-cphc-advisories-www-nhc-noaa-gov-currentstorms-json-the-mapservices-wea"
+      ],
       "reason": "exact /api/cyclones: cyclones.js calls only www.nhc.noaa.gov and mapservices.weather.noaa.gov; NWS pages are public domain per weather.gov/disclaimer (NHC page itself not opened; Mike confirms before ads). Plan item 19, 2026-11-23."
     },
     "weather": {
@@ -889,5 +752,171 @@
       "fix": "Mike reads https://open-meteo.com/en/terms and either confirms, buys the plan, or we drop /api/weather-effects from the allowlist.",
       "owner": "Mike"
     }
-  ]
+  ],
+  "approvedPending": [],
+  "ownerApprovedRouteQueue": {
+    "note": "2026-11-24: owner approved every unknown-licence source (data/owner-approvals.json). These ids left their exclusion group because their licence row is now enabled; the routes that serve them are still closed until each is read in GEV code, allowlisted, justified and probed in CI (plan item 22).",
+    "byGroup": {
+      "bundled-unknown": [
+        "ucs-satellite-database-ucs-satellite-database-5-1-2023-3-564-records-operator-ow",
+        "imaging-sensor-pack-46-earth-observation-platforms-swath-resolution"
+      ],
+      "cctv-packs-not-allowed": [
+        "city-of-austin-open-data",
+        "txdot-its-its-txdot-gov",
+        "city-of-tallinn-ristmikud-tallinn-ee",
+        "transpordiamet-tarktee",
+        "stadt-warendorf-webcam",
+        "caltrans-cwwp2-dot-ca-gov",
+        "deldot-video-deldot-gov",
+        "tfl-open-data-jamcams",
+        "servei-catal-de-tr-nsit-ajuntament-de-barcelona-ajuntament-de-terrassa",
+        "king-county-road-services-services-arcgis-com-king-county-gis",
+        "wsdot-data-wsdot-wa-gov",
+        "hong-kong-transport-department-data-gov-hk",
+        "webcam-romania-giroc-webcamromania-ro-w4-webcamromania-ro",
+        "statens-vegvesen-catalog-ogckart-sn1-atlas-vegvesen-no-frames-kamera-atlas-vegve",
+        "lithuania-road-cameras-via-lietuva-cctv-lithuania-eismoinfo-lt"
+      ],
+      "transit-bike-rail": [
+        "gbfs-lyft-bcycle-social-bicycles-pbsc",
+        "bike-share-toronto-toronto-publicbikesystem-net",
+        "bike-ita-tembici-publicbikesystem-net-seven-brazilian-cities-santiago-and-bogot",
+        "oslo-bergen-trondheim-bysykkel-urban-sharing-gbfs-urbansharing-com",
+        "kolumbus-farte-bysykkel-entur-mobility-api-entur-io-mobility-v2-gbfs",
+        "jcdecaux-cyclocity-api-cyclocity-fr",
+        "mbta-massdot-cdn-mbta-com",
+        "capmetro-data-texas-gov",
+        "metro-transit-metropolitan-council",
+        "ovapi-stichting-opengeo",
+        "entur-api-entur-io",
+        "translink-queensland-government",
+        "hsl-realtime-hsl-fi",
+        "ttc-bustime-ttc-ca",
+        "miway-miapp-ca",
+        "durham-region-transit-drtonline-durhamregiontransit-com",
+        "guelph-transit-glphtrpcloud-com",
+        "kingston-transit-api-cityofkingston-ca",
+        "barrie-transit-myridebarrie-ca",
+        "yrt-viva-rtu-york-ca",
+        "burlington-transit-opendata-burlington-ca",
+        "metro-north-api-endpoint-mta-info-rrgtfsfeeds-s3-amazonaws-com",
+        "lirr-api-endpoint-mta-info-rrgtfsfeeds-s3-amazonaws-com",
+        "mbta-rail-cdn-mbta-com",
+        "septa-regional-rail-www3-septa-org-github-com",
+        "septa-trolleys-www3-septa-org-github-com",
+        "marc-mdotmta-gtfs-rt-s3-amazonaws-com-feeds-mta-maryland-gov",
+        "tri-rail-gtfsr-tri-rail-com-gtfs-tri-rail-com",
+        "rtd-open-data-rtd-denver-com-www-rtd-denver-com",
+        "capmetro-metrorail-data-texas-gov",
+        "metro-light-rail-svc-metrotransit-org",
+        "lynx-gtfsrealtime-ridetransit-org",
+        "grt-ion-webapps-regionofwaterloo-ca",
+        "vy-api-entur-io-storage-googleapis-com",
+        "go-ahead-api-entur-io-storage-googleapis-com",
+        "flytoget-api-entur-io-storage-googleapis-com",
+        "sj-nord-api-entur-io-storage-googleapis-com",
+        "seattle-streetcar-s3-amazonaws-com-metro-kingcounty-gov",
+        "connector-streetcar-tmgtfsprd-sorttrpcloud-com-www-go-metro-com",
+        "bordeaux-tram-bdx-mecatran-com",
+        "prague-pid-api-golemio-cz",
+        "warsaw-buses-and-trams-mkuran-pl",
+        "bordeaux-tbm-bdx-mecatran-com",
+        "pozna-buses-and-trams-ztm-poznan-pl",
+        "edmonton-transit-service-gtfs-edmonton-ca",
+        "victoria-regional-transit-bct-tmix-se",
+        "krak-w-buses-gtfs-ztp-krakow-pl",
+        "krak-w-trams-gtfs-ztp-krakow-pl",
+        "vilnius-public-transport-stops-lt",
+        "bucharest-public-transport-gtfs-tpbi-ro",
+        "rome-public-transport-romamobilita-it",
+        "turin-gtt-percorsieorari-gtt-to-it",
+        "venice-actv-buses-tpl-actv-it",
+        "venice-actv-waterbuses-tpl-actv-it",
+        "adelaide-metro-gtfs-adelaidemetro-com-au-2",
+        "marta-buses-gtfs-rt-itsmarta-com",
+        "denver-rtd-open-data-rtd-denver-com",
+        "cluj-napoca-ctp-cluj-rt-feed-gtfs-ro",
+        "ia-i-ctp-iasi-rt-feed-gtfs-ro",
+        "rzesz-w-city-transport-mpkrzeszow-pl",
+        "m-laga-emt-gtfs-emtmalaga-es",
+        "carris-lisbon-city-gateway-carris-pt",
+        "rouen-astuce-api-mrn-cityway-fr",
+        "toulon-mistral-feed-rdtpm-toulon-ratpdev-com",
+        "tours-fil-bleu-data-filbleu-fr"
+      ],
+      "radio": [
+        "radio-browser"
+      ],
+      "live-misc": [
+        "google-street-view-maps-javascript-api",
+        "google-map-tiles-api-photorealistic-3d-tiles-places-geocoding",
+        "adsbdb-api-adsbdb-com",
+        "planespotters-net-api-planespotters-net-pub-photos-hex-hex",
+        "aisstream-io",
+        "celestrak",
+        "the-space-devs-launch-library-2-v2-3",
+        "esri-world-imagery-arcgis-online-tile-service",
+        "environment-and-climate-change-canada-msc-geomet-ogc-api",
+        "news-server-gev-news-origin-optional-none-by-default",
+        "gdelt-2-0-events-and-gkg-data-gdeltproject-org-gdeltv2-no-key-used-only-without-",
+        "liveuamap-a-liveuamap-com-api-liveuamap-api-key-optional-paid-used-only-without-",
+        "world-news-api-api-worldnewsapi-com-search-news-worldnewsapi-key-optional-used-o",
+        "tomtom-traffic-api-flow-vector-tiles",
+        "gdelt-project-doc-2-0"
+      ],
+      "library-tiles-not-allowed": [
+        "arizona-statewide-imagery-2017-az-statewide-imagery-azgeo-az-gov",
+        "bismarck-mandan-north-dakota-aerial-photography-bismarck-mandan-nd-ndgishub-nd-g",
+        "topplusopen-basemap-bkg-bkg-topplus-open-sgx-geodatenzentrum-de",
+        "connecticut-statewide-imagery-2019-ct-statewide-imagery-cteco-uconn-edu",
+        "dakota-county-minnesota-air-photo-dakota-county-mn-gisimg-co-dakota-mn-us",
+        "delaware-statewide-imagery-2024-de-statewide-imagery-imagery-firstmap-delaware-g",
+        "eesti-ortofoto-maa-amet-ee-maa-amet-ortofoto-tiles-maaamet-ee",
+        "grand-forks-north-dakota-aerial-photography-grand-forks-nd-ndgishub-nd-gov",
+        "japan-standard-map-gsi-gsi-japan-map-cyberjapandata-gsi-go-jp",
+        "japan-aerial-photos-gsi-gsi-japan-photo-cyberjapandata-gsi-go-jp",
+        "iowa-statewide-imagery-2023-ia-statewide-imagery-ortho-gis-iastate-edu",
+        "france-aerial-photos-ign-ign-orthophotos-france-data-geopf-fr",
+        "illinois-statewide-imagery-il-statewide-imagery-data-isgs-illinois-edu",
+        "surface-water-occurrence-jrc-jrc-surface-water-storage-googleapis-com",
+        "kansas-statewide-imagery-2021-ks-statewide-imagery-services-kgs-ku-edu",
+        "lake-county-indiana-aerial-imagery-lake-county-in-tiles-arcgis-com",
+        "lawrence-kansas-aerial-photos-lawrence-ks-tiles-arcgis-com",
+        "lee-county-florida-aerial-imagery-lee-county-fl-gisimageserver-leegov-com",
+        "loudoun-county-virginia-imagery-loudoun-county-va-logis-loudoun-gov",
+        "louisville-lojic-kentucky-imagery-louisville-lojic-ky-services-lojic-org",
+        "massachusetts-statewide-imagery-ma-statewide-imagery-tiles-arcgis-com",
+        "maris-imagery-mississippi-maris-ms-tiles-arcgis-com",
+        "maryland-statewide-imagery-md-statewide-imagery-mdgeodata-md-gov",
+        "maine-statewide-imagery-me-statewide-imagery-gis-maine-gov",
+        "michigan-statewide-imagery-2024-mi-statewide-imagery-imagery-michigan-gov",
+        "mountain-village-colorado-orthoimagery-mountain-village-co-tiles-arcgis-com",
+        "mississippi-statewide-imagery-ms-statewide-imagery-tiles-arcgis-com",
+        "north-central-texas-nctcog-ortho-nctcog-tx-mapitimage-tarrantcounty-com",
+        "north-dakota-statewide-imagery-2013-nd-statewide-imagery-ndgishub-nd-gov",
+        "new-orleans-regional-planning-commission-imagery-new-orleans-rpc-la-tiles-arcgis",
+        "new-hampshire-statewide-imagery-2022-nh-statewide-imagery-nhgeodata-unh-edu",
+        "new-jersey-statewide-imagery-2015-nj-statewide-imagery-maps-nj-gov",
+        "digitale-orthophotos-nrw-dop-10-cm-nrw-dop-www-wms-nrw-de",
+        "northwest-arkansas-benton-washington-county-imagery-nwa-benton-washington-ar-til",
+        "oakland-county-michigan-ortho-imagery-oakland-county-mi-gisservices-oakgov-com",
+        "ortofotomapa-polski-gugik-pl-ortofotomapa-mapy-geoportal-gov-pl",
+        "portland-metro-rlis-oregon-aerial-photos-portland-metro-or-utility-arcgis-com",
+        "rhode-island-statewide-imagery-2019-ri-statewide-imagery-tiles-arcgis-com",
+        "switzerland-aerial-photos-swissimage-10-cm-swisstopo-swissimage-wmts-geo-admin-c",
+        "union-county-ohio-aerial-imagery-union-county-oh-www7-co-union-oh-us",
+        "virginia-statewide-imagery-va-statewide-imagery-vginmaps-vdem-virginia-gov",
+        "orthophotos-de-wallonie-wallonie-ortho-geoservices-wallonie-be",
+        "wisconsin-statewide-imagery-2020-wi-statewide-imagery-di-wisdot-img-arcgis-com",
+        "west-virginia-statewide-imagery-wv-statewide-imagery-services-wvgis-wvu-edu"
+      ],
+      "library-datasets-not-allowed": [
+        "amsterdam-traffic-and-anpr-camera-positions-amsterdam-traffic-cameras-api-data-a",
+        "disaster-alerts-gdacs-gdacs-disaster-alerts-www-gdacs-org",
+        "maritime-chokepoints-imf-portwatch-imf-portwatch-chokepoints-services9-arcgis-co",
+        "port-disruptions-imf-portwatch-imf-portwatch-disruptions-services9-arcgis-com"
+      ]
+    }
+  }
 }
