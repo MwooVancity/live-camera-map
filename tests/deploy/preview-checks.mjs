@@ -1,6 +1,7 @@
 // Checks the preview deployment THROUGH the proxy. Usage: node tests/deploy/preview-checks.mjs <baseUrl> <hostHeader>
 // Exits 1 on any failed check. Prints every check, one line each.
 import http from 'node:http';
+import { gunzipSync } from 'node:zlib';
 
 const [base, host] = process.argv.slice(2);
 if (!base || !host) { console.error('usage: node tests/deploy/preview-checks.mjs <baseUrl> <hostHeader>'); process.exit(2); }
@@ -32,7 +33,7 @@ for (const p of ['/@vite/client', '/src/main.js', '/vite.config.js', '/package.j
 
 // 2) The built page loads and names a hashed JS bundle.
 const home = await get('/', { 'Accept-Encoding': 'gzip' });
-const html = home.body.toString('utf8');
+const html = (home.headers['content-encoding'] === 'gzip' ? gunzipSync(home.body) : home.body).toString('utf8');
 const m = /\/assets\/[^"'\s]+-[A-Za-z0-9_-]{8}\.js/.exec(html);
 check('home 200 with a hashed asset', home.status === 200 && !!m, `status ${home.status} asset ${m ? m[0] : 'none'}`);
 
