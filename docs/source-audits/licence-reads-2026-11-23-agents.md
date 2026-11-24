@@ -14,3 +14,6 @@ Coverage stats for the research piece (agent script outside the repo, run agains
 
 ## VERIFIED by Claude 2026-11-24 (page opened through a fetch agent, text matches)
 USGS, https://www.usgs.gov/information-policies-and-instructions/copyrights-and-credits: "USGS-authored or produced data and information are considered to be in the U.S. Public Domain." Credit: "we ask that proper credit be given." Third-party material: "you must obtain permission from the copyright holder". The page does not mention the earthquake feeds themselves (only a link to earthquake.usgs.gov), so the feed's own policy page (earthquake.usgs.gov/earthquakes/feed/policy.php) is still to be read before a row is written. No block built: a quake list near a city only weakly serves a road-camera reader (Helpful test not yet passed).
+
+## DECIDED 2026-11-24: Caltrans CWWP2 travel times NOT built
+Live sample (https://cwwp2.dot.ca.gov/data/d12/tt/ttStatusD12.json, opened by Claude): begin and end coordinates are placeholders (0.000001 / 0.000002) and the nearby-place fields hold filler ("here", "sdf"). A segment cannot be placed on a city or road page without guessing, and only Districts 3, 8, 11 and 12 publish travel times. Shows nothing true we could attach to a page, so it fails the Helpful test. Revisit if Caltrans publishes real segment coordinates.
