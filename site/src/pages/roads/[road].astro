@@ -102,4 +102,16 @@ const axisText = ord.northish ? 'south to north' : 'west to east';
     <li><a href="/guides/what-live-road-conditions-mean/">What the live road conditions mean</a></li>
     <li><a href="/guides/how-to-read-last-checked-status/">How to read "last checked" status</a></li>
   </ul>
+  <script>
+    import { isSaved, toggleSaved, storageWorks } from '../../scripts/saved';
+    // Save this road page in this browser (no account); the list is on /saved/.
+    const h1 = document.querySelector('h1');
+    if (h1 && storageWorks()) {
+      const url = location.pathname, label = (h1.textContent || '').trim();
+      const b = document.createElement('button'); b.type = 'button';
+      const paint = () => { const on = isSaved(url); b.textContent = on ? 'Road saved' : 'Save this road'; b.setAttribute('aria-pressed', String(on)); };
+      b.addEventListener('click', () => { toggleSaved({ url, label, place: 'Road page' }); paint(); });
+      paint(); h1.after(b);
+    }
+  </script>
 </Base>

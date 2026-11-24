@@ -431,3 +431,10 @@ test('saved page: noindex, not in the sitemap, linked from home, no camera data 
   assert.ok(pages.get('/').includes('href="/saved/"'), 'home does not link /saved/');
   assert.ok(!/https:\/\/cwwp2/.test(html), 'camera URLs baked into the saved page');
 });
+
+test('road pages carry the save-road script and the saved page explains saving roads', () => {
+  const roads = [...pages.keys()].filter((r) => /^\/roads\/[^/]+\/$/.test(r));
+  assert.ok(roads.length > 0);
+  for (const r of roads) assert.ok(/<script[^>]*type="module"/.test(pages.get(r)), `${r}: no script (the save-road button is added by it)`);
+  assert.ok(pages.get('/saved/').includes('Save this road'));
+});
