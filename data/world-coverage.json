@@ -62,8 +62,8 @@
    "argosPlacePages": 20,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": "opentransportdata.swiss has no webcam dataset; look at ASTRA and cantonal sources (UNVERIFIED)",
-   "note": "docs/source-audits/world-hunt-2026-11-24.md",
+   "next": "round 2 search found no official open list (UNVERIFIED, search and API checks only); try a browser check of the national road agency site or an email",
+   "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
   {
@@ -107,8 +107,8 @@
    "argosPlacePages": 15,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": "portal returned no catalogue to our tools; browser check or email (UNVERIFIED not found)",
-   "note": "docs/source-audits/world-hunt-2026-11-24.md",
+   "next": "round 2 search found no official open list (UNVERIFIED, search and API checks only); try a browser check of the national road agency site or an email",
+   "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
   {
@@ -152,8 +152,8 @@
    "argosPlacePages": 12,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": "nothing usable found with search; browser check (UNVERIFIED not found)",
-   "note": "docs/source-audits/world-hunt-2026-11-24.md",
+   "next": "round 2 search found no official open list (UNVERIFIED, search and API checks only); try a browser check of the national road agency site or an email",
+   "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
   {
@@ -187,9 +187,9 @@
    "country": "croatia",
    "argosPlacePages": 7,
    "ourCameras": 0,
-   "status": "not-investigated",
-   "next": null,
-   "note": null,
+   "status": "blocked",
+   "next": "HAK camera lists did not load for our fetch and no licence found (about 240 to 260 cameras is a search snippet only)",
+   "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
   {
@@ -206,8 +206,8 @@
    "argosPlacePages": 6,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
-   "note": null,
+   "next": "round 2 search found no official open list (UNVERIFIED, search and API checks only); try a browser check of the national road agency site or an email",
+   "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
   {
@@ -215,17 +215,17 @@
    "argosPlacePages": 6,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
-   "note": null,
+   "next": "round 2 search found no official open list (UNVERIFIED, search and API checks only); try a browser check of the national road agency site or an email",
+   "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
   {
    "country": "sweden",
    "argosPlacePages": 5,
    "ourCameras": 0,
-   "status": "not-investigated",
-   "next": null,
-   "note": null,
+   "status": "blocked",
+   "next": "Trafikverket camera API: official page links CC0 (licence text itself unread); needs a free Trafikverket account: Mike signs up, then count and build",
+   "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
   {
@@ -233,8 +233,8 @@
    "argosPlacePages": 5,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
-   "note": null,
+   "next": "round 2 search found no official open list (UNVERIFIED, search and API checks only); try a browser check of the national road agency site or an email",
+   "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
   {
@@ -242,8 +242,8 @@
    "argosPlacePages": 5,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
-   "note": null,
+   "next": "round 2 search found no official open list (UNVERIFIED, search and API checks only); try a browser check of the national road agency site or an email",
+   "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
   {
@@ -259,9 +259,9 @@
    "country": "slovenia",
    "argosPlacePages": 4,
    "ourCameras": 0,
-   "status": "not-investigated",
-   "next": null,
-   "note": null,
+   "status": "small",
+   "next": "DRSI official XLSX: 649 rows with names and roads but no coordinates or picture links and no stated licence; look for promet.si list or email",
+   "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
   {
@@ -277,18 +277,18 @@
    "country": "belgium",
    "argosPlacePages": 4,
    "ourCameras": 0,
-   "status": "not-investigated",
-   "next": null,
-   "note": null,
+   "status": "small",
+   "next": "Brussels: 2 city-square webcams, CC0, not road traffic; Flanders Verkeerscentrum not found",
+   "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
   {
    "country": "thailand",
    "argosPlacePages": 4,
    "ourCameras": 0,
-   "status": "not-investigated",
-   "next": null,
-   "note": null,
+   "status": "blocked",
+   "next": "Longdo terms reportedly limit use to its own service (search snippet, UNVERIFIED); DOH not found",
+   "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
   {
@@ -716,6 +716,7 @@
   }
  ],
  "huntRounds": [
-  "2026-11-24 round 1: 8 countries (Czechia, Switzerland, France, South Korea, Hungary, Poland, Indonesia, Austria): docs/source-audits/world-hunt-2026-11-24.md"
+  "2026-11-24 round 1: 8 countries (Czechia, Switzerland, France, South Korea, Hungary, Poland, Indonesia, Austria): docs/source-audits/world-hunt-2026-11-24.md",
+  "2026-11-24 round 2: 12 countries: docs/source-audits/world-hunt-2-2026-11-24.md"
  ]
 }
