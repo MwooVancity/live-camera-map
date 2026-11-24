@@ -1,6 +1,6 @@
 // Camera health checker. Reads data/camera-registry/cameras.json, writes data/health/health.json (generated, gitignored).
 // Usage: node ops/health/check.mjs [--previous <file|url>] [--registry <cameras.json>] [--out <health.json>]
-//   [--limit N] [--sample N] [--max-requests 7000] [--budget-min 18] [--concurrency 6] [--host-delay-ms 100]
+//   [--limit N] [--sample N] [--max-requests 9000] [--budget-min 18] [--concurrency 6] [--host-delay-ms 100]
 //   [--stale-hours 6] [--magic-all] [--source <sourceId>]   (--source checks one source only; with --sample it never writes health.json)
 //   [--max-check-age-h 48] [--run-every-h 3]   (a camera's own check older than the first is unknown; the second only turns runs into hours in the report)
 // Fair budget: each source gets a share of the time budget and request cap by its own polite pace; its cameras are checked oldest-last-checked first
@@ -23,13 +23,13 @@ import { MAX_CHECK_AGE_H } from './lib/age.mjs';
 // (lib/plan.mjs); inside a source the cameras checked longest ago (never checked first) go first; the cameras a run does not reach keep
 // their previous record, and one whose own last check is older than maxCheckAgeH becomes 'unknown' (lib/age.mjs, also used by the site).
 // runEveryHours is the staging cron spacing ('17 */3 * * *'); it only turns "runs per full cycle" into hours for the report.
-export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 7000, budgetMs: 18 * 60000, breakerAt: 25, retries: 2, backoffMs: 1000, backoffMaxMs: 30000, timeoutMs: 15000, staleHours: 6, minBytes: 1000, maxUnknownShare: 0.2, magicAll: false,
+export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 9000, budgetMs: 18 * 60000, breakerAt: 25, retries: 2, backoffMs: 1000, backoffMaxMs: 30000, timeoutMs: 15000, staleHours: 6, minBytes: 1000, maxUnknownShare: 0.2, magicAll: false,
   maxCheckAgeH: MAX_CHECK_AGE_H, runEveryHours: 3, retrySlack: 0.9,
   // Per-source overrides (concurrency, hostDelayMs = minimum gap between requests to that source's host, staleHours).
   // drivebc: www.drivebc.ca publishes no rate limit and its API terms say limits may change without notice, so it gets its own
   // gentler pace (3 workers, 300 ms between requests = at most ~3 requests/s, HEAD only) and a 4 h stale limit (see docs/decisions/bc-health-stale-limit.md).
   // digitraffic (Finland): Digitraffic limits weather camera images to 60 requests a minute per IP without its Digitraffic-User header, so one worker
-  // 1100 ms apart (54 a minute) is used whatever the header allows; 805 cameras take about 15 minutes, which is why the time budget is 18 minutes and the cap 7000.
+  // 1100 ms apart (54 a minute) is used whatever the header allows; 805 cameras take about 15 minutes, which is why the time budget is 18 minutes and the cap 7000 (raised to 9000 on 2026-11-24 when the Hong Kong list added 1,011 cameras).
   // It answers a camera with no picture with a grey "Image not available" JPEG (200, image/jpeg, no Last-Modified, no ETag): needValidators counts that as unavailable.
   // quebec-mtmd: quebec511.info answers automated requests with a Cloudflare bot-check page (403, Cf-Mitigated: challenge); we do not work around it (CLAUDE.md),
   // so `skip` sends no request at all and every Quebec camera is unknown by design (never unavailable, and not counted in the 20% unknown limit).
@@ -40,6 +40,7 @@ export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 7000, bud
     drivebc: { concurrency: 3, hostDelayMs: 300, staleHours: 4 },
     'toronto-traffic': { concurrency: 2, hostDelayMs: 500, staleHours: 6 },
     'calgary-traffic': { concurrency: 2, hostDelayMs: 500, staleHours: 6 }, // trafficcam.calgary.ca: no robots.txt (404) and no stated limit; same polite pace as Toronto, HEAD only
+    'hongkong-traffic': { concurrency: 1, hostDelayMs: 250, staleHours: 6 }, // tdcctv.data.one.gov.hk: no stated limit; one worker, 250 ms apart (at most 4 a second), HEAD only; 1,013 pictures take about 4.5 minutes
     digitraffic: { concurrency: 1, hostDelayMs: 1100, staleHours: 6, needValidators: true },
     'quebec-mtmd': { skip: 'host-blocks-automated-checks' },
   } };

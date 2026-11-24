@@ -185,6 +185,22 @@
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
       "mustNotShip": false
+    },
+    {
+      "id": "hongkong-traffic-cameras",
+      "name": "Traffic Snapshot Images, Transport Department (DATA.GOV.HK, camera list XML)",
+      "section": "Camera registry sources (read by ops/importers/hongkong.mjs)",
+      "folder": "",
+      "licence": "DATA.GOV.HK Terms and Conditions Version 1.2, last updated 26 May 2025 (https://data.gov.hk/en/terms-and-conditions, read by Claude 2026-11-24 and re-read as page text by the importer every run): \"You are allowed to browse, download, distribute, reproduce, hyperlink to, and print the Data for both commercial and non-commercial purposes on a free-of-charge basis on condition that:- you shall comply with the Terms of Use; you shall identify clearly the source of the Data and acknowledge the Government and the Relevant Organisations' ownership of the intellectual property rights in the Data ...; you shall also give proper attribution to the Government, the Relevant Organisations and DATA.GOV.HK.\" Credit line printed on every page that shows the cameras: \"Source: Transport Department, The Government of the Hong Kong Special Administrative Region, via DATA.GOV.HK.\" The terms also contain an indemnity clause, which Mike must read before launch. Feed: https://static.data.gov.hk/td/traffic-snapshot-images/code/Traffic_Camera_Locations_En.xml (no key; static.data.gov.hk publishes no robots.txt, it answers an error body; the importer reads it every run and obeys any Disallow). Whether the camera pictures (tdcctv.data.one.gov.hk) are covered as \"Data\" is not separately stated, so image display, caching and redistribution stay unverified and we only link out. The importer stops if the terms page loses the phrases \"for both commercial and non-commercial purposes\" or \"DATA.GOV.HK\".",
+      "commercialStatus": "allowed_per_doc",
+      "statusReason": "quoted text: Data may be used \"for both commercial and non-commercial purposes\" free of charge, with clear source identification and attribution; applies to the camera list, pictures unverified (link-out only)",
+      "attribution": "Source: Transport Department, The Government of the Hong Kong Special Administrative Region, via DATA.GOV.HK.",
+      "provenance": "https://data.gov.hk/en/terms-and-conditions (terms v1.2) and the feed URL above, read 2026-11-24; the GEV row hong-kong-transport-department-data-gov-hk stays as the GEV doc has it (unknown, fails closed)",
+      "imageStatus": "unverified: image display, caching and redistribution not stated; link-out only",
+      "reviewedAt": "2026-11-24",
+      "reviewedBy": "claude-doc-read",
+      "needsHumanReview": true,
+      "mustNotShip": false
     }
   ]
 }

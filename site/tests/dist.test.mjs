@@ -356,6 +356,27 @@ test('Calgary: one region hub, no city pages, every camera listed once as a link
   assert.equal(new Set(mine.map((c) => c.name)).size, mine.length, 'no two labels alike');
   assert.ok(pages.get('/cameras/canada/').includes('/cameras/canada/calgary/'), 'the country hub links to it');
 });
+test('Hong Kong: country hub and one region page, no city pages, every camera listed once as a link to the Department picture address, the exact required credit and the pictures-belong-to-the-Government caveat printed, link-out only', () => {
+  const r = '/cameras/hong-kong/hong-kong/';
+  const mine = cameras.filter((c) => c.regionSlug === 'hong-kong');
+  assert.ok(mine.length >= 900, 'the registry holds the Hong Kong list');
+  const html = pages.get(r);
+  assert.ok(html, 'page built');
+  assert.ok(html.includes(`data-count="${mine.length}"`) && html.includes(`All ${mine.length} cameras`), 'count');
+  const block = html.match(/<section data-block="cameras"[\s\S]*?<\/section>/)[0];
+  assert.equal((block.match(/<li>/g) || []).length, mine.length, 'list length');
+  for (const m of block.matchAll(/<li><a href="([^"]+)"/g)) assert.match(m[1], /^https:\/\/tdcctv\.data\.one\.gov\.hk\/[A-Za-z0-9]+\.JPG$/);
+  assert.ok(!/<(img|video|iframe|source)\b/i.test(block), 'no media tag in the list');
+  assert.ok(html.includes('Credit: Transport Department, The Government of the Hong Kong Special Administrative Region, via DATA.GOV.HK.'), 'the exact credit, one full stop');
+  assert.ok(!html.includes('DATA.GOV.HK..'), 'no doubled full stop');
+  assert.ok(/pictures belong to the Government of the Hong Kong SAR/.test(html), 'the pictures are the Government\'s');
+  assert.ok(/do not separately say whether the picture files are covered/.test(html), 'image caveat');
+  assert.ok(![...pages.keys()].some((x) => x.startsWith(r) && x !== r), 'no Hong Kong city page: the feed has no city field');
+  assert.ok(!isNoindex(html), 'indexable');
+  assert.equal(new Set(mine.map((c) => c.name)).size, mine.length, 'no two labels alike');
+  assert.ok(pages.get('/cameras/hong-kong/').includes('/cameras/hong-kong/hong-kong/'), 'the country hub links to it');
+  assert.ok(!isNoindex(pages.get('/cameras/hong-kong/')), 'country hub indexable');
+});
 test('country hub of Canada: BC and Quebec regions with their own text, and the one-camera Quebec region is counted in the total but said to have no page', () => {
   const html = pages.get('/cameras/canada/');
   const total = cameras.filter((c) => countryOfRegion(c.regionSlug) === 'canada').length;
@@ -380,7 +401,7 @@ test('footer credits link to the licence terms and say what we changed (CC BY: l
     assert.ok(/Changes by us:/.test(f), `${route} footer does not say what we changed`);
   }
 });
-const countryOfRegion = (slug) => ({ california: 'united-states', finland: 'finland' }[slug] || (slug ? 'canada' : null));
+const countryOfRegion = (slug) => ({ california: 'united-states', finland: 'finland', 'hong-kong': 'hong-kong' }[slug] || (slug ? 'canada' : null));
 
 // ---- launch switch (owner 2026-11-23): PUBLIC_NOINDEX=1 hides EVERY page, robots disallows all, sitemap is empty ----
 test('launch switch: PUBLIC_NOINDEX=1 build hides every page and offers no URL to search engines', () => {

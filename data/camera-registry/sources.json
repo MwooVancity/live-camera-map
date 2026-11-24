@@ -158,5 +158,25 @@
   "license": "Open Government Licence - City of Calgary",
   "licenseUrl": "https://data.calgary.ca/stories/s/Open-Data-Terms/u45n-7awa",
   "reviewedAt": "2026-11-23"
+ },
+ {
+  "id": "hongkong-traffic",
+  "name": "Traffic Snapshot Images (Transport Department, DATA.GOV.HK)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one request for the list per run; picture links are checked by the health checker at most 4 a second",
+   "docsUrl": "https://data.gov.hk/en-data/dataset/hk-td-tis_2-traffic-snapshot-images"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Source: Transport Department, The Government of the Hong Kong Special Administrative Region, via DATA.GOV.HK.",
+  "license": "DATA.GOV.HK Terms and Conditions Version 1.2",
+  "licenseUrl": "https://data.gov.hk/en/terms-and-conditions",
+  "reviewedAt": "2026-11-24"
  }
 ]

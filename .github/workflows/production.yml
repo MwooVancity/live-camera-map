@@ -48,6 +48,7 @@ jobs:
           timeout 120 node ops/importers/drivebc.mjs --only=events || echo "BC events not refreshed (exit $?)"
           timeout 90 node ops/importers/toronto.mjs || echo "Toronto list not refreshed (exit $?)"
           timeout 60 node ops/importers/calgary.mjs || echo "Calgary list not refreshed (exit $?)"
+          timeout 90 node ops/importers/hongkong.mjs || echo "Hong Kong list not refreshed (exit $?)"
       - name: Camera health check (fair budget by source, previous result from the live site or, on the first run, from staging)
         timeout-minutes: 22
         run: |

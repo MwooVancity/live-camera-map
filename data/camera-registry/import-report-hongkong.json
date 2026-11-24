@@ -1,0 +1,10 @@
+{
+ "generatedAt": "2026-11-24T02:38:37.228Z",
+ "source": "https://static.data.gov.hk/td/traffic-snapshot-images/code/Traffic_Camera_Locations_En.xml",
+ "licenceUrl": "https://data.gov.hk/en/terms-and-conditions",
+ "raw": 1013,
+ "dropped": {
+  "noUrl": 2
+ },
+ "total": 1011
+}

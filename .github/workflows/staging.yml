@@ -39,8 +39,10 @@ jobs:
         run: timeout 90 node ops/importers/toronto.mjs || echo "Toronto list not refreshed (exit $?); the committed list is used"
       - name: Refresh the Calgary camera list (City of Calgary open data; two requests; the importer re-reads the licence page sentences first; a failed or refused run keeps the committed list and never fails the deploy)
         run: timeout 60 node ops/importers/calgary.mjs || echo "Calgary list not refreshed (exit $?); the committed list is used"
+      - name: Refresh the Hong Kong camera list (Transport Department list on DATA.GOV.HK; three requests; the importer re-reads the terms page sentences and robots.txt first; a failed or refused run keeps the committed list and never fails the deploy)
+        run: timeout 90 node ops/importers/hongkong.mjs || echo "Hong Kong list not refreshed (exit $?); the committed list is used"
       - name: Camera health check (previous result from the deployed site, 18 min time budget shared fairly by source)
-        # Fair budget (rule health-fair-budget): each source gets a share of the 18 min and of the 7000-request cap by its own polite pace
+        # Fair budget (rule health-fair-budget): each source gets a share of the 18 min and of the 9000-request cap by its own polite pace
         # (Finland images 1100 ms apart, Toronto 500 ms, DriveBC 300 ms, Caltrans 100 ms; Quebec links are never requested). Inside a source the
         # cameras checked longest ago go first (never checked first); the others keep their previous result from previous-health.json, and a camera whose
         # own last check is over 48 h old shows unknown. Each run prints per source "whole set every N runs = H h" (runs are 3 h apart). Today every

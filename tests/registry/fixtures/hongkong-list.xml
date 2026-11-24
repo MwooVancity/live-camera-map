@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<image-list>
+	<image>
+		<key>H429F</key>
+		<region>Hong Kong Island</region>
+		<district>Southern</district>
+		<description>Aberdeen Praya Road near Fish Market [H429F]</description>
+		<easting>833549</easting>
+		<northing>812187</northing>
+		<latitude>22.24845</latitude>
+		<longitude>114.1505</longitude>
+		<url>https://tdcctv.data.one.gov.hk/H429F.JPG</url>
+	</image>
+	<image>
+		<key>H106F</key>
+		<region>Hong Kong Island</region>
+		<district>Central &amp; Western</district>
+		<description>Connaught Road Central near Exchange Square [H106F]</description>
+		<easting>834091</easting>
+		<northing>816342</northing>
+		<latitude>22.2859674</latitude>
+		<longitude>114.1557495</longitude>
+		<url>https://tdcctv.data.one.gov.hk/H106F.JPG</url>
+	</image>
+	<image>
+		<key>K101F</key>
+		<region>Kowloon</region>
+		<district>Yau Tsim Mong</district>
+		<description>Nathan Road near Jordan Road [K101F]</description>
+		<easting>835000</easting>
+		<northing>818000</northing>
+		<latitude>22.3049</latitude>
+		<longitude>114.1717</longitude>
+		<url>https://tdcctv.data.one.gov.hk/K101F.JPG</url>
+	</image>
+	<image>
+		<key>S501F</key>
+		<region>New Territories</region>
+		<district>Sha Tin</district>
+		<description>Tolo Highway - Sha Tin Side [S501F]</description>
+		<easting>838000</easting>
+		<northing>825000</northing>
+		<latitude>22.3871</latitude>
+		<longitude>114.1952</longitude>
+		<url>https://tdcctv.data.one.gov.hk/S501F.JPG</url>
+	</image>
+	<image>
+		<key>N001F</key>
+		<region>New Territories</region>
+		<district>Tuen Mun</district>
+		<description>Castle Peak Road near Tuen Mun Town Hall [N001F]</description>
+		<easting>818000</easting>
+		<northing>827000</northing>
+		<latitude>22.3912</latitude>
+		<longitude>113.9760</longitude>
+		<url>https://tdcctv.data.one.gov.hk/N001F.JPG</url>
+	</image>
+</image-list>

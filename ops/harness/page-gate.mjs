@@ -5,7 +5,7 @@ import { readdirSync, readFileSync, existsSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const CAMERA_HOSTS = ['cwwp2.dot.ca.gov', 'wzmedia.dot.ca.gov', 'drivebc.ca', 'weathercam.digitraffic.fi', 'quebec511.info', 'opendata.toronto.ca', 'trafficcam.calgary.ca']; // drivebc.ca covers www.drivebc.ca picture addresses; the last four are the Finland, Quebec, Toronto and Calgary link-out hosts
+const CAMERA_HOSTS = ['cwwp2.dot.ca.gov', 'wzmedia.dot.ca.gov', 'drivebc.ca', 'weathercam.digitraffic.fi', 'quebec511.info', 'opendata.toronto.ca', 'trafficcam.calgary.ca', 'tdcctv.data.one.gov.hk']; // drivebc.ca covers www.drivebc.ca picture addresses; the last four are the Finland, Quebec, Toronto and Calgary link-out hosts
 
 function walk(dir, out = []) {
   for (const f of readdirSync(dir)) {

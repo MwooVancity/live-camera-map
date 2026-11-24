@@ -4,6 +4,7 @@ import { MIN_CAMERAS } from '../config.mjs';
 import { QC_REGIONS } from '../../../ops/importers/lib/quebec.mjs';
 import { TOR_REGION } from '../../../ops/importers/lib/toronto.mjs';
 import { CGY_REGION } from '../../../ops/importers/lib/calgary.mjs';
+import { HK_REGION } from '../../../ops/importers/lib/hongkong.mjs';
 
 // NFKD splits an accented letter into the letter plus a combining mark; the marks are removed first, otherwise "Hämeenlinna" became "ha-meenlinna".
 export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -68,6 +69,13 @@ export const REGIONS = {
     placeText: (x) => sentence(`The City's list has no neighbourhood or place field: each camera is named by the roads it is at and a quadrant of the city (NW, NE, SW, SE), which is a part of the city and not a place name, so no camera here has a named place and there are no city pages; all ${x.total} cameras are listed below.`),
     cityText: () => '',
     caveats: ['The camera pictures belong to the City of Calgary and are not shown here. Each link goes to one live picture address on trafficcam.calgary.ca; it is a link only. The City says the cameras are for traffic monitoring, not enforcement, and footage is not recorded. The licence covers the list; it does not say whether the picture files themselves are covered.'],
+  },
+  // Hong Kong: one region from the Transport Department's own list; each row has a District (the Department's own word), kept as text, and the feed has no city field, so no city pages.
+  [HK_REGION.slug]: {
+    sourceId: 'hongkong-traffic', agency: 'Transport Department (Hong Kong)', cityLimit: 0, guide: null, credit: true, list: 'traffic camera list', listAll: true,
+    placeText: (x) => sentence(`The Department's list has no city field: each camera is named as the Department names it, ending in its camera key (for example [H429F]), and carries a District and an area (Hong Kong Island, Kowloon or New Territories), which are parts of Hong Kong and not city names, so there are no city pages; all ${x.total} cameras are listed below.`),
+    cityText: () => '',
+    caveats: ['The camera pictures belong to the Government of the Hong Kong SAR and are not shown here. Each link goes to one still picture address on tdcctv.data.one.gov.hk; it is a link only. The DATA.GOV.HK terms cover the data; they do not separately say whether the picture files are covered.'],
   },
 };
 // The credit sentence for a source that asks for one (its attribution line from sources.json, without a leading "Source:").
