@@ -34,9 +34,9 @@
    "country": "czechia",
    "argosPlacePages": 29,
    "ourCameras": 0,
-   "status": "not-investigated",
-   "next": null,
-   "note": null,
+   "status": "blocked",
+   "next": "Prague Golemio API needs a key or registration; national camera feed not found",
+   "note": "docs/source-audits/world-hunt-2026-11-24.md",
    "owner": null
   },
   {
@@ -62,8 +62,8 @@
    "argosPlacePages": 20,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
-   "note": null,
+   "next": "opentransportdata.swiss has no webcam dataset; look at ASTRA and cantonal sources (UNVERIFIED)",
+   "note": "docs/source-audits/world-hunt-2026-11-24.md",
    "owner": null
   },
   {
@@ -79,18 +79,18 @@
    "country": "france",
    "argosPlacePages": 17,
    "ourCameras": 0,
-   "status": "not-investigated",
-   "next": null,
-   "note": null,
+   "status": "small",
+   "next": "BUILD NEXT (small): Lyon \"Cameras Web Criter\" GeoJSON, 15 cameras, no key, Licence Ouverte 2.0 named by data.gouv.fr (licence text itself unread: quote it first); find a national DIR feed",
+   "note": "docs/source-audits/world-hunt-2026-11-24.md",
    "owner": null
   },
   {
    "country": "south-korea",
    "argosPlacePages": 16,
    "ourCameras": 0,
-   "status": "not-investigated",
-   "next": null,
-   "note": null,
+   "status": "blocked",
+   "next": "ITS server refused the connection from our network; check in a browser or email",
+   "note": "docs/source-audits/world-hunt-2026-11-24.md",
    "owner": null
   },
   {
@@ -107,8 +107,8 @@
    "argosPlacePages": 15,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
-   "note": null,
+   "next": "portal returned no catalogue to our tools; browser check or email (UNVERIFIED not found)",
+   "note": "docs/source-audits/world-hunt-2026-11-24.md",
    "owner": null
   },
   {
@@ -124,9 +124,9 @@
    "country": "poland",
    "argosPlacePages": 14,
    "ourCameras": 0,
-   "status": "not-investigated",
-   "next": null,
-   "note": null,
+   "status": "blocked",
+   "next": "GDDKiA national access point needs registration; reuse terms unread",
+   "note": "docs/source-audits/world-hunt-2026-11-24.md",
    "owner": null
   },
   {
@@ -152,17 +152,17 @@
    "argosPlacePages": 12,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
-   "note": null,
+   "next": "nothing usable found with search; browser check (UNVERIFIED not found)",
+   "note": "docs/source-audits/world-hunt-2026-11-24.md",
    "owner": null
   },
   {
    "country": "austria",
    "argosPlacePages": 10,
    "ourCameras": 0,
-   "status": "not-investigated",
-   "next": null,
-   "note": null,
+   "status": "blocked",
+   "next": "ASFINAG webcam page answers 403 from F5 bot protection (2026-11-24): not worked around; try an email to ASFINAG",
+   "note": "docs/source-audits/world-hunt-2026-11-24.md",
    "owner": null
   },
   {
@@ -714,5 +714,8 @@
    "note": null,
    "owner": null
   }
+ ],
+ "huntRounds": [
+  "2026-11-24 round 1: 8 countries (Czechia, Switzerland, France, South Korea, Hungary, Poland, Indonesia, Austria): docs/source-audits/world-hunt-2026-11-24.md"
  ]
 }
