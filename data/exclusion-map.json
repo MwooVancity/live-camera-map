@@ -117,6 +117,24 @@
       ]
     },
     {
+      "id": "open-meteo",
+      "title": "Open-Meteo free API (non-commercial only; ad-supported sites are commercial)",
+      "mechanism": "server-proxied",
+      "routes": [
+        {
+          "route": "/api/weather-effects",
+          "evidence": "gev/server/providers/regional/weather.js:16 (api.open-meteo.com); open-meteo.com/en/terms read 2026-11-24: \"You may only use the free API services for non-commercial purposes\""
+        }
+      ],
+      "probePaths": [
+        "/api/weather-effects"
+      ],
+      "proxyEnforced": true,
+      "permissionIds": [
+        "open-meteo"
+      ]
+    },
+    {
       "id": "fl511",
       "title": "FL511 cameras (personal use only)",
       "mechanism": "opt-in CCTV pack, default off",
@@ -588,11 +606,10 @@
       "sourceIds": [
         "noaa-nowcoast-observed-weather-nowcoast-noaa-gov-geoserver-observations-weather-",
         "noaa-nowcoast-lightning-density-nowcoast-noaa-gov-geoserver-observations-lightni",
-        "open-meteo",
         "noaa-gfs-wind-noaa-gfs-bdp-pds-s3-amazonaws-com",
         "ecmwf-ifs-wind-data-ecmwf-int-forecasts-ecmwf-open-data"
       ],
-      "reason": "tile/image -> nowCOAST only (weather.js:4); weather-effects -> Open-Meteo (regional/weather.js:16); wind -> NOAA GFS and ECMWF"
+      "reason": "tile/image -> nowCOAST only (weather.js:4); weather-effects -> Open-Meteo (regional/weather.js:16) is CLOSED since 2026-11-24 (free API is non-commercial); wind -> NOAA GFS and ECMWF"
     },
     "weather-manifest": {
       "basis": "enabled-source",
@@ -710,10 +727,10 @@
     },
     {
       "id": "OPENMETEO-UNVERIFIED",
-      "status": "open",
+      "status": "closed",
       "severity": "low",
       "what": "data/source-permissions.json marks Open-Meteo allowed_per_doc from the CC BY 4.0 line in DATA_SOURCES.md:62. From training knowledge (UNVERIFIED, not re-read this session) the free Open-Meteo API tier is limited to non-commercial use; commercial use needs a paid plan or self-hosting. /api/weather-effects is allowlisted on that basis.",
-      "fix": "Mike reads https://open-meteo.com/en/terms and either confirms, buys the plan, or we drop /api/weather-effects from the allowlist.",
+      "fix": "CLOSED 2026-11-24: open-meteo.com/en/terms says the free API is for non-commercial purposes only and commercial examples include ad-supported sites; /api/weather-effects removed from the allowlist (JSON and nginx), added to neverAllowed, permission row forced restricted in ops/audit/build-inventory.mjs. Reopens only with a paid Open-Meteo commercial plan or written permission.",
       "owner": "Mike"
     }
   ],

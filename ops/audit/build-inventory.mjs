@@ -24,6 +24,7 @@ const FORCED_RESTRICTED = [
   [/ghostmaps|s2 ghost/i, 'S2 GhostMaps: non-commercial', false],
   [/google news/i, 'Google News RSS: personal use', false],
   [/inaturalist/i, 'iNaturalist: non-commercial by default', false],
+  [/open-?meteo/i, 'Open-Meteo free API: "You may only use the free API services for non-commercial purposes"; ad-supported sites count as commercial (open-meteo.com/en/terms, read 2026-11-24); a paid commercial plan or written permission is needed', false],
 ];
 
 const RESTRICT_RE = /non-?commercial|cc by-nc|\bby-nc\b|personal use|written agreement|needs an agreement|research use only|not licensed/i;
