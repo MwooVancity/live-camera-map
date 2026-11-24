@@ -152,7 +152,7 @@
    "argosPlacePages": 12,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": "RTTMC camera location document is a location list, not proof of a live image API (ChatGPT, UNVERIFIED): separate static locations from live feeds, check stable links",
+   "next": "data.go.id search \"cctv lalu lintas\" 2026-11-24 (curl, 200) lists city-level datasets (Pontianak CCTV locations 2021-2025 csv/xlsx, Kendari, Banjarbaru, Sambas, ATCS 2024, camera counts) that are location or count tables, not live links: they fail the stable-link test (plan item 36 P0-1) unless a row has a stable official camera page. Next: open one csv (Pontianak) and check for URLs and licence; RTMC portal rtmc.dephub.go.id did not connect from this network (UNVERIFIED), try in a browser",
    "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
