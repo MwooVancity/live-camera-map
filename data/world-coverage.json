@@ -62,7 +62,7 @@
    "argosPlacePages": 20,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": "round 2 search found no official open list (UNVERIFIED, search and API checks only); try a browser check of the national road agency site or an email",
+   "next": "ASTRA says its traffic data platform (camera systems among other devices) sits on the Swiss Mobility Open Data Platform (astra.admin.ch/en/mobility-data, from a search snippet, UNVERIFIED); no per-camera list found 2026-11-24 on opendata.swiss or opentransportdata.swiss searches: read opentransportdata.swiss dataset list in a browser for a camera or Verkehrskamera dataset, else email ASTRA for the camera catalogue and licence",
    "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
@@ -106,8 +106,8 @@
    "country": "hungary",
    "argosPlacePages": 15,
    "ourCameras": 0,
-   "status": "not-investigated",
-   "next": "round 2 search found no official open list (UNVERIFIED, search and API checks only); try a browser check of the national road agency site or an email",
+   "status": "blocked",
+   "next": "Magyar Közút road portal utinform.hu answered HTTP 403 to curl 2026-11-24 (not worked around) and data.gov.hu did not connect from this network: view both in a normal browser by hand, look for a camera dataset and its licence, else email Magyar Közút for the camera catalogue",
    "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
