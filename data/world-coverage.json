@@ -6,10 +6,10 @@
   {
    "country": "united-states-of-america",
    "argosPlacePages": 156,
-   "ourCameras": 4086,
+   "ourCameras": 5338,
    "status": "partial",
-   "next": null,
-   "note": "Caltrans 3,263 and Austin 823 built; NY (511NY agreement unread), Oregon (account plus ODOT written ok), Florida and Houston restricted, Washington needs an access code, Texas DriveTexas ruled out",
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
+   "note": "Caltrans 3,263, Austin 823 and Iowa DOT 1,252 (1,253 rows, one duplicate picture path; CC BY 4.0, indemnification clause flagged for the owner) built; NY (511NY agreement unread), Oregon (account plus ODOT written ok), Florida and Houston restricted, Washington needs an access code, Texas DriveTexas ruled out",
    "owner": null
   },
   {
@@ -17,7 +17,7 @@
    "argosPlacePages": 49,
    "ourCameras": 0,
    "status": "blocked",
-   "next": "DGT reply (emailed 2026-11-23) on commercial reuse; 1,980 cameras",
+   "next": "DGT national access point nap.dgt.es answers 200 = VERIFIED 2026-11-24: DATEX II camera locations and real-time camera datasets (they exclude Catalonia and the Basque Country, ChatGPT reading, UNVERIFIED); our DGT email of 2026-11-23 on commercial reuse is pending",
    "note": null,
    "owner": "Mike pastes the reply"
   },
@@ -26,7 +26,7 @@
    "argosPlacePages": 48,
    "ourCameras": 0,
    "status": "blocked",
-   "next": "MLIT blocks bots; email for access (docs/outreach)",
+   "next": "MLIT Road Information Provision System shows road cameras in a viewer; a stable per-camera catalogue and commercial reuse are UNVERIFIED: find the open-data catalogue or email MLIT",
    "note": null,
    "owner": "Claude may email"
   },
@@ -44,7 +44,7 @@
    "argosPlacePages": 22,
    "ourCameras": 0,
    "status": "small",
-   "next": "A22 Autobrennero 13 cameras CC0 (feed live 2026-11-24); batch with another Italian source",
+   "next": "Autostrade per l'Italia claims about 4,000 webcams in a viewer, no open licence established; A22 Brenner (13 cameras, CC0) is the small clean source",
    "note": null,
    "owner": null
   },
@@ -53,7 +53,7 @@
    "argosPlacePages": 22,
    "ourCameras": 2264,
    "status": "partial",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": "DriveBC, Quebec (bot check, shows unknown), Toronto, Calgary built; Ontario 511 needs key, Alberta needs key plus written permission",
    "owner": null
   },
@@ -89,7 +89,7 @@
    "argosPlacePages": 16,
    "ourCameras": 0,
    "status": "blocked",
-   "next": "ITS server refused the connection from our network; check in a browser or email",
+   "next": "UTIC (utic.go.kr/guide/cctvOpenData.do) answers \"enter the open-data KEY\" = VERIFIED 2026-11-24: Mike signs up for a free key at data.go.kr (account creation is his), then read the key terms for republishing a camera list; MOLIT CCTV API is the second lead",
    "note": "docs/source-audits/world-hunt-2026-11-24.md",
    "owner": null
   },
@@ -125,7 +125,7 @@
    "argosPlacePages": 14,
    "ourCameras": 0,
    "status": "blocked",
-   "next": "GDDKiA national access point needs registration; reuse terms unread",
+   "next": "GDDKiA publishes camera imagery in a viewer; find out whether camera locations can be reused (registration was needed in hunt round 1)",
    "note": "docs/source-audits/world-hunt-2026-11-24.md",
    "owner": null
   },
@@ -152,7 +152,7 @@
    "argosPlacePages": 12,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": "round 2 search found no official open list (UNVERIFIED, search and API checks only); try a browser check of the national road agency site or an email",
+   "next": "RTTMC camera location document is a location list, not proof of a live image API (ChatGPT, UNVERIFIED): separate static locations from live feeds, check stable links",
    "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
@@ -161,7 +161,7 @@
    "argosPlacePages": 10,
    "ourCameras": 0,
    "status": "blocked",
-   "next": "ASFINAG webcam page answers 403 from F5 bot protection (2026-11-24): not worked around; try an email to ASFINAG",
+   "next": "ASFINAG data portal (DATEX II, registration, some free some paid, ChatGPT, UNVERIFIED); the webcam page answered 403 from F5 on 2026-11-24 and was not worked around: register as Mike or email ASFINAG",
    "note": "docs/source-audits/world-hunt-2026-11-24.md",
    "owner": null
   },
@@ -170,7 +170,7 @@
    "argosPlacePages": 10,
    "ourCameras": 0,
    "status": "blocked",
-   "next": "NZTA terms ban commercial use unless expressly permitted; emailed service@nzta.govt.nz 2026-11-24, 313 cameras",
+   "next": "NZTA feed trafficnz.info/service/traffic/rest/4/cameras/all is keyless, 313 cameras, stable image path /camera/<id>.jpg = VERIFIED 2026-11-24; terms bar commercial use unless NZTA expressly permits: build only after the reply to our 2026-11-24 email",
    "note": null,
    "owner": "wait for reply"
   },
@@ -242,7 +242,7 @@
    "argosPlacePages": 5,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": "round 2 search found no official open list (UNVERIFIED, search and API checks only); try a browser check of the national road agency site or an email",
+   "next": "SANRAL i-TRAFFIC GetCameras (itraffic.sanral.co.za) needs a developer key and did not answer from our network 2026-11-24 (UNVERIFIED): Mike requests a key, then read the terms",
    "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
@@ -251,7 +251,7 @@
    "argosPlacePages": 5,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -287,7 +287,7 @@
    "argosPlacePages": 4,
    "ourCameras": 0,
    "status": "blocked",
-   "next": "Longdo terms reportedly limit use to its own service (search snippet, UNVERIFIED); DOH not found",
+   "next": "the open government CCTV CSV on data.go.th is general CCTV, not a road-camera list (ChatGPT): do not import without checking purpose and locations",
    "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
@@ -305,7 +305,7 @@
    "argosPlacePages": 3,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -314,7 +314,7 @@
    "argosPlacePages": 2,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "no national open catalogue verified; provincial viewers only: defer",
    "note": null,
    "owner": null
   },
@@ -323,7 +323,7 @@
    "argosPlacePages": 2,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -332,7 +332,7 @@
    "argosPlacePages": 2,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -350,7 +350,7 @@
    "argosPlacePages": 2,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -359,7 +359,7 @@
    "argosPlacePages": 2,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -368,7 +368,7 @@
    "argosPlacePages": 2,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -377,7 +377,7 @@
    "argosPlacePages": 2,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -386,7 +386,7 @@
    "argosPlacePages": 2,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -395,7 +395,7 @@
    "argosPlacePages": 2,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -404,7 +404,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -422,7 +422,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -431,7 +431,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -440,7 +440,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -449,7 +449,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -458,7 +458,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -467,7 +467,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -476,7 +476,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -485,7 +485,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -494,7 +494,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -503,7 +503,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -512,7 +512,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -521,7 +521,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -530,7 +530,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -539,7 +539,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -548,7 +548,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -557,7 +557,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -566,7 +566,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "no national public traffic-camera API verified; fragmented city systems (ChatGPT): defer, look for one city with an open dataset",
    "note": null,
    "owner": null
   },
@@ -575,7 +575,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -584,7 +584,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -593,7 +593,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -602,7 +602,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -611,7 +611,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -620,7 +620,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -629,7 +629,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -638,7 +638,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -647,7 +647,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -656,7 +656,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -665,7 +665,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "ADM Trafic has motorway webcams in a viewer, no machine-readable catalogue verified: email ADM for a catalogue and the reuse licence",
    "note": null,
    "owner": null
   },
@@ -674,7 +674,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -683,7 +683,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -692,7 +692,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -701,7 +701,7 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
    "owner": null
   },
@@ -710,13 +710,23 @@
    "argosPlacePages": 1,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": null,
+   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": null,
+   "owner": null
+  },
+  {
+   "country": "singapore",
+   "argosPlacePages": 0,
+   "ourCameras": 0,
+   "status": "small",
+   "next": "LTA traffic-images API is live and its licence allows commercial use, but only 8 cameras came back and every picture URL changes (VERIFIED 2026-11-24): ask LTA for a stable camera page or id before listing",
+   "note": "added 2026-11-24 from ChatGPT round C and our checks",
    "owner": null
   }
  ],
  "huntRounds": [
   "2026-11-24 round 1: 8 countries (Czechia, Switzerland, France, South Korea, Hungary, Poland, Indonesia, Austria): docs/source-audits/world-hunt-2026-11-24.md",
-  "2026-11-24 round 2: 12 countries: docs/source-audits/world-hunt-2-2026-11-24.md"
+  "2026-11-24 round 2: 12 countries: docs/source-audits/world-hunt-2-2026-11-24.md",
+  "2026-11-24 round C: ChatGPT 40-country shortlist checked by tool for Korea, Spain, New Zealand, South Africa, Singapore; every non-built row now has a named next action (tests/parity/world-coverage.test.mjs)"
  ]
 }
