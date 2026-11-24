@@ -17,7 +17,7 @@
    "argosPlacePages": 49,
    "ourCameras": 0,
    "status": "blocked",
-   "next": "BUILD NEXT (VERIFIED 2026-11-24 by curl): https://nap.dgt.es/dataset/camaras-dgt-datex2-v3-7 lists licence \"Free of charge\" and excludes Catalonia and the Basque Country; feed https://nap.dgt.es/datex2/v3/dgt/DevicePublication/camaras_datex2_v37.xml answers 200 keyless, 3.7 MB, 1,980 camera devices with id, road, latitude and longitude, picture path https://etraffic.dgt.es/camarasEtraffic/<id>.jpg (stable per id, image/jpeg 200); etraffic robots allows all. Open: read the licence text on the dataset page (CC BY claimed by ChatGPT, UNVERIFIED), read DGT legal notice, then importer (one agent, after the Iowa commit) with licence row; our DGT email of 2026-11-23 still pending",
+   "next": "TECHNICALLY READY, LICENCE CONFLICT (VERIFIED 2026-11-24): feed https://nap.dgt.es/datex2/v3/dgt/DevicePublication/camaras_datex2_v37.xml is keyless with 1,980 cameras and stable picture paths https://etraffic.dgt.es/camarasEtraffic/<id>.jpg, and the dataset page says Creative Commons Attribution, BUT the dgt.es legal notice says unauthorised \"comercialización\" of its works infringes DGT rights and has no reuse grant. Do not build until DGT answers our email of 2026-11-23 (nap@dgt.es) that the dataset CC BY terms govern; then build from the Iowa pattern",
    "note": null,
    "owner": "Mike pastes the reply"
   },
