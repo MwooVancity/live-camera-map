@@ -15,7 +15,10 @@ export function parseMapParams(search) {
 export const altFromZoom = (lat, z) => Math.max(200, Math.round(((1000 * 156543 * Math.cos(lat * Math.PI / 180)) / 2 ** z / 2) / Math.tan(Math.PI / 6)));
 
 // The GEV share-hash form, verified in gev/scripts/qa-stories.mjs ('v=2&lat=20&lon=10&alt=2500000&...') and gev/src/share/viewCodec.js (fields lat, lon, alt).
-export const gevHash = ({ lat, lon, z }) => `#v=2&lat=${lat}&lon=${lon}&alt=${altFromZoom(lat, z)}`;
+// The engine only honours map=osm when the share hash is complete (checked in a browser 2026-11-24); a partial hash falls back to its default Esri imagery, whose use terms are unknown.
+const BASEMAP = 'heading=360&pitch=-90&roll=0&style=normal&map=osm';
+export const gevHash = ({ lat, lon, z }) => `#v=2&lat=${lat}&lon=${lon}&alt=${altFromZoom(lat, z)}&${BASEMAP}`;
+export const defaultGevHash = `#v=2&lat=35&lon=-82.5&alt=23000000&${BASEMAP}`;
 
 // items = [[name, url, lat, lon, kindLabel]]; the n closest to p, nearest first (ties by name).
 export const nearest = (items, p, n = 3) => items.map((i) => ({ i, km: distKm(p.lat, p.lon, i[2], i[3]) })).sort((a, b) => a.km - b.km || (a.i[0] < b.i[0] ? -1 : 1)).slice(0, n);

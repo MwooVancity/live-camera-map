@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import { SITE_NAME } from '../../config.mjs';
 import { cameras, countsBy } from '../../lib/data.mjs';
 import { countryOf } from '../../../../ops/importers/lib/registry.mjs';
+import { defaultGevHash } from '../../lib/map-params.mjs';
 import { buildEntries } from '../../lib/search-index.mjs';
 import { curatedPlaces, regionsWithPages, countriesWithPages, countryName, countryRoute, regionRoute, cityRoute, GUIDES } from '../../lib/pages.mjs';
 
@@ -21,7 +22,7 @@ const near = buildEntries(cameras).filter((e) => e.kind === 'city' || e.kind ===
   <h1>Traffic camera map</h1>
   <p>The map shows {cameras.length} official traffic camera locations in {list}. Selecting a camera sends you to the official source; we do not display camera pictures. The same cameras are listed below as plain links, so you can browse without the map: start with <a href="/cameras/">all camera countries</a>, a country, a region, or a city.</p>
   {embed
-    ? <iframe class="map" title="Traffic camera map" src={embed} sandbox="allow-scripts allow-same-origin" referrerpolicy="no-referrer" loading="lazy"></iframe>
+    ? <iframe class="map" title="Traffic camera map" src={embed + defaultGevHash} sandbox="allow-scripts allow-same-origin" referrerpolicy="no-referrer" loading="lazy"></iframe>
     : <p class="meta">The map engine is not deployed yet. The lists below work now.</p>}
   <section id="map-here" hidden>
     <h2>Map position</h2>

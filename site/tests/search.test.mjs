@@ -143,7 +143,7 @@ test('map params: valid values parse; out-of-range, text and injection are refus
   for (const bad of ['', '?lat=91&lon=0', '?lat=0&lon=181', '?lat=abc&lon=0', '?lat=1&lon=2&z=99', '?lat=1&lon=2&z=0', '?lat=1e3&lon=2', '?lat=1&lon=2&z=<script>', '?lat=1&lat=2']) assert.equal(parseMapParams(bad), null, bad);
 });
 test('GEV hash: the verified form #v=2&lat=&lon=&alt= (format read in gev/scripts/qa-stories.mjs)', () => {
-  const h = gevHash({ lat: 49.6239, lon: -123.2062, z: 11 }); assert.match(h, /^#v=2&lat=49\.6239&lon=-123\.2062&alt=\d+$/);
+  const h = gevHash({ lat: 49.6239, lon: -123.2062, z: 11 }); assert.match(h, /^#v=2&lat=49\.6239&lon=-123\.2062&alt=\d+&heading=360&pitch=-90&roll=0&style=normal&map=osm$/);
   assert.ok(altFromZoom(49, 5) > altFromZoom(49, 11)); assert.ok(altFromZoom(0, 20) >= 200);
 });
 test('nearest: closest first, at most n', () => {
