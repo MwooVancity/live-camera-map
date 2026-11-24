@@ -1,0 +1,718 @@
+{
+ "_note": "World coverage queue (plan.md item 28). argosPlacePages = number of URLs under /en/cameras/<country>/ in Argos's public sitemap read 2026-11-24 (research-private/argos-sitemap.xml, gitignored): a proxy for how deep they cover a country, NOT a camera count. Status words: built, partial, small, blocked (needs a licence, key, reply or fix: next names it), not-investigated. Pick the next source by camera count and licence cleanliness (CLAUDE.md), biggest argosPlacePages first.",
+ "generated": "2026-11-24",
+ "countries": 79,
+ "rows": [
+  {
+   "country": "united-states-of-america",
+   "argosPlacePages": 156,
+   "ourCameras": 4086,
+   "status": "partial",
+   "next": null,
+   "note": "Caltrans 3,263 and Austin 823 built; NY (511NY agreement unread), Oregon (account plus ODOT written ok), Florida and Houston restricted, Washington needs an access code, Texas DriveTexas ruled out",
+   "owner": null
+  },
+  {
+   "country": "spain",
+   "argosPlacePages": 49,
+   "ourCameras": 0,
+   "status": "blocked",
+   "next": "DGT reply (emailed 2026-11-23) on commercial reuse; 1,980 cameras",
+   "note": null,
+   "owner": "Mike pastes the reply"
+  },
+  {
+   "country": "japan",
+   "argosPlacePages": 48,
+   "ourCameras": 0,
+   "status": "blocked",
+   "next": "MLIT blocks bots; email for access (docs/outreach)",
+   "note": null,
+   "owner": "Claude may email"
+  },
+  {
+   "country": "czechia",
+   "argosPlacePages": 29,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "italy",
+   "argosPlacePages": 22,
+   "ourCameras": 0,
+   "status": "small",
+   "next": "A22 Autobrennero 13 cameras CC0 (feed live 2026-11-24); batch with another Italian source",
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "canada",
+   "argosPlacePages": 22,
+   "ourCameras": 2264,
+   "status": "partial",
+   "next": null,
+   "note": "DriveBC, Quebec (bot check, shows unknown), Toronto, Calgary built; Ontario 511 needs key, Alberta needs key plus written permission",
+   "owner": null
+  },
+  {
+   "country": "switzerland",
+   "argosPlacePages": 20,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "finland",
+   "argosPlacePages": 18,
+   "ourCameras": 805,
+   "status": "built",
+   "next": null,
+   "note": "Digitraffic 805, CC BY 4.0",
+   "owner": null
+  },
+  {
+   "country": "france",
+   "argosPlacePages": 17,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "south-korea",
+   "argosPlacePages": 16,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "norway",
+   "argosPlacePages": 16,
+   "ourCameras": 0,
+   "status": "blocked",
+   "next": "Statens vegvesen DATEX registration (NLOD named)",
+   "note": null,
+   "owner": "Mike registers"
+  },
+  {
+   "country": "hungary",
+   "argosPlacePages": 15,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "germany",
+   "argosPlacePages": 14,
+   "ourCameras": 0,
+   "status": "blocked",
+   "next": "Autobahn API returned 0 cameras (2026-11-23); look for state feeds",
+   "note": null,
+   "owner": "Claude"
+  },
+  {
+   "country": "poland",
+   "argosPlacePages": 14,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "taiwan",
+   "argosPlacePages": 13,
+   "ourCameras": 0,
+   "status": "blocked",
+   "next": "unreachable from our network (plan item 17)",
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "united-kingdom",
+   "argosPlacePages": 12,
+   "ourCameras": 792,
+   "status": "built",
+   "next": null,
+   "note": "London TfL JamCams 792 (2026-11-24); rest of UK not investigated",
+   "owner": null
+  },
+  {
+   "country": "indonesia",
+   "argosPlacePages": 12,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "austria",
+   "argosPlacePages": 10,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "new-zealand",
+   "argosPlacePages": 10,
+   "ourCameras": 0,
+   "status": "blocked",
+   "next": "NZTA terms ban commercial use unless expressly permitted; emailed service@nzta.govt.nz 2026-11-24, 313 cameras",
+   "note": null,
+   "owner": "wait for reply"
+  },
+  {
+   "country": "australia",
+   "argosPlacePages": 9,
+   "ourCameras": 0,
+   "status": "blocked",
+   "next": "NSW stale, Queensland needs key and licence read; Victoria not investigated",
+   "note": null,
+   "owner": "Claude / Mike key"
+  },
+  {
+   "country": "croatia",
+   "argosPlacePages": 7,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "iceland",
+   "argosPlacePages": 7,
+   "ourCameras": 499,
+   "status": "built",
+   "next": null,
+   "note": "Vegagerdin 499, CC BY 4.0",
+   "owner": null
+  },
+  {
+   "country": "greece",
+   "argosPlacePages": 6,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "slovakia",
+   "argosPlacePages": 6,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "sweden",
+   "argosPlacePages": 5,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "brazil",
+   "argosPlacePages": 5,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "south-africa",
+   "argosPlacePages": 5,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "russia",
+   "argosPlacePages": 5,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "slovenia",
+   "argosPlacePages": 4,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "hong-kong",
+   "argosPlacePages": 4,
+   "ourCameras": 1011,
+   "status": "built",
+   "next": null,
+   "note": "1,011",
+   "owner": null
+  },
+  {
+   "country": "belgium",
+   "argosPlacePages": 4,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "thailand",
+   "argosPlacePages": 4,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "netherlands",
+   "argosPlacePages": 3,
+   "ourCameras": 0,
+   "status": "blocked",
+   "next": "NDW real-time directory has no camera file",
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "malaysia",
+   "argosPlacePages": 3,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "china",
+   "argosPlacePages": 2,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "vietnam",
+   "argosPlacePages": 2,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "portugal",
+   "argosPlacePages": 2,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "estonia",
+   "argosPlacePages": 2,
+   "ourCameras": 0,
+   "status": "blocked",
+   "next": "no official feed URL found; email tmc@transpordiamet.ee",
+   "note": null,
+   "owner": "Claude may email"
+  },
+  {
+   "country": "andorra",
+   "argosPlacePages": 2,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "argentina",
+   "argosPlacePages": 2,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "bosnia-and-herz",
+   "argosPlacePages": 2,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "bulgaria",
+   "argosPlacePages": 2,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "colombia",
+   "argosPlacePages": 2,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "serbia",
+   "argosPlacePages": 2,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "chile",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "ireland",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "blocked",
+   "next": "TII: ChatGPT could not find a camera catalogue; unknown",
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "lithuania",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "romania",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "mexico",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "denmark",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "turkey",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "malta",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "luxembourg",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "israel",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "latvia",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "kenya",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "faeroe-is",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "puerto-rico",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "antarctica",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "peru",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "costa-rica",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "philippines",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "india",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "kyrgyzstan",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "guatemala",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "papua-new-guinea",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "ecuador",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "u-s-virgin-is",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "kosovo",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "zimbabwe",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "namibia",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "greenland",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "kazakhstan",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "morocco",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "reunion",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "georgia",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "ukraine",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "montenegro",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  },
+  {
+   "country": "dominican-rep",
+   "argosPlacePages": 1,
+   "ourCameras": 0,
+   "status": "not-investigated",
+   "next": null,
+   "note": null,
+   "owner": null
+  }
+ ]
+}
