@@ -17,7 +17,7 @@
    "argosPlacePages": 49,
    "ourCameras": 0,
    "status": "blocked",
-   "next": "DGT national access point nap.dgt.es answers 200 = VERIFIED 2026-11-24: DATEX II camera locations and real-time camera datasets (they exclude Catalonia and the Basque Country, ChatGPT reading, UNVERIFIED); our DGT email of 2026-11-23 on commercial reuse is pending",
+   "next": "DGT production NAP camera dataset (DATEX2 v3.7, CC BY, excludes Catalonia and Basque Country per ChatGPT, UNVERIFIED by me: nap.dgt.es answers 200); the separate locations record is on nap-test.dgt.es only (ChatGPT): find the exact dataset URL on nap.dgt.es, read the XML, check for stable per-camera links; our DGT email is pending",
    "note": null,
    "owner": "Mike pastes the reply"
   },
@@ -89,7 +89,7 @@
    "argosPlacePages": 16,
    "ourCameras": 0,
    "status": "blocked",
-   "next": "UTIC (utic.go.kr/guide/cctvOpenData.do) answers \"enter the open-data KEY\" = VERIFIED 2026-11-24: Mike signs up for a free key at data.go.kr (account creation is his), then read the key terms for republishing a camera list; MOLIT CCTV API is the second lead",
+   "next": "MOLIT Traffic CCTV dataset https://www.data.go.kr/data/3068943/openapi.do = VERIFIED 2026-11-24 (exists, location and install info only, Open Government Licence Type 1 source indication, third-party rights flagged): Mike signs up for a free key, then inspect a sample for field provenance; UTIC key terms limit use to the stated application purpose, so ask UTIC in writing before listing its cameras",
    "note": "docs/source-audits/world-hunt-2026-11-24.md",
    "owner": null
   },
@@ -233,7 +233,7 @@
    "argosPlacePages": 5,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": "round 2 search found no official open list (UNVERIFIED, search and API checks only); try a browser check of the national road agency site or an email",
+   "next": "DER-SP dataset https://dadosabertos.sp.gov.br/dataset/cameras = VERIFIED 2026-11-24 (page exists, XLSX, CC BY 4.0, described as camera locations on DER-SP roads) but tagged \"fiscalização\" (enforcement): download, check camera type and coordinates, and whether each row has a stable official link before any import; ANTT/CNSO concession portal is a second lead (not verified)",
    "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
