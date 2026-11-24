@@ -1,0 +1,10 @@
+{
+  "measured": "2026-11-24 from the running GEV v0.3.0 (npm --prefix gev run dev, http://127.0.0.1:5173, getComputedStyle in a real browser)",
+  "accent": "#00d4ff",
+  "background": "#0a0a0f",
+  "text": "#e8eaed",
+  "bodyFont": "Inter",
+  "monoFont": "JetBrains Mono",
+  "labelStyle": "mono, 10px, uppercase, letter-spacing 3px, 30% text opacity",
+  "note": "site/tests/design.test.mjs fails if Base.astro drifts from these. Content headings stay Inter for reading; GEV uses mono only for brand and labels."
+}

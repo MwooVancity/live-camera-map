@@ -5,6 +5,10 @@ const fi = sourceOf('digitraffic'), qc = sourceOf('quebec-mtmd'), tor = sourceOf
 const { title, description, route, crumbs = [], noindex = false } = Astro.props;
 const canonical = SITE_URL + route;
 const trail = [{ name: 'Home', route: '/' }, ...crumbs];
+// Self-hosted Inter + JetBrains Mono (OFL, same families as GEV; no third-party font request). Tokens are checked against data/gev-design-tokens.json by site/tests/design.test.mjs.
+const base = import.meta.env.PUBLIC_BASE_PATH ?? '';
+const face = (fam, w, file) => `@font-face{font-family:'${fam}';font-weight:${w};font-style:normal;font-display:swap;src:url('${base}/fonts/${file}.woff2') format('woff2')}`;
+const fontFaces = [face('Inter', 400, 'inter-latin-400-normal'), face('Inter', 600, 'inter-latin-600-normal'), face('JetBrains Mono', 400, 'jetbrains-mono-latin-400-normal'), face('JetBrains Mono', 700, 'jetbrains-mono-latin-700-normal')].join('');
 const ld = JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -22,10 +26,13 @@ const ld = JSON.stringify({
   <link rel="canonical" href={canonical} />
   {NOINDEX_ALL ? <meta name="robots" content="noindex,nofollow" /> : noindex && <meta name="robots" content="noindex,follow" />}
   <script type="application/ld+json" set:html={ld}></script>
+  <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href={`${base}/fonts/inter-latin-400-normal.woff2`} />
+  <style is:inline set:html={fontFaces}></style>
   <style>
-    /* GEV look (plan item 14): black, cyan accent #4fe3ff, spaced uppercase labels. Dark only, high contrast. */
-    :root { color-scheme: dark; --fg:#e6f1f5; --bg:#05090d; --mut:#8fa8b3; --line:#1b2a33; --link:#4fe3ff; --cta:#4fe3ff; --ctatext:#021014; --panel:#0a131a; }
-    body { margin:0; font:16px/1.55 system-ui,sans-serif; color:var(--fg); background:var(--bg); }
+    /* GEV look (plan item 14): measured from the running GEV (data/gev-design-tokens.json): bg #0a0a0f, text #e8eaed, accent #00d4ff, Inter body, JetBrains Mono spaced uppercase labels. Dark only, high contrast. */
+    :root { color-scheme: dark; --fg:#e8eaed; --bg:#0a0a0f; --mut:#9aa7b0; --line:#1f2a33; --link:#00d4ff; --cta:#00d4ff; --ctatext:#021014; --panel:#10141b; --font-body:Inter,-apple-system,BlinkMacSystemFont,sans-serif; --font-mono:'JetBrains Mono','SF Mono','Fira Code',monospace; }
+    body { margin:0; font:16px/1.55 var(--font-body); color:var(--fg); background:var(--bg); }
     header,main,footer { max-width:60rem; margin:0 auto; padding:0 16px; }
     header { display:flex; flex-wrap:wrap; gap:8px 20px; align-items:center; padding-top:12px; padding-bottom:12px; border-bottom:1px solid var(--line); }
     header a.brand { font-weight:700; color:var(--fg); text-decoration:none; }
@@ -38,12 +45,15 @@ const ld = JSON.stringify({
     :global(.filters) { display:flex; flex-wrap:wrap; gap:10px 16px; align-items:center; margin:12px 0; }
     :global(.filters label) { display:flex; flex-direction:column; gap:4px; font-size:0.9rem; }
     :global([data-camera-list] li) { margin-bottom: 8px; }
-    :global(.cta) { display:inline-block; background:var(--cta); color:var(--ctatext); padding:10px 18px; border-radius:6px; text-decoration:none; font-weight:700; box-shadow:0 0 18px rgba(79,227,255,.35); }
-    header a { font-size:.8rem; letter-spacing:.14em; text-transform:uppercase; }
+    :global(.cta) { display:inline-block; background:var(--cta); color:var(--ctatext); padding:10px 18px; border-radius:6px; text-decoration:none; font-weight:700; box-shadow:0 0 18px rgba(0,212,255,.35); }
+    header a { font-family:var(--font-mono); font-size:.8rem; letter-spacing:.14em; text-transform:uppercase; }
     header a.brand { font-size:.95rem; letter-spacing:.2em; }
     nav.crumbs { letter-spacing:.04em; }
     :global(button), :global(select), #site-search input { background:var(--panel); color:var(--fg); border:1px solid var(--line); border-radius:6px; }
     :global(button:hover), :global(select:hover) { border-color:var(--cta); }
+    :global(a:hover), :global(button:hover) { filter:brightness(1.12); }
+    :global(button:active) { transform:translateY(1px); }
+    @media (prefers-reduced-motion: reduce) { :global(*), :global(*::before), :global(*::after) { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; scroll-behavior:auto !important; } }
     :global(a:focus-visible), :global(button:focus-visible), :global(select:focus-visible), #site-search input:focus-visible { outline:2px solid var(--cta); outline-offset:2px; }
     :global(section[data-block]) { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px 16px; }
     :global(h2) { letter-spacing:.02em; }

@@ -9,6 +9,9 @@ const regions = regionsWithPages(cameras);
 const byRegion = countsBy(cameras, 'region');
 const regionName = (slug) => cameras.find((c) => c.regionSlug === slug).regionName;
 const names = regions.map(regionName);
+// The list is the curated set of city pages, grouped by region; it is NOT a global ranking (Hong Kong or Toronto can hold more cameras than a listed town), so the heading says what it is.
+const groups = [];
+for (const p of places) { let g = groups.find((x) => x.region === p.region); if (!g) { g = { region: p.region, name: regionName(p.region), items: [] }; groups.push(g); } g.items.push(p); }
 const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names.at(-1)}` : names[0];
 const agencies = regions.map((r) => regionInfo(r).agency).join(' and ');
 const nCountries = Object.keys(countsBy(cameras, 'country')).length;
@@ -25,10 +28,15 @@ const sourcesN = new Set(cameras.map((c) => c.sourceId)).size;
     <summary>Where the counts come from</summary>
     <p>{SITE_NAME} lists {total} traffic cameras in {list}, each one a link to the official source ({regions.map((r) => `${regionName(r)}: ${byRegion[r]}${r === 'california' ? ` from Caltrans districts ${loadedDistricts.join(', ')}` : ` from ${regionInfo(r).agency}`}`).join('; ')}). We show where the cameras are, which roads they cover and when our list was last updated{registryDate ? ` (${registryDate})` : ''}. We do not copy camera pictures.</p>
   </details>
-  <h2>Cities with the most cameras</h2>
-  <ul class="cols">
-    {places.map((p) => <li><a href={cityRoute(p.region, p.city)}>{p.city} traffic cameras</a> ({p.n})</li>)}
-  </ul>
+  <h2>Traffic cameras by city</h2>
+  <div class="city-groups">
+    {groups.map((g) => (
+      <section>
+        <h3>{g.name}</h3>
+        <ul>{g.items.map((p) => <li><a href={cityRoute(p.region, p.city)}>{p.city} traffic cameras</a> <span class="n">({p.n})</span></li>)}</ul>
+      </section>
+    ))}
+  </div>
   <p><a href="/cameras/">All countries and regions</a> | <a href="/roads/">Cameras by road</a> | <a href="/status/">Camera network status</a> | <a href="/saved/">Your saved cameras</a></p>
   <h2>Guides</h2>
   <ul>{GUIDES.map((g) => <li><a href={`/guides/${g.slug}/`}>{g.title}</a></li>)}</ul>
@@ -41,6 +49,11 @@ const sourcesN = new Set(cameras.map((c) => c.sourceId)).size;
   .stats span { border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; }
   .actions { display: flex; flex-wrap: wrap; gap: 12px; }
   .cta2 { display: inline-block; padding: 10px 18px; border: 1px solid var(--cta); border-radius: 6px; color: var(--cta); text-decoration: none; font-weight: 600; }
+  .city-groups { display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: 8px 32px; }
+  .city-groups h3 { font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mut); margin: 20px 0 6px; font-weight: 400; }
+  .city-groups ul { list-style: none; margin: 0; padding: 0; }
+  .city-groups li { padding: 9px 0; border-bottom: 1px solid var(--line); }
+  .city-groups .n { color: var(--mut); }
   .where { margin: 12px 0 20px; }
   .where summary { cursor: pointer; color: var(--mut); min-height: 44px; display: flex; align-items: center; }
 </style>

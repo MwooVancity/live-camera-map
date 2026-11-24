@@ -60,26 +60,6 @@
   "reviewedAt": "2026-11-22"
  },
  {
-  "id": "drivebc",
-  "name": "DriveBC HighwayCams (Government of British Columbia)",
-  "status": "active",
-  "api": {
-   "auth": "none",
-   "rateLimit": "one request per run for the list; the health checker throttles per host",
-   "docsUrl": "https://catalogue.data.gov.bc.ca/dataset/drivebc-highway-cams"
-  },
-  "permissions": {
-   "metadata_commercial": "unverified",
-   "image_display": "unverified",
-   "image_caching": "unverified",
-   "image_redistribution": "unverified"
-  },
-  "attribution": "Contains information licensed under the Open Government Licence - British Columbia",
-  "license": "Open Government Licence - British Columbia",
-  "licenseUrl": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61",
-  "reviewedAt": "2026-11-22"
- },
- {
   "id": "digitraffic",
   "name": "Fintraffic Digitraffic weather cameras (Finland)",
   "status": "active",
@@ -218,5 +198,25 @@
   "license": "Public Domain (dataset licence); City of Austin Open Data Terms of Use",
   "licenseUrl": "https://data.austintexas.gov/stories/s/ranj-cccq",
   "reviewedAt": "2026-11-24"
+ },
+ {
+  "id": "drivebc",
+  "name": "DriveBC HighwayCams (Government of British Columbia)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one request per run for the list; the health checker throttles per host",
+   "docsUrl": "https://catalogue.data.gov.bc.ca/dataset/drivebc-highway-cams"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Contains information licensed under the Open Government Licence - British Columbia",
+  "license": "Open Government Licence - British Columbia",
+  "licenseUrl": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61",
+  "reviewedAt": "2026-11-22"
  }
 ]
