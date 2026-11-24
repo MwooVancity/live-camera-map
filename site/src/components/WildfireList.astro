@@ -1,0 +1,12 @@
+---
+// The rows of a 'wildfires' block (city or road page). Text and plain links only. Never says a road is closed or safe.
+import { NEAR_FIRE_KM, INCIWEB_URL } from '../../../ops/importers/lib/wildfire.mjs';
+const { b, place } = Astro.props;
+const day = (iso) => (iso ? iso.slice(0, 10) : null);
+const when = (iso) => (iso ? iso.slice(0, 16).replace('T', ' ') + ' UTC' : null);
+const acres = (a) => (a === null || a === undefined ? 'size not reported' : `${Math.round(a).toLocaleString('en-US')} acres`);
+const contained = (p) => (p === null || p === undefined ? 'containment not reported' : `${p}% contained`);
+---
+<ul>{b.items.map((i) => <li><strong>{i.name}</strong>{i.state ? ` (${i.state})` : ''}: about {Math.max(1, Math.round(i.km))} km from the nearest edge of the perimeter ({b.onRoad ? "to the closest of this road's cameras" : `from the centre of ${place}'s cameras`}); {acres(i.acres)}, {contained(i.percentContained)}. <span class="meta">{[i.updatedAt && `Perimeter updated ${when(i.updatedAt)}`, i.discoveryDate && `discovered ${day(i.discoveryDate)}`].filter(Boolean).join('; ') || 'No update time given'}.</span></li>)}</ul>
+{b.more > 0 && <p class="meta">and {b.more} more within {NEAR_FIRE_KM} km.</p>}
+<p class="meta">Fire perimeters change by the hour; check the official source and your state road status before you drive. Official incident pages: <a href={INCIWEB_URL} rel="noopener">InciWeb</a>. Distances are approximate: they are measured to a simplified outline of up to 20 points.</p>

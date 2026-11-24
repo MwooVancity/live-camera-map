@@ -33,6 +33,7 @@ jobs:
           # a feed that cannot refresh keeps its last file; the page hides any block older than its max age. One bad feed never stops the deploy.
           node ops/importers/caltrans-conditions.mjs || echo "caltrans conditions not fully refreshed (exit $?)"
           node ops/importers/nws.mjs || echo "nws not fully refreshed (exit $?)"
+          timeout 120 node ops/importers/wildfire.mjs || echo "wildfire not refreshed (exit $?); the page block hides itself when its file is older than 6 hours"
       - name: Refresh British Columbia road events (DriveBC Open511; a failed run keeps the last good file and never fails the deploy)
         run: timeout 120 node ops/importers/drivebc.mjs --only=events || echo "BC events not refreshed (exit $?); the page block hides itself when its data is older than 15 minutes"
       - name: Refresh the Toronto camera list (City of Toronto open data; the importer re-reads the licence id and licence sentence first; a failed or refused run keeps the committed list and never fails the deploy)

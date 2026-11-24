@@ -3,6 +3,7 @@
 // Every closure, chain control and sign is an <li data-event> that must carry at least one nearest-camera link (page gate).
 import { NEAR_KM, BUILT_AT } from '../lib/live.mjs';
 import { cleanLabel } from '../lib/labels.mjs';
+import WildfireList from './WildfireList.astro';
 const { b } = Astro.props;
 const total = b.id === 'road-conditions' ? b.lcs.length + b.cc.length : b.items.length;
 const where = (i) => [i.direction, i.place || i.locationName].filter(Boolean).join(', ');
@@ -24,6 +25,7 @@ const kmText = (km) => (km < 0.1 ? 'under 0.1' : km.toFixed(1));
     <ul>{b.items.map((i) => <li>{where(i)}{i.locationName && i.place ? ` (${i.locationName})` : ''}: {[val(i.airTemp, 'air temperature'), val(i.surfaceTemp, 'road surface temperature'), val(i.windAvg, 'wind'), val(i.windGust, 'gust'), val(i.visibility, 'visibility'), val(i.humidity, 'humidity %')].filter(Boolean).join(', ')}. <span class="meta">Read {i.recordedAt.slice(0, 16).replace('T', ' ')} UTC.</span></li>)}</ul>
     <p class="meta">Caltrans does not state the units of these readings, so we show them exactly as reported.</p>
   </>)}
+  {b.id === 'wildfires' && <WildfireList b={b} />}
   {b.id === 'weather-alerts' && (<>
     <ul>{b.items.map((a) => <li><strong>{a.event}</strong> ({[a.severity, a.urgency].filter(Boolean).join(', ')}). {a.headline} <span class="meta">For {a.cities.join(', ')}.</span></li>)}</ul>
     <p class="meta">The National Weather Service gives alerts for a point, so these are the alerts for the cities listed on this page, not for every mile of the road.</p>

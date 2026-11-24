@@ -45,6 +45,7 @@ jobs:
         run: |
           node ops/importers/caltrans-conditions.mjs || echo "caltrans conditions not fully refreshed (exit $?)"
           node ops/importers/nws.mjs || echo "nws not fully refreshed (exit $?)"
+          timeout 120 node ops/importers/wildfire.mjs || echo "wildfire not refreshed (exit $?)"
           timeout 120 node ops/importers/drivebc.mjs --only=events || echo "BC events not refreshed (exit $?)"
           timeout 90 node ops/importers/toronto.mjs || echo "Toronto list not refreshed (exit $?)"
           timeout 60 node ops/importers/calgary.mjs || echo "Calgary list not refreshed (exit $?)"

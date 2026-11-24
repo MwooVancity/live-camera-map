@@ -34,7 +34,7 @@ const dirWord = region === 'british-columbia' ? 'camera facing' : 'direction';
 // 4 others, the nearest places of other regions fill the list (so a small region still links 3 or more cities).
 const centre = (list) => ({ lat: list.reduce((s, c) => s + c.lat, 0) / list.length, lon: list.reduce((s, c) => s + c.lon, 0) / list.length });
 const me = centre(here);
-const live = cityBlocks({ lat: me.lat, lon: me.lon, slug: citySlug, region });
+const live = cityBlocks({ lat: me.lat, lon: me.lon, slug: citySlug, region, name: city });
 const places = curatedPlaces(cameras).filter((p) => !(p.region === region && p.city === city));
 const dist = (p) => { const q = centre(cameras.filter((x) => x.regionSlug === p.region && x.city === p.city)); return (q.lat - me.lat) ** 2 + ((q.lon - me.lon) * Math.cos(me.lat * Math.PI / 180)) ** 2; };
 const ranked = places.map((p) => ({ p, d: dist(p), same: p.region === region })).sort((a, b) => Number(b.same) - Number(a.same) || a.d - b.d);

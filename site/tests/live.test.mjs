@@ -159,3 +159,84 @@ test('built BC page: bc-events block has source, as-of, Updated text, count = li
   for (const [route, h] of stale) assert.ok(!blocksOn(h).includes('bc-events'), `${route}: bc-events shown with stale data`);
   assert.match(stale.get('/cameras/canada/british-columbia/'), /older than its limit/);
 });
+
+// ---- Wildfires near (NIFC WFIGS perimeters, data/conditions/wildfire.json) ----
+import { roadBlocks } from '../src/lib/live.mjs';
+const WF_ID = 'nifc-wfigs-wildland-fire-interagency-geospatial-services-arcgis-feature-service';
+const fire = (id, name, dLat, o = {}) => ({ id, name, state: 'CA', acres: 4200, percentContained: 20, discoveryDate: ago(3000), updatedAt: ago(30), lat: C.lat + dLat, lon: C.lon,
+  ring: [[C.lat + dLat - 0.01, C.lon - 0.01], [C.lat + dLat - 0.01, C.lon + 0.01], [C.lat + dLat + 0.01, C.lon + 0.01], [C.lat + dLat + 0.01, C.lon - 0.01]], ...o });
+function fireFixture({ ageMin = 1, closed = false, items } = {}) {
+  const d = mkdtempSync(join(tmpdir(), 'fire-'));
+  writeFileSync(join(d, 'wildfire.json'), JSON.stringify({ feed: 'wildfire', sourceId: WF_ID, generatedAt: ago(ageMin), items: items || [fire('far', 'Far Fire', 1.0), fire('near', 'Near Fire', 0.2), fire('mid', 'Mid Fire', 0.3)] }));
+  const rows = realPerms.sources.filter((s) => s.id === WF_ID).map((s) => ({ ...s, reviewedAt: new Date().toISOString().slice(0, 10), ...(closed ? { mustNotShip: true } : {}) }));
+  const pf = join(d, 'perms.json');
+  writeFileSync(pf, JSON.stringify({ ...realPerms, sources: rows }));
+  process.env.CONDITIONS_DIR = d; process.env.PERMISSIONS_FILE = pf;
+  return { dir: d, env: { CONDITIONS_DIR: d, PERMISSIONS_FILE: pf } };
+}
+const wf = (o) => cityBlocks({ ...C, name: 'San Diego' }, loadLive()).filter((b) => b.id === 'wildfires');
+
+test('wildfires: fresh, enabled: one block with proof fields; only fires with an edge within 50 km, nearest first', () => {
+  fireFixture();
+  const [b] = wf();
+  assert.ok(b && b.source === 'NIFC WFIGS (US public domain)' && b.attribution && b.asof && b.link, 'proof fields');
+  assert.equal(b.title, 'Wildfires near San Diego');
+  assert.deepEqual(b.items.map((i) => i.id), ['near', 'mid'], '1.0 degree (about 110 km) away is left out');
+  assert.ok(b.items[0].km < b.items[1].km && b.items[1].km < 50);
+  assert.equal(b.maxAgeMin, 360);
+});
+test('wildfires: file older than 6 hours at build omits the block; 5 h 59 min still shows', () => {
+  fireFixture({ ageMin: 361 }); assert.deepEqual(wf(), []);
+  fireFixture({ ageMin: 359 }); assert.equal(wf().length, 1);
+});
+test('wildfires: closed licence row, missing row, missing file, garbage file: omitted, never empty', () => {
+  fireFixture({ closed: true }); assert.deepEqual(wf(), []);
+  const { dir } = fireFixture();
+  const p = JSON.parse(readFileSync(join(dir, 'perms.json'), 'utf8')); p.sources = []; writeFileSync(join(dir, 'perms.json'), JSON.stringify(p)); assert.deepEqual(wf(), []);
+  const g = fireFixture(); writeFileSync(join(g.dir, 'wildfire.json'), '<html>502</html>'); assert.deepEqual(wf(), []);
+  const h = fireFixture(); writeFileSync(join(h.dir, 'wildfire.json'), JSON.stringify({ generatedAt: ago(1), items: 'x' })); assert.deepEqual(wf(), []);
+});
+test('wildfires: nothing within 50 km omits the block; more than 5 shows 5 and counts the rest', () => {
+  fireFixture({ items: [fire('far', 'Far Fire', 1.0)] }); assert.deepEqual(wf(), []);
+  fireFixture({ items: Array.from({ length: 7 }, (_, k) => fire(`f${k}`, `Fire ${k}`, 0.1 + k * 0.01)) });
+  const [b] = wf(); assert.equal(b.items.length, 5); assert.equal(b.more, 2);
+});
+test('wildfires: only California cities get it (BC and unknown regions do not, even with a fire file)', () => {
+  fireFixture();
+  assert.deepEqual(cityBlocks({ ...C, region: 'british-columbia' }, loadLive()).filter((b) => b.id === 'wildfires'), []);
+  assert.deepEqual(cityBlocks({ ...C, region: 'finland' }, loadLive()), []);
+});
+test('wildfires on a road: measured from the road cameras, nearest first, titled for the road, flagged onRoad', () => {
+  fireFixture();
+  const cams = [{ id: 'a', lat: C.lat, lon: C.lon }, { id: 'b', lat: C.lat + 0.2, lon: C.lon }];
+  const b = roadBlocks('i-5', cams, [], loadLive(), new Date(), { road: 'I-5' }).find((x) => x.id === 'wildfires');
+  assert.ok(b && b.onRoad && b.title === 'Wildfires near I-5');
+  assert.equal(b.items[0].id, 'near'); assert.ok(b.items[0].km < 5, 'the second camera is right beside the near fire');
+  assert.ok(!roadBlocks('i-5', [{ id: 'a', lat: C.lat - 2, lon: C.lon }], [], loadLive(), new Date(), { road: 'I-5' }).some((x) => x.id === 'wildfires'));
+  fireFixture({ ageMin: 400 });
+  assert.ok(!roadBlocks('i-5', cams, [], loadLive(), new Date(), { road: 'I-5' }).some((x) => x.id === 'wildfires'));
+});
+
+test('built pages: city and road wildfire block with source, as-of, safety text, InciWeb link, no road-closed claim, escaped name, count = rows; stale build drops both', () => {
+  const { dir, env } = fireFixture();
+  const evil = '<script>alert(1)</script><img src=x onerror=alert(2)>';
+  const p = join(dir, 'wildfire.json'); const j = JSON.parse(readFileSync(p, 'utf8')); j.items[1].name = evil; writeFileSync(p, JSON.stringify(j));
+  const road = cameras.find((c) => c.regionSlug === 'california' && c.city === 'San Diego' && c.road === 'I-5');
+  assert.ok(road, 'fixture road');
+  const pages = build(env);
+  const roadRoute = '/roads/i-5/';
+  for (const [route, h] of [[sdRoute, pages.get(sdRoute)], [roadRoute, pages.get(roadRoute)]]) {
+    const sec = h.match(/<section data-block="wildfires"[\s\S]*?<\/section>/);
+    assert.ok(sec, `${route}: wildfires block missing`);
+    assert.match(sec[0], /data-source="NIFC WFIGS \(US public domain\)"/); assert.match(sec[0], /data-asof="\d{4}-\d\d-\d\dT/);
+    assert.match(sec[0], /Fire perimeters change by the hour; check the official source and your state road status before you drive\./);
+    assert.match(sec[0], /href="https:\/\/inciweb\.wildfire\.gov\/"/); assert.match(sec[0], /from the nearest edge of the perimeter/);
+    assert.ok(!/road (is )?closed|is safe|safe to drive/i.test(sec[0]), 'never claims a road is closed or safe');
+    assert.equal(Number(sec[0].match(/data-rows="(\d+)"/)[1]), (sec[0].match(/<li>/g) || []).length);
+    assert.ok(!/<img\b/i.test(sec[0]));
+  }
+  assert.ok(pages.get(sdRoute).includes('Wildfires near San Diego (2)'));
+  assert.ok(!pages.get(sdRoute).includes('<script>alert(1)') && !/<img[^>]*onerror/i.test(pages.get(sdRoute)) && pages.get(sdRoute).includes('&lt;script&gt;alert(1)'));
+  const stale = build(fireFixture({ ageMin: 400 }).env);
+  for (const [route, h] of stale) assert.ok(!blocksOn(h).includes('wildfires'), `${route}: wildfires shown with a stale file`);
+});

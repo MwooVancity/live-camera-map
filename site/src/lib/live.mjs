@@ -7,6 +7,7 @@ import { resolve } from 'node:path';
 import { isEnabled } from '../../../tests/licensing/gate.mjs';
 import { usableItems, usableNws, SOURCE_IDS, MAX_AGE_MIN } from '../../../ops/importers/lib/conditions.mjs';
 import { roadSlug } from '../../../ops/importers/lib/registry.mjs';
+import { WILDFIRE_SOURCE_ID, WILDFIRE_MAX_AGE_MIN, SOURCE_LABEL, DATASET_URL, usableWildfire, wildfiresNear } from '../../../ops/importers/lib/wildfire.mjs';
 
 export const BUILT_AT = new Date().toISOString(); // when this build started: the 'page built' time on every live block
 export const RADIUS_KM = 15; // a road item counts as "near" a city when within this of the city's camera centroid
@@ -66,6 +67,18 @@ function bcBlocks(c, live, now) {
   return items.length ? [{ id: 'bc-events', title: 'Road events near here', items, ...metaOf(live, now, ['bc-events'], [live.doc('bc-events').generatedAt]), maxAgeMin: MAX_AGE_MIN['bc-events'] }] : [];
 }
 
+// 'Wildfires near' block for a city (points = [centre]) or a road (points = its cameras): NIFC WFIGS perimeters whose nearest edge is within
+// NEAR_FIRE_KM, nearest first, at most WILDFIRE_ROWS shown. Omitted when the licence row is closed, the file is older than 6 h, or no fire is that near.
+export const WILDFIRE_ROWS = 5;
+function wildfireBlocks(live, now, points, title, onRoad = false) {
+  const row = live.rows.get(WILDFIRE_SOURCE_ID);
+  if (!isEnabled(row, now)) return [];
+  const doc = live.doc('wildfire');
+  const all = wildfiresNear(usableWildfire(doc, now), points);
+  if (!all.length) return [];
+  return [{ id: 'wildfires', title, onRoad, items: all.slice(0, WILDFIRE_ROWS), more: Math.max(0, all.length - WILDFIRE_ROWS), source: SOURCE_LABEL, attribution: String(row.attribution || '').replace(/^"|"$/g, ''), link: DATASET_URL, asof: doc.generatedAt, maxAgeMin: WILDFIRE_MAX_AGE_MIN }];
+}
+
 // Blocks for one city. c = {lat, lon, slug, region?}. Returns only blocks that passed every gate, in display order.
 export function cityBlocks(c, live = loadLive(), now = new Date()) {
   if (c.region && c.region !== 'california') return c.region === 'british-columbia' ? bcBlocks(c, live, now) : [];
@@ -92,6 +105,7 @@ export function cityBlocks(c, live = loadLive(), now = new Date()) {
   if (periods.length) out.push({ id: 'forecast', title: 'Forecast for the next 48 hours', items: periods, ...meta(['nws-forecast'], [nwsDoc.forecast.fetchedAt]), maxAgeMin: 180 });
   const alerts = src(live, 'nws-alerts', now).ok ? nws.alerts : [];
   if (alerts.length) out.push({ id: 'weather-alerts', title: 'Active weather alerts', items: alerts, ...meta(['nws-alerts'], [nwsDoc.alerts.fetchedAt]), maxAgeMin: 180 });
+  out.push(...wildfireBlocks(live, now, [c], `Wildfires near ${c.name || 'here'}`));
   return out;
 }
 
@@ -137,5 +151,6 @@ export function roadBlocks(slug, cams, cities, live = loadLive(), now = new Date
     }
     if (byKey.size) out.push({ id: 'weather-alerts', title: `Weather alerts for cities on ${road}`, items: [...byKey.values()], ...metaOf(live, now, ['nws-alerts'], asofs), maxAgeMin: 180 });
   }
+  out.push(...wildfireBlocks(live, now, cams, `Wildfires near ${road}`, true));
   return out;
 }
