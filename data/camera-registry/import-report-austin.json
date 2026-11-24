@@ -1,0 +1,10 @@
+{
+ "generatedAt": "2026-11-24T03:04:40.828Z",
+ "source": "https://data.austintexas.gov/resource/b4k4-adkb.json?$limit=5000",
+ "licenceUrl": "https://data.austintexas.gov/stories/s/ranj-cccq",
+ "raw": 1009,
+ "dropped": {
+  "notTurnedOn": 186
+ },
+ "total": 823
+}

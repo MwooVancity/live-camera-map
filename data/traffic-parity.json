@@ -3,7 +3,7 @@
   "reviewed": "2026-11-23",
   "clusters": [
     { "cluster": "Country camera pages", "argosPages": 79, "type": "country", "status": "partial", "ourUrls": ["/cameras/canada/", "/cameras/finland/", "/cameras/hong-kong/", "/cameras/iceland/", "/cameras/united-states/"], "reason": "5 countries live; more only with a licence row each (plan.md section 8)" },
-    { "cluster": "English place (city/region) camera pages", "argosPages": 564, "type": "city", "status": "partial", "ourUrls": ["/cameras/canada/toronto/", "/cameras/canada/calgary/", "/cameras/hong-kong/hong-kong/", "/cameras/iceland/iceland/", "/cameras/canada/montreal/", "/cameras/united-states/california/"], "reason": "cities where a licensed feed exists" },
+    { "cluster": "English place (city/region) camera pages", "argosPages": 564, "type": "city", "status": "partial", "ourUrls": ["/cameras/canada/toronto/", "/cameras/canada/calgary/", "/cameras/hong-kong/hong-kong/", "/cameras/iceland/iceland/", "/cameras/canada/montreal/", "/cameras/united-states/california/", "/cameras/united-states/texas/"], "reason": "cities where a licensed feed exists" },
     { "cluster": "Spanish place camera pages", "argosPages": 644, "type": "other-language", "status": "gap", "reason": "Spain DGT licence unresolved (email sent, no reply); a Spanish page set only with real per-language data" },
     { "cluster": "Country today pages", "argosPages": 502, "type": "country", "status": "gap", "reason": "needs licensed news or event feeds per country; none cleared yet" },
     { "cluster": "Road and highway pages", "argosPages": 0, "type": "road", "status": "built", "ourUrls": ["/roads/", "/roads/i-5/", "/roads/us-101/"], "reason": "Argos has no road silo (teardown); our edge" },

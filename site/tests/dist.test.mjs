@@ -377,6 +377,26 @@ test('Hong Kong: country hub and one region page, no city pages, every camera li
   assert.ok(pages.get('/cameras/hong-kong/').includes('/cameras/hong-kong/hong-kong/'), 'the country hub links to it');
   assert.ok(!isNoindex(pages.get('/cameras/hong-kong/')), 'country hub indexable');
 });
+test('Texas (City of Austin): region page under the United States, Austin only said plainly, no city pages, every camera listed once as a link to the City picture address, the credit line printed, link-out only', () => {
+  const r = '/cameras/united-states/texas/';
+  const mine = cameras.filter((c) => c.regionSlug === 'texas');
+  assert.ok(mine.length >= 300, 'the registry holds the Austin list');
+  const html = pages.get(r);
+  assert.ok(html, 'page built');
+  assert.ok(html.includes(`data-count="${mine.length}"`) && html.includes(`All ${mine.length} cameras`), 'count');
+  const block = html.match(/<section data-block="cameras"[\s\S]*?<\/section>/)[0];
+  assert.equal((block.match(/<li>/g) || []).length, mine.length, 'list length');
+  for (const m of block.matchAll(/<li><a href="([^"]+)"/g)) assert.match(m[1], /^https:\/\/cctv\.austinmobility\.io\/image\/\d+\.jpg$/);
+  assert.ok(!/<(img|video|iframe|source)/i.test(block), 'no media tag in the list');
+  assert.ok(html.includes('Credit: City of Austin, Texas - data.austintexas.gov, Austin Transportation & Public Works, Traffic Cameras.') || html.includes('Credit: City of Austin, Texas - data.austintexas.gov, Austin Transportation &amp; Public Works, Traffic Cameras.'), 'the credit line, one full stop');
+  assert.ok(!html.includes('Cameras..'), 'no doubled full stop');
+  assert.ok(/City of Austin's cameras only, not a list for the whole state of Texas/.test(html.replace(/&#39;|&apos;/g, "'")), 'Austin only, not all of Texas');
+  assert.ok(/pictures belong to the City of Austin/.test(html), 'the pictures are the City');
+  assert.ok(![...pages.keys()].some((x) => x.startsWith(r) && x !== r), 'no Texas city page: the feed has no city field');
+  assert.ok(!isNoindex(html), 'indexable');
+  assert.equal(new Set(mine.map((c) => c.name)).size, mine.length, 'no two labels alike');
+  assert.ok(pages.get('/cameras/united-states/').includes(r), 'the country hub links to it');
+});
 test('Iceland: country hub and one region page, no city pages, every camera view listed once as a link to the Administration picture directory, the exact required credit and the pictures-belong-to-the-Administration caveat printed, link-out only', () => {
   const r = '/cameras/iceland/iceland/';
   const mine = cameras.filter((c) => c.regionSlug === 'iceland');
@@ -423,7 +443,7 @@ test('footer credits link to the licence terms and say what we changed (CC BY: l
     assert.ok(/Changes by us:/.test(f), `${route} footer does not say what we changed`);
   }
 });
-const countryOfRegion = (slug) => ({ california: 'united-states', finland: 'finland', 'hong-kong': 'hong-kong', iceland: 'iceland' }[slug] || (slug ? 'canada' : null));
+const countryOfRegion = (slug) => ({ california: 'united-states', texas: 'united-states', finland: 'finland', 'hong-kong': 'hong-kong', iceland: 'iceland' }[slug] || (slug ? 'canada' : null));
 
 // ---- launch switch (owner 2026-11-23): PUBLIC_NOINDEX=1 hides EVERY page, robots disallows all, sitemap is empty ----
 test('launch switch: PUBLIC_NOINDEX=1 build hides every page and offers no URL to search engines', () => {

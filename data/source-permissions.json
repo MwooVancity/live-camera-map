@@ -4888,6 +4888,23 @@
       "needsHumanReview": true,
       "mustNotShip": false,
       "enabled": true
+    },
+    {
+      "id": "austin-traffic-cameras",
+      "name": "Traffic Cameras, City of Austin Open Data (dataset b4k4-adkb, Socrata JSON list)",
+      "section": "Camera registry sources (read by ops/importers/austin.mjs)",
+      "folder": "",
+      "licence": "City of Austin Open Data Terms of Use (https://data.austintexas.gov/stories/s/ranj-cccq, read by Claude 2026-11-24 from the story JSON https://data.austintexas.gov/stories/s/ranj-cccq.json and re-read as text by the importer every run): \"Data available through the City of Austin Open Data Portal are offered free and without restriction.\" and \"Unless otherwise noted in metadata, datasets available on the City of Austin Open Data Portal are in the public domain\". Secondary use: \"Data accessed through the City of Austin Open Data Portal at https://data.austintexas.gov do not, and should not, include controls over its end use.\" Attribution: \"We ask that proper credit be given when using content, data, documentation, code, and related materials from the City of Austin Open Data Portal ... Please provide attribution to both the City of Austin and the City Department that is the source of the cited data.\" The terms contain no commercial-use prohibition; they say the City may require termination of use for violation of the terms and disclaim all warranties. Dataset metadata (https://data.austintexas.gov/api/views/b4k4-adkb.json, read 2026-11-24 and re-read every run): license.name \"Public Domain\", attribution \"City of Austin, Texas - data.austintexas.gov\"; the description says the cameras are \"owned and operated by Austin Transportation & Public Works\". Feed: https://data.austintexas.gov/resource/b4k4-adkb.json (no key; portal robots.txt says only \"Crawl-delay: 1\", read every run and obeyed; 1,009 rows on 2026-11-24, 823 with status TURNED_ON). Only TURNED_ON rows with a https://cctv.austinmobility.io/image/N.jpg link are kept. Credit line printed on every page that shows the cameras: \"Source: City of Austin, Texas - data.austintexas.gov, Austin Transportation & Public Works, Traffic Cameras.\" The importer stops if the metadata licence or attribution changes or the terms text loses the phrases \"offered free and without restriction\", \"are in the public domain\", \"do not, and should not, include controls over its end use\" or \"proper credit be given\". The upstream doc row city-of-austin-open-data stays as that doc has it.",
+      "commercialStatus": "allowed_per_doc",
+      "statusReason": "quoted text: the City offers its open data \"free and without restriction\", datasets are \"in the public domain\" unless the metadata says otherwise (this dataset says Public Domain), the terms put no controls on end use and ask for credit to the City and the department; applies to the camera list, pictures (cctv.austinmobility.io) unverified (link-out only)",
+      "attribution": "Source: City of Austin, Texas - data.austintexas.gov, Austin Transportation & Public Works, Traffic Cameras.",
+      "provenance": "https://data.austintexas.gov/stories/s/ranj-cccq (City of Austin Open Data Terms of Use) and https://data.austintexas.gov/api/views/b4k4-adkb.json, read 2026-11-24; the upstream camera constants name the same dataset (DEFAULT_AUSTIN_ROWS_URL)",
+      "imageStatus": "unverified: the terms cover the open data portal data; they do not separately say whether the camera picture files on cctv.austinmobility.io are covered; link-out only",
+      "reviewedAt": "2026-11-24",
+      "reviewedBy": "claude-doc-read",
+      "needsHumanReview": true,
+      "mustNotShip": false,
+      "enabled": true
     }
   ]
 }

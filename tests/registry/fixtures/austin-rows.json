@@ -1,0 +1,9 @@
+[
+{"camera_id":"1","location_name":"830 BLK W RUNDBERG LN (Little Walnut Creek Library, HEB)","camera_status":"TURNED_ON","signal_eng_area":"NORTHEAST","primary_st_block":"830","primary_st":" RUNDBERG LN","screenshot_address":"https://cctv.austinmobility.io/image/1.jpg","location":{"type":"Point","coordinates":[-97.698158,30.363686]}},
+{"camera_id":"6","location_name":" LAVACA ST / 3RD ST","camera_status":"TURNED_ON","signal_eng_area":"CENTRAL","primary_st":" LAVACA ST","cross_st":" 3RD ST","screenshot_address":"https://cctv.austinmobility.io/image/6.jpg","location":{"type":"Point","coordinates":[-97.746246,30.26593]}},
+{"camera_id":"7","location_name":"LAVACA ST / 3RD ST","camera_status":"TURNED_ON","signal_eng_area":"CENTRAL","primary_st":"LAVACA ST","cross_st":"3RD ST","screenshot_address":"https://cctv.austinmobility.io/image/7.jpg","location":{"type":"Point","coordinates":[-97.7463,30.26594]}},
+{"camera_id":"8","location_name":"BEN WHITE BLVD / S 1ST ST","camera_status":"TURNED_ON","primary_st":"BEN WHITE BLVD","screenshot_address":"https://cctv.austinmobility.io/image/8.jpg","location":{"type":"Point","coordinates":[-97.77,30.22]}},
+{"camera_id":"9","location_name":"MOPAC / CESAR CHAVEZ","camera_status":"DESIRED","primary_st":"MOPAC","screenshot_address":"https://cctv.austinmobility.io/image/9.jpg","location":{"type":"Point","coordinates":[-97.76,30.27]}},
+{"camera_id":"10","location_name":"OLD SIGNAL","camera_status":"VOID","primary_st":"X ST","screenshot_address":"https://cctv.austinmobility.io/image/10.jpg","location":{"type":"Point","coordinates":[-97.75,30.28]}},
+{"camera_id":"11","location_name":"GONE ST / 1ST ST","camera_status":"REMOVED","primary_st":"GONE ST","screenshot_address":"https://cctv.austinmobility.io/image/11.jpg","location":{"type":"Point","coordinates":[-97.74,30.29]}}
+]

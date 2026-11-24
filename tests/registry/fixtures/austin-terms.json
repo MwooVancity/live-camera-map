@@ -1,0 +1,6 @@
+{"id":"ranj-cccq","name":"City of Austin Open Data Terms of Use","blocks":[
+{"layout":"12","components":[{"type":"html","value":"<h2>Terms of Use for the City of Austin Open Data Portal</h2>"}]},
+{"layout":"12","components":[{"type":"html","value":"<p>Data available through the City of Austin Open Data Portal are offered free and without restriction. Unless otherwise noted in metadata, datasets available on the City of Austin Open Data Portal are in the public domain, which means you may link to the City of Austin Open Data Portal at no cost .</p>"}]},
+{"layout":"12","components":[{"type":"html","value":"<p>We ask that proper credit be given when using content, data, documentation, code, and related materials from the City of Austin Open Data Portal. Please provide attribution to both the City of Austin and the City <a href=\"#\">Department</a> that is the source of the cited data.</p>"}]},
+{"layout":"12","components":[{"type":"html","value":"<h3>Secondary Use of Data</h3><p>Data accessed through the City of Austin Open Data Portal at https://data.austintexas.gov do not, and should not, include controls over its end use.</p>"}]}
+]}

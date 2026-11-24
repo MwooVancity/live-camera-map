@@ -198,5 +198,25 @@
   "license": "CC BY 4.0 (Icelandic Road and Coastal Administration terms of use, Act No. 45/2018)",
   "licenseUrl": "https://www.vegagerdin.is/vegagerdin/gagnasafn/vefthjonustur/terms-and-conditions",
   "reviewedAt": "2026-11-24"
+ },
+ {
+  "id": "austin-traffic",
+  "name": "Traffic Cameras (City of Austin Open Data, Austin Transportation & Public Works)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one request for the list per run (Socrata resource endpoint; portal robots.txt asks Crawl-delay 1); picture links are checked by the health checker at most 4 a second",
+   "docsUrl": "https://data.austintexas.gov/d/b4k4-adkb"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Source: City of Austin, Texas - data.austintexas.gov, Austin Transportation & Public Works, Traffic Cameras.",
+  "license": "Public Domain (dataset licence); City of Austin Open Data Terms of Use",
+  "licenseUrl": "https://data.austintexas.gov/stories/s/ranj-cccq",
+  "reviewedAt": "2026-11-24"
  }
 ]

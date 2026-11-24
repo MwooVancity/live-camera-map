@@ -6,6 +6,7 @@ import { TOR_REGION } from '../../../ops/importers/lib/toronto.mjs';
 import { CGY_REGION } from '../../../ops/importers/lib/calgary.mjs';
 import { HK_REGION } from '../../../ops/importers/lib/hongkong.mjs';
 import { IS_REGION } from '../../../ops/importers/lib/iceland.mjs';
+import { TX_REGION } from '../../../ops/importers/lib/austin.mjs';
 
 // NFKD splits an accented letter into the letter plus a combining mark; the marks are removed first, otherwise "Hämeenlinna" became "ha-meenlinna".
 export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -84,6 +85,13 @@ export const REGIONS = {
     placeText: (x) => sentence(`The Administration's list has no place field: each camera view is named as the Administration names it, with the picture file name in brackets because several views share one text, and carries its road name and number where the Administration gives them, so there are no city pages; all ${x.total} views are listed below.`),
     cityText: () => '',
     caveats: ['The camera pictures belong to the Icelandic Road and Coastal Administration and are not shown here. Each link goes to one still picture address on www.vegagerdin.is; it is a link only. The Administration publishes the data under CC BY 4.0 and says its road camera images are automatically generated real-time data provided as is; its terms do not separately say that the picture files are covered, and we do not suggest the Administration endorses this site.'],
+  },
+  // Texas: one source, the City of Austin's own list. Region page is Austin only (the registry has no other Texas source); the feed has no city field and lists cameras in the City's extra-territorial jurisdiction too, so no city is invented.
+  [TX_REGION.slug]: {
+    sourceId: 'austin-traffic', agency: 'City of Austin', cityLimit: 0, guide: null, credit: true, list: 'traffic camera list', listAll: true,
+    placeText: (x) => sentence(`These are the City of Austin's cameras only, not a list for the whole state of Texas: the City's list has no city field (it also covers cameras in the City's extra-territorial jurisdiction), so there are no city pages. Each of the ${x.total} cameras is one the City marks TURNED_ON, named as the City names it with its camera number in brackets, and carries its street and cross street where the City gives them; cameras the City marks DESIRED, VOID or REMOVED are left out.`),
+    cityText: () => '',
+    caveats: ['The camera pictures belong to the City of Austin and are not shown here. Each link goes to one still picture address on cctv.austinmobility.io; it is a link only. The City of Austin Open Data Terms of Use cover the data portal and put no controls on end use; they do not separately say whether the picture files are covered.'],
   },
 };
 // The credit sentence for a source that asks for one (its attribution line from sources.json, without a leading "Source:").
