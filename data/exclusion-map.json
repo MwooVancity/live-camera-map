@@ -415,7 +415,7 @@
       "mechanism": "mixed: server-proxied (blocked at proxy) and browser-direct (Esri, ECCC AQHI, Street View; not stoppable at proxy)",
       "routes": [
         {
-          "route": "/api/google/*, /api/adsbdb, /api/vessels, /api/celestrak/*, /api/launches, /api/tomtom/*",
+          "route": "/api/google/*, /api/vessels, /api/tomtom/*",
           "evidence": "gev/data/route-inventory.json"
         },
         {
@@ -426,10 +426,7 @@
       "probePaths": [
         "/api/google/tiles-token",
         "/api/google/text-search",
-        "/api/adsbdb",
         "/api/vessels",
-        "/api/celestrak/active",
-        "/api/launches",
         "/api/tomtom/status",
         "/api/tomtom/flow"
       ],
@@ -645,6 +642,27 @@
         "radio-browser"
       ],
       "reason": "exact GET /api/radio/stations; the POST /click vote route stays closed. Radio Browser row owner-approved 2026-11-24 (data/owner-approvals.json). Plan item 22."
+    },
+    "celestrak": {
+      "basis": "enabled-source",
+      "sourceIds": [
+        "celestrak"
+      ],
+      "reason": "exact /api/celestrak and /api/celestrak-satcat; CelesTrak row owner-approved 2026-11-24, written confirmation requested (plan item 20)"
+    },
+    "adsbdb": {
+      "basis": "enabled-source",
+      "sourceIds": [
+        "adsbdb-api-adsbdb-com"
+      ],
+      "reason": "exact route/aircraft lookups; owner-approved 2026-11-24"
+    },
+    "launches": {
+      "basis": "enabled-source",
+      "sourceIds": [
+        "the-space-devs-launch-library-2-v2-3"
+      ],
+      "reason": "exact /api/launches; owner-approved 2026-11-24"
     }
   },
   "libraryDisabledIds": [
@@ -905,7 +923,10 @@
       ]
     },
     "opened": [
-      "radio (stations)"
+      "radio (stations)",
+      "celestrak",
+      "adsbdb",
+      "launches"
     ]
   }
 }
