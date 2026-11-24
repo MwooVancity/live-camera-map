@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { SITE_NAME } from '../config.mjs';
 import { cameras, countsBy, registryDate, loadedDistricts } from '../lib/data.mjs';
-import { curatedPlaces, regionsWithPages, regionInfo, cityRoute, GUIDES } from '../lib/pages.mjs';
+import { curatedPlaces, regionsWithPages, regionInfo, cityRoute, countriesWithPages, countryName, countryRoute, GUIDES } from '../lib/pages.mjs';
 const total = cameras.length;
 const places = curatedPlaces(cameras);
 const regions = regionsWithPages(cameras);
@@ -14,6 +14,8 @@ const groups = [];
 for (const p of places) { let g = groups.find((x) => x.region === p.region); if (!g) { g = { region: p.region, name: regionName(p.region), items: [] }; groups.push(g); } g.items.push(p); }
 const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names.at(-1)}` : names[0];
 const agencies = regions.map((r) => regionInfo(r).agency).join(' and ');
+const byCountry = countsBy(cameras, 'country');
+const countryList = countriesWithPages(cameras);
 const nCountries = Object.keys(countsBy(cameras, 'country')).length;
 const sourcesN = new Set(cameras.map((c) => c.sourceId)).size;
 ---
@@ -28,6 +30,8 @@ const sourcesN = new Set(cameras.map((c) => c.sourceId)).size;
     <summary>Where the counts come from</summary>
     <p>{SITE_NAME} lists {total} traffic cameras in {list}, each one a link to the official source ({regions.map((r) => `${regionName(r)}: ${byRegion[r]}${r === 'california' ? ` from Caltrans districts ${loadedDistricts.join(', ')}` : ` from ${regionInfo(r).agency}`}`).join('; ')}). We show where the cameras are, which roads they cover and when our list was last updated{registryDate ? ` (${registryDate})` : ''}. We do not copy camera pictures.</p>
   </details>
+  <h2>Traffic cameras by country</h2>
+  <ul class="chips">{countryList.map((c) => <li><a href={countryRoute(c)}>{countryName(c)}</a> <span class="n">{byCountry[c]}</span></li>)}</ul>
   <h2>Traffic cameras by city</h2>
   <div class="city-groups">
     {groups.map((g) => (
@@ -54,6 +58,10 @@ const sourcesN = new Set(cameras.map((c) => c.sourceId)).size;
   .city-groups ul { list-style: none; margin: 0; padding: 0; }
   .city-groups li { padding: 9px 0; border-bottom: 1px solid var(--line); }
   .city-groups .n { color: var(--mut); }
+  .chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .chips li { border: 1px solid var(--line); border-radius: 999px; background: var(--panel); }
+  .chips a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 6px 0 16px; text-decoration: none; }
+  .chips .n { color: var(--mut); padding-right: 16px; font-family: var(--font-mono); font-size: 0.85rem; }
   .where { margin: 12px 0 20px; }
   .where summary { cursor: pointer; color: var(--mut); min-height: 44px; display: flex; align-items: center; }
 </style>
