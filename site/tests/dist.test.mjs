@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { DIST, SITE_URL, CAMERA_HOSTS, readPages, titleOf, isNoindex, sitemapViolations } from './helpers.mjs';
-import { countsBy } from '../../ops/importers/lib/registry.mjs';
+import { countsBy, countryOf } from '../../ops/importers/lib/registry.mjs';
 import { curatedPlaces, regionInfo } from '../src/lib/pages.mjs';
 
 const pages = readPages();
@@ -443,10 +443,8 @@ test('footer credits link to the licence terms and say what we changed (CC BY: l
     assert.ok(/Changes by us:/.test(f), `${route} footer does not say what we changed`);
   }
 });
-const CANADA_SOURCES = new Set(['calgary-traffic', 'drivebc', 'quebec-mtmd', 'toronto-traffic']);
-const REGION_COUNTRY = { california: 'united-states', texas: 'united-states', finland: 'finland', 'hong-kong': 'hong-kong', iceland: 'iceland', london: 'united-kingdom' };
-// An unknown region no longer counts as Canada by default: a new source must be added to one of these two lists or the test fails (item 28 stage 1).
-const countryOfRegion = (slug) => { if (!slug) return null; if (REGION_COUNTRY[slug]) return REGION_COUNTRY[slug]; const src = cameras.find((c) => c.regionSlug === slug)?.sourceId; if (CANADA_SOURCES.has(src)) return 'canada'; throw new Error(`region ${slug} (source ${src}) has no country: add it to REGION_COUNTRY or CANADA_SOURCES in site/tests/dist.test.mjs`); };
+// One map for the country of a region: registry.mjs countryOf (item 28 stage 1). A region it does not know gives null, which fails the count below.
+const countryOfRegion = (slug) => { if (!slug) return null; const c = countryOf(slug); if (!c) throw new Error(`region ${slug} has no country in REGION_COUNTRY (ops/importers/lib/registry.mjs)`); return c.countrySlug; };
 
 // ---- launch switch (owner 2026-11-23): PUBLIC_NOINDEX=1 hides EVERY page, robots disallows all, sitemap is empty ----
 test('launch switch: PUBLIC_NOINDEX=1 build hides every page and offers no URL to search engines', () => {
