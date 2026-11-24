@@ -11,11 +11,20 @@ const regionName = (slug) => cameras.find((c) => c.regionSlug === slug).regionNa
 const names = regions.map(regionName);
 const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names.at(-1)}` : names[0];
 const agencies = regions.map((r) => regionInfo(r).agency).join(' and ');
+const nCountries = Object.keys(countsBy(cameras, 'country')).length;
+const sourcesN = new Set(cameras.map((c) => c.sourceId)).size;
 ---
 <Base title={`Live traffic cameras: ${total} official camera links | ${SITE_NAME}`} description={`${total} traffic cameras in ${list}, each linked to the official ${agencies} source, with the roads covered and when each list was last updated.`} route="/">
-  <h1>Free live traffic cameras</h1>
-  <p>{SITE_NAME} lists {total} traffic cameras in {list}, each one a link to the official source ({regions.map((r) => `${regionName(r)}: ${byRegion[r]}${r === 'california' ? ` from Caltrans districts ${loadedDistricts.join(', ')}` : ` from ${regionInfo(r).agency}`}`).join('; ')}). We show where the cameras are, which roads they cover and when our list was last updated{registryDate ? ` (${registryDate})` : ''}. We do not copy camera pictures.</p>
-  <p><a class="cta" href="/map/">Open the map</a></p>
+  <section class="hero">
+    <h1>Free live traffic cameras</h1>
+    <p class="lead"><strong>{total}</strong> official camera links in <strong>{nCountries}</strong> countries, each one checked by us. No account, no pictures copied: every name goes to the official source.</p>
+    <p class="stats"><span>List updated {registryDate}</span><span>{sourcesN} official sources</span><span>Health checked every few hours</span></p>
+    <p class="actions"><a class="cta" href="/map/">Open the map</a> <a class="cta2" href="/cameras/">Browse all cameras</a></p>
+  </section>
+  <details class="where">
+    <summary>Where the counts come from</summary>
+    <p>{SITE_NAME} lists {total} traffic cameras in {list}, each one a link to the official source ({regions.map((r) => `${regionName(r)}: ${byRegion[r]}${r === 'california' ? ` from Caltrans districts ${loadedDistricts.join(', ')}` : ` from ${regionInfo(r).agency}`}`).join('; ')}). We show where the cameras are, which roads they cover and when our list was last updated{registryDate ? ` (${registryDate})` : ''}. We do not copy camera pictures.</p>
+  </details>
   <h2>Cities with the most cameras</h2>
   <ul class="cols">
     {places.map((p) => <li><a href={cityRoute(p.region, p.city)}>{p.city} traffic cameras</a> ({p.n})</li>)}
@@ -24,3 +33,14 @@ const agencies = regions.map((r) => regionInfo(r).agency).join(' and ');
   <h2>Guides</h2>
   <ul>{GUIDES.map((g) => <li><a href={`/guides/${g.slug}/`}>{g.title}</a></li>)}</ul>
 </Base>
+<style>
+  .hero { padding: 28px 0 8px; }
+  .hero h1 { font-size: clamp(2rem, 6vw, 3.2rem); line-height: 1.1; margin: 0 0 12px; letter-spacing: -0.01em; }
+  .lead { font-size: 1.2rem; max-width: 40em; }
+  .stats { display: flex; flex-wrap: wrap; gap: 8px 10px; padding: 0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mut); }
+  .stats span { border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .cta2 { display: inline-block; padding: 10px 18px; border: 1px solid var(--cta); border-radius: 6px; color: var(--cta); text-decoration: none; font-weight: 600; }
+  .where { margin: 12px 0 20px; }
+  .where summary { cursor: pointer; color: var(--mut); min-height: 44px; display: flex; align-items: center; }
+</style>

@@ -233,3 +233,12 @@ test('failing fixture: a search box with no <noscript> fallback to /cameras/ and
   const half = gate(site({ city: (c, b) => pageNoSearch('<div role="search"><input type="search"><noscript><a href="/cameras/">c</a></noscript></div>' + b) }), md);
   assert.ok(half.some((e) => /no <noscript> fallback/.test(e)));
 });
+
+// ---- prompt hook: Line 0 and the ask-ChatGPT rule are printed on every request (owner 2026-11-24) ----
+import { execFileSync } from 'node:child_process';
+test('prompt hook prints Line 0 and the ask-ChatGPT-every-chance rule', () => {
+  const out = execFileSync(process.execPath, [new URL('./hook-prompt.mjs', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')], { encoding: 'utf8' });
+  assert.match(out, /LINE 0/);
+  assert.match(out, /ASK CHATGPT EVERY CHANCE/);
+  assert.match(out, /never bypass/);
+});

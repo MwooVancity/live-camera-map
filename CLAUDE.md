@@ -50,7 +50,7 @@ God's Eye View (GEV) is proven upstream code. Its files must NEVER be edited, de
 The Claude cloud sandbox cannot reach most camera APIs (only package registries and GitHub). Importers and live data tests run on Mike's machine. Build importers against saved sample responses and mark them "untested against live API" until Mike confirms a real run.
 
 ## Workflow
-0. Ask ChatGPT/Gemini first for big research and before plan-changing decisions: procedure and log in plan.md section 9 (their facts are UNVERIFIED until checked on the primary source).
+0. CORE (owner 2026-11-24, HARD): ask ChatGPT at EVERY chance: before each plan-changing decision, after each finished batch, when a page or design is built (upload screenshots; guest chat takes images only), and whenever unsure. It is a free second strong reviewer for decisions. Procedure and log: plan.md section 9. Its facts are UNVERIFIED until checked on the primary source or the live endpoint (one of its leads, Autobahn webcams, was empty); report wrong claims back to it. If Chrome is not connected or a bot check appears: say so in one line, never bypass, retry at the next chance. The UserPromptSubmit hook prints this every request.
 1. Check `plan.md` for the current day and its "Done when" criteria.
 2. Make the smallest working change, then run `npm run build` (add `npm run validate` for data) before saying it is done.
 3. Update checkboxes in `plan.md` only for things actually verified.
