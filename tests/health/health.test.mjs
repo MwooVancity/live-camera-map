@@ -285,6 +285,7 @@ test('BC pace: a per-source hostDelayMs spaces requests to that host (4 requests
   assert.ok(Date.now() - t0 >= 330, `took only ${Date.now() - t0} ms`);
   assert.equal(r.doc.perSource.drivebc.reachable, 4);
   assert.equal(r.doc.perSource.drivebc.requests, 4);
+  assert.ok(Number.isInteger(r.doc.perSource.drivebc.ms) && r.doc.perSource.drivebc.ms >= 0, "per-source runtime in ms is published (plan item 28 stage 6)");
 });
 
 test('BC stale limit: a picture last modified 5 h ago is stale for drivebc (4 h) but reachable for another source (6 h)', async () => {

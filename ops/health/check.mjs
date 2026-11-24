@@ -153,8 +153,10 @@ export async function run(opts) {
     const ctx = ctxFor(src), queue = ordered.slice(0, n);
     for (const c of ordered.slice(n)) rec[c.id] = carry(c);
     src.scheduled = n;
+    const t0 = Date.now(); // per-source runtime (item 28 stage 6): which source eats the time budget
     const conc = (cfg.perSource && cfg.perSource[id] && cfg.perSource[id].concurrency) || cfg.concurrency;
     await Promise.all(Array.from({ length: conc }, async () => { for (let c; (c = queue.shift());) rec[c.id] = await checkOne(c, src, ctx); }));
+    src.ms = Date.now() - t0;
   }));
 
   const total = cams.length, cameras = {};
@@ -164,7 +166,7 @@ export async function run(opts) {
     const n = Object.fromEntries(STATUSES.map((x) => [x, 0]));
     for (const c of bySource.get(id)) n[cameras[c.id].status]++;
     const dn = bySource.get(id).filter((c) => deferredIds.has(c.id)).length;
-    summary[id] = { total: s.total, ...n, requests: s.requests, circuitOpen: s.open, staleHours: s.staleHours, scheduled: s.skip ? 0 : s.scheduled, carriedForward: dn, cycleRuns: plan[id].runs, cycleHours: plan[id].hours, cycle: cycleText(id, s.skip ? null : plan[id], cfg.maxCheckAgeH), ...(s.skip ? { skipped: s.skip } : {}) };
+    summary[id] = { total: s.total, ...n, requests: s.requests, ms: s.ms ?? 0, circuitOpen: s.open, staleHours: s.staleHours, scheduled: s.skip ? 0 : s.scheduled, carriedForward: dn, cycleRuns: plan[id].runs, cycleHours: plan[id].hours, cycle: cycleText(id, s.skip ? null : plan[id], cfg.maxCheckAgeH), ...(s.skip ? { skipped: s.skip } : {}) };
   }
   const skippedIds = new Set(cams.filter((c) => perSource[c.sourceId].skip).map((c) => c.id)); // never probed on purpose: not a failure of this run
   // Failures only: breaker, budget, cap and survived-429. A camera this run never scheduled (carried forward, or never checked yet) is not a failure;
