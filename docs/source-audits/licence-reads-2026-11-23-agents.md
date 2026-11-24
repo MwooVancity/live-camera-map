@@ -17,3 +17,8 @@ USGS, https://www.usgs.gov/information-policies-and-instructions/copyrights-and-
 
 ## DECIDED 2026-11-24: Caltrans CWWP2 travel times NOT built
 Live sample (https://cwwp2.dot.ca.gov/data/d12/tt/ttStatusD12.json, opened by Claude): begin and end coordinates are placeholders (0.000001 / 0.000002) and the nearby-place fields hold filler ("here", "sdf"). A segment cannot be placed on a city or road page without guessing, and only Districts 3, 8, 11 and 12 publish travel times. Shows nothing true we could attach to a page, so it fails the Helpful test. Revisit if Caltrans publishes real segment coordinates.
+
+## Singapore traffic images (checked by Claude 2026-11-24; Singapore is a top-5 Argos country)
+- Licence (https://data.gov.sg/open-data-licence, opened through a fetch agent): "worldwide, perpetual, royalty-free, non-exclusive licence", use "whether commercially or non-commercially", a conspicuous notice is required ("made available under the terms of the Singapore Open Data Licence version 1.0" plus a link to the licence). Excludes personal data and third-party rights the agency cannot license. The dataset's own page could not be opened by the agent, so the dataset-level licence row is still UNVERIFIED.
+- Feed (https://api.data.gov.sg/v1/transport/traffic-images, opened by Claude, no key): returned 8 cameras at 2026-11-24 08:26 +08:00, each with a one-snapshot image URL (a new file per snapshot) and no stable per-camera page.
+- DECIDED not built: 8 cameras and no stable link-out target. Revisit if the API lists more cameras or LTA publishes stable camera pages.
