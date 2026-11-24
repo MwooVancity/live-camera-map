@@ -5,6 +5,7 @@ import { QC_REGIONS } from './quebec.mjs';
 import { TOR_REGION } from './toronto.mjs';
 import { CGY_REGION } from './calgary.mjs';
 import { HK_REGION, HK_COUNTRY } from './hongkong.mjs';
+import { IS_REGION, IS_COUNTRY } from './iceland.mjs';
 
 export const CA_BOUNDS = { latMin: 32.3, latMax: 42.1, lonMin: -124.6, lonMax: -114.0 };
 // Optional text field (one source gives it, another does not): the source's own words for where the camera is. Text only, never a picture.
@@ -93,6 +94,7 @@ export const REGION_COUNTRY = {
   [TOR_REGION.slug]: CANADA, // Toronto: one region, the City's own list (no place field, so no city pages)
   [CGY_REGION.slug]: CANADA, // Calgary: one region, the City's own list (no place field, so no city pages)
   [HK_REGION.slug]: HK_COUNTRY, // Hong Kong: one region, the Transport Department's own list (District kept as text, no city pages)
+  [IS_REGION.slug]: IS_COUNTRY, // Iceland: one region, the Road and Coastal Administration's own list (no place field, so no city pages)
 };
 export const countryOf = (regionSlug) => REGION_COUNTRY[regionSlug] || null;
 

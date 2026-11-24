@@ -1,5 +1,5 @@
 // Builds the static search index into site/public/search/ BEFORE astro build. Usage (from site/): node scripts/build-search.mjs
-// Files: manifest.json (entry point), global.<hash>.json (country, region, city, road names: the only file read on first focus besides the manifest),
+// Files: manifest.json (entry point), global.<hash>.json (country, region, city, town, road names: the only file read on first focus besides the manifest),
 // shard-<country>.<hash>.json (everything of one country). Deterministic (no clock, sorted rows). Written to a temp folder, verified, then swapped in:
 // a failed or over-budget build throws and leaves the old folder untouched (never a half-written manifest).
 import { createHash } from 'node:crypto';
@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { KIND_RANK } from '../src/lib/search-core.mjs';
 
 export const BUDGET_BYTES = 300 * 1024; // first search = manifest + global lookup + one country shard, gzip (design: day4-search-design.md)
-const GLOBAL_KINDS = new Set(['country', 'region', 'city', 'road']);
+const GLOBAL_KINDS = new Set(['country', 'region', 'city', 'road', 'town']); // towns too (2026-11-24: with 5 countries the 3-shard fallback lost Canadian towns; towns are about 10 KB so every town is found without guessing a country)
 const sha = (s) => createHash('sha256').update(s).digest('hex');
 const gz = (s) => gzipSync(s, { level: 9 }).length;
 const row = (e) => [e.id, e.kind, e.name, e.norm, e.region, e.road, e.lat, e.lon, e.url];

@@ -201,6 +201,22 @@
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
       "mustNotShip": false
+    },
+    {
+      "id": "iceland-road-cameras",
+      "name": "Road cameras, Icelandic Road and Coastal Administration (Vegagerðin; camera list JSON)",
+      "section": "Camera registry sources (read by ops/importers/iceland.mjs)",
+      "folder": "",
+      "licence": "IRCA terms and conditions (https://www.vegagerdin.is/vegagerdin/gagnasafn/vefthjonustur/terms-and-conditions, read by Claude 2026-11-24 and re-read as page text by the importer every run): \"All IRCA data made available for reuse is licensed under the international Creative Commons Attribution 4.0 International licence (CC BY 4.0), in accordance with Act No. 45/2018 on the Re-use of Public Sector Information.\" and \"users must acknowledge the source of the data in accordance with Article 4(1)(2) of Act No. 45/2018 and the terms of the CC BY 4.0 licence. The attribution must include: The name of the licensor: the Icelandic Road and Coastal Administration (IRCA). The name of the dataset or a description of the data. The date or period when the data was downloaded or obtained. A reference to the CC BY 4.0 licence. The data must not be used in a manner that suggests that IRCA endorses the user\". Not open data under the terms: IRCA and State logos, third-party rights. Disclaimer: automatically generated real-time data including \"images from road cameras\" is provided \"as is\". Feed: https://gagnaveita.vegagerdin.is/api/vefmyndavelar2014_1 (no key, 499 camera views at 166 stations, read 2026-11-24). Credit line printed on every page that shows the cameras (licensor, dataset, CC BY 4.0, plus the import date on the page): \"Source: Icelandic Road and Coastal Administration (Vegagerðin), road camera list, CC BY 4.0.\" The GEV row icelandic-road-and-coastal-administration-vegager-in-irca documents the same licence.",
+      "commercialStatus": "allowed_per_doc",
+      "statusReason": "quoted text: IRCA data is licensed under CC BY 4.0 (a licence that allows commercial use) with attribution and no suggestion of endorsement; applies to the camera list, pictures unverified (link-out only)",
+      "attribution": "Source: Icelandic Road and Coastal Administration (Vegagerðin), road camera list, CC BY 4.0.",
+      "provenance": "https://www.vegagerdin.is/vegagerdin/gagnasafn/vefthjonustur/terms-and-conditions and the feed URL above, read 2026-11-24; gev/DATA_SOURCES.md:80",
+      "imageStatus": "unverified: image display, caching and redistribution not stated separately from the data licence; link-out only",
+      "reviewedAt": "2026-11-24",
+      "reviewedBy": "claude-doc-read",
+      "needsHumanReview": true,
+      "mustNotShip": false
     }
   ]
 }

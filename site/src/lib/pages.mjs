@@ -5,6 +5,7 @@ import { QC_REGIONS } from '../../../ops/importers/lib/quebec.mjs';
 import { TOR_REGION } from '../../../ops/importers/lib/toronto.mjs';
 import { CGY_REGION } from '../../../ops/importers/lib/calgary.mjs';
 import { HK_REGION } from '../../../ops/importers/lib/hongkong.mjs';
+import { IS_REGION } from '../../../ops/importers/lib/iceland.mjs';
 
 // NFKD splits an accented letter into the letter plus a combining mark; the marks are removed first, otherwise "Hämeenlinna" became "ha-meenlinna".
 export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -76,6 +77,13 @@ export const REGIONS = {
     placeText: (x) => sentence(`The Department's list has no city field: each camera is named as the Department names it, ending in its camera key (for example [H429F]), and carries a District and an area (Hong Kong Island, Kowloon or New Territories), which are parts of Hong Kong and not city names, so there are no city pages; all ${x.total} cameras are listed below.`),
     cityText: () => '',
     caveats: ['The camera pictures belong to the Government of the Hong Kong SAR and are not shown here. Each link goes to one still picture address on tdcctv.data.one.gov.hk; it is a link only. The DATA.GOV.HK terms cover the data; they do not separately say whether the picture files are covered.'],
+  },
+  // Iceland: one region from the Road and Coastal Administration's own list; one row per camera view, the station name kept as text, no place field, so no city pages.
+  [IS_REGION.slug]: {
+    sourceId: 'iceland-vegagerdin', agency: 'Icelandic Road and Coastal Administration (Vegagerðin)', cityLimit: 0, guide: null, credit: true, list: 'road camera list', listAll: true,
+    placeText: (x) => sentence(`The Administration's list has no place field: each camera view is named as the Administration names it, with the picture file name in brackets because several views share one text, and carries its road name and number where the Administration gives them, so there are no city pages; all ${x.total} views are listed below.`),
+    cityText: () => '',
+    caveats: ['The camera pictures belong to the Icelandic Road and Coastal Administration and are not shown here. Each link goes to one still picture address on www.vegagerdin.is; it is a link only. The Administration publishes the data under CC BY 4.0 and says its road camera images are automatically generated real-time data provided as is; its terms do not separately say that the picture files are covered, and we do not suggest the Administration endorses this site.'],
   },
 };
 // The credit sentence for a source that asks for one (its attribution line from sources.json, without a leading "Source:").

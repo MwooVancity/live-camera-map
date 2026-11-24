@@ -178,5 +178,25 @@
   "license": "DATA.GOV.HK Terms and Conditions Version 1.2",
   "licenseUrl": "https://data.gov.hk/en/terms-and-conditions",
   "reviewedAt": "2026-11-24"
+ },
+ {
+  "id": "iceland-vegagerdin",
+  "name": "Road cameras (Icelandic Road and Coastal Administration, Vegagerðin)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one request for the list per run; picture links are checked by the health checker at most 4 a second",
+   "docsUrl": "https://www.vegagerdin.is/vegagerdin/gagnasafn/vefthjonustur/terms-and-conditions"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Source: Icelandic Road and Coastal Administration (Vegagerðin), road camera list, CC BY 4.0.",
+  "license": "CC BY 4.0 (Icelandic Road and Coastal Administration terms of use, Act No. 45/2018)",
+  "licenseUrl": "https://www.vegagerdin.is/vegagerdin/gagnasafn/vefthjonustur/terms-and-conditions",
+  "reviewedAt": "2026-11-24"
  }
 ]

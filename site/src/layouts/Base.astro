@@ -1,7 +1,7 @@
 ---
 import { SITE_NAME, SITE_URL, NOINDEX_ALL } from '../config.mjs';
 import { sourceOf } from '../lib/data.mjs';
-const fi = sourceOf('digitraffic'), qc = sourceOf('quebec-mtmd'), tor = sourceOf('toronto-traffic'), cgy = sourceOf('calgary-traffic'), hk = sourceOf('hongkong-traffic'); // attribution lines come from sources.json (one place), shown only when that source is in the registry
+const fi = sourceOf('digitraffic'), qc = sourceOf('quebec-mtmd'), tor = sourceOf('toronto-traffic'), cgy = sourceOf('calgary-traffic'), hk = sourceOf('hongkong-traffic'), is = sourceOf('iceland-vegagerdin'); // attribution lines come from sources.json (one place), shown only when that source is in the registry
 const { title, description, route, crumbs = [], noindex = false } = Astro.props;
 const canonical = SITE_URL + route;
 const trail = [{ name: 'Home', route: '/' }, ...crumbs];
@@ -86,7 +86,7 @@ const ld = JSON.stringify({
     <slot />
   </main>
   <footer>
-    <p>Camera data: Caltrans (California Department of Transportation) for California and DriveBC (Government of British Columbia) for British Columbia. Each camera links to the official source. {SITE_NAME} shows no camera images, thumbnails or video: link-out only. California licence terms are not yet confirmed; the British Columbia camera list and road events are under the Open Government Licence - British Columbia, which does not say whether the pictures are covered.{(fi || qc || tor || cgy || hk) && <> Credits for the other countries: {[fi, qc, tor, cgy, hk].filter(Boolean).map((s, i) => <>{i ? '; ' : ''}{s.attribution} (<a href={s.licenseUrl}>licence</a>)</>)}. Changes by us: road, direction and place are read from the agency text and repeated positions are left out.</>}</p>
+    <p>Camera data: Caltrans (California Department of Transportation) for California and DriveBC (Government of British Columbia) for British Columbia. Each camera links to the official source. {SITE_NAME} shows no camera images, thumbnails or video: link-out only. California licence terms are not yet confirmed; the British Columbia camera list and road events are under the Open Government Licence - British Columbia, which does not say whether the pictures are covered.{(fi || qc || tor || cgy || hk || is) && <> Credits for the other countries: {[fi, qc, tor, cgy, hk, is].filter(Boolean).map((s, i) => <>{i ? '; ' : ''}{s.attribution} (<a href={s.licenseUrl}>licence</a>)</>)}. Changes by us: road, direction and place are read from the agency text and repeated positions are left out.</>}</p>
     <p>No ads, no tracking, no third-party scripts or fonts.</p>
   </footer>
   <script>

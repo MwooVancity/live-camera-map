@@ -377,6 +377,28 @@ test('Hong Kong: country hub and one region page, no city pages, every camera li
   assert.ok(pages.get('/cameras/hong-kong/').includes('/cameras/hong-kong/hong-kong/'), 'the country hub links to it');
   assert.ok(!isNoindex(pages.get('/cameras/hong-kong/')), 'country hub indexable');
 });
+test('Iceland: country hub and one region page, no city pages, every camera view listed once as a link to the Administration picture directory, the exact required credit and the pictures-belong-to-the-Administration caveat printed, link-out only', () => {
+  const r = '/cameras/iceland/iceland/';
+  const mine = cameras.filter((c) => c.regionSlug === 'iceland');
+  assert.ok(mine.length >= 400, 'the registry holds the Iceland list');
+  const html = pages.get(r);
+  assert.ok(html, 'page built');
+  assert.ok(html.includes(`data-count="${mine.length}"`) && html.includes(`All ${mine.length} cameras`), 'count');
+  const block = html.match(/<section data-block="cameras"[\s\S]*?<\/section>/)[0];
+  assert.equal((block.match(/<li>/g) || []).length, mine.length, 'list length');
+  for (const m of block.matchAll(/<li><a href="([^"]+)"/g)) assert.match(m[1], /^https:\/\/www\.vegagerdin\.is\/vgdata\/vefmyndavelar\/[A-Za-z0-9_-]+\.jpg$/);
+  assert.ok(!/<(img|video|iframe|source)\b/i.test(block), 'no media tag in the list');
+  assert.ok(html.includes('Credit: Icelandic Road and Coastal Administration (Vegagerðin), road camera list, CC BY 4.0.'), 'the exact credit, one full stop');
+  assert.ok(!html.includes('CC BY 4.0..'), 'no doubled full stop');
+  assert.ok(/pictures belong to the Icelandic Road and Coastal Administration/.test(html), 'the pictures are the Administration\'s');
+  assert.ok(/we do not suggest the Administration endorses this site/.test(html), 'no endorsement');
+  assert.ok(/imported \d{4}-\d{2}-\d{2}/.test(html), 'the import date the licence asks for');
+  assert.ok(![...pages.keys()].some((x) => x.startsWith(r) && x !== r), 'no Iceland city page: the feed has no place field');
+  assert.ok(!isNoindex(html), 'indexable');
+  assert.equal(new Set(mine.map((c) => c.name)).size, mine.length, 'no two labels alike');
+  assert.ok(pages.get('/cameras/iceland/').includes('/cameras/iceland/iceland/'), 'the country hub links to it');
+  assert.ok(!isNoindex(pages.get('/cameras/iceland/')), 'country hub indexable');
+});
 test('country hub of Canada: BC and Quebec regions with their own text, and the one-camera Quebec region is counted in the total but said to have no page', () => {
   const html = pages.get('/cameras/canada/');
   const total = cameras.filter((c) => countryOfRegion(c.regionSlug) === 'canada').length;
@@ -401,7 +423,7 @@ test('footer credits link to the licence terms and say what we changed (CC BY: l
     assert.ok(/Changes by us:/.test(f), `${route} footer does not say what we changed`);
   }
 });
-const countryOfRegion = (slug) => ({ california: 'united-states', finland: 'finland', 'hong-kong': 'hong-kong' }[slug] || (slug ? 'canada' : null));
+const countryOfRegion = (slug) => ({ california: 'united-states', finland: 'finland', 'hong-kong': 'hong-kong', iceland: 'iceland' }[slug] || (slug ? 'canada' : null));
 
 // ---- launch switch (owner 2026-11-23): PUBLIC_NOINDEX=1 hides EVERY page, robots disallows all, sitemap is empty ----
 test('launch switch: PUBLIC_NOINDEX=1 build hides every page and offers no URL to search engines', () => {
