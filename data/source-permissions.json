@@ -5038,6 +5038,23 @@
       "enabled": true
     },
     {
+      "id": "tfl-jamcam-cameras",
+      "name": "JamCams, Transport for London (Unified API Place/Type/JamCam list)",
+      "section": "Camera registry sources (read by ops/importers/tfl.mjs)",
+      "folder": "",
+      "licence": "TfL transport data service terms and conditions (https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service, read by Claude 2026-11-24 from the page payload and re-read as page text by the importer every run): \"These licence terms and conditions apply to TfL's free transport data service and are based on version 2.0 of the Open Government Licence with specific amendments for Transport for London (the \"Licence\").\" Rights: \"You are free to: Copy, publish, distribute and transmit the Information; Adapt the Information and; Exploit the Information commercially and non-commercially for example, by combining it with other Information, or by including it in Your own product or application\". Requirements: \"Acknowledge TfL as the source of the Information by including the following attribution statement 'Powered by TfL Open Data'\" and \"Acknowledge that this Information contains Ordnance Survey derived data by including the following attribution statement: 'Contains OS data © Crown copyright and database rights 2016' and Geomni UK Map data © and database rights [2019]\"; protect TfL's logos and follow its design and branding guidelines; limit requests to 500 calls per minute per data feed. Non-endorsement: the Licence gives no right to use the Information in a way that suggests any official status or that TfL endorses the user. The Information is licensed 'as is'. The terms do not mention camera pictures. Feed: https://api.tfl.gov.uk/Place/Type/JamCam (no key, 889 places on 2026-11-24, 792 with available=true; api.tfl.gov.uk has no robots.txt, it answers 404). Only available=true rows inside Greater London whose imageUrl is on https://s3-eu-west-1.amazonaws.com/jamcams.tfl.gov.uk/ are kept. Credit lines printed on every page that shows the cameras: \"Powered by TfL Open Data\" and \"Contains OS data © Crown copyright and database rights 2016\". The importer stops if the terms page loses the phrases \"Exploit the Information commercially and non-commercially\", \"Powered by TfL Open Data\" or \"version 2.0 of the Open Government Licence\".",
+      "commercialStatus": "allowed_per_doc",
+      "statusReason": "quoted text: the Information may be exploited \"commercially and non-commercially\" under OGL v2.0 with TfL amendments, with the two attribution statements; applies to the camera list, pictures unverified (link-out only)",
+      "attribution": "Powered by TfL Open Data. Contains OS data © Crown copyright and database rights 2016 and Geomni UK Map data © and database rights 2019.",
+      "provenance": "https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service and the feed URL above, read 2026-11-24",
+      "imageStatus": "unverified: the terms do not say whether the JamCam picture files on s3-eu-west-1.amazonaws.com/jamcams.tfl.gov.uk are covered by the data licence; image display, caching and redistribution not stated; link-out only",
+      "reviewedAt": "2026-11-24",
+      "reviewedBy": "claude-doc-read",
+      "needsHumanReview": true,
+      "mustNotShip": false,
+      "enabled": true
+    },
+    {
       "id": "austin-traffic-cameras",
       "name": "Traffic Cameras, City of Austin Open Data (dataset b4k4-adkb, Socrata JSON list)",
       "section": "Camera registry sources (read by ops/importers/austin.mjs)",

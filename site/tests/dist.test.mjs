@@ -443,7 +443,7 @@ test('footer credits link to the licence terms and say what we changed (CC BY: l
     assert.ok(/Changes by us:/.test(f), `${route} footer does not say what we changed`);
   }
 });
-const countryOfRegion = (slug) => ({ california: 'united-states', texas: 'united-states', finland: 'finland', 'hong-kong': 'hong-kong', iceland: 'iceland' }[slug] || (slug ? 'canada' : null));
+const countryOfRegion = (slug) => ({ california: 'united-states', texas: 'united-states', finland: 'finland', 'hong-kong': 'hong-kong', iceland: 'iceland', london: 'united-kingdom' }[slug] || (slug ? 'canada' : null));
 
 // ---- launch switch (owner 2026-11-23): PUBLIC_NOINDEX=1 hides EVERY page, robots disallows all, sitemap is empty ----
 test('launch switch: PUBLIC_NOINDEX=1 build hides every page and offers no URL to search engines', () => {

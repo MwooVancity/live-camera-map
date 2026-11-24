@@ -1,7 +1,7 @@
 // Proves each harness gate can FAIL (and that the good fixture passes). Run: node --test ops/harness/harness.test.mjs
 import test from 'node:test';
 import assert from 'node:assert';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { decide } from './hook-pretool.mjs';
@@ -252,7 +252,28 @@ test('plan.md section 9: ChatGPT rows from 2026-11-25 carry a MISSING: line', ()
   for (const line of plan.split(/\r?\n/)) {
     const m = /^\| (\d{4}-\d{2}-\d{2}) \|/.exec(line);
     if (!m || m[1] < '2026-11-25' || !/ChatGPT/.test(line)) continue;
-    if (!line.includes('MISSING:')) bad.push(line.slice(0, 80));
+    const i = line.indexOf('MISSING:');
+    const part = i < 0 ? '' : line.slice(i);
+    // Needs an evidence label per ChatGPT's critique: VERIFIED(...) with evidence, UNKNOWN, NOT MATERIAL, or "nothing missing; checked: <something>". A bare "MISSING: none" fails.
+    const ok = /VERIFIED\([^)]{3,}\)|UNKNOWN|NOT MATERIAL|nothing missing; checked: \S{3,}/.test(part);
+    if (!ok) bad.push(line.slice(0, 80));
+    // Full question packet (owner 2026-11-24: "you never paste full questions"): the row names the saved prompt file, which must hold the owner's verbatim words and the gap-check block.
+    const p = /PROMPT: (docs\/chatgpt-prompts\/[\w.-]+\.md)/.exec(line);
+    const file = p ? new URL('../../' + p[1], import.meta.url) : null;
+    const text = file && existsSync(file) ? readFileSync(file, 'utf8') : '';
+    if (!text.includes('OWNER SAID') || !text.includes('GAP CHECK before you answer')) bad.push('no valid PROMPT file: ' + line.slice(0, 60));
   }
-  assert.deepEqual(bad, [], 'ChatGPT rows without a MISSING: line');
+  assert.deepEqual(bad, [], 'ChatGPT rows without a labelled MISSING: line and a saved full prompt file');
+});
+test('the prompt template itself carries every required section', () => {
+  const t = readFileSync(new URL('../../docs/chatgpt-prompts/TEMPLATE.md', import.meta.url), 'utf8');
+  for (const s of ['OWNER SAID', 'SITUATION', 'CONSTRAINTS', 'EXACT EVIDENCE', 'MY QUESTION', 'GAP CHECK before you answer', 'Restate in 3 lines']) assert.ok(t.includes(s), 'template lacks ' + s);
+});
+test('the MISSING: label check rejects a bare none', () => {
+  const ok = (s) => /VERIFIED\([^)]{3,}\)|UNKNOWN|NOT MATERIAL|nothing missing; checked: \S{3,}/.test(s);
+  assert.equal(ok('MISSING: none'), false);
+  assert.equal(ok('MISSING: nothing missing'), false);
+  assert.equal(ok('MISSING: host size = UNKNOWN'), true);
+  assert.equal(ok('MISSING: file exists = VERIFIED(ops/x.mjs:3)'), true);
+  assert.equal(ok('MISSING: nothing missing; checked: repo grep, CI run 123'), true);
 });

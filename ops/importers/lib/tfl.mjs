@@ -12,7 +12,7 @@ export const ROBOTS_URL = 'https://api.tfl.gov.uk/robots.txt';
 export const TERMS_URL = 'https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service';
 // All must still be in the terms page text (read 2026-11-24, page payload decoded, tags removed, spaces collapsed).
 export const LICENCE_PHRASES = ['Exploit the Information commercially and non-commercially', 'Powered by TfL Open Data', 'version 2.0 of the Open Government Licence'];
-export const ATTRIBUTION = 'Powered by TfL Open Data. Contains OS data © Crown copyright and database rights 2016.';
+export const ATTRIBUTION = 'Powered by TfL Open Data. Contains OS data © Crown copyright and database rights 2016 and Geomni UK Map data © and database rights 2019.';
 export const IMAGE_RE = /^https:\/\/s3-eu-west-1\.amazonaws\.com\/jamcams\.tfl\.gov\.uk\/([0-9A-Za-z._-]+)\.jpg$/; // the link-out target must be TfL's own picture bucket
 export const LN_REGION = { slug: 'london', name: 'London' };
 export const LN_COUNTRY = { countryCode: 'GB', countrySlug: 'united-kingdom', countryName: 'United Kingdom' };

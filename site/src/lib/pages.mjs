@@ -7,6 +7,7 @@ import { CGY_REGION } from '../../../ops/importers/lib/calgary.mjs';
 import { HK_REGION } from '../../../ops/importers/lib/hongkong.mjs';
 import { IS_REGION } from '../../../ops/importers/lib/iceland.mjs';
 import { TX_REGION } from '../../../ops/importers/lib/austin.mjs';
+import { LN_REGION } from '../../../ops/importers/lib/tfl.mjs';
 
 // NFKD splits an accented letter into the letter plus a combining mark; the marks are removed first, otherwise "Hämeenlinna" became "ha-meenlinna".
 export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -85,6 +86,13 @@ export const REGIONS = {
     placeText: (x) => sentence(`The Administration's list has no place field: each camera view is named as the Administration names it, with the picture file name in brackets because several views share one text, and carries its road name and number where the Administration gives them, so there are no city pages; all ${x.total} views are listed below.`),
     cityText: () => '',
     caveats: ['The camera pictures belong to the Icelandic Road and Coastal Administration and are not shown here. Each link goes to one still picture address on www.vegagerdin.is; it is a link only. The Administration publishes the data under CC BY 4.0 and says its road camera images are automatically generated real-time data provided as is; its terms do not separately say that the picture files are covered, and we do not suggest the Administration endorses this site.'],
+  },
+  // London: one region from TfL's own JamCam list; every row has the city London, so the region page lists them all and there are no city pages.
+  [LN_REGION.slug]: {
+    sourceId: 'tfl-jamcams', agency: 'Transport for London', cityLimit: 0, guide: null, credit: true, list: 'JamCam list', listAll: true,
+    placeText: (x) => sentence(`TfL's list has no borough or place field: each camera is named as TfL names it, usually the roads it is at, and every one is in London, so there are no city pages; all ${x.total} available cameras are listed below. Cameras TfL marks as not available are left out.`),
+    cityText: () => '',
+    caveats: ['The camera pictures belong to Transport for London and are not shown here. Each link goes to one still picture address on s3-eu-west-1.amazonaws.com/jamcams.tfl.gov.uk; it is a link only. TfL\'s licence covers its data; it does not mention the picture files, and we do not suggest TfL endorses this site.'],
   },
   // Texas: one source, the City of Austin's own list. Region page is Austin only (the registry has no other Texas source); the feed has no city field and lists cameras in the City's extra-territorial jurisdiction too, so no city is invented.
   [TX_REGION.slug]: {

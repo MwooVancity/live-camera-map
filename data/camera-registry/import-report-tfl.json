@@ -1,0 +1,10 @@
+{
+ "generatedAt": "2026-11-24T20:12:05.787Z",
+ "source": "https://api.tfl.gov.uk/Place/Type/JamCam",
+ "licenceUrl": "https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service",
+ "raw": 889,
+ "dropped": {
+  "unavailable": 97
+ },
+ "total": 792
+}

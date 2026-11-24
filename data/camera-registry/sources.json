@@ -218,5 +218,25 @@
   "license": "Open Government Licence - British Columbia",
   "licenseUrl": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61",
   "reviewedAt": "2026-11-22"
+ },
+ {
+  "id": "tfl-jamcams",
+  "name": "JamCams (Transport for London)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one request for the list per run; picture links are checked by the health checker at most 4 a second",
+   "docsUrl": "https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Powered by TfL Open Data. Contains OS data © Crown copyright and database rights 2016 and Geomni UK Map data © and database rights 2019.",
+  "license": "Open Government Licence v2.0 with Transport for London amendments (TfL transport data service terms)",
+  "licenseUrl": "https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service",
+  "reviewedAt": "2026-11-24"
  }
 ]
