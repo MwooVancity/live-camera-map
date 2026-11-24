@@ -1,0 +1,16 @@
+{
+  "_note": "Human-checked corrections applied LAST by ops/audit/apply-gev-classes.mjs. Source: adversarial verifier agents, workflow wf_24d11818, 2026-11-24, each checked by Claude against data/proxy-allowlist.json, exclusion-map.json and source-permissions.json. match = case-insensitive regex on the row feature.",
+  "overrides": [
+    { "inventory": "readme", "match": "mapped alpr cameras|alpr", "status": "excluded", "reason": "privacy: mapped licence-plate-reader cameras are not shipped; their OSM/Overpass route is also not in the proxy allowlist" },
+    { "inventory": "readme", "match": "traffic simulation on osm roads", "status": "gap", "reason": "needs OSM road data; the OSM features and Overpass routes are not in the proxy allowlist (OSM is ODbL, a separate dataset)" },
+    { "inventory": "readme", "match": "hls live video cameras|failed live video fallback", "status": "excluded", "reason": "camera streams and frames are never proxied (neverAllowed /api/cctv/stream, /api/cctv/media, /api/cctv/frame); we link out only" },
+    { "inventory": "readme", "match": "cameras projected into the 3d city|observed weather as translucent shells over google 3d", "status": "excluded", "reason": "Google 3D tiles licence is unknown (source-permissions row enabled false)" },
+    { "inventory": "readme", "match": "3d fleet|glyph-to-3d model swap", "status": "excluded", "reason": "needs flight and ship feeds: /api/flights and /api/vessels are on the proxy neverAllowed list" },
+    { "inventory": "readme", "match": "click-to-track satellite/plane/ship/camera", "status": "gap", "reason": "partial: cameras are trackable (cctv-sources route allowed); flights, ships and satellites need blocked routes (/api/flights, /api/vessels, /api/celestrak)" },
+    { "inventory": "readme", "match": "wildlife sightings", "status": "gap", "reason": "iNaturalist is restricted (row enabled false); Acartia is allowed_per_doc but its route is not in the proxy allowlist" },
+    { "inventory": "readme", "match": "live flights \\(opensky|military flights", "status": "excluded", "reason": "OpenSky is restricted; /api/flights and /api/military are on the proxy neverAllowed list; adsb.lol is allowed_per_doc but has no allowlisted route" },
+    { "inventory": "readme", "match": "utilities panel", "status": "gap", "reason": "partial: Draw and Import run in the embed; Directions needs /api/route and Places needs a blocked route (neither is in the proxy allowlist)" },
+    { "inventory": "readme", "match": "mapped installations", "status": "gap", "reason": "works only through a browser-direct OpenFreeMap fallback; /api/military-installations is blocked by the proxy" },
+    { "inventory": "sources", "match": "nasa isslive telemetry", "status": "gap", "reason": "off by default and no terms of use are published for the feed; the proxy has no route for it" }
+  ]
+}
