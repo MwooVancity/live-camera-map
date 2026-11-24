@@ -34,7 +34,10 @@ function cells(line) {
 }
 const strip = (s) => s.replace(/\*\*/g, '').replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/`/g, '').trim();
 
+// Rows the doc parser cannot read but Claude verified on the primary page (evidence in the reason; Mike still confirms before ads).
+const VERIFIED_ALLOWED = [[/^NOAA NHC \/ CPHC advisories/, 'verified 2026-11-23 on https://www.weather.gov/disclaimer: NWS web pages are in the public domain, usable without charge for any lawful purpose, no endorsement implied (NHC page itself not opened)']];
 function classify(name, licence, commercialCol) {
+  for (const [re, why] of VERIFIED_ALLOWED) if (re.test(name)) return { status: 'allowed_per_doc', why, mustNotShip: false };
   for (const [re, why, mustNotShip] of FORCED_RESTRICTED) {
     if (re.test(name)) return { status: 'restricted', why, mustNotShip };
   }

@@ -514,11 +514,11 @@
     },
     {
       "id": "live-misc",
-      "title": "Other live sources with unknown permission (NHC cyclones, Google Street View and 3D tiles, adsbdb, planespotters, AISStream, CelesTrak, Launch Library, Esri imagery, ECCC GeoMet, GDELT, Liveuamap, World News API, TomTom)",
+      "title": "Other live sources with unknown permission (Google Street View and 3D tiles, adsbdb, planespotters, AISStream, CelesTrak, Launch Library, Esri imagery, ECCC GeoMet, GDELT, Liveuamap, World News API, TomTom)",
       "mechanism": "mixed: server-proxied (blocked at proxy) and browser-direct (Esri, ECCC AQHI, Street View; not stoppable at proxy)",
       "routes": [
         {
-          "route": "/api/cyclones, /api/google/*, /api/adsbdb, /api/vessels, /api/celestrak/*, /api/launches, /api/tomtom/*",
+          "route": "/api/google/*, /api/adsbdb, /api/vessels, /api/celestrak/*, /api/launches, /api/tomtom/*",
           "evidence": "gev/data/route-inventory.json"
         },
         {
@@ -527,7 +527,6 @@
         }
       ],
       "probePaths": [
-        "/api/cyclones",
         "/api/google/tiles-token",
         "/api/google/text-search",
         "/api/adsbdb",
@@ -542,7 +541,6 @@
         "BD-1"
       ],
       "permissionIds": [
-        "noaa-nhc-cphc-advisories-www-nhc-noaa-gov-currentstorms-json-the-mapservices-wea",
         "google-street-view-maps-javascript-api",
         "google-map-tiles-api-photorealistic-3d-tiles-places-geocoding",
         "adsbdb-api-adsbdb-com",
@@ -732,6 +730,11 @@
       "basis": "enabled-source",
       "sourceIds": ["adsb-lol"],
       "reason": "exact /api/military only: gev/server/providers/aircraft/adsb-lol.js:128 fetches api.adsb.lol/v2/mil (adsb.lol, allowed_per_doc, enabled). /api/military/track (tracks.js also calls OpenSky) and /api/military-installations stay on neverAllowed. Plan item 19a, 2026-11-24."
+    },
+    "cyclones": {
+      "basis": "enabled-source",
+      "sourceIds": ["noaa-nhc-cphc-advisories-www-nhc-noaa-gov-currentstorms-json-the-mapservices-wea"],
+      "reason": "exact /api/cyclones: cyclones.js calls only www.nhc.noaa.gov and mapservices.weather.noaa.gov; NWS pages are public domain per weather.gov/disclaimer (NHC page itself not opened; Mike confirms before ads). Plan item 19, 2026-11-23."
     },
     "weather": {
       "basis": "enabled-source",

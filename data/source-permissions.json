@@ -72,15 +72,15 @@
       "section": "Live sources (fetched at runtime — not stored in this repo)",
       "folder": "",
       "licence": "NWS public-data terms; no endorsement implied",
-      "commercialStatus": "unknown",
-      "statusReason": "licence unclear in doc; fails closed",
+      "commercialStatus": "allowed_per_doc",
+      "statusReason": "verified 2026-11-23 on https://www.weather.gov/disclaimer: NWS web pages are in the public domain, usable without charge for any lawful purpose, no endorsement implied (NHC page itself not opened)",
       "attribution": "\"NOAA/NWS NHC / CPHC\"",
       "provenance": "gev/DATA_SOURCES.md:22",
-      "reviewedAt": "2026-11-22",
+      "reviewedAt": "2026-11-24",
       "reviewedBy": "claude-doc-parse",
       "needsHumanReview": true,
       "mustNotShip": false,
-      "enabled": false
+      "enabled": true
     },
     {
       "id": "mapillary-vector-tiles-graph-api-mapillaryjs",
