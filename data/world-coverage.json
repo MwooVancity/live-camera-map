@@ -161,7 +161,7 @@
    "argosPlacePages": 10,
    "ourCameras": 0,
    "status": "blocked",
-   "next": "ASFINAG data portal (DATEX II, registration, some free some paid, ChatGPT, UNVERIFIED); the webcam page answered 403 from F5 on 2026-11-24 and was not worked around: register as Mike or email ASFINAG",
+   "next": "data.gv.at catalogue search \"webcam asfinag\" 2026-11-24 returned 17 datasets; the 10 titles I read are tolls, reports, road graph and one municipal traffic count with camera, none an ASFINAG camera list (\"verkehrskamera\" gave 0). ASFINAG webcam page answered 403 earlier (not bypassed). Next: register for the ASFINAG DATEX II portal as Mike (his account) or email ASFINAG for the camera catalogue and licence",
    "note": "docs/source-audits/world-hunt-2026-11-24.md",
    "owner": null
   },
