@@ -36,8 +36,19 @@ const rows = sources
     </section>
   )}
   <section data-block="status-sources" data-basis="registry" data-count={cameras.length} data-source="Official camera registries" data-asof={registryDate}>
-    <h2>Where the links come from</h2>
-    <ul>{rows.map((r) => <li>{r.s.name}: {r.cams.length} cameras.</li>)}</ul>
+    <h2>How complete each source's records are</h2>
+    <p>Counted from the camera list itself, not from the link check. A camera with no road name or no direction cannot be placed on a road page or in a driving order, so these shares show how much each network tells us.</p>
+    <table>
+      <thead><tr><th>Source</th><th>Cameras</th><th>With a road name</th><th>With a direction</th><th>Feed type</th></tr></thead>
+      <tbody>
+        {rows.map((r) => {
+          const k = r.cams.length;
+          const share = (f) => `${Math.round((r.cams.filter(f).length / k) * 100)}%`;
+          const still = r.cams.filter((c) => c.feedType === 'still').length;
+          return <tr><td>{r.s.name}</td><td>{k}</td><td>{share((c) => c.road)}</td><td>{share((c) => c.direction)}</td><td>{still === k ? 'still images' : still === 0 ? 'video' : 'mixed'}</td></tr>;
+        })}
+      </tbody>
+    </table>
   </section>
   <p><a href="/cameras/">All countries and regions</a> | <a href="/map/">Open the map</a></p>
 </Base>

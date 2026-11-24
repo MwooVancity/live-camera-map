@@ -419,7 +419,8 @@ test('status page: in the sitemap, linked from home, no health table without a f
   assert.ok(html, 'no /status/ page');
   assert.ok(pages.get('/').includes('href="/status/"'), 'home does not link /status/');
   assert.ok(readFileSync(join(DIST, 'sitemap.xml'), 'utf8').includes(`${SITE_URL}/status/`), 'not in the sitemap');
-  if (/data-asof="not-checked"/.test(html)) assert.ok(!html.includes('<table>'), 'a table of counts with no health file');
+  if (/data-asof="not-checked"/.test(html)) assert.ok(!html.slice(html.indexOf('data-block="network-health"'), html.indexOf('data-block="status-sources"')).includes('<table>'), 'a health table with no health file');
+  assert.ok(html.includes('With a road name'), 'coverage table missing');
   else assert.match(html, /checked cameras reachable|No camera checked/);
 });
 
