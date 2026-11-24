@@ -107,4 +107,5 @@ for (const r0 of allow.routes) {
 console.log(rows.join('\n'));
 const pass = rows.filter((x) => x.startsWith('PASS')).length;
 console.log(`\nSUMMARY pass=${pass} fail=${fails} total=${rows.length}`);
-process.exit(fails ? 1 : 0);
+// exitCode, not exit(): exit() cut the piped output (1,380 rows) mid-line and hid the FAIL rows in CI 2026-11-24.
+process.exitCode = fails ? 1 : 0;
