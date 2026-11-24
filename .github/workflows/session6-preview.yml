@@ -1,0 +1,50 @@
+name: session6-preview
+# Brings up the PREVIEW variant (build once, then vite preview) behind the allowlist proxy and measures it on Linux:
+# route matrix, source exposure, gzip, cache headers, memory. Manual run only (it builds GEV: about 5-10 CI minutes).
+on: workflow_dispatch
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      COMPOSE: docker compose -f ops/deploy/docker-compose.yml -f ops/deploy/docker-compose.preview.yml
+      HOSTNAME_UNDER_TEST: map.example.test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: git clone https://github.com/bilawalsidhu/gods-eye-view gev
+      - run: git -C gev checkout "$(cut -d' ' -f1 ops/upstream-base.txt)"
+      - run: node tests/immutability/check.mjs
+      - run: cp ops/deploy/.env.example ops/deploy/.env
+      - name: Compose up (build image, vite build, vite preview, wait for healthy)
+        run: $COMPOSE up -d --build --wait --wait-timeout 600
+      - name: Memory (host and container) right after start
+        run: |
+          free -m
+          docker stats --no-stream --format 'table {{.Name}}\t{{.MemUsage}}\t{{.CPUPerc}}'
+      - name: Allowlist and bypass matrix
+        run: node tests/security/methods.mjs http://127.0.0.1:8080 "$HOSTNAME_UNDER_TEST"
+      - name: Preview checks (source exposure, gzip, cache, api, embed)
+        run: node tests/deploy/preview-checks.mjs http://127.0.0.1:8080 "$HOSTNAME_UNDER_TEST"
+      - name: Critical probe and healthcheck
+        run: |
+          node tests/security/probe.mjs http://127.0.0.1:8080 "$HOSTNAME_UNDER_TEST" preview
+          node ops/monitoring/healthcheck.mjs http://127.0.0.1:8080 "$HOSTNAME_UNDER_TEST"
+      - name: Light load (200 requests, 20 at a time) then memory again
+        run: |
+          for i in $(seq 1 10); do
+            for j in $(seq 1 20); do curl -s -o /dev/null -H "Host: $HOSTNAME_UNDER_TEST" http://127.0.0.1:8080/api/radio/stations & done; wait
+          done
+          docker stats --no-stream --format 'table {{.Name}}\t{{.MemUsage}}\t{{.CPUPerc}}'
+      - name: Logs and immutability
+        if: always()
+        run: |
+          $COMPOSE logs --no-color > compose.log 2>&1 || true
+          node tests/immutability/check.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: session6-results
+          path: compose.log

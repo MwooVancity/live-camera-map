@@ -1,0 +1,13 @@
+# Production-style GEV: `vite build` once at start, then `vite preview` (no /@vite, /src or /server source served).
+# Use WITH the base file:  docker compose -f ops/deploy/docker-compose.yml -f ops/deploy/docker-compose.preview.yml up -d --build --wait
+# The pinned upstream Dockerfile is untouched; only the start command changes here. Vite docs say preview is not an official
+# production server, so this is a tested, constrained setup (see plan.md section 9, 2026-11-24 debate), not a supported one.
+# The build needs RAM: measure `docker stats` in the session6-preview run before choosing a 1 GB host.
+services:
+  gev:
+    command:
+      - sh
+      - -c
+      - ./node_modules/.bin/vite build && exec ./node_modules/.bin/vite preview --host 0.0.0.0 --port 4173 --strictPort
+    healthcheck:
+      start_period: 300s
