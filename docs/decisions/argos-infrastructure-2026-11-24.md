@@ -25,3 +25,16 @@ Where camera images come from at runtime, tile provider, where the camera data J
 3. They load Google Fonts from Google; we self-host fonts (our design test pins it). A small privacy and speed edge to say on our own pages.
 4. Their HTML is not cached at the edge (no-cache). Ours can be: Cloudflare Pages caches static assets by default.
 5. Blocking AI crawlers is their choice; we do not copy it, but note any traffic from AI answers will not credit them.
+
+## Addendum: one anonymous browser load of /map/ (2026-11-24, owner: a normal browser is fine)
+Method: a normal Chrome tab, no login, one load, network list read once. No account was created and nothing was clicked.
+| Finding | Evidence |
+|---|---|
+| The map needs an account | the page shows "Sign in or create your account" (Google or an emailed code) over a blurred picture; `/api/account/me` returned 401 |
+| The globe behind the sign-in box is a pre-made picture, not live data | the only image requested was `/img/registro/mapa-escritorio.webp`; no tile, camera or data request left the argosatlas.com domain before login |
+| Map stack | Vite chunks `maplibre-*.js` (+ css) and `deck-*.js` (deck.gl), `boot`, `main`, `insignias` (badges), `flechas`, `experiments`; all same origin |
+| Everything is same origin | no third-party map, tile or image host seen before login |
+| Analytics and testing | Amplitude (`api2.amplitude.com`), Google tag, Cloudflare Web Analytics beacon, their own `/api/exp/config`, `/api/exp/cuenta`, `/api/exp/event` (a home-made A/B test system), `/api/landing/stats` for the live counters |
+| Third parties | Google Fonts (Michroma) only |
+STILL UNKNOWN (needs a login, which we do not do): camera image origin, tile provider, whether images are proxied.
+Our edges from this: we need no account for the map (their map is login-walled for every visitor, so none of their map shows to a search crawler either), we self-host fonts, we have no third-party analytics. Their landing counters (200,000+ cameras, 17,042 flights, 20,061 ships) are their own numbers.
