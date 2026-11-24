@@ -113,6 +113,24 @@ export const GUIDE_BODY = {
       'How often each picture refreshes is set by DriveBC and we have not measured it. On the three picture addresses we checked, the server sent no last-modified time, so our checker can say a picture link answered with a JPEG (reachable) or did not (unavailable), but it cannot call a picture stale. Reachable does not mean the picture is recent.',
     ] },
   ],
+  'what-caltrans-chain-controls-mean': () => [
+    { h: 'The control levels, in the words of Caltrans', p: [
+      'Caltrans publishes a Chain Control Status Chart (cwwp2.dot.ca.gov/documentation/cc/cc-chart.htm). These are its definitions, quoted from that chart.',
+      'R-0: "No chain controls are in effect at this time."',
+      'R-1: "Chains, traction devices or snow tires are required on the drive axle of all vehicles except four wheel or all wheel drive vehicles."',
+      'R-1 MODIFIED: "Trucks and vehicles pulling trailers require chains, traction devices or snow tires on the drive axle of all vehicles except four wheel or all wheel drive vehicles."',
+      'R-2: "Chains or traction devices are required on all vehicles except four wheel / all wheel drive vehicles with snow treaded tires on all wheels."',
+      'R-3: "Chains or traction devices are required on all vehicles, no exceptions."',
+    ] },
+    { h: 'What that means before you leave', p: [
+      'The levels go up in strictness: R-1 is the lightest and R-3 allows no exceptions. A control can change while you drive, so check the source for your road again before you set off.',
+      'Four-wheel and all-wheel drive vehicles are excluded at R-1. At R-2 they are excluded only with snow-treaded tires on all wheels. At R-3 nobody is excluded.',
+    ] },
+    { h: 'Where this site shows them', p: [
+      'On a city or road page that has a chain control nearby, the row shows the status code Caltrans reports and the description Caltrans attaches to it, word for word, with the time we read it. A page with no chain control nearby shows no such row.',
+      'The chart lists "W" as "No Restrictions - Watch for snow on pavement". That is a separate code from R-0. These are Caltrans definitions and are not legal advice. For what the law requires on a given road, use the official Caltrans source.',
+    ] },
+  ],
   'camera-link-is-dead': (x) => [
     { h: 'First, check what you actually got', p: [
       'A blank page, an error message or a picture that never changes can each mean something different. If the page itself loads but the picture is old, the camera may be offline; if the address fails to load, the source may have moved the file.',
