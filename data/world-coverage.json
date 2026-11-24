@@ -233,7 +233,7 @@
    "argosPlacePages": 5,
    "ourCameras": 0,
    "status": "not-investigated",
-   "next": "DER-SP dataset https://dadosabertos.sp.gov.br/dataset/cameras = VERIFIED 2026-11-24 (page exists, XLSX, CC BY 4.0, described as camera locations on DER-SP roads) but tagged \"fiscalização\" (enforcement): download, check camera type and coordinates, and whether each row has a stable official link before any import; ANTT/CNSO concession portal is a second lead (not verified)",
+   "next": "DER-SP dataset https://dadosabertos.sp.gov.br/dataset/cameras = VERIFIED 2026-11-24 (page exists, XLSX, CC BY 4.0, described as camera locations on DER-SP roads) but tagged \"fiscalização\" (enforcement): the XLSX link (der.sp.gov.br /WebSite/Arquivos/DadosAbertos/AtivosRodoviarios/Cameras/Câmeras.xlsx) answered HTTP 202 with an empty body to curl on 2026-11-24 (likely a bot gate, not worked around): get the file by hand or ask DER-SP by email, then check camera type and coordinates, and whether each row has a stable official link before any import; ANTT/CNSO concession portal is a second lead (not verified)",
    "note": "docs/source-audits/world-hunt-2-2026-11-24.md",
    "owner": null
   },
