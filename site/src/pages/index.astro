@@ -2,8 +2,11 @@
 import Base from '../layouts/Base.astro';
 import { SITE_NAME } from '../config.mjs';
 import { cameras, countsBy, registryDate, loadedDistricts } from '../lib/data.mjs';
+import { buildEntries } from '../lib/search-index.mjs';
 import { curatedPlaces, regionsWithPages, regionInfo, cityRoute, countriesWithPages, countryName, countryRoute, GUIDES } from '../lib/pages.mjs';
 const total = cameras.length;
+// City and road pages with a position, for the optional "cameras near me" button: [name, url, lat, lon, kind].
+const near = buildEntries(cameras).filter((e) => e.kind === 'city' || e.kind === 'road').map((e) => [e.name, e.url, e.lat, e.lon, e.kind]);
 const places = curatedPlaces(cameras);
 const regions = regionsWithPages(cameras);
 const byRegion = countsBy(cameras, 'region');
@@ -24,7 +27,9 @@ const sourcesN = new Set(cameras.map((c) => c.sourceId)).size;
     <h1>Free live traffic cameras</h1>
     <p class="lead"><strong>{total}</strong> official camera links in <strong>{nCountries}</strong> countries, each one checked by us. No account, no pictures copied: every name goes to the official source.</p>
     <p class="stats"><span>List updated {registryDate}</span><span>{sourcesN} official sources</span><span>Health checked every few hours</span></p>
-    <p class="actions"><a class="cta" href="/map/">Open the map</a> <a class="cta2" href="/cameras/">Browse all cameras</a></p>
+    <p class="actions"><a class="cta" href="/map/">Open the map</a> <a class="cta2" href="/cameras/">Browse all cameras</a> <button type="button" id="near-btn" class="cta2" hidden>Cameras near me</button></p>
+    <div id="near" aria-live="polite" hidden><p id="near-msg" class="meta"></p><ul id="near-list"></ul></div>
+    <script type="application/json" id="near-data" set:html={JSON.stringify(near).replace(/</g, '\\u003c')}></script>
   </section>
   <details class="where">
     <summary>Where the counts come from</summary>
@@ -44,6 +49,30 @@ const sourcesN = new Set(cameras.map((c) => c.sourceId)).size;
   <p><a href="/cameras/">All countries and regions</a> | <a href="/roads/">Cameras by road</a> | <a href="/status/">Camera network status</a> | <a href="/saved/">Your saved cameras</a></p>
   <h2>Guides</h2>
   <ul>{GUIDES.map((g) => <li><a href={`/guides/${g.slug}/`}>{g.title}</a></li>)}</ul>
+  <script>
+    // Optional "cameras near me": asks for the position only after a click, uses it in this browser only (nothing is sent anywhere).
+    import { nearest } from '../lib/map-params.mjs';
+    const btn = document.getElementById('near-btn');
+    if (btn && 'geolocation' in navigator) {
+      btn.hidden = false;
+      const box = document.getElementById('near'), msg = document.getElementById('near-msg'), ul = document.getElementById('near-list');
+      const items = JSON.parse(document.getElementById('near-data').textContent);
+      btn.addEventListener('click', () => {
+        box.hidden = false; ul.textContent = ''; msg.textContent = 'Finding the nearest camera pages. Your position stays in this browser.';
+        navigator.geolocation.getCurrentPosition((pos) => {
+          const p = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+          const best = nearest(items, p, 3).filter((x) => x.km <= 300);
+          if (!best.length) { msg.textContent = 'No camera pages within 300 km of you yet. Browse all countries below.'; return; }
+          msg.textContent = 'Nearest camera pages (your position stays in this browser):';
+          for (const { i, km } of best) {
+            const li = document.createElement('li'), a = document.createElement('a');
+            a.href = i[1]; a.textContent = i[0] + ' (' + i[4] + ')';
+            li.append(a, ' ' + Math.round(km) + ' km away'); ul.append(li);
+          }
+        }, () => { msg.textContent = 'Location was not shared. Use the search box or browse below.'; }, { timeout: 10000, maximumAge: 600000 });
+      });
+    }
+  </script>
 </Base>
 <style>
   .hero { padding: 28px 0 8px; }
