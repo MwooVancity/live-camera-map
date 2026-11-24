@@ -2,23 +2,389 @@
   "_note": "Argos Maps PRODUCT matrix (plan.md item 29). Source: our notes from argosatlas.com/en/pricing/ read in a normal browser on 2026-11-24 (public page; their map itself is behind a sign-in wall, so nothing here is guessed from inside it). Our own words, no copied text. 'argos' = what they say is free or paid. 'gev' = what the GEV map already does (UNVERIFIED unless marked, from README and layer names). 'us' = our site today. verdict = three tests (Helpful, Gain, HCU) plus the hard rules. status: edge (we are already better), parity (same), gap (they have it, we do not), skip (fails a test or a hard rule, reason given).",
   "read": "2026-11-24",
   "rows": [
-    { "feature": "Live camera views", "argos": "free with a daily quota and an ad before a camera opens; Pro removes both", "gev": "CCTV layer shows camera dots and opens the official source", "us": "every camera is a link to its official page, no quota, no ad before the click, no sign-in", "status": "edge", "verdict": "Beats Argos by: no quota, no sign-in, official source, health stamp per camera" },
-    { "feature": "Number of cameras", "argos": "about 226,000 claimed on their live counter", "gev": "not applicable", "us": "9,457 from 10 sources in 6 countries", "status": "gap", "verdict": "coverage queue data/world-coverage.json and plan items 28 and 30" },
-    { "feature": "Recording and 24 h history of cameras (paid, from DISTRICT)", "argos": "paid: keeps the last 24 hours of chosen cameras, video scrub, timelapse, clips", "gev": "no", "us": "none", "status": "skip", "verdict": "fails the link-out-only rule (storing pictures) and each operator's terms; never built" },
-    { "feature": "Videowall and TV mode, 16 cameras at once (paid, DIVISION)", "argos": "paid", "gev": "no", "us": "/saved/ lists your saved cameras as links", "status": "skip", "verdict": "showing 16 pictures at once is image embedding; our /saved/ list stays link-only" },
-    { "feature": "Camera API: embed any camera on your own site (paid)", "argos": "paid", "gev": "no", "us": "none", "status": "skip", "verdict": "embedding or proxying pictures is barred (CLAUDE.md hard rule)" },
-    { "feature": "3D globe", "argos": "paid from DISTRICT", "gev": "yes, the Cesium globe is the GEV default", "us": "free inside /map/", "status": "edge", "verdict": "Beats Argos by: free 3D globe; watch the Cesium ion credit before ads (plan item 25)" },
-    { "feature": "Live flights and ships map", "argos": "free, about 16,600 flights and 20,000 ships", "gev": "yes, via OpenSky, adsb.lol and AIS routes", "us": "routes closed: OpenSky needs a 99 USD a month licence, AISStream needs a key", "status": "gap", "verdict": "plan items 19, 20, 22: military aircraft open (adsb.lol), civil flights and ships wait on licence or key" },
-    { "feature": "Flight and ship history (7 to 90 days, paid)", "argos": "paid", "gev": "aircraft tracks exist for the live session", "us": "none", "status": "skip", "verdict": "needs stored raw data (OpenSky bars long-term archives) and does not help someone looking for a camera" },
-    { "feature": "Alerts and daily brief by Telegram, Discord, Slack or email (paid)", "argos": "paid", "gev": "no", "us": "none", "status": "gap", "verdict": "Helpful for a commute ('my camera is down'), but needs accounts or a backend, which our rules bar; revisit only with a serverless, no-account design after launch data" },
-    { "feature": "Geofences with alerts (paid)", "argos": "paid", "gev": "Authoring tools can draw areas (UNVERIFIED how far)", "us": "none", "status": "skip", "verdict": "alerts need a backend; the drawing part, if GEV has it, is free inside /map/" },
-    { "feature": "Your own ADS-B antenna on the map (paid)", "argos": "paid, RTL-SDR over USB or a dump1090 address, decoded in the browser", "gev": "GEV lists an RTL-SDR dependency (@jtarrio/webrtlsdr): likely present (UNVERIFIED)", "us": "inside /map/ if GEV exposes it", "status": "parity", "verdict": "free for everyone if confirmed; check in a browser" },
-    { "feature": "AI assistant that drives the map (paid credits)", "argos": "paid, 10,000 to 100,000 credits a month", "gev": "voice and chat need our paid OpenAI or Gemini keys", "us": "routes closed so anonymous visitors cannot burn our keys", "status": "gap", "verdict": "open only behind a per-visitor cap or login (plan item 22 d)" },
-    { "feature": "Analyst mode panels (paid)", "argos": "paid, 5,000 panel combinations", "gev": "GEV has panels and layers", "us": "inside /map/", "status": "parity", "verdict": "GEV's own panels are free" },
-    { "feature": "CSV, GeoJSON and KML export (coming, paid)", "argos": "not shipped yet, paid", "gev": "no", "us": "none", "status": "gap", "verdict": "Helpful and Argos charges for it; needs a licence read per source for redistribution of the list, then a free download per city or road; plan item 29 follow-up, WAITING on licence reads" },
-    { "feature": "API and MCP server (AGENCY, 4,999 USD a month)", "argos": "paid for registered companies", "gev": "GEV has an MCP tool but /mcp is never allowed", "us": "none", "status": "skip", "verdict": "a bulk data API risks the redistribution terms of our sources and needs a backend" },
-    { "feature": "Ad-free everywhere (paid)", "argos": "paid; the free site shows ads", "gev": "not applicable", "us": "ads planned beside data only, never inside the map; the footer claim 'No ads' must change the day ads go in", "status": "parity", "verdict": "revenue is the point; ads beside data only" },
-    { "feature": "Free sign-in-free map", "argos": "their map page asks for an account (Google or an emailed code) before anything loads", "gev": "not applicable", "us": "no sign-in anywhere", "status": "edge", "verdict": "Beats Argos by: also crawlable and shareable without an account" },
-    { "feature": "Geopolitics layers: conflicts, markets, VIPs, risk zones, power plants, news", "argos": "free atlas counters: 1,661 events, 15,583 assets, 1,594 people, 221 risk zones, 34,936 power plants", "gev": "many layers (power plants, EONET events, GDELT-based news closed)", "us": "partly inside /map/; own news block failed the Helpful test (plan item 21)", "status": "gap", "verdict": "only the layers with a clean licence, and only if Search Console shows demand (plan item 27)" }
+    {
+      "feature": "Live camera views",
+      "argos": "free with a daily quota and an ad before a camera opens; Pro removes both",
+      "gev": "CCTV layer shows camera dots and opens the official source",
+      "us": "every camera is a link to its official page, no quota, no ad before the click, no sign-in",
+      "status": "edge",
+      "verdict": "Beats Argos by: no quota, no sign-in, official source, health stamp per camera"
+    },
+    {
+      "feature": "Number of cameras",
+      "argos": "about 226,000 claimed on their live counter",
+      "gev": "not applicable",
+      "us": "9,457 from 10 sources in 6 countries",
+      "status": "gap",
+      "verdict": "coverage queue data/world-coverage.json and plan items 28 and 30"
+    },
+    {
+      "feature": "Recording and 24 h history of cameras (paid, from DISTRICT)",
+      "argos": "paid: keeps the last 24 hours of chosen cameras, video scrub, timelapse, clips",
+      "gev": "no",
+      "us": "none",
+      "status": "skip",
+      "verdict": "fails the link-out-only rule (storing pictures) and each operator's terms; never built"
+    },
+    {
+      "feature": "Videowall and TV mode, 16 cameras at once (paid, DIVISION)",
+      "argos": "paid",
+      "gev": "no",
+      "us": "/saved/ lists your saved cameras as links",
+      "status": "skip",
+      "verdict": "showing 16 pictures at once is image embedding; our /saved/ list stays link-only"
+    },
+    {
+      "feature": "Camera API: embed any camera on your own site (paid)",
+      "argos": "paid",
+      "gev": "no",
+      "us": "none",
+      "status": "skip",
+      "verdict": "embedding or proxying pictures is barred (CLAUDE.md hard rule)"
+    },
+    {
+      "feature": "3D globe",
+      "argos": "paid from DISTRICT",
+      "gev": "yes, the Cesium globe is the GEV default",
+      "us": "free inside /map/",
+      "status": "edge",
+      "verdict": "Beats Argos by: free 3D globe; watch the Cesium ion credit before ads (plan item 25)"
+    },
+    {
+      "feature": "Live flights and ships map",
+      "argos": "free, about 16,600 flights and 20,000 ships",
+      "gev": "yes, via OpenSky, adsb.lol and AIS routes",
+      "us": "routes closed: OpenSky needs a 99 USD a month licence, AISStream needs a key",
+      "status": "gap",
+      "verdict": "plan items 19, 20, 22: military aircraft open (adsb.lol), civil flights and ships wait on licence or key"
+    },
+    {
+      "feature": "Flight and ship history (7 to 90 days, paid)",
+      "argos": "paid",
+      "gev": "aircraft tracks exist for the live session",
+      "us": "none",
+      "status": "skip",
+      "verdict": "needs stored raw data (OpenSky bars long-term archives) and does not help someone looking for a camera"
+    },
+    {
+      "feature": "Alerts and daily brief by Telegram, Discord, Slack or email (paid)",
+      "argos": "paid",
+      "gev": "no",
+      "us": "none",
+      "status": "gap",
+      "verdict": "Helpful for a commute ('my camera is down'), but needs accounts or a backend, which our rules bar; revisit only with a serverless, no-account design after launch data"
+    },
+    {
+      "feature": "Geofences with alerts (paid)",
+      "argos": "paid",
+      "gev": "Authoring tools can draw areas (UNVERIFIED how far)",
+      "us": "none",
+      "status": "skip",
+      "verdict": "alerts need a backend; the drawing part, if GEV has it, is free inside /map/"
+    },
+    {
+      "feature": "Your own ADS-B antenna on the map (paid)",
+      "argos": "paid, RTL-SDR over USB or a dump1090 address, decoded in the browser",
+      "gev": "GEV lists an RTL-SDR dependency (@jtarrio/webrtlsdr): likely present (UNVERIFIED)",
+      "us": "inside /map/ if GEV exposes it",
+      "status": "parity",
+      "verdict": "free for everyone if confirmed; check in a browser"
+    },
+    {
+      "feature": "AI assistant that drives the map (paid credits)",
+      "argos": "paid, 10,000 to 100,000 credits a month",
+      "gev": "voice and chat need our paid OpenAI or Gemini keys",
+      "us": "routes closed so anonymous visitors cannot burn our keys",
+      "status": "gap",
+      "verdict": "open only behind a per-visitor cap or login (plan item 22 d)"
+    },
+    {
+      "feature": "Analyst mode panels (paid)",
+      "argos": "paid, 5,000 panel combinations",
+      "gev": "GEV has panels and layers",
+      "us": "inside /map/",
+      "status": "parity",
+      "verdict": "GEV's own panels are free"
+    },
+    {
+      "feature": "CSV, GeoJSON and KML export (coming, paid)",
+      "argos": "not shipped yet, paid",
+      "gev": "no",
+      "us": "none",
+      "status": "gap",
+      "verdict": "Helpful and Argos charges for it; needs a licence read per source for redistribution of the list, then a free download per city or road; plan item 29 follow-up, WAITING on licence reads"
+    },
+    {
+      "feature": "API and MCP server (AGENCY, 4,999 USD a month)",
+      "argos": "paid for registered companies",
+      "gev": "GEV has an MCP tool but /mcp is never allowed",
+      "us": "none",
+      "status": "skip",
+      "verdict": "a bulk data API risks the redistribution terms of our sources and needs a backend"
+    },
+    {
+      "feature": "Ad-free everywhere (paid)",
+      "argos": "paid; the free site shows ads",
+      "gev": "not applicable",
+      "us": "ads planned beside data only, never inside the map; the footer claim 'No ads' must change the day ads go in",
+      "status": "parity",
+      "verdict": "revenue is the point; ads beside data only"
+    },
+    {
+      "feature": "Free sign-in-free map",
+      "argos": "their map page asks for an account (Google or an emailed code) before anything loads",
+      "gev": "not applicable",
+      "us": "no sign-in anywhere",
+      "status": "edge",
+      "verdict": "Beats Argos by: also crawlable and shareable without an account"
+    },
+    {
+      "feature": "Geopolitics layers: conflicts, markets, VIPs, risk zones, power plants, news",
+      "argos": "free atlas counters: 1,661 events, 15,583 assets, 1,594 people, 221 risk zones, 34,936 power plants",
+      "gev": "many layers (power plants, EONET events, GDELT-based news closed)",
+      "us": "partly inside /map/; own news block failed the Helpful test (plan item 21)",
+      "status": "gap",
+      "verdict": "only the layers with a clean licence, and only if Search Console shows demand (plan item 27)"
+    },
+    {
+      "feature": "Merged #1: 3D globe",
+      "argos": "paid from DISTRICT ($79.99)",
+      "gev": "yes, Cesium, 14 UI languages, 39 layer ids",
+      "us": "embedded map, free once host is live",
+      "status": "edge",
+      "verdict": "EDGE: free vs paid"
+    },
+    {
+      "feature": "Merged #2: Wind, cloud, rain radar, lightning, quakes, fires, storms",
+      "argos": "free, from NOAA, RainViewer, USGS, EONET, FIRMS",
+      "gev": "wind and weather layers, cyclones, FIRMS (key), quakes in the library",
+      "us": "via GEV once deployed",
+      "status": "parity",
+      "verdict": "PARITY"
+    },
+    {
+      "feature": "Merged #3: Satellites, ISS, launches",
+      "argos": "free (3D models paid)",
+      "gev": "satellites layer (CelesTrak, our proxy opens it), launches (opened)",
+      "us": "via GEV",
+      "status": "parity",
+      "verdict": "PARITY"
+    },
+    {
+      "feature": "Merged #4: Street-level photos (Panoramax, KartaView, Mapillary)",
+      "argos": "free on cards",
+      "gev": "street-level layer, same three providers (CC BY-SA)",
+      "us": "via GEV",
+      "status": "parity",
+      "verdict": "PARITY"
+    },
+    {
+      "feature": "Merged #5: Camera count",
+      "argos": "226,203 (25,317 live video), 190+ countries",
+      "gev": "7,350 served by default, about 17,950 available, 14 countries",
+      "us": "12,061 now (12 sources incl. NSW 250 and Taiwan 2,354), Iowa 1,253 queued",
+      "status": "gap",
+      "verdict": "GAP: about 8 to 20 times fewer than Argos; path: plan items 30, 31, 33"
+    },
+    {
+      "feature": "Merged #6: Camera pictures inside our pages",
+      "argos": "opens inside their wall with an ad and a daily quota",
+      "gev": "frames shown through GEV's own proxy",
+      "us": "link-out only to official source",
+      "status": "edge",
+      "verdict": "EDGE (no quota, no ad before the click, no sign-in) and a hard SKIP of embedding"
+    },
+    {
+      "feature": "Merged #7: Camera health",
+      "argos": "shows last image time on each card",
+      "gev": "none per camera history",
+      "us": "health stamp per camera, 3-hourly, plain unknown when a host blocks checks",
+      "status": "edge",
+      "verdict": "EDGE (published per-source freshness); parity on last-image time"
+    },
+    {
+      "feature": "Merged #8: Camera recording, 24 h archive, time-lapse",
+      "argos": "paid DISTRICT (15 cameras) and DIVISION (150)",
+      "gev": "none (screen-record friendly mode only)",
+      "us": "none",
+      "status": "skip",
+      "verdict": "SKIP: needs stored pictures, link-out rule"
+    },
+    {
+      "feature": "Merged #9: Videowall, TV mode (16 cameras)",
+      "argos": "paid DIVISION",
+      "gev": "none",
+      "us": "none",
+      "status": "skip",
+      "verdict": "SKIP: embeds pictures"
+    },
+    {
+      "feature": "Merged #10: Camera embed API for other sites",
+      "argos": "listed as a paid feature (detail unseen, INFERRED)",
+      "gev": "none",
+      "us": "none",
+      "status": "skip",
+      "verdict": "SKIP: embeds pictures"
+    },
+    {
+      "feature": "Merged #11: Live flights (ADS-B)",
+      "argos": "free, 15,798 now, 451 military",
+      "gev": "flights layer: OpenSky (non-commercial, stays OFF) with adsb.lol fallback (ODbL); military layer adsb.lol",
+      "us": "via GEV; OpenSky OFF",
+      "status": "gap",
+      "verdict": "GAP: path plan items 19, 20, 22 (adsb.lol licence for ads is UNKNOWN)"
+    },
+    {
+      "feature": "Merged #12: OFAC sanctions match on ships and aircraft",
+      "argos": "free, 1,969 vessels and 342 aircraft",
+      "gev": "not found",
+      "us": "none",
+      "status": "gap",
+      "verdict": "GAP, UNKNOWN value: public lists exist (US, UK, EU), HCU risk of naming vessels: decide after launch (plan item 34 merged table, docs/source-audits/gev-vs-argos-merged-2026-11-24.md)"
+    },
+    {
+      "feature": "Merged #13: Live ships (AIS)",
+      "argos": "free, 19,932 now, 36,196 tracked, dark-ship flags",
+      "gev": "AISStream layer, needs a free key, 64 fixes per ship",
+      "us": "via GEV once key is set",
+      "status": "gap",
+      "verdict": "GAP: key sign-up is Mike's (plan item 20)"
+    },
+    {
+      "feature": "Merged #14: Ports, straits, chokepoint traffic table (28 straits)",
+      "argos": "free; IMF PortWatch based; has a public tools page",
+      "gev": "IMF PortWatch only as a library entry, off",
+      "us": "none",
+      "status": "gap",
+      "verdict": "GAP: IMF PortWatch is public; a /tools/ page is possible; Helpful for a camera directory is weak: UNKNOWN (plan item 34 merged table, docs/source-audits/gev-vs-argos-merged-2026-11-24.md)"
+    },
+    {
+      "feature": "Merged #15: Frontlines, verified war events, GPS jamming, UCDP history, air-raid alerts",
+      "argos": "free on map only; no public pages",
+      "gev": "GDELT conflicts layer; GPSJAM aggregation (GNSS layer); GhostMaps (non-commercial)",
+      "us": "via GEV, partly",
+      "status": "skip",
+      "verdict": "SKIP for now: not camera-related, no public page ranks for them, licences mixed"
+    },
+    {
+      "feature": "Merged #16: Finance (15,583 assets), company cards, VIP people (1,594), risk zones (221), instability index",
+      "argos": "free on map; instability index appears on country pages",
+      "gev": "none by design; GEV's policy forbids person tracking",
+      "us": "none",
+      "status": "skip",
+      "verdict": "SKIP: no SEO page of theirs for finance, VIP or risk zones, person data and AI-drawn risk zones fail Helpful and HCU for a camera directory"
+    },
+    {
+      "feature": "Merged #17: Country pages (251) with ports, advisories, internet status, markets",
+      "argos": "yes, public SEO pages",
+      "gev": "none",
+      "us": "country camera hubs only",
+      "status": "gap",
+      "verdict": "GAP, partly: our country hubs list cameras; non-camera context (advisories, weather) needs licences and a reader reason: UNKNOWN"
+    },
+    {
+      "feature": "Merged #18: Public camera pages",
+      "argos": "646 EN pages (79 country, 566 region or place), same in Spanish",
+      "gev": "none (app, not a content site)",
+      "us": "country, region, city, road pages; noindex until go-live",
+      "status": "gap",
+      "verdict": "GAP on volume and on Spanish; our pages carry health, roads in order, per-source credit (plan item 34 merged table, docs/source-audits/gev-vs-argos-merged-2026-11-24.md)"
+    },
+    {
+      "feature": "Merged #19: Blog",
+      "argos": "351 EN and 353 ES posts, 6 named authors",
+      "gev": "none",
+      "us": "guides (few)",
+      "status": "gap",
+      "verdict": "GAP: volume; HCU risk of mass posts: only posts with real data (plan item 34 merged table, docs/source-audits/gev-vs-argos-merged-2026-11-24.md)"
+    },
+    {
+      "feature": "Merged #20: Spanish and other languages",
+      "argos": "ES and EN only",
+      "gev": "14 UI languages",
+      "us": "English only",
+      "status": "gap",
+      "verdict": "GAP: Spanish pages (their second market); path: translate the camera hubs only after launch data shows demand"
+    },
+    {
+      "feature": "Merged #21: AI assistant",
+      "argos": "paid, 10,000 to 250,000 credits",
+      "gev": "chat and voice with the user's own OpenAI or Gemini key, 61 voice tools",
+      "us": "via GEV, key-gated",
+      "status": "parity",
+      "verdict": "PARITY if key set; our paid keys are plan item 22 d"
+    },
+    {
+      "feature": "Merged #22: Alerts (Telegram, Discord, Slack, email), geofences, daily brief",
+      "argos": "paid DISTRICT and DIVISION",
+      "gev": "none (no accounts, no email, no webhook code)",
+      "us": "none",
+      "status": "gap",
+      "verdict": "GAP, deferred: needs accounts or a backend, forbidden by CLAUDE.md for now; revisit after launch (commute alerts without accounts is an idea)"
+    },
+    {
+      "feature": "Merged #23: Export CSV, GeoJSON, KML",
+      "argos": "\"coming soon\", DIVISION and up",
+      "gev": "import only (KML, GPX, CSV import), no export",
+      "us": "none",
+      "status": "gap",
+      "verdict": "GAP and EDGE chance: free per-city CSV of camera lists, needs a licence read per source for redistribution (plan item 29 NEXT)"
+    },
+    {
+      "feature": "Merged #24: API and MCP",
+      "argos": "AGENCY $4,999 a month only",
+      "gev": "MCP server with 30 tools, local, free (route closed on our host, plan item 22)",
+      "us": "none",
+      "status": "edge",
+      "verdict": "EDGE chance: a read-only public data file per country; MCP route stays closed (security)"
+    },
+    {
+      "feature": "Merged #25: Accounts, quotas, ads",
+      "argos": "sign-in wall, daily camera quota, ad before camera, country blocks, 24 h pass, 10-year pass",
+      "gev": "none",
+      "us": "none, no ads yet",
+      "status": "edge",
+      "verdict": "EDGE"
+    },
+    {
+      "feature": "Merged #26: Growth engine",
+      "argos": "affiliate 20 percent forever, per-card affiliate links, creator playbook, templates, Black Friday, free plan for 10,000-follower creators, community votes",
+      "gev": "none",
+      "us": "none",
+      "status": "skip",
+      "verdict": "SKIP for the engine (needs accounts and payments); we ARE a possible affiliate of others (plan item 6)"
+    },
+    {
+      "feature": "Merged #27: Mobile",
+      "argos": "2D map works on phones, globe needs a strong machine, no native app",
+      "gev": "desktop-first, phone support partial (UNVERIFIED)",
+      "us": "phone-first site, Lighthouse 100 on four pages (lab)",
+      "status": "edge",
+      "verdict": "EDGE for the directory; map on phone UNKNOWN"
+    },
+    {
+      "feature": "Merged #28: Data library (airports 47,927, power plants 34,936, data centres 4,072, dams 5,356, companies)",
+      "argos": "free layers",
+      "gev": "96 library entries (power plants, datacenters 4,352, dams 706, cables 712, transit feeds 53, rail about 27 to 30)",
+      "us": "via GEV",
+      "status": "parity",
+      "verdict": "PARITY on some, GAP on counts; several GEV sets are non-commercial (TeleGeography, GhostMaps, volcanoes) so they stay off"
+    },
+    {
+      "feature": "Merged #29: Time and history",
+      "argos": "paid history 7 or 90 days",
+      "gev": "64 AIS fixes, 15-minute transit history, no archive",
+      "us": "none",
+      "status": "skip",
+      "verdict": "SKIP (stored data)"
+    },
+    {
+      "feature": "Merged #30: Licensing of their own camera list",
+      "argos": "publishes a page naming about 25 camera owners with licences",
+      "gev": "25 CCTV pack flags, licence column in docs",
+      "us": "licence row per source, gate fails closed",
+      "status": "edge",
+      "verdict": "EDGE on rigour; Argos's list is our lead list (plan item 33 round 0)"
+    }
   ]
 }
