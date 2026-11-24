@@ -422,3 +422,12 @@ test('status page: in the sitemap, linked from home, no health table without a f
   if (/data-asof="not-checked"/.test(html)) assert.ok(!html.includes('<table>'), 'a table of counts with no health file');
   else assert.match(html, /checked cameras reachable|No camera checked/);
 });
+
+test('saved page: noindex, not in the sitemap, linked from home, no camera data baked in, city pages carry the save script', () => {
+  const html = pages.get('/saved/');
+  assert.ok(html, 'no /saved/ page');
+  assert.ok(isNoindex(html), '/saved/ must be noindex');
+  assert.ok(!readFileSync(join(DIST, 'sitemap.xml'), 'utf8').includes('/saved/'), '/saved/ is in the sitemap');
+  assert.ok(pages.get('/').includes('href="/saved/"'), 'home does not link /saved/');
+  assert.ok(!/https:\/\/cwwp2/.test(html), 'camera URLs baked into the saved page');
+});

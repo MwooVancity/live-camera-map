@@ -20,7 +20,7 @@ const agencies = regions.map((r) => regionInfo(r).agency).join(' and ');
   <ul class="cols">
     {places.map((p) => <li><a href={cityRoute(p.region, p.city)}>{p.city} traffic cameras</a> ({p.n})</li>)}
   </ul>
-  <p><a href="/cameras/">All countries and regions</a> | <a href="/roads/">Cameras by road</a> | <a href="/status/">Camera network status</a></p>
+  <p><a href="/cameras/">All countries and regions</a> | <a href="/roads/">Cameras by road</a> | <a href="/status/">Camera network status</a> | <a href="/saved/">Your saved cameras</a></p>
   <h2>Guides</h2>
   <ul>{GUIDES.map((g) => <li><a href={`/guides/${g.slug}/`}>{g.title}</a></li>)}</ul>
 </Base>

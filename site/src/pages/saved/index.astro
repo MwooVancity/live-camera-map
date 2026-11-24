@@ -1,0 +1,32 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SITE_NAME } from '../../config.mjs';
+---
+<Base title={`Your saved cameras | ${SITE_NAME}`} description="Cameras you saved in this browser. No account needed." route="/saved/" crumbs={[{ name: 'Saved cameras', route: '/saved/' }]} noindex={true}>
+  <h1>Your saved cameras</h1>
+  <p>Saved cameras stay in this browser only. We have no account and no copy of your list. Clearing your browser data removes it. Each name is a link to the official source, not a picture.</p>
+  <p><strong>Do not use this page while driving.</strong></p>
+  <noscript><p>This page needs JavaScript to show your list. <a href="/cameras/">Browse all cameras</a> instead.</p></noscript>
+  <p id="saved-empty" hidden>Nothing saved yet. Open any city page and press Save beside a camera.</p>
+  <p id="saved-blocked" hidden>This browser blocks saving, so a list cannot be kept here.</p>
+  <ul id="saved-list"></ul>
+  <p><a href="/cameras/">All countries and regions</a> | <a href="/map/">Open the map</a></p>
+  <script>
+    import { readSaved, removeSaved, storageWorks } from '../../scripts/saved';
+    const ul = document.getElementById('saved-list')!;
+    const render = () => {
+      ul.textContent = '';
+      const list = readSaved();
+      document.getElementById('saved-blocked')!.hidden = storageWorks();
+      document.getElementById('saved-empty')!.hidden = list.length > 0 || !storageWorks();
+      for (const s of list) {
+        const li = document.createElement('li');
+        const a = document.createElement('a'); a.href = s.url; a.rel = 'noopener'; a.textContent = s.label; li.append(a);
+        const m = document.createElement('span'); m.className = 'meta'; m.textContent = ` ${s.place}. Saved ${s.savedAt.slice(0, 10)}. `; li.append(m);
+        const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Remove'; b.addEventListener('click', () => { removeSaved(s.url); render(); }); li.append(b);
+        ul.append(li);
+      }
+    };
+    render();
+  </script>
+</Base>

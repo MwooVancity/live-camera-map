@@ -124,6 +124,18 @@ const guides = isCA
   <h2>Guides</h2>
   <ul>{guides.map(([slug, title]) => <li><a href={`/guides/${slug}/`}>{title}</a></li>)}</ul>
   <script>
+    import { isSaved, toggleSaved, storageWorks } from '../../../../scripts/saved';
+    // Save buttons: only when this browser lets us keep a list.
+    if (storageWorks()) {
+      const place = document.querySelector('h1')?.textContent?.replace(' traffic cameras', '') || '';
+      for (const li of document.querySelectorAll<HTMLElement>('[data-camera-list] > li')) {
+        const a = li.querySelector('a'); if (!a) continue;
+        const b = document.createElement('button'); b.type = 'button';
+        const paint = () => { const on = isSaved(a.href); b.textContent = on ? 'Saved' : 'Save'; b.setAttribute('aria-pressed', String(on)); };
+        b.addEventListener('click', () => { toggleSaved({ url: a.href, label: a.textContent || '', place }); paint(); });
+        paint(); li.append(' ', b);
+      }
+    }
     // Filters live in the URL (?road=&feed=&status=) so a filtered list can be shared. Without JavaScript the form stays hidden and the whole list shows.
     const form = document.querySelector<HTMLFormElement>('[data-filters]');
     const items = [...document.querySelectorAll<HTMLElement>('[data-camera-list] > li')];
