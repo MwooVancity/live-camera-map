@@ -5,17 +5,20 @@ Read `plan.md` first. It is the source of truth for decisions, data model and bu
 ## Line 0: Argos Atlas killer from the very start (HARD, owner 2026-11-22)
 The point of this site is to beat argosatlas.com, not to be a smaller copy of it. For every page and feature, helpfulness to the person and information gain over Argos come before everything else except the hard rules below (licensing, `gev/` immutability, security, link-out only). Every page must answer the visitor's question better than the Argos page for the same place: all licensed data for that place on the page (plan.md section 6), one source and one timestamp per number, camera health Argos does not have. Before building a page or block, say one line: "Beats Argos by: ...". If it cannot be said, do not build it. Never copy Argos code, text, images or layout; the goal is to win on data, not to imitate.
 
+### Minimum rule: GEV + Argos Maps, nothing "blocked" (owner 2026-11-23, HARD)
+The site does everything GEV and Argos Maps do, as a floor. Argos traffic is repeat brand visitors, so port GEV as a website and add whatever Argos has beyond it. Never call a feature "blocked": give each gap an active path (read the licence, open a clean alternative, build our own feed, or email the provider) tracked in plan.md until shipped. Only licensing, gev/ immutability, security and link-out-only hold a feature, and the hold names its next action. Claude may email data providers for written permission without asking Mike (log in plan.md section 9; never sign, pay or share secrets). Ship by Fri 2026-11-27.
+
 ### Traffic parity (owner 2026-11-23, HARD)
 Argos Atlas gets about 500k visits a month (confirmed by the owner in Ahrefs). We do not miss any traffic they capture: every page type and keyword cluster Argos ranks for gets an equivalent page of ours or a recorded gap reason in data/traffic-parity.json; build order is by the traffic each gap represents. Procedure and gate: plan.md section 4 and section 3 item 4. Raw Ahrefs exports never go into git (paid-tool data, public repo); research-private/ is gitignored. The end game is to pass their traffic, measured by Search Console against Ahrefs, never by page counts.
 
 ### Argos as our lead list (owner 2026-11-22)
-Every public data source Argos Atlas uses is a LEAD for us: if they use it and it is free, we add it, and we do it faster than they did. Paid sources are out. Argos using a source is not a licence: a free source can still forbid commercial use, need a key or require attribution, and Argos may have a private deal. So each lead gets its own row in data/source-permissions.json (licence text quoted, URL, review date) through the existing gate before any data ships. Copy their source list and feature ideas freely; never their code, text, images, layout or branding, and never scrape them (read their public methodology page by hand, respect robots.txt).
+Every free public source Argos uses is a lead: add it faster, each with its own row in data/source-permissions.json (licence quoted, URL, date) before data ships. Argos using a source is not a licence. Never copy their code, text, images, layout or branding; never scrape them.
 
 ## Who you are working with
 Mike is a first-time solo developer building this as a side venture. He wants complete, immediately usable deliverables, direct communication, and for you to make decisions yourself and state them in one line. Do not hedge or pile on caveats. But assume everything will break: verify before claiming anything works, and say plainly what you could not verify.
 
-## Project in one paragraph
-A free, search-first camera directory with a simple 2D map (English first, WORLD-wide: owner 2026-11-22 "I do not care about anywhere but the world, like Argos"), competing with argosatlas.com (a world-right-now product: cameras, flights, ships, hazards, country pages, tools; EN and ES; its map asks for sign-in, ours never will). Cameras are our core and strongest edge; every other Argos vertical is a lead built in order of Ahrefs traffic and licence cleanliness (plan.md section 4). Launch is link-out only: show camera metadata and link to the official source.
+## Project
+Free, search-first world camera directory plus the GEV map at /map/, competing with argosatlas.com. Launch is link-out only: camera metadata plus a link to the official source.
 
 ## Stack
 Astro (static site), MapLibre GL JS, OpenFreeMap tiles behind a provider abstraction, JSON data in git (`cameras.json`, `sources.json`), generated `health.json` published to Cloudflare R2, GitHub Actions for health checks, Cloudflare Pages hosting. Node 22+ for the site (the God's Eye View repo, if used, needs Node 24.14+ or 26).
@@ -47,7 +50,7 @@ God's Eye View (GEV) is proven upstream code. Its files must NEVER be edited, de
 - Kill criteria and the 10-session order are in `docs/decisions/red-team-round3.md`. Session 3 is a mandatory go/no-go.
 
 ## Environment limits
-The Claude cloud sandbox cannot reach most camera APIs (only package registries and GitHub). Importers and live data tests run on Mike's machine. Build importers against saved sample responses and mark them "untested against live API" until Mike confirms a real run.
+Cloud sandbox reaches only package registries and GitHub; importers and live tests run on Mike's machine, marked "untested against live API" until he confirms.
 
 ## Workflow
 0. CORE (owner 2026-11-24, HARD): ask ChatGPT at EVERY chance: before each plan-changing decision, after each finished batch, when a page or design is built (upload screenshots; guest chat takes images only), and whenever unsure. It is a free second strong reviewer for decisions. Procedure and log: plan.md section 9. Its facts are UNVERIFIED until checked on the primary source or the live endpoint (one of its leads, Autobahn webcams, was empty); report wrong claims back to it. If Chrome is not connected or a bot check appears: say so in one line, never bypass, retry at the next chance. The UserPromptSubmit hook prints this every request.
@@ -56,11 +59,8 @@ The Claude cloud sandbox cannot reach most camera APIs (only package registries 
 3. Update checkboxes in `plan.md` only for things actually verified.
 4. End each task with: what changed, what was verified, what is still unverified, what will break next.
 
-## Commands (fill in as built)
-- `npm run dev`: local dev server
-- `npm run build`: validate data + build site
-- `npm run validate`: check `cameras.json` / `sources.json`
-- `npm run import:<source>`: run an importer (on Mike's machine)
+## Commands
+npm run dev | build | validate | import:<source> (importers run on Mike's machine).
 
 ## Data conventions
 Camera ids are stable and prefixed by source (`ontario-511-123`). Source ids are kebab-case. Dates are ISO 8601 UTC. Coordinates are decimal degrees, validated to lat -90..90 and lon -180..180.
