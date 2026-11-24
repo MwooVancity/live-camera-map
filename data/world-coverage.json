@@ -179,7 +179,7 @@
    "argosPlacePages": 9,
    "ourCameras": 250,
    "status": "partial",
-   "next": "NSW built 2026-11-24 (Transport for NSW Live Traffic, 250 cameras, CC BY 4.0, link-out; picture host blocks automated checks so health is unknown by design). Next: Queensland (needs key and licence read), Victoria (not investigated)",
+   "next": "NSW built 2026-11-24 (Transport for NSW Live Traffic, 250 cameras, CC BY 4.0, link-out; picture host blocks automated checks so health is unknown by design). Next: Queensland (needs key and licence read), Victoria (not investigated) | Queensland TMR (VERIFIED 2026-11-24 by curl): QLDTraffic GeoJSON API (data.qld.gov.au dataset 131940-traffic-and-travel-information-geojson-api, licence Creative Commons Attribution 4.0, feeds include Web Camera details) answers 401 {\"message\":\"Unauthorized\"} without an API key: Mike registers for a free key on https://qldtraffic.qld.gov.au/more/Developers-and-Data/index.html (his account), then build; a keyless alternative is the TMR \"State controlled roads traffic cameras - Queensland\" location layer (qldspatial, CC BY 3.0, SHP/KMZ, locations only, UNVERIFIED whether it has per-camera links)",
    "note": null,
    "owner": "Claude"
   },
