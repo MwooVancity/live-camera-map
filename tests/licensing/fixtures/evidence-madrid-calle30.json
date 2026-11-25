@@ -1,0 +1,21 @@
+{
+  "sourceId": "madrid-calle30",
+  "dataOwner": { "name": "Madrid Calle 30, S.A.", "url": "https://mc30.es/" },
+  "evidenceDate": "2026-11-24",
+  "statements": [
+    { "scope": "metadata", "where": "datos.madrid.es dataset page", "url": "https://datos.madrid.es/dataset/212166-0-trafico-calle30-camaras", "quote": "Licencia Creative Commons Attribution 4.0 International (CC BY 4.0)", "effect": "permits" },
+    { "scope": "metadata", "where": "mc30.es aviso legal", "url": "https://mc30.es/aviso-legal/", "quote": "Queda estrictamente prohibido la utilización de todos los elementos objeto de propiedad industrial e intelectual con fines comerciales", "effect": "restricts" }
+  ],
+  "metadata": { "status": "allowed", "quote": "Licencia Creative Commons Attribution 4.0 International (CC BY 4.0)", "url": "https://datos.madrid.es/dataset/212166-0-trafico-calle30-camaras" },
+  "commercialReuse": { "status": "allowed", "quote": "Licencia Creative Commons Attribution 4.0 International (CC BY 4.0)", "url": "https://datos.madrid.es/dataset/212166-0-trafico-calle30-camaras" },
+  "ads": { "status": "unverified", "quote": "", "url": "" },
+  "redistribution": { "status": "allowed", "quote": "Licencia Creative Commons Attribution 4.0 International (CC BY 4.0)", "url": "https://datos.madrid.es/dataset/212166-0-trafico-calle30-camaras" },
+  "imageRights": { "status": "unverified", "quote": "", "url": "" },
+  "attribution": { "wording": "Origen de los datos: Madrid Calle 30, S.A.", "url": "https://datos.madrid.es/" },
+  "access": { "keyOrRegistration": false, "note": "keyless" },
+  "rateLimit": { "value": "none published", "url": "https://mc30.es/" },
+  "robots": { "result": "allowed", "url": "https://mc30.es/robots.txt", "checkedAt": "2026-11-24", "note": "mc30.es allows all. The datos.madrid.es download hop (/dataset/*/resource/*/download) is disallowed by datos.madrid.es robots.txt and is not fetched by us." },
+  "botCheck": { "result": "none", "httpStatus": 200, "checkedAt": "2026-11-24" },
+  "stability": { "value": "37 rows, 36 unique names, one duplicate code", "note": "" },
+  "humanDecision": { "decision": "pending", "by": "", "at": "", "note": "email to info@mc30.es for written confirmation" }
+}

@@ -1,0 +1,75 @@
+{
+  "sourceId": "example-source",
+  "dataOwner": {
+    "name": "",
+    "url": ""
+  },
+  "evidenceDate": "",
+  "statements": [
+    {
+      "scope": "metadata",
+      "where": "dataset page",
+      "url": "",
+      "quote": "",
+      "effect": "permits | restricts | silent"
+    }
+  ],
+  "metadata": {
+    "status": "unverified",
+    "quote": "",
+    "url": ""
+  },
+  "commercialReuse": {
+    "status": "unverified",
+    "quote": "",
+    "url": ""
+  },
+  "ads": {
+    "status": "unverified",
+    "quote": "",
+    "url": ""
+  },
+  "redistribution": {
+    "status": "unverified",
+    "quote": "",
+    "url": ""
+  },
+  "imageRights": {
+    "status": "unverified",
+    "quote": "",
+    "url": ""
+  },
+  "attribution": {
+    "wording": "",
+    "url": ""
+  },
+  "access": {
+    "keyOrRegistration": "unverified",
+    "note": ""
+  },
+  "rateLimit": {
+    "value": "unverified",
+    "url": ""
+  },
+  "robots": {
+    "result": "unverified",
+    "url": "",
+    "checkedAt": "",
+    "note": ""
+  },
+  "botCheck": {
+    "result": "unverified",
+    "httpStatus": 0,
+    "checkedAt": ""
+  },
+  "stability": {
+    "value": "unverified",
+    "note": ""
+  },
+  "humanDecision": {
+    "decision": "pending",
+    "by": "",
+    "at": "",
+    "note": ""
+  }
+}

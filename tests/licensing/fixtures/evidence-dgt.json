@@ -1,0 +1,21 @@
+{
+  "sourceId": "dgt-spain",
+  "dataOwner": { "name": "Direccion General de Trafico (DGT)", "url": "https://www.dgt.es/" },
+  "evidenceDate": "2026-11-24",
+  "statements": [
+    { "scope": "metadata", "where": "dataset page on nap.dgt.es", "url": "http://www.opendefinition.org/licenses/cc-by", "quote": "Creative Commons Attribution", "effect": "permits" },
+    { "scope": "metadata", "where": "dgt.es legal notice", "url": "https://www.dgt.es/contenido/aviso-legal/", "quote": "La reproduccion, distribucion, comercializacion o transformacion no autorizadas de dichas obras, a no ser que sea para uso personal y privado, constituye una infraccion de los derechos de propiedad intelectual de la Direccion General de Trafico", "effect": "restricts" }
+  ],
+  "metadata": { "status": "allowed", "quote": "Creative Commons Attribution", "url": "http://www.opendefinition.org/licenses/cc-by" },
+  "commercialReuse": { "status": "unverified", "quote": "", "url": "" },
+  "ads": { "status": "unverified", "quote": "", "url": "" },
+  "redistribution": { "status": "allowed", "quote": "Creative Commons Attribution", "url": "http://www.opendefinition.org/licenses/cc-by" },
+  "imageRights": { "status": "unverified", "quote": "", "url": "" },
+  "attribution": { "wording": "Fuente: Direccion General de Trafico", "url": "https://nap.dgt.es/" },
+  "access": { "keyOrRegistration": false, "note": "keyless feed" },
+  "rateLimit": { "value": "none published", "url": "https://nap.dgt.es/" },
+  "robots": { "result": "allowed", "url": "https://nap.dgt.es/robots.txt", "checkedAt": "2026-11-24", "note": "" },
+  "botCheck": { "result": "none", "httpStatus": 200, "checkedAt": "2026-11-24" },
+  "stability": { "value": "DATEX II v3.7 feed, 1,980 cameras", "note": "" },
+  "humanDecision": { "decision": "pending", "by": "", "at": "", "note": "waiting for the DGT reply to our email of 2026-11-23" }
+}

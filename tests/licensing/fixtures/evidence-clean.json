@@ -1,0 +1,20 @@
+{
+  "sourceId": "fixture-clean",
+  "dataOwner": { "name": "Example Highway Agency", "url": "https://data.example.gov/" },
+  "evidenceDate": "2026-11-24",
+  "statements": [
+    { "scope": "metadata", "where": "open data licence page", "url": "https://data.example.gov/licence", "quote": "Data may be reused for any purpose, including commercial use, with attribution.", "effect": "permits" }
+  ],
+  "metadata": { "status": "allowed", "quote": "Data may be reused for any purpose, including commercial use, with attribution.", "url": "https://data.example.gov/licence" },
+  "commercialReuse": { "status": "allowed", "quote": "Data may be reused for any purpose, including commercial use, with attribution.", "url": "https://data.example.gov/licence" },
+  "ads": { "status": "allowed", "quote": "including commercial use", "url": "https://data.example.gov/licence" },
+  "redistribution": { "status": "allowed", "quote": "Data may be reused for any purpose, including commercial use, with attribution.", "url": "https://data.example.gov/licence" },
+  "imageRights": { "status": "unverified", "quote": "", "url": "" },
+  "attribution": { "wording": "Source: Example Highway Agency open data", "url": "https://data.example.gov/licence" },
+  "access": { "keyOrRegistration": false, "note": "no key" },
+  "rateLimit": { "value": "none published; we use one request per run", "url": "https://data.example.gov/api" },
+  "robots": { "result": "allowed", "url": "https://data.example.gov/robots.txt", "checkedAt": "2026-11-24", "note": "" },
+  "botCheck": { "result": "none", "httpStatus": 200, "checkedAt": "2026-11-24" },
+  "stability": { "value": "documented API, stable for 2 years", "note": "" },
+  "humanDecision": { "decision": "approve", "by": "mike", "at": "2026-11-24", "note": "" }
+}
