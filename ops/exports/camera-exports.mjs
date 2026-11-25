@@ -32,6 +32,7 @@ export function buildRows(cams, sources, health = {}, perms = []) {
   const metaClosed = new Set([...src.keys()].filter((sid) => { const p = perms.find((x) => x.id === (PERMISSION_ROW[sid] || sid)); return p && !metadataOk(p); }));
   for (const c of cams) {
     const e = eligibility(c); if (!e.directory_eligible) { skipped.notEligible++; continue; }
+    if (metaClosed.has(c.sourceId)) { skipped.noMetadata++; continue; }
     const s = src.get(c.sourceId);
     const licence = s && s.license && s.license !== 'unverified' ? s.license : '';
     if (!licence || !s.attribution) { skipped.noLicence++; continue; }
