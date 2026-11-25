@@ -46,3 +46,17 @@ export function sitemapViolations(dist = DIST) {
   for (const r of listed) if (!pages.has(r)) v.push(`sitemap lists ${r} which was not built`);
   return v;
 }
+
+// Scratch output dir for a test build. It must sit INSIDE site/: when --outDir is outside the cwd, astro writes its
+// prerender temp files to the shared site/.astro, so two builds at once collide. Inside the cwd every build is independent
+// (this is what lets the build-spawning test files run in parallel). Removed when the test process exits.
+import { mkdtempSync, mkdirSync, rmSync } from 'node:fs';
+const created = [];
+process.on('exit', () => { for (const d of created) try { rmSync(d, { recursive: true, force: true }); } catch {} });
+export function buildOutDir(prefix) {
+  const base = join(process.cwd(), '.test-builds');
+  mkdirSync(base, { recursive: true });
+  const d = mkdtempSync(join(base, prefix));
+  created.push(d);
+  return d;
+}

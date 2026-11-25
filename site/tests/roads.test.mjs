@@ -12,7 +12,7 @@ import { nearestCameras, roadBlocks, loadLive, NEAR_KM } from '../src/lib/live.m
 import { curatedRoads, pageList } from '../src/lib/pages.mjs';
 import { roadSlug, countsBy } from '../../ops/importers/lib/registry.mjs';
 import { cityHealth, STATUSES } from '../src/lib/health.mjs';
-import { readPages, isNoindex } from './helpers.mjs';
+import { readPages, buildOutDir, isNoindex } from './helpers.mjs';
 import { gate } from '../../ops/harness/page-gate.mjs';
 
 const cameras = JSON.parse(readFileSync('../data/camera-registry/cameras.json', 'utf8'));
@@ -159,7 +159,7 @@ test('roadBlocks: stale feeds give no blocks; a road with no matching items give
 
 // ---- built pages ----
 function build(env) {
-  const out = mkdtempSync(join(tmpdir(), 'roadout-'));
+  const out = buildOutDir('roadout-');
   execFileSync(process.execPath, ['node_modules/astro/astro.js', 'build', '--outDir', out], { env: { ...process.env, ...env }, stdio: 'pipe' });
   return { out, pages: readPages(out) };
 }

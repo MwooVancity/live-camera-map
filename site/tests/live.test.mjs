@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { cityBlocks, loadLive } from '../src/lib/live.mjs';
-import { readPages, CAMERA_HOSTS } from './helpers.mjs';
+import { readPages, buildOutDir, CAMERA_HOSTS } from './helpers.mjs';
 
 const cameras = JSON.parse(readFileSync('../data/camera-registry/cameras.json', 'utf8'));
 const sd = cameras.filter((c) => c.city === 'San Diego');
@@ -57,7 +57,7 @@ test('nothing near the city: road blocks omitted', () => {
 });
 
 function build(env) {
-  const out = mkdtempSync(join(tmpdir(), 'liveout-'));
+  const out = buildOutDir('liveout-');
   execFileSync(process.execPath, ['node_modules/astro/astro.js', 'build', '--outDir', out], { env: { ...process.env, ...env }, stdio: 'pipe' });
   return readPages(out);
 }

@@ -5,7 +5,7 @@ import { readFileSync, existsSync, mkdtempSync, mkdirSync, writeFileSync } from 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { DIST, SITE_URL, CAMERA_HOSTS, readPages, titleOf, isNoindex, sitemapViolations } from './helpers.mjs';
+import { DIST, SITE_URL, CAMERA_HOSTS, readPages, buildOutDir, titleOf, isNoindex, sitemapViolations } from './helpers.mjs';
 import { countsBy, countryOf } from '../../ops/importers/lib/registry.mjs';
 import { curatedPlaces, regionInfo } from '../src/lib/pages.mjs';
 
@@ -140,7 +140,7 @@ test('map page: works without JS, fallback when no engine, iframe src ends ?embe
   assert.ok(!/<script\b(?![^>]*(ld\+json|application\/json|type="module"))/.test(map), 'map page needs no JS (only data and first-party module scripts allowed)');
   assert.ok(!/<script\b[^>]*\bsrc="(?!\/)/.test(map), 'no third-party script');
   assert.ok(/<noscript>/.test(map) && /<ul class="cols">/.test(map), 'the plain link lists and the search fallback are in the HTML');
-  const out = mkdtempSync(join(tmpdir(), 'embed-'));
+  const out = buildOutDir('embed-');
   execFileSync(process.execPath, ['node_modules/astro/astro.js', 'build', '--outDir', out], { env: { ...process.env, PUBLIC_GEV_EMBED_URL: 'https://gev.example/app?x=1#h' }, stdio: 'pipe' });
   const built = readFileSync(join(out, 'map', 'index.html'), 'utf8');
   const src = built.match(/<iframe[^>]*\bsrc="([^"]+)"/)[1];
@@ -448,7 +448,7 @@ const countryOfRegion = (slug) => { if (!slug) return null; const c = countryOf(
 
 // ---- launch switch (owner 2026-11-23): PUBLIC_NOINDEX=1 hides EVERY page, robots disallows all, sitemap is empty ----
 test('launch switch: PUBLIC_NOINDEX=1 build hides every page and offers no URL to search engines', () => {
-  const out = mkdtempSync(join(tmpdir(), 'noindex-'));
+  const out = buildOutDir('noindex-');
   execFileSync(process.execPath, ['node_modules/astro/astro.js', 'build', '--outDir', out], { env: { ...process.env, PUBLIC_NOINDEX: '1' }, stdio: 'pipe' });
   const pages = readPages(out);
   assert.ok(pages.size > 20, 'built pages: ' + pages.size);

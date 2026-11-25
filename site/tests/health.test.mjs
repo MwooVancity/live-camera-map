@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { cityHealth, tally, STATUSES } from '../src/lib/health.mjs';
-import { readPages } from './helpers.mjs';
+import { readPages, buildOutDir } from './helpers.mjs';
 import { gate } from '../../ops/harness/page-gate.mjs';
 
 const cameras = JSON.parse(readFileSync('../data/camera-registry/cameras.json', 'utf8'));
@@ -27,7 +27,7 @@ function healthFile({ ageH = 1, runOk = true } = {}) {
 const load = (f) => JSON.parse(readFileSync(f, 'utf8'));
 
 function build(file) {
-  const out = mkdtempSync(join(tmpdir(), 'healthout-'));
+  const out = buildOutDir('healthout-');
   execFileSync(process.execPath, ['node_modules/astro/astro.js', 'build', '--outDir', out], { env: { ...process.env, HEALTH_FILE: file }, stdio: 'pipe' });
   return { out, pages: readPages(out) };
 }
