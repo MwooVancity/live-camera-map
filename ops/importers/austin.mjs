@@ -9,7 +9,7 @@ import { join, dirname } from 'node:path';
 import { readFileSync } from 'node:fs';
 import { parseFeed, normalizeAustin, termsText, metaProblems, FEED_URL, META_URL, ROBOTS_URL, TERMS_URL, TERMS_PAGE_URL, LICENCE_PHRASES, ATTRIBUTION } from './lib/austin.mjs';
 import { robotsAllows } from './lib/iceland.mjs'; // one robots.txt reader (longest-prefix Allow/Disallow in the "*" group)
-import { fetchText as ft0, commitSource } from './lib/runner.mjs';
+import { fetchText as ft0, commitSource, readRobots, pathQuery } from './lib/runner.mjs';
 import { isEnabled } from '../../tests/licensing/gate.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -35,8 +35,8 @@ export async function runCameras({ minUsable = 300, fetchText = ft0, outDir = RE
   try { terms = termsText(await fetchText(TERMS_URL, { Accept: 'application/json' })); } catch (e) { return fail(`licence page unreadable: ${e.message}`); }
   const lost = LICENCE_PHRASES.filter((p) => !terms.includes(p));
   if (lost.length) return fail(`licence wording changed (missing "${lost.join('", "')}"); review before use`);
-  try { robots = await fetchText(ROBOTS_URL, {}, 1); } catch { robots = ''; } // no robots.txt (an error body) = no rules
-  if (!robotsAllows(robots, new URL(FEED_URL).pathname)) return fail('robots.txt disallows the feed path');
+  try { robots = await readRobots(fetchText, ROBOTS_URL); } catch (e) { return fail(`robots.txt unreadable: ${e.message}`); } // only a 4xx answer (no file) means no rules
+  if (!robotsAllows(robots, pathQuery(FEED_URL))) return fail('robots.txt disallows the feed path');
   try { body = await fetchText(FEED_URL, { Accept: 'application/json' }); } catch (e) { return fail(`feed unreadable: ${e.message}`); }
   try { rows = parseFeed(body); } catch (e) { return fail(`feed unreadable: ${e.message}`); }
   if (rows.length >= 5000) return fail('feed cut off at the 5000 row limit');

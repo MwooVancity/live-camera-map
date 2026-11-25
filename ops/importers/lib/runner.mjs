@@ -19,6 +19,16 @@ export async function fetchText(url, headers = {}, tries = 3) {
   }
   throw err;
 }
+// robots.txt: a 3xx or 4xx answer (no file, a redirect, access denied) means no rules; a 5xx, 429, timeout or network error means we cannot know, so the importer stops (RFC 9309).
+export async function readRobots(ft, url) {
+  try { return await ft(url, {}, 1); } catch (e) {
+    const m = /HTTP (\d{3})/.exec(String(e && e.message));
+    if (m && (m[1][0] === '4' || m[1][0] === '3') && m[1] !== '429') return ''; // 3xx: the host answers a redirect we cannot follow (Iceland)
+    throw e;
+  }
+}
+// path plus query of a URL: what robots.txt rules are matched against.
+export const pathQuery = (u) => { const x = new URL(u); return x.pathname + x.search; };
 export async function fetchJson(url, headers = {}) {
   const body = await fetchText(url, { Accept: 'application/json', ...headers });
   try { return JSON.parse(body); } catch (e) { throw new Error(`invalid JSON from source: ${e.message}`); }

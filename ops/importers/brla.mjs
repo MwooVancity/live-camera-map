@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
 import { readFileSync } from 'node:fs';
 import { parseFeed, normalizeBrla, metaProblems, robotsAllows, FEED_URL, META_URL, ROBOTS_URL, PAGE_URL, ATTRIBUTION, LIMIT } from './lib/brla.mjs';
-import { fetchText as ft0, commitSource } from './lib/runner.mjs';
+import { fetchText as ft0, commitSource, readRobots, pathQuery } from './lib/runner.mjs';
 import { isEnabled } from '../../tests/licensing/gate.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -31,8 +31,8 @@ export async function runCameras({ minUsable = 60, fetchText = ft0, outDir = REG
   try { meta = await fetchText(META_URL, { Accept: 'application/json' }); } catch (e) { return fail(`licence page unreadable: ${e.message}`); }
   const mp = metaProblems(meta);
   if (mp.length) return fail(`licence wording changed (${mp.join('; ')}); review before use`);
-  try { robots = await fetchText(ROBOTS_URL, {}, 1); } catch { robots = ''; } // no robots.txt (an error body) = no rules
-  for (const u of [FEED_URL, META_URL]) if (!robotsAllows(robots, new URL(u).pathname)) return fail('robots.txt disallows a path we read');
+  try { robots = await readRobots(fetchText, ROBOTS_URL); } catch (e) { return fail(`robots.txt unreadable: ${e.message}`); } // only a 4xx answer (no file) means no rules
+  for (const u of [FEED_URL, META_URL]) if (!robotsAllows(robots, pathQuery(u))) return fail('robots.txt disallows a path we read');
   if (pauseMs) await sleep(pauseMs); // Crawl-delay 1
   try { rows = parseFeed(await fetchText(FEED_URL, { Accept: 'application/json' })); } catch (e) { return fail(`feed unreadable: ${e.message}`); }
   if (rows.length >= LIMIT) return fail(`feed cut off at the ${LIMIT} row limit`);

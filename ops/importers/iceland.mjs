@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
 import { readFileSync } from 'node:fs';
 import { parseFeed, normalizeIs, robotsAllows, pageText, FEED_URL, ROBOTS_URL, TERMS_URL, LICENCE_PHRASES, ATTRIBUTION } from './lib/iceland.mjs';
-import { fetchText as ft0, commitSource } from './lib/runner.mjs';
+import { fetchText as ft0, commitSource, readRobots, pathQuery } from './lib/runner.mjs';
 import { isEnabled } from '../../tests/licensing/gate.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -31,8 +31,8 @@ export async function runCameras({ fetchText = ft0, outDir = REG_DIR, now = new 
   try { terms = pageText(await fetchText(TERMS_URL)); } catch (e) { return fail(`licence page unreadable: ${e.message}`); }
   const lost = LICENCE_PHRASES.filter((p) => !terms.includes(p));
   if (lost.length) return fail(`licence wording changed (missing "${lost.join('", "')}"); review before use`);
-  try { robots = await fetchText(ROBOTS_URL, {}, 1); } catch { robots = ''; } // no robots.txt (the host answers a redirect or an error body) = no rules
-  if (!robotsAllows(robots, new URL(FEED_URL).pathname)) return fail('robots.txt disallows the feed path');
+  try { robots = await readRobots(fetchText, ROBOTS_URL); } catch (e) { return fail(`robots.txt unreadable: ${e.message}`); } // only a 4xx answer (no file) means no rules
+  if (!robotsAllows(robots, pathQuery(FEED_URL))) return fail('robots.txt disallows the feed path');
   try { body = await fetchText(FEED_URL, { Accept: 'application/json' }); } catch (e) { return fail(`feed unreadable: ${e.message}`); }
   try { rows = parseFeed(body); } catch (e) { return fail(`feed unreadable: ${e.message}`); }
   const drop = {}, seen = new Set(), cams = [];

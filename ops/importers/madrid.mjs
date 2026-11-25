@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
 import { readFileSync } from 'node:fs';
 import { parseFeed, normalizeMadrid, robotsAllows, pageText, FEED_URL, KML_FINAL_URL, ROBOTS_URL, INFORMO_ROBOTS_URL, PAGE_URL, TERMS_URL, LEGAL_URL, DATASET_PHRASES, TERMS_PHRASES, LEGAL_PHRASES, ATTRIBUTION, CRAWL_DELAY_MS } from './lib/madrid.mjs';
-import { fetchText as ft0, commitSource } from './lib/runner.mjs';
+import { fetchText as ft0, commitSource, readRobots, pathQuery } from './lib/runner.mjs';
 import { isEnabled } from '../../tests/licensing/gate.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -28,10 +28,10 @@ export async function runCameras({ minUsable = 150, fetchText = ft0, outDir = RE
   const fail = (reason, report = null) => { log(`madrid: NOT WRITTEN: ${reason}`); return { written: false, reason, report }; };
   if (!isEnabled(perms.find((s) => s.id === 'madrid-camaras-cameras'), new Date(now))) return fail('licence closed');
   let robots = '', robots2 = '', body, xml;
-  try { robots = await fetchText(ROBOTS_URL, {}, 1); } catch { robots = ''; } // no robots.txt (an error body) = no rules
-  try { robots2 = await fetchText(INFORMO_ROBOTS_URL, {}, 1); } catch { robots2 = ''; }
-  for (const u of [PAGE_URL, TERMS_URL, LEGAL_URL, FEED_URL]) if (!robotsAllows(robots, new URL(u).pathname)) return fail('robots.txt disallows a path we read');
-  if (!robotsAllows(robots2, new URL(KML_FINAL_URL).pathname)) return fail('robots.txt of informo.madrid.es disallows the camera file');
+  try { robots = await readRobots(fetchText, ROBOTS_URL); } catch (e) { return fail(`robots.txt unreadable: ${e.message}`); } // only a 4xx answer (no file) means no rules
+  try { robots2 = await readRobots(fetchText, INFORMO_ROBOTS_URL); } catch (e) { return fail(`robots.txt unreadable: ${e.message}`); } // only a 4xx answer (no file) means no rules
+  for (const u of [PAGE_URL, TERMS_URL, LEGAL_URL, FEED_URL]) if (!robotsAllows(robots, pathQuery(u))) return fail('robots.txt disallows a path we read');
+  if (!robotsAllows(robots2, pathQuery(KML_FINAL_URL))) return fail('robots.txt of informo.madrid.es disallows the camera file');
   for (const [url, phrases, label] of [[PAGE_URL, DATASET_PHRASES, 'dataset page'], [TERMS_URL, TERMS_PHRASES, 'terms page'], [LEGAL_URL, LEGAL_PHRASES, 'legal notice']]) {
     let text;
     if (pauseMs) await sleep(pauseMs); // Crawl-delay 10

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
 import { readFileSync } from 'node:fs';
 import { parsePage, parseCount, normalizeIowa, itemProblems, robotsAllows, pageText, LAYER_URL, COUNT_URL, pageUrl, PAGE_SIZE, MAX_PAGES, ITEM_URL, ITEM_PAGE_URL, ROBOTS_URL, TERMS_URL, LICENCE_PHRASES, ATTRIBUTION } from './lib/iowa.mjs';
-import { fetchText as ft0, commitSource } from './lib/runner.mjs';
+import { fetchText as ft0, commitSource, readRobots, pathQuery } from './lib/runner.mjs';
 import { isEnabled } from '../../tests/licensing/gate.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -34,7 +34,7 @@ export async function runCameras({ minUsable = 300, fetchText = ft0, outDir = RE
   try { terms = pageText(await fetchText(TERMS_URL)); } catch (e) { return fail(`licence page unreadable: ${e.message}`); }
   const lost = LICENCE_PHRASES.filter((p) => !terms.includes(p));
   if (lost.length) return fail(`licence wording changed (missing "${lost.join('", "')}"); review before use`);
-  try { robots = await fetchText(ROBOTS_URL, {}, 1); } catch { robots = ''; } // 403 or 404 = no rules to read (see lib/iowa.mjs)
+  try { robots = await readRobots(fetchText, ROBOTS_URL); } catch (e) { return fail(`robots.txt unreadable: ${e.message}`); } // only a 4xx answer (no file) means no rules
   if (!robotsAllows(robots, new URL(LAYER_URL).pathname + '/query')) return fail('robots.txt disallows the feed path');
   try { count = parseCount(await fetchText(COUNT_URL, { Accept: 'application/json' })); } catch (e) { return fail(`feed unreadable: ${e.message}`); }
   const rows = [];

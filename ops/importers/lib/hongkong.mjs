@@ -28,21 +28,7 @@ export function parseImages(xml) {
   return [...xml.matchAll(/<image>([\s\S]*?)<\/image>/g)].map((m) => Object.fromEntries([...m[1].matchAll(/<([a-z]+)>([\s\S]*?)<\/\1>/g)].map((a) => [a[1], unescapeXml(a[2].replace(/^<!\[CDATA\[([\s\S]*)\]\]>$/, '$1'))])));
 }
 
-// robots.txt text -> true when `path` may be fetched by a generic robot (longest-prefix Disallow/Allow in the "*" group; no file or no rules = allowed).
-export function robotsAllows(text, path) {
-  if (typeof text !== 'string' || !/^\s*user-agent\s*:/im.test(text)) return true;
-  let star = false, inGroup = false, best = { len: -1, allow: true };
-  for (const raw of text.split(/\r?\n/)) {
-    const line = raw.replace(/#.*/, '').trim(); const i = line.indexOf(':');
-    if (i < 0) continue;
-    const k = line.slice(0, i).trim().toLowerCase(), v = line.slice(i + 1).trim();
-    if (k === 'user-agent') { if (!inGroup) star = false; inGroup = true; if (v === '*') star = true; continue; }
-    inGroup = false;
-    if (!star || (k !== 'disallow' && k !== 'allow') || !v) continue;
-    if (path.startsWith(v) && v.length >= best.len) best = { len: v.length, allow: k === 'allow' };
-  }
-  return best.allow;
-}
+export { robotsAllows } from './iceland.mjs'; // one robots.txt reader for every importer
 
 // Returns a camera or null; drop reasons are counted into `drop`. `seen` (a Set) drops a repeated key.
 export function normalizeHk(r, lastSeen, drop = {}, seen = new Set()) {

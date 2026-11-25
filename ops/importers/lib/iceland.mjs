@@ -27,7 +27,8 @@ export function parseFeed(body) {
   return v;
 }
 
-// robots.txt text -> true when `path` may be fetched by a generic robot (longest-prefix Disallow/Allow in the "*" group; no file or no rules = allowed).
+// robots.txt text -> true when `path` (path plus query) may be fetched by a generic robot. Group "*" only; rules may use `*` (any run of characters) and a trailing `$`;
+// the LONGEST matching rule wins and Allow wins a tie (RFC 9309); an empty Disallow allows everything; no file or no rules = allowed.
 export function robotsAllows(text, path) {
   if (typeof text !== 'string' || !/^\s*user-agent\s*:/im.test(text)) return true;
   let star = false, inGroup = false, best = { len: -1, allow: true };
@@ -38,7 +39,10 @@ export function robotsAllows(text, path) {
     if (k === 'user-agent') { if (!inGroup) star = false; inGroup = true; if (v === '*') star = true; continue; }
     inGroup = false;
     if (!star || (k !== 'disallow' && k !== 'allow') || !v) continue;
-    if (path.startsWith(v) && v.length >= best.len) best = { len: v.length, allow: k === 'allow' };
+    const anchored = v.endsWith('$'), pat = (anchored ? v.slice(0, -1) : v).split('*').map((x) => x.replace(/[.+?^${}()|[\]\\]/g, '\\$&')).join('.*');
+    if (!new RegExp('^' + pat + (anchored ? '$' : '')).test(path)) continue;
+    const allow = k === 'allow';
+    if (v.length > best.len || (v.length === best.len && allow)) best = { len: v.length, allow };
   }
   return best.allow;
 }
