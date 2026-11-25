@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 export const VERDICT = { READY: 'READY', HOLD: 'HOLD', REJECT: 'REJECT' };
 const PERMISSIONS = ['metadata', 'commercialReuse', 'ads', 'redistribution', 'imageRights'];
 const REQUIRED_VERIFIED = ['metadata', 'commercialReuse', 'ads', 'redistribution']; // imageRights may stay unverified (link-out only)
+const EFFECTS = ['permits', 'restricts', 'silent'];
 const nz = (v) => typeof v === 'string' && v.trim().length > 0;
 export const REAL_QUOTE = (q) => nz(q) && q.trim().length >= 12 && !/^(todo|tbd|n\/a|none|unknown|\?+)$/i.test(q.trim());
 
@@ -34,12 +35,19 @@ export function validate(r) {
   if (r.robots?.result === 'blocked') reject.push(`robots.txt disallows the feed (${r.robots.url || 'no url'})`);
   if (r.metadata?.status === 'restricted') reject.push(`metadata is restricted: "${r.metadata.quote || ''}"`);
   if (r.humanDecision?.decision === 'reject') reject.push(`human decision: reject (${r.humanDecision.by || '?'}, ${r.humanDecision.at || '?'})`);
+  // The site carries ads and is a commercial directory: restricted commercial reuse or ads cannot be approved (A4).
+  for (const k of ['commercialReuse', 'ads']) if (r[k]?.status === 'restricted') reject.push(`${k} is restricted: "${r[k].quote || ''}"`);
   if (reject.length) return { verdict: VERDICT.REJECT, reasons: reject, conflicts };
   // --- conflicts: the same scope has a statement that permits and one that restricts
-  const st = Array.isArray(r.statements) ? r.statements.filter((s) => REAL_QUOTE(s.quote)) : [];
+  const all = Array.isArray(r.statements) ? r.statements : [];
+  for (const s of all) if (!EFFECTS.includes(s && s.effect)) reasons.push(`statement effect "${s && s.effect}" (${s && s.scope}) is not one of permits, restricts, silent`);
+  // A permitting statement needs a real quote; a restricting one counts whatever its length (a short "no commercial use" is still a restriction).
+  const st = all.filter((s) => s && (s.effect === 'restricts' || REAL_QUOTE(s.quote)));
   for (const scope of new Set(st.map((s) => s.scope))) {
     const ok = st.filter((s) => s.scope === scope && s.effect === 'permits'), no = st.filter((s) => s.scope === scope && s.effect === 'restricts');
     for (const p of ok) for (const q of no) conflicts.push({ scope, permits: { where: p.where, url: p.url, quote: p.quote }, restricts: { where: q.where, url: q.url, quote: q.quote } });
+    // a restricting statement against a field marked allowed contradicts the field itself, even with no permitting statement
+    if (!ok.length && r[scope]?.status === 'allowed') for (const q of no) conflicts.push({ scope, permits: { where: `the ${scope} field`, url: r[scope].url, quote: r[scope].quote }, restricts: { where: q.where, url: q.url, quote: q.quote } });
   }
   for (const c of conflicts) reasons.push(`CONFLICT on ${c.scope}: ${c.permits.where} (${c.permits.url}) says "${c.permits.quote}" BUT ${c.restricts.where} (${c.restricts.url}) says "${c.restricts.quote}"`);
   // --- unverified fields

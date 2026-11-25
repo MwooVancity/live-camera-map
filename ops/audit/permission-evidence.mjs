@@ -6,7 +6,11 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const firstQuote = (t) => ((String(t).match(/"([^"]{15,})"/) || [])[1] || '').trim();
-const urlOf = (prov) => { const p = String(prov || '').trim(); return (p.match(/https?:\/\/[^\s,;)]+/) || [p.split(/\s+/)[0]])[0] || ''; };
+// The place the quote was read: an https URL, else a file reference like gev/DATA_SOURCES.md:72. Never "the first word" (any prose would then pass the includes() check).
+const urlOf = (prov) => { const p = String(prov || ''); return (p.match(/https:\/\/[^\s,;)"']+/) || [])[0] || (p.match(/(?:^|[\s(])([\w.-]+(?:\/[\w.-]+)+(?::\d+)?)(?=[\s,;)]|$)/) || [])[1] || ''; };
+// A quote that says "no commercial use", "not permitted", "all rights reserved" is a restriction, not a permission (A3).
+export const RESTRICTS = /\b(no|non|not|without|never)\b\s+(?:[\w-]+\s+){0,3}(commercial|redistribut|republish|re-?us|reproduc|copy\b|copying)|all rights reserved|prohibit|forbidden|not (?:be )?(?:permitted|allowed)|may not|must not|cannot be used/i;
+const restricts = (q) => RESTRICTS.test(String(q).replace(/\b(no|without)\s+(?:known\s+|any\s+)?(restrictions?|limitations?|limits?)\b/gi, ''));
 
 export function derive(r) {
   const url = urlOf(r.provenance);
@@ -15,7 +19,9 @@ export function derive(r) {
   const imagePermission = { status: closed ? 'restricted' : (imgText === 'allowed' ? 'unverified' : imgText), quote: '', url: '' };
   if (closed) return { metadataPermission: { status: 'restricted', quote: '', url }, imagePermission };
   const quote = firstQuote(r.licence) || (r.commercialStatus === 'allowed_per_doc' ? String(r.licence || '').trim().slice(0, 500) : '');
-  if (quote && url && String(r.provenance).includes(url)) return { metadataPermission: { status: 'allowed', quote, url }, imagePermission };
+  // allowed only when the status says so (per doc, or the owner approved it with a date), a real https URL is in the provenance, and the quote itself does not restrict
+  const statusOk = r.commercialStatus === 'allowed_per_doc' || (r.commercialStatus === 'allowed_per_owner' && Boolean(r.ownerApprovedAt));
+  if (quote && url && statusOk && !restricts(quote)) return { metadataPermission: { status: 'allowed', quote, url }, imagePermission };
   const out = { metadataPermission: { status: 'unverified', quote: '', url }, imagePermission };
   if (r.commercialStatus === 'allowed_per_owner' && r.ownerApprovedAt) out.metadataGrandfather = { reason: `owner approval ${r.ownerApprovedAt} (data/owner-approvals.json): the doc licence text is unclear, so no sentence permits publishing names and coordinates` };
   return out;
