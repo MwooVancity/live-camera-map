@@ -42,6 +42,7 @@ jobs:
           tests/registry/drivebc.test.mjs
           tests/registry/duplicates.test.mjs
           tests/registry/eligibility.test.mjs
+          tests/registry/citalu.test.mjs
           tests/registry/firstseen.test.mjs
           tests/registry/hongkong.test.mjs
           tests/registry/iceland.test.mjs

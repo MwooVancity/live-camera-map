@@ -1,0 +1,14 @@
+{
+ "id": "5a8fbbc2111e9b24f89b49f0",
+ "slug": "cita-cameras-autoroute",
+ "title": "Cita : Caméras autoroute",
+ "license": "cc-zero",
+ "frequency": "continuous",
+ "last_update": "2022-08-12T15:47:41.630000+00:00",
+ "resources": [
+  {
+   "url": "https://www.cita.lu/kml/cameras.kml",
+   "format": "kml"
+  }
+ ]
+}
