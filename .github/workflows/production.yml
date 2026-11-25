@@ -1,7 +1,8 @@
 name: production
 # Builds the real site (worldtrafficcameras.com) with fresh feeds and deploys it to Cloudflare Pages.
 # Does NOTHING until the owner adds the two repository secrets CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID (plan.md owner to-do),
-# so it never doubles the load on the data sources before it can deploy.
+# so it adds no load before it can deploy. AFTER the secrets are set, staging.yml and this workflow BOTH run every importer and an 18-minute
+# health probe every 3 hours (twice the source load): owner decision B13 (code review 2026-11-25), schedules unchanged until it is made.
 # The site stays HIDDEN from search (noindex on every page, robots.txt Disallow, empty sitemap) until the owner sets the repository
 # variable LAUNCH to the value live (Settings > Secrets and variables > Actions > Variables).
 on:
