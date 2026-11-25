@@ -32,7 +32,7 @@ function mapLines(text, header) {
     const m = /^\s*"~(.*)"\s+1;\s*$/.exec(l);
     if (m) res.push(new RegExp(m[1]));
     // fail loud: a rule line this model cannot parse would be silently dropped (an unparsed ALLOW line = false pass)
-    else if (/"/.test(l) && !/^\s*(#|map )/.test(l)) throw new Error(`nginx map ${header}: cannot parse rule line: ${l.trim()}`);
+    else if (l.trim() && !/^\s*(#|map |default\s+\S+;|\{|\}|[^"]*\{\s*$)/.test(l)) throw new Error(`nginx map ${header}: cannot parse rule line: ${l.trim()}`);
   }
   return res;
 }
@@ -131,6 +131,14 @@ export function checkExclusion({ nginxText, allow, map, perms, envText }) {
   for (const r of allow.routes) for (const method of r.methods) {
     if (!nginxAllows(m, method, r.probe)) v.push(`route ${r.id}: JSON says ${method} ${r.probe} is allowed, nginx denies it`);
     if (!jsonAllows(allow, method, r.probe)) v.push(`route ${r.id}: own probe ${method} ${r.probe} is not allowed by the JSON mirror`);
+  }
+
+  // 4b. B14 reverse direction: every nginx route regex equals a JSON pattern (after [?] and [.] are written the JSON way), so nginx cannot allow more than the JSON says
+  const norm = (x) => x.replace(/\[\?\]/g, '\\?').replace(/\[\.\]/g, '\\.').replace(/\[ \]/g, ' ').replace(/\\\//g, '/'); // RegExp.source escapes /
+  const jsonPats = new Set(allow.routes.map((r) => norm(r.pattern)));
+  for (const re of m.route) {
+    const b = /^\^(?:\(GET\|HEAD\)|GET) (.*)\$$/.exec(norm(re.source));
+    if (!b || !jsonPats.has('^' + b[1] + '$')) v.push(`nginx route regex has no matching JSON pattern: ${norm(re.source).slice(0, 80)}`);
   }
 
   // 5. deployment env switches off what the proxy cannot see (browser-direct, opt-in packs)
@@ -241,4 +249,16 @@ test('FIXTURE: an opt-in camera pack left on in the deploy env makes the check F
   const envText = real.envText.replace('CCTV_NYC_ENABLED=0', 'CCTV_NYC_ENABLED=1');
   const v = checkExclusion({ ...real, envText });
   assert.ok(v.some((x) => x.includes('CCTV_NYC_ENABLED')), v.join('\n'));
+});
+
+test('B14 FIXTURE: an unquoted allow line makes the check THROW, never a silent drop', () => {
+  const bad = real.nginxText.replace('    default 0;\n    # app shell', '    default 0;\n    ~^GET[ ]/api/evil 1;\n    # app shell');
+  assert.notEqual(bad, real.nginxText);
+  assert.throws(() => checkExclusion({ ...real, nginxText: bad }), /cannot parse/);
+});
+test('B14 FIXTURE: an nginx route regex that the JSON does not list makes the check FAIL', () => {
+  const bad = real.nginxText.replace('    default 0;\n    # app shell', '    default 0;\n    "~^GET[ ]/api/evil([?].*)?$" 1;\n    # app shell');
+  assert.notEqual(bad, real.nginxText);
+  const v = checkExclusion({ ...real, nginxText: bad });
+  assert.ok(v.some((x) => x.includes('no matching JSON pattern') && x.includes('/api/evil')), v.join('\n'));
 });
