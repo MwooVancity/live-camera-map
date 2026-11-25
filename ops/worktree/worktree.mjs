@@ -34,7 +34,11 @@ export function createWorktree(agent, { repo = ROOT, log = console.log } = {}) {
   okId(agent);
   const dir = worktreeDir(repo, agent);
   if (existsSync(dir)) throw new Error(`${dir} already exists`);
-  git(repo, 'worktree', 'add', '-q', '-b', branchOf(agent), dir, 'HEAD');
+  // LF checkout: with core.autocrlf=true a fresh checkout is CRLF and tests that split env files on LF fail (measured 2026-11-24, exclusion test).
+  git(repo, 'worktree', 'add', '-q', '--no-checkout', '-b', branchOf(agent), dir, 'HEAD');
+  git(repo, 'config', 'extensions.worktreeConfig', 'true');
+  git(dir, 'config', '--worktree', 'core.autocrlf', 'false');
+  git(dir, 'reset', '-q', '--hard');
   // ponytail: junctions need no admin rights on Windows; the target is never copied. Upstream is read-only by rule and by the immutability check, not by the filesystem.
   for (const rel of [UP, 'site/node_modules', 'node_modules']) {
     const src = join(repo, rel), dst = join(dir, rel);
@@ -50,7 +54,7 @@ export function removeWorktree(agent, { repo = ROOT, log = console.log } = {}) {
   const dir = worktreeDir(repo, agent);
   // Unlink junctions FIRST: a recursive delete that follows one would empty the main tree's node_modules or the upstream clone.
   for (const rel of [UP, 'site/node_modules', 'node_modules']) { const p = join(dir, rel); if (isLink(p)) unlinkSync(p); }
-  if (existsSync(dir)) git(repo, 'worktree', 'remove', '--force', dir);
+  if (existsSync(dir)) { try { git(repo, 'worktree', 'remove', '--force', dir); } catch { /* half-removed or locked: fall through to the plain delete */ } }
   git(repo, 'worktree', 'prune');
   try { git(repo, 'branch', '-D', branchOf(agent)); } catch { /* already gone */ }
   if (existsSync(dir)) rmSync(dir, { recursive: true, force: true });

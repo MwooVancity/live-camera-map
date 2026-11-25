@@ -90,3 +90,10 @@ test('cleanup removes worktrees and branches and never deletes what the junction
   assert.equal(readFileSync(join(repo, 'gev/sentinel.txt'), 'utf8'), 'gev');
   assert.equal(readFileSync(join(repo, 'site/node_modules/sentinel.txt'), 'utf8'), 'nm');
 });
+
+test('a worktree checks files out with LF even when the repo config says autocrlf=true (the exclusion test parses env files by LF)', () => {
+  const repo = sandbox();
+  git(repo, 'config', 'core.autocrlf', 'true');
+  const a = createWorktree('lf', { repo, log: () => {} });
+  assert.ok(!readFileSync(join(a, 'README.md'), 'utf8').includes('\r'), 'README.md has CR');
+});
