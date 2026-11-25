@@ -26,7 +26,7 @@ export const CHECKLIST = (id) => [
   `8. data/world-coverage.json: flip the country row; run the importer once, then: node --test tests/registry/*.test.mjs tests/licensing/*.test.mjs ops/harness/*.test.mjs, then in site/: npm run build && npm test, then node ops/harness/page-gate.mjs site/dist site/PAGES.md.`,
 ];
 
-export function scaffold(id, { template = 'nsw', root = ROOT, log = console.log } = {}) {
+export function scaffold(id, { template = 'nsw', root = ROOT, log = console.log, runAll = true } = {}) {
   if (!/^[a-z][a-z0-9]{1,15}$/.test(id)) throw new Error('short id: 2 to 16 lowercase letters or digits, starting with a letter');
   if (!/^[a-z][a-z0-9]{1,15}$/.test(template)) throw new Error('bad template name');
   const pairs = [
@@ -41,7 +41,7 @@ export function scaffold(id, { template = 'nsw', root = ROOT, log = console.log 
   for (const [from, to] of pairs) { writeFileSync(join(root, to), banner + swap(readFileSync(join(root, from), 'utf8'))); written.push(to); }
   const planFile = join(root, 'ops/importers/run-all.json');
   const plan = JSON.parse(readFileSync(planFile, 'utf8'));
-  if (!plan.importers.some((e) => e.id === id)) { plan.importers.push({ id, script: `${id}.mjs`, timeoutSec: 90 }); writeFileSync(planFile, JSON.stringify(plan, null, 2) + '\n'); written.push('ops/importers/run-all.json (entry added)'); }
+  if (runAll && !plan.importers.some((e) => e.id === id)) { plan.importers.push({ id, script: `${id}.mjs`, timeoutSec: 90 }); writeFileSync(planFile, JSON.stringify(plan, null, 2) + '\n'); written.push('ops/importers/run-all.json (entry added)'); }
   for (const w of written) log(`wrote ${w}`);
   for (const l of CHECKLIST(id)) log(l);
   return written;
@@ -55,7 +55,7 @@ export function generate(id, { evidence, sourceId = `${id}-cameras`, name, regio
   for (const [k, v] of Object.entries({ sourceId, regionSlug, countrySlug, worldCountry })) if (!SLUG.test(v || '')) throw new Error(`${k}: lowercase letters, digits and dashes only`);
   if (!name || !/^[^'\\\r\n`$]{3,120}$/.test(name)) throw new Error('name: 3 to 120 characters, no quotes, backslashes or $');
   const patch = buildPatch({ id, sourceId, name, regionSlug, countrySlug, worldCountry, evidence, today }); // throws REJECT before anything is written
-  const written = scaffold(id, { template, root, log });
+  const written = scaffold(id, { template, root, log, runAll: false }); // run-all.json is a shared file: its entry is in the patch
   const dir = join(root, 'ops/importers/patches'); mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, `${id}.patch.json`), JSON.stringify(patch, null, 2) + '\n');
   log(`patch ${patch.verdict}: ${patch.summary}`);

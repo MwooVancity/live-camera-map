@@ -25,9 +25,10 @@ test('clean licence: patch is emitted, applies to the real shared files, is idem
   const root = sandbox();
   const { patch } = generate('wsdot', opts(root, fx('clean'), { sourceId: 'wsdot-cameras' }));
   assert.equal(patch.verdict, 'READY');
-  const row = patch.edits.find((e) => e.kind === 'json-push').value;
+  const row = patch.edits.find((e) => e.file.endsWith('source-permissions.manual.json')).value;
   assert.deepEqual([row.commercialStatus, row.metadataPermission.status, row.imagePermission.status, row.needsHumanReview, row.mustNotShip], ['unverified', 'unverified', 'unverified', true, true]);
   assert.ok(!JSON.stringify(row).includes('"allowed"'), 'never allowed');
+  assert.ok(!JSON.parse(read(root, 'ops/importers/run-all.json')).importers.some((e) => e.id === 'wsdot'), 'run-all.json is shared: only the patch adds it');
   for (const r of apply('wsdot', { root, log: () => {} })) assert.ok(/^applied|row not found/.test(r.status), `${r.file}: ${r.status}`);
   for (const r of apply('wsdot', { root, log: () => {} })) assert.ok(/already applied|row not found/.test(r.status), `second run ${r.file}: ${r.status}`);
   const rows = JSON.parse(read(root, 'data/source-permissions.manual.json')).sources;
@@ -64,7 +65,7 @@ test('conflicting licence (Spain DGT): HOLD patch quoting both sentences, row cl
   const root = sandbox();
   const { patch } = generate('dgt', opts(root, fx('dgt'), { sourceId: 'dgt-spain', regionSlug: 'spain-national', countrySlug: 'spain' }));
   assert.equal(patch.verdict, 'HOLD');
-  const row = patch.edits.find((e) => e.kind === 'json-push').value;
+  const row = patch.edits.find((e) => e.file.endsWith('source-permissions.manual.json')).value;
   assert.match(row.licence, /Creative Commons Attribution/);
   assert.match(row.licence, /comercializacion o transformacion no autorizadas/);
   assert.match(row.statusReason, /^HOLD: CONFLICT/);

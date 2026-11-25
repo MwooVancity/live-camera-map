@@ -30,6 +30,7 @@ export function buildPatch({ id, sourceId, name, regionSlug, countrySlug, worldC
   const R = `${UP(id)}_REGION`, C = `${UP(id)}_COUNTRY`, V = `src_${id}`;
   const page = `/cameras/${countrySlug}/${regionSlug}/`;
   const edits = [
+    { stage: 'now', file: 'ops/importers/run-all.json', kind: 'json-push', path: ['importers'], unique: 'id', value: { id, script: `${id}.mjs`, timeoutSec: 90 }, marker: id },
     { stage: 'now', file: 'data/source-permissions.manual.json', kind: 'json-push', path: ['sources'], unique: 'id', value: row, marker: sourceId },
     { stage: 'now', file: 'data/world-coverage.json', kind: 'json-row-update', path: ['rows'], match: { country: worldCountry }, prepend: { next: `SCAFFOLDED ${today} (${id}, ${v.verdict}, unreviewed, disabled): ${hold ? v.reasons[0] : 'evidence READY, human decision still needed'} | previous: ` }, marker: `(${id}, ${v.verdict}, unreviewed` },
     { stage: 'now', file: 'ops/importers/lib/registry.mjs', kind: 'import-add', line: `import { ${R}, ${C} } from './${id}.mjs';`, marker: `from './${id}.mjs'` },
