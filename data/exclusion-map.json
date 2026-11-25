@@ -452,7 +452,13 @@
       "gaps": [
         "BD-1"
       ],
-      "permissionIds": []
+      "permissionIds": [
+        "google-street-view-maps-javascript-api",
+        "google-map-tiles-api-photorealistic-3d-tiles-places-geocoding",
+        "liveuamap-a-liveuamap-com-api-liveuamap-api-key-optional-paid-used-only-without-",
+        "world-news-api-api-worldnewsapi-com-search-news-worldnewsapi-key-optional-used-o",
+        "tomtom-traffic-api-flow-vector-tiles"
+      ]
     },
     {
       "id": "library-tiles-not-allowed",
@@ -827,8 +833,6 @@
         "tours-fil-bleu-data-filbleu-fr"
       ],
       "live-misc": [
-        "google-street-view-maps-javascript-api",
-        "google-map-tiles-api-photorealistic-3d-tiles-places-geocoding",
         "adsbdb-api-adsbdb-com",
         "planespotters-net-api-planespotters-net-pub-photos-hex-hex",
         "aisstream-io",
@@ -838,9 +842,6 @@
         "environment-and-climate-change-canada-msc-geomet-ogc-api",
         "news-server-gev-news-origin-optional-none-by-default",
         "gdelt-2-0-events-and-gkg-data-gdeltproject-org-gdeltv2-no-key-used-only-without-",
-        "liveuamap-a-liveuamap-com-api-liveuamap-api-key-optional-paid-used-only-without-",
-        "world-news-api-api-worldnewsapi-com-search-news-worldnewsapi-key-optional-used-o",
-        "tomtom-traffic-api-flow-vector-tiles",
         "gdelt-project-doc-2-0"
       ],
       "library-tiles-not-allowed": [

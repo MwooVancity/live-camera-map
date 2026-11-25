@@ -1,6 +1,6 @@
 {
   "generatedFrom": "gev/DATA_SOURCES.md",
-  "reviewedAt": "2026-11-24",
+  "reviewedAt": "2026-11-25",
   "sources": [
     {
       "id": "noaa-gfs-wind-noaa-gfs-bdp-pds-s3-amazonaws-com",
@@ -164,28 +164,24 @@
       "section": "Live sources (fetched at runtime — not stored in this repo)",
       "folder": "",
       "licence": "Google Maps Platform ToS (your own key + billing; every panorama load is billed)",
-      "commercialStatus": "allowed_per_owner",
-      "statusReason": "owner approval 2026-11-24 (data/owner-approvals.json); licence was unclear in the doc",
+      "commercialStatus": "restricted",
+      "statusReason": "licence text restricts commercial use",
       "attribution": "\"Street View imagery © Google\" on the globe while the provider is on, and Google's logo and terms in the viewer",
       "provenance": "gev/DATA_SOURCES.md:24",
-      "reviewedAt": "2026-11-24",
+      "reviewedAt": "2026-11-25",
       "reviewedBy": "claude-doc-parse",
       "needsHumanReview": true,
-      "ownerApprovedAt": "2026-11-24",
       "mustNotShip": false,
-      "enabled": true,
+      "enabled": false,
       "metadataPermission": {
-        "status": "unverified",
+        "status": "restricted",
         "quote": "",
         "url": "gev/DATA_SOURCES.md:24"
       },
       "imagePermission": {
-        "status": "unverified",
+        "status": "restricted",
         "quote": "",
         "url": ""
-      },
-      "metadataGrandfather": {
-        "reason": "owner approval 2026-11-24 (data/owner-approvals.json): the doc licence text is unclear, so no sentence permits publishing names and coordinates"
       }
     },
     {
@@ -272,28 +268,24 @@
       "section": "Live sources (fetched at runtime — not stored in this repo)",
       "folder": "",
       "licence": "Google Maps Platform ToS (proprietary, your own key + billing)",
-      "commercialStatus": "allowed_per_owner",
-      "statusReason": "owner approval 2026-11-24 (data/owner-approvals.json); licence was unclear in the doc",
+      "commercialStatus": "restricted",
+      "statusReason": "licence text restricts commercial use",
       "attribution": "\"Google\" / \"Google Maps\" logo — shown in-app, required",
       "provenance": "gev/DATA_SOURCES.md:28",
-      "reviewedAt": "2026-11-24",
+      "reviewedAt": "2026-11-25",
       "reviewedBy": "claude-doc-parse",
       "needsHumanReview": true,
-      "ownerApprovedAt": "2026-11-24",
       "mustNotShip": false,
-      "enabled": true,
+      "enabled": false,
       "metadataPermission": {
-        "status": "unverified",
+        "status": "restricted",
         "quote": "",
         "url": "gev/DATA_SOURCES.md:28"
       },
       "imagePermission": {
-        "status": "unverified",
+        "status": "restricted",
         "quote": "",
         "url": ""
-      },
-      "metadataGrandfather": {
-        "reason": "owner approval 2026-11-24 (data/owner-approvals.json): the doc licence text is unclear, so no sentence permits publishing names and coordinates"
       }
     },
     {
@@ -881,28 +873,24 @@
       "section": "Live sources (fetched at runtime — not stored in this repo)",
       "folder": "",
       "licence": "Liveuamap API terms of the operator's own subscription. Headlines, places and links only; item pictures and clips are hotlinked from Liveuamap, never stored",
-      "commercialStatus": "allowed_per_owner",
-      "statusReason": "owner approval 2026-11-24 (data/owner-approvals.json); licence was unclear in the doc",
+      "commercialStatus": "restricted",
+      "statusReason": "licence text restricts commercial use",
       "attribution": "\"Liveuamap\" with a link in the Data attribution popover once its items show; \"Liveuamap\" and the item's Liveuamap link on every card",
       "provenance": "gev/DATA_SOURCES.md:50",
-      "reviewedAt": "2026-11-24",
+      "reviewedAt": "2026-11-25",
       "reviewedBy": "claude-doc-parse",
       "needsHumanReview": true,
-      "ownerApprovedAt": "2026-11-24",
       "mustNotShip": false,
-      "enabled": true,
+      "enabled": false,
       "metadataPermission": {
-        "status": "unverified",
+        "status": "restricted",
         "quote": "",
         "url": "gev/DATA_SOURCES.md:50"
       },
       "imagePermission": {
-        "status": "unverified",
+        "status": "restricted",
         "quote": "",
         "url": ""
-      },
-      "metadataGrandfather": {
-        "reason": "owner approval 2026-11-24 (data/owner-approvals.json): the doc licence text is unclear, so no sentence permits publishing names and coordinates"
       }
     },
     {
@@ -911,28 +899,24 @@
       "section": "Live sources (fetched at runtime — not stored in this repo)",
       "folder": "",
       "licence": "World News API terms of the operator's own plan. The terms allow caching only with World News API's prior written permission, and then for at most 1 hour: getting that permission before setting the key is the operator's responsibility. Titles and links only; article text and summaries are not kept or shown; pictures are hotlinked from the publisher",
-      "commercialStatus": "allowed_per_owner",
-      "statusReason": "owner approval 2026-11-24 (data/owner-approvals.json); licence was unclear in the doc",
+      "commercialStatus": "restricted",
+      "statusReason": "licence text restricts commercial use",
       "attribution": "The \"World News API\" link to worldnewsapi.com, always in the Data attribution popover (a credit; the terms require a backlink only of invited free plans); \"via World News API\", the publisher's domain and the article link on every card",
       "provenance": "gev/DATA_SOURCES.md:51",
-      "reviewedAt": "2026-11-24",
+      "reviewedAt": "2026-11-25",
       "reviewedBy": "claude-doc-parse",
       "needsHumanReview": true,
-      "ownerApprovedAt": "2026-11-24",
       "mustNotShip": false,
-      "enabled": true,
+      "enabled": false,
       "metadataPermission": {
-        "status": "unverified",
+        "status": "restricted",
         "quote": "",
         "url": "gev/DATA_SOURCES.md:51"
       },
       "imagePermission": {
-        "status": "unverified",
+        "status": "restricted",
         "quote": "",
         "url": ""
-      },
-      "metadataGrandfather": {
-        "reason": "owner approval 2026-11-24 (data/owner-approvals.json): the doc licence text is unclear, so no sentence permits publishing names and coordinates"
       }
     },
     {
@@ -1149,28 +1133,24 @@
       "section": "Live sources (fetched at runtime — not stored in this repo)",
       "folder": "",
       "licence": "TomTom for Developers terms (proprietary, your own key; free tier currently 200K tile requests/month — see current pricing)",
-      "commercialStatus": "allowed_per_owner",
-      "statusReason": "owner approval 2026-11-24 (data/owner-approvals.json); licence was unclear in the doc",
+      "commercialStatus": "restricted",
+      "statusReason": "licence text restricts commercial use",
       "attribution": "\"Traffic flow data © TomTom\" — registered when live mode activates",
       "provenance": "gev/DATA_SOURCES.md:60",
-      "reviewedAt": "2026-11-24",
+      "reviewedAt": "2026-11-25",
       "reviewedBy": "claude-doc-parse",
       "needsHumanReview": true,
-      "ownerApprovedAt": "2026-11-24",
       "mustNotShip": false,
-      "enabled": true,
+      "enabled": false,
       "metadataPermission": {
-        "status": "unverified",
+        "status": "restricted",
         "quote": "",
         "url": "gev/DATA_SOURCES.md:60"
       },
       "imagePermission": {
-        "status": "unverified",
+        "status": "restricted",
         "quote": "",
         "url": ""
-      },
-      "metadataGrandfather": {
-        "reason": "owner approval 2026-11-24 (data/owner-approvals.json): the doc licence text is unclear, so no sentence permits publishing names and coordinates"
       }
     },
     {

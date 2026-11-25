@@ -4,6 +4,7 @@
 // mirror data/proxy-allowlist.json against data/exclusion-map.json and data/source-permissions.json.
 // A running-GEV proof of the same paths is .github/workflows/session4-exclusion.yml.
 import test from 'node:test';
+import { isEnabled } from '../licensing/gate.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
@@ -19,7 +20,7 @@ const real = {
   envText: read('ops/deploy/gev-exclusion.env'),
 };
 const METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'];
-const isAllowedPerm = (s) => (s.commercialStatus === 'allowed_per_doc' || s.commercialStatus === 'allowed_per_owner') && s.enabled === true && s.mustNotShip !== true;
+const isAllowedPerm = (s) => (s.commercialStatus === 'allowed_per_doc' || s.commercialStatus === 'allowed_per_owner') && isEnabled(s, new Date()) && s.mustNotShip !== true; // B5: judged today by the gate, not by the stored flag
 
 // ---- nginx model: the regex lines of each map block, exactly as nginx reads them ----
 function mapLines(text, header) {

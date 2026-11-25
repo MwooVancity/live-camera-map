@@ -7,7 +7,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { isEnabled, metadataOk } from '../../tests/licensing/gate.mjs';
+import { isEnabled, RESTRICT_RE } from '../../tests/licensing/gate.mjs';
 import { keepReviewDates } from './review-dates.mjs';
 import { derive } from './permission-evidence.mjs';
 
@@ -28,7 +28,6 @@ const FORCED_RESTRICTED = [
   [/open-?meteo/i, 'Open-Meteo free API: "You may only use the free API services for non-commercial purposes"; ad-supported sites count as commercial (open-meteo.com/en/terms, read 2026-11-24); a paid commercial plan or written permission is needed', false],
 ];
 
-const RESTRICT_RE = /non-?commercial|cc by-nc|\bby-nc\b|personal use|written agreement|needs an agreement|research use only|not licensed/i;
 const PERMISSIVE_RE = /public domain|\bcc0\b|cc by 4\.0|cc by-sa|\bodbl\b|\bmit\b|apache|open government licen|\bogl\b|u\.s\. government|nasa|noaa|usgs|natural earth/i;
 
 function cells(line) {
@@ -142,12 +141,12 @@ let prevRows = null;
 if (existsSync(prevFile)) { try { prevRows = JSON.parse(readFileSync(prevFile, 'utf8').replace(/^﻿/, '')).sources; } catch (e) { throw new Error(`cannot read ${prevFile} to keep review dates: ${e.message}`); } }
 out.splice(0, out.length, ...keepReviewDates(out, prevRows));
 // P0-4: structured metadata and image evidence; a row whose metadata is neither allowed nor grandfathered closes (restricted rows stay restricted).
-for (const o of out) { Object.assign(o, derive(o)); o.enabled = o.enabled && metadataOk(o); }
+for (const o of out) { Object.assign(o, derive(o)); o.enabled = isEnabled(o, new Date()); } // B5: judged today, by the one gate (it also checks metadata, attribution, owner approval)
 
 // Hand-read rows (sources not in gev/DATA_SOURCES.md). Appended so regenerating never drops them; `enabled` comes from the gate.
 for (const m of JSON.parse(readFileSync(resolve(root, 'data/source-permissions.manual.json'), 'utf8')).sources) {
   if (out.some((o) => o.id === m.id)) throw new Error(`manual row ${m.id} duplicates a generated id`);
-  out.push({ ...m, enabled: isEnabled(m, new Date(m.reviewedAt)) }); // manual rows carry their own evidence fields (npm: node ops/audit/permission-evidence.mjs --migrate-manual)
+  out.push({ ...m, enabled: isEnabled(m, new Date()) }); // manual rows carry their own evidence fields (npm: node ops/audit/permission-evidence.mjs --migrate-manual)
 }
 
 mkdirSync(resolve(root, 'docs/source-audits'), { recursive: true });

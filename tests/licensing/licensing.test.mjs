@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { isEnabled } from './gate.mjs';
+import { isEnabled, RESTRICT_RE } from './gate.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const { sources } = JSON.parse(readFileSync(resolve(root, 'data/source-permissions.json'), 'utf8'));
@@ -17,6 +17,7 @@ const good = {
   mustNotShip: false,
 };
 const today = new Date('2026-11-22');
+const now = new Date(); // B5: stored flags and real rows are judged today, not on their own review date
 
 test('gate: good entry passes (control)', () => assert.equal(isEnabled(good, today), true));
 test('gate: unknown fails closed', () => assert.equal(isEnabled({ ...good, commercialStatus: 'unknown' }, today), false));
@@ -31,7 +32,7 @@ test('gate: undefined entry fails', () => assert.equal(isEnabled(undefined, toda
 
 test('inventory: has rows', () => assert.ok(sources.length > 200, `only ${sources.length} rows`));
 test('inventory: stored enabled flag matches the gate (no hand edits)', () => {
-  const bad = sources.filter((s) => s.enabled !== isEnabled(s, new Date(s.reviewedAt)));
+  const bad = sources.filter((s) => s.enabled !== isEnabled(s, now));
   assert.deepEqual(bad.map((s) => s.id), []);
 });
 test('inventory: nothing unknown or restricted is enabled', () => {
@@ -94,7 +95,7 @@ for (const [feed, id] of Object.entries(SOURCE_IDS)) {
   test(`feed-licence: ${feed} has a row (${id}) that passes the gate and quotes text and a URL`, () => {
     const row = sources.find((s) => s.id === id);
     assert.ok(row, `${id} missing from data/source-permissions.json`);
-    assert.equal(isEnabled(row, today), true, `${id} is not enabled by the gate`);
+    assert.equal(isEnabled(row, now), true, `${id} is not enabled by the gate (expired review or closed row)`);
     assert.match(row.licence, /"[^"]{15,}"/, 'licence must quote the source text');
     assert.match(row.provenance + row.licence, /https:\/\//, 'row must give the URL');
   });
@@ -125,4 +126,41 @@ test('review dates: no previous file (first run, unreadable) dates every row tod
 });
 test('review dates: every row in the real file has its own ISO date', () => {
   assert.ok(sources.every((s) => /^\d{4}-\d\d-\d\d$/.test(s.reviewedAt)));
+});
+
+// ---- B5: expiry boundaries (code review 2026-11-25) ----
+const daysAgo = (n) => new Date(Date.parse(good.reviewedAt) + n * 86400000);
+test('B5: review age 180 days passes, 181 fails, 2 days in the future fails', () => {
+  assert.equal(isEnabled(good, daysAgo(180)), true);
+  assert.equal(isEnabled(good, daysAgo(181)), false);
+  assert.equal(isEnabled(good, daysAgo(-2)), false);
+});
+test('B5: an enabled row dated 2024-01-01 is rejected today (the old test judged it on its own date)', () => {
+  assert.equal(isEnabled({ ...good, reviewedAt: '2024-01-01' }, now), false);
+  const stale = { ...good, reviewedAt: '2024-01-01', enabled: true };
+  assert.notEqual(stale.enabled, isEnabled(stale, now), 'the inventory check would flag this row');
+});
+
+// ---- B6: allowed_per_owner is bound to data/owner-approvals.json ----
+const approvals = { approvedAt: '2026-11-24' };
+const owner = { ...good, commercialStatus: 'allowed_per_owner', ownerApprovedAt: '2026-11-24', licence: 'Terms unclear in the doc' };
+const t24 = new Date('2026-11-25');
+test('B6: owner-approved row with the recorded date passes (control)', () => assert.equal(isEnabled(owner, t24, approvals), true));
+test('B6: owner-approved row without a date fails', () => assert.equal(isEnabled({ ...owner, ownerApprovedAt: undefined }, t24, approvals), false));
+test('B6: owner-approved row with a date that is not the recorded approval fails', () => assert.equal(isEnabled({ ...owner, ownerApprovedAt: '2026-11-20' }, t24, approvals), false));
+test('B6: deleting the approvals file closes every owner-approved row', () => assert.equal(isEnabled(owner, t24, null), false));
+test('B6: a restricted licence text is never opened by an owner approval', () => {
+  assert.equal(isEnabled({ ...owner, licence: 'Non-commercial use only' }, t24, approvals), false);
+  assert.equal(isEnabled({ ...owner, licence: 'Written permission required' }, t24, approvals), false);
+});
+test('B6: every real owner-approved row matches the recorded approval and has no restricted text', () => {
+  const rec = JSON.parse(readFileSync(resolve(root, 'data/owner-approvals.json'), 'utf8'));
+  const bad = sources.filter((s) => s.commercialStatus === 'allowed_per_owner' && (s.ownerApprovedAt !== rec.approvedAt || RESTRICT_RE.test(s.licence)));
+  assert.deepEqual(bad.map((s) => s.id), []);
+});
+
+// ---- B7: the restricted pattern covers the wording the owner-approval scope forbids ----
+test('B7: restricted pattern matches written permission, proprietary, subscription, your own key', () => {
+  for (const t of ['Written permission required', 'Proprietary data', 'Paid subscription needed', 'Bring your own key', 'Requires your own API key', 'non-commercial']) assert.match(t, RESTRICT_RE, t);
+  for (const t of ['U.S. public domain', 'CC BY 4.0', 'ODbL']) assert.doesNotMatch(t, RESTRICT_RE, t);
 });

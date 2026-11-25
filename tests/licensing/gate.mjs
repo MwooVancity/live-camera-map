@@ -1,10 +1,19 @@
 // Fail-closed licensing gate. A source is enabled only if EVERY condition holds.
+import { readFileSync, existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 export const MAX_REVIEW_AGE_DAYS = 180;
+// Licence wording that restricts commercial use. Shared by ops/audit/build-inventory.mjs (classifier) and the owner-approval check below (B6/B7).
+export const RESTRICT_RE = /non-?commercial|cc by-nc|by-nc|personal use|written agreement|needs an agreement|research use only|not licensed|written permission|proprietary|subscription|your own (api )?key|bring your own/i;
+const APPROVALS = fileURLToPath(new URL('../../data/owner-approvals.json', import.meta.url));
+// Recorded owner approval; null when the file is gone (then every allowed_per_owner row closes).
+export const loadApprovals = () => (existsSync(APPROVALS) ? JSON.parse(readFileSync(APPROVALS, 'utf8')) : null);
 
-export function isEnabled(s, today = new Date()) {
+export function isEnabled(s, today = new Date(), approvals = loadApprovals()) {
   if (!s || s.mustNotShip) return false;
   if (!metadataOk(s)) return false; // P0-4: names, coordinates and links need a quoted permission (rows that carry the field)
-  if (s.commercialStatus === 'allowed_per_owner') { if (!s.ownerApprovedAt || Number.isNaN(Date.parse(s.ownerApprovedAt))) return false; } // owner approval needs its date (data/owner-approvals.json)
+  if (s.commercialStatus === 'allowed_per_owner') { // B6: the date must be the recorded approval, and a restricted licence text is out of its scope
+    if (!approvals || !s.ownerApprovedAt || s.ownerApprovedAt !== approvals.approvedAt || RESTRICT_RE.test(String(s.licence || ''))) return false;
+  }
   else if (s.commercialStatus !== 'allowed_per_doc') return false; // unknown, restricted, anything else: closed
   if (!s.attribution || !String(s.attribution).trim() || /^[-—n/a\s]*$/i.test(String(s.attribution))) return false; // a dash or n/a is no attribution (same rule as build-inventory)
   if (!s.provenance || !String(s.provenance).trim()) return false;
