@@ -293,3 +293,29 @@ test('B2 PowerShell and fs-write attacks on gev/ are blocked', () => {
   assert.strictEqual(decide('PowerShell', { command: 'Get-Content gev/package.json' }), null);
   assert.strictEqual(decide('PowerShell', { command: 'git -C gev status --porcelain' }), null);
 });
+
+// B4: a test file named in no workflow, hook or site/package.json is reported.
+import { unreferencedTests } from './test-coverage.mjs';
+test('B4 an unreferenced test file is reported and the real repo has none', () => {
+  const d = mkdtempSync(join(tmpdir(), 'cov-'));
+  mkdirSync(join(d, 'tests'), { recursive: true }); mkdirSync(join(d, '.github/workflows'), { recursive: true }); mkdirSync(join(d, '.githooks'));
+  writeFileSync(join(d, 'tests/a.test.mjs'), ''); writeFileSync(join(d, 'tests/b.test.mjs'), '');
+  writeFileSync(join(d, '.github/workflows/x.yml'), 'run: node --test tests/a.test.mjs');
+  assert.deepStrictEqual(unreferencedTests(d), ['tests/b.test.mjs']);
+  assert.deepStrictEqual(unreferencedTests(process.cwd()), []);
+});
+
+// B10: the uploaded build must be hidden unless LAUNCH is exactly "live".
+import { noindexProblems } from './deploy-noindex.mjs';
+test('B10 deploy build check: indexable build fails, hidden build passes, only exact "live" skips', () => {
+  const d = mkdtempSync(join(tmpdir(), 'nx-'));
+  writeFileSync(join(d, 'robots.txt'), 'User-agent: *\nAllow: /\n');
+  writeFileSync(join(d, 'index.html'), '<html><head><title>x</title></head></html>');
+  assert.ok(noindexProblems(d, '').length >= 2);
+  assert.ok(noindexProblems(d, 'Live').length >= 2, 'Live is not live');
+  assert.deepStrictEqual(noindexProblems(d, 'live'), []);
+  writeFileSync(join(d, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
+  writeFileSync(join(d, 'index.html'), '<html><head><meta name="robots" content="noindex,nofollow"></head></html>');
+  assert.deepStrictEqual(noindexProblems(d, ''), []);
+  assert.ok(noindexProblems(mkdtempSync(join(tmpdir(), 'nx-')), '').length, 'empty build is a failure');
+});

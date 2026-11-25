@@ -2,6 +2,8 @@ name: session6-preview
 # Brings up the PREVIEW variant (build once, then vite preview) behind the allowlist proxy and measures it on Linux:
 # route matrix, source exposure, gzip, cache headers, memory. Manual run only (it builds GEV: about 5-10 CI minutes).
 on: workflow_dispatch
+permissions:
+  contents: read
 jobs:
   preview:
     runs-on: ubuntu-latest
@@ -10,8 +12,8 @@ jobs:
       COMPOSE: docker compose -f ops/deploy/docker-compose.yml -f ops/deploy/docker-compose.preview.yml
       HOSTNAME_UNDER_TEST: map.example.test
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '24'
       - run: git clone https://github.com/bilawalsidhu/gods-eye-view gev
@@ -60,7 +62,7 @@ jobs:
         run: |
           $COMPOSE logs --no-color > compose.log 2>&1 || true
           node tests/immutability/check.mjs
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: session6-results

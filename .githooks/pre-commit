@@ -9,7 +9,7 @@ T0=$(date +%s%N); TIMES=""
 stage() { label=$1; shift; s=$(date +%s%N); out=$("$@" 2>&1) || { echo "$out"; echo "COMMIT BLOCKED: $* failed"; exit 1; }; TIMES="$TIMES $label=$(( ($(date +%s%N) - s) / 1000000 ))"; }
 stage preflight node ops/lint/preflight.mjs --offline
 stage selftest node ops/harness/selftest.mjs
-stage unit node --test ops/lint/preflight.test.mjs ops/harness/harness.test.mjs tests/exclusion/exclusion.test.mjs tests/deploy/compose-lint.test.mjs tests/deploy/headers.test.mjs tests/health/health.test.mjs tests/worktree/worktree.test.mjs tests/licensing/licence-evidence.test.mjs tests/registry/new-source.test.mjs tests/registry/new-source-patch.test.mjs
+stage unit node --test ops/lint/preflight.test.mjs ops/harness/harness.test.mjs tests/exclusion/exclusion.test.mjs tests/deploy/compose-lint.test.mjs tests/deploy/headers.test.mjs tests/health/health.test.mjs tests/worktree/worktree.test.mjs tests/licensing/licence-evidence.test.mjs tests/licensing/licensing.test.mjs tests/licensing/evidence.test.mjs tests/registry/new-source.test.mjs tests/registry/new-source-patch.test.mjs
 if [ -d gev/.git ]; then stage immutability node tests/immutability/check.mjs; fi
 # Site tests only when site/ or the registry changed (build 2 s + tests); a broken site test was committed once without this.
 if { [ -n "${PRECOMMIT_CHANGED_FILES:-}" ] && echo "$PRECOMMIT_CHANGED_FILES" || git diff --cached --name-only; } | grep -qE '^(site/|data/camera-registry/)'; then

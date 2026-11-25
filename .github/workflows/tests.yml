@@ -1,0 +1,53 @@
+name: tests
+# B4 (code review 2026-11-25): test files that no other gate ran (registry importers, conditions, observability, parity, evidence).
+# Explicit list on purpose: ops/harness/selftest.mjs fails when a *.test.mjs file is named in no workflow, hook or site/package.json.
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+      - run: git clone https://github.com/bilawalsidhu/gods-eye-view gev
+      - run: git -C gev checkout "$(cut -d' ' -f1 ops/upstream-base.txt)"
+      - run: npm ci
+        working-directory: site
+      - run: npm run build
+        working-directory: site
+      - run: >-
+          node --test --test-concurrency=4
+          tests/licensing/licensing.test.mjs
+          tests/conditions/conditions.test.mjs
+          tests/conditions/drivebc-events.test.mjs
+          tests/conditions/wildfire.test.mjs
+          tests/licensing/evidence.test.mjs
+          tests/observability/observability.test.mjs
+          tests/parity/gev-parity.test.mjs
+          tests/parity/world-coverage.test.mjs
+          tests/registry/a22.test.mjs
+          tests/registry/austin.test.mjs
+          tests/registry/brla.test.mjs
+          tests/registry/calgary.test.mjs
+          tests/registry/camera-exports.test.mjs
+          tests/registry/drivebc.test.mjs
+          tests/registry/duplicates.test.mjs
+          tests/registry/eligibility.test.mjs
+          tests/registry/firstseen.test.mjs
+          tests/registry/hongkong.test.mjs
+          tests/registry/iceland.test.mjs
+          tests/registry/importers-listed.test.mjs
+          tests/registry/iowa.test.mjs
+          tests/registry/madrid.test.mjs
+          tests/registry/nsw.test.mjs
+          tests/registry/registry.test.mjs
+          tests/registry/run-all.test.mjs
+          tests/registry/source-complete.test.mjs
+          tests/registry/taiwan.test.mjs
+          tests/registry/tfl.test.mjs
+          tests/registry/toronto.test.mjs
+          tests/registry/world.test.mjs

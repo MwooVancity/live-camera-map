@@ -20,11 +20,12 @@ const tagCache = new Map();
 function tagExists(repo, tag) {
   const k = `${repo}@${tag}`;
   if (tagCache.has(k)) return tagCache.get(k);
+  if (/^[0-9a-f]{40}$/.test(tag)) return true; // B9: a commit SHA pin cannot be listed with ls-remote; its format is checked, the SHA was looked up with gh api
   let ok = false;
   try {
     const out = execFileSync('git', ['ls-remote', '--tags', '--heads', `https://github.com/${repo}.git`, tag, `${tag}^{}`], { encoding: 'utf8', timeout: 30000 });
     ok = out.trim().length > 0;
-  } catch { ok = false; }
+  } catch (e) { ok = 'unreachable'; } // B14: a network error is not proof the tag is missing
   tagCache.set(k, ok);
   return ok;
 }
@@ -35,7 +36,9 @@ for (const f of files) {
   catch (e) { errors.push(`${p}: invalid YAML: ${String(e.stderr).trim().split('\n').pop()}`); continue; }
   if (offline) continue;
   for (const m of readFileSync(p, 'utf8').matchAll(/uses:\s*([\w.-]+\/[\w.-]+)(?:\/[\w./-]+)?@([\w.-]+)/g)) {
-    if (!tagExists(m[1], m[2])) errors.push(`${p}: action ${m[1]}@${m[2]} does not exist`);
+    const t = tagExists(m[1], m[2]);
+    if (t === 'unreachable') errors.push(`${p}: could not check ${m[1]}@${m[2]} (github.com unreachable)`);
+    else if (!t) errors.push(`${p}: action ${m[1]}@${m[2]} does not exist`);
   }
 }
 
