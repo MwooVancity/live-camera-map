@@ -135,7 +135,7 @@ test('a run with a big drop never replaces a good BC file', async () => {
 
 test('multi-source: the BC importer never deletes Caltrans cameras, and Caltrans never deletes BC cameras', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'bc-'));
-  const ca = await runCaltrans({ fetcher: caOk, outDir: dir, now: NOW, log: quiet });
+  const ca = await runCaltrans({ fetcher: caOk, outDir: dir, now: '2026-11-25T12:00:00.000Z', log: quiet });
   assert.equal(ca.written, true);
   const caRows = JSON.parse(readFileSync(join(dir, 'cameras.json'), 'utf8'));
   assert.ok(caRows.length > 0 && caRows.every((c) => c.sourceId === 'caltrans'));
@@ -144,7 +144,7 @@ test('multi-source: the BC importer never deletes Caltrans cameras, and Caltrans
   assert.deepEqual(all.filter((c) => c.sourceId === 'caltrans'), caRows, 'Caltrans rows byte-for-byte the same after a BC run');
   assert.equal(all.filter((c) => c.sourceId === 'drivebc').length, 8);
   const bcRows = all.filter((c) => c.sourceId === 'drivebc');
-  assert.equal((await runCaltrans({ fetcher: caOk, outDir: dir, now: NOW, log: quiet })).written, true);
+  assert.equal((await runCaltrans({ fetcher: caOk, outDir: dir, now: '2026-11-25T12:00:00.000Z', log: quiet })).written, true);
   all = JSON.parse(readFileSync(join(dir, 'cameras.json'), 'utf8'));
   assert.deepEqual(all.filter((c) => c.sourceId === 'drivebc'), bcRows, 'BC rows the same after a Caltrans run');
   assert.equal(new Set(all.map((c) => c.id)).size, all.length, 'ids unique across sources');
@@ -156,7 +156,7 @@ test('the Caltrans "count fell" guard counts only Caltrans rows (BC rows cannot 
   const many = Array.from({ length: 100 }, (_, i) => ({ sourceId: 'caltrans', id: `caltrans-d01-${i}` }));
   const bc = Array.from({ length: 500 }, (_, i) => ({ sourceId: 'drivebc', id: `drivebc-${i}` }));
   writeFileSync(join(dir, 'cameras.json'), JSON.stringify([...many, ...bc]));
-  const r = await runCaltrans({ fetcher: async () => caFixture, outDir: dir, now: NOW, log: quiet });
+  const r = await runCaltrans({ fetcher: async () => caFixture, outDir: dir, now: '2026-11-25T12:00:00.000Z', log: quiet });
   assert.equal(r.written, false); assert.match(r.reason, /count fell from 100/);
 });
 

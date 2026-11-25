@@ -33,22 +33,26 @@ export function stampFirstSeen(cams, old) {
 
 // Validate, guard, then write cameras.json (own rows only), sources.json and the report. Never overwrites good with incomplete.
 // raw = how many source records were read; kept = cams.length after normalise + dedupe.
-export function commitSource({ outDir, sourceId, sourceRow, cams, raw, report, reportFile, log = console.log, label = sourceId }) {
+// extraReason = an importer's own refusal (for example failed districts), checked after the zero-camera test.
+export function commitSource({ outDir, sourceId, sourceRow, cams, raw, report, reportFile, log = console.log, label = sourceId, extraReason = null }) {
   const fail = (reason) => { log(`${label}: NOT WRITTEN: ${reason}`); return { written: false, reason, report }; };
   const camPath = join(outDir, 'cameras.json');
   const all0 = readJsonOrNull(camPath);
   const old = ownRows(all0, sourceId);
   stampFirstSeen(cams, old);
-  const bad = cams.filter((c) => validateCamera(c).length);
+  const srcPath = join(outDir, 'sources.json');
+  const bad = cams.filter((c) => c.sourceId !== sourceId || validateCamera(c).length); // a row of another source is a defect (A15)
   let reason = null;
   if (registryUnreadable(camPath)) reason = 'cameras.json exists but is not a readable list; fix it first (other sources would be lost)';
+  else if (registryUnreadable(srcPath)) reason = 'sources.json exists but is not a readable list; fix it first (other sources would be lost)';
   else if (bad.length) reason = `${bad.length} cameras failed validation`;
   else if (cams.length === 0) reason = 'zero cameras';
+  else if (extraReason) reason = extraReason;
   else if (cams.length < raw * 0.5) reason = `only ${cams.length} of ${raw} records kept (shape change?)`;
   else if (old.length && cams.length < old.length * 0.5) reason = `count fell from ${old.length} to ${cams.length}`;
   if (reason) return fail(reason);
   writeJsonAtomic(camPath, mergeSource(all0, sourceId, cams)); // every other source's rows are untouched
-  writeJsonAtomic(join(outDir, 'sources.json'), upsertSources(readJsonOrNull(join(outDir, 'sources.json')), [sourceRow]));
+  writeJsonAtomic(srcPath, upsertSources(readJsonOrNull(srcPath), [].concat(sourceRow)));
   writeJsonAtomic(join(outDir, reportFile), report);
   return { written: true, reason: null, report };
 }

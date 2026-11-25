@@ -9,7 +9,8 @@
 import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
 import { readFileSync } from 'node:fs';
-import { dedupe, validateCamera, countsBy, writeJsonAtomic, readJsonOrNull, mergeSource, ownRows, upsertSources, registryUnreadable } from './lib/registry.mjs';
+import { dedupe, countsBy, writeJsonAtomic, readJsonOrNull } from './lib/registry.mjs';
+import { commitSource } from './lib/runner.mjs';
 import { parseCsv, normalizeDriveBc, parseOpen511, BC_LICENCE_TITLE, CKAN_PACKAGE_URL, OPEN511_EVENTS_URL, OPEN511_PAGE } from './lib/drivebc.mjs';
 import { UA, SOURCE_IDS } from './lib/conditions.mjs';
 import { isEnabled } from '../../tests/licensing/gate.mjs';
@@ -67,23 +68,10 @@ export async function runCameras({ fetchJson: fj = fetchJson, fetchText: ft = fe
   const all = [];
   for (const r of rows) { const c = normalizeDriveBc(r, now, drop); if (c) all.push(c); }
   const cams = dedupe(all, drop);
-  const bad = cams.filter((c) => validateCamera(c).length);
   const report = { generatedAt: now, source: res.url, datasetModified: rec.metadata_modified || null, licence: rec.license_title, raw: rows.length, badRows, dropped: drop, total: cams.length, byCity: countsBy(cams, 'city') };
-  const camPath = join(outDir, 'cameras.json');
-  const all0 = readJsonOrNull(camPath);
-  const old = ownRows(all0, 'drivebc');
-  let reason = null;
-  if (registryUnreadable(camPath)) reason = 'cameras.json exists but is not a readable list; fix it first (other sources would be lost)';
-  else if (bad.length) reason = `${bad.length} cameras failed validation`;
-  else if (cams.length === 0) reason = 'zero cameras';
-  else if (badRows > rows.length * 0.05) reason = `${badRows} of ${rows.length + badRows} CSV rows had the wrong number of fields`;
-  else if (cams.length < (rows.length) * 0.5) reason = `only ${cams.length} of ${rows.length} rows kept`;
-  else if (old.length && cams.length < old.length * 0.5) reason = `count fell from ${old.length} to ${cams.length}`;
-  if (reason) return fail(reason, report);
-  writeJsonAtomic(camPath, mergeSource(all0, 'drivebc', cams)); // Caltrans rows are untouched
-  writeJsonAtomic(join(outDir, 'sources.json'), upsertSources(readJsonOrNull(join(outDir, 'sources.json')), [BC_SOURCE]));
-  writeJsonAtomic(join(outDir, 'import-report-drivebc.json'), report);
-  return { written: true, reason: null, report };
+  const extraReason = badRows > rows.length * 0.05 ? `${badRows} of ${rows.length + badRows} CSV rows had the wrong number of fields` : null;
+  const r = commitSource({ outDir, sourceId: 'drivebc', sourceRow: BC_SOURCE, cams, raw: rows.length, report, reportFile: 'import-report-drivebc.json', log, label: 'cameras', extraReason });
+  return r.written ? r : { ...r, report };
 }
 
 // One paged request chain to Open511 (limit 500; a full page asks for the next offset). Returns { written, reason, report }.

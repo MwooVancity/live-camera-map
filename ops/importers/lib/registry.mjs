@@ -48,6 +48,7 @@ export function normalizeCaltrans(raw, district, lastSeen, drop = {}) {
   const video = s(c.imageData?.streamingVideoURL);
   const officialUrl = still || video;
   if (!officialUrl || !s(c.index)) return bump('noUrlOrIndex');
+  if (!/^https?:\/\/([a-z0-9-]+\.)*dot\.ca\.gov(\/|$)/i.test(officialUrl)) return bump('badHost'); // link-out only to Caltrans' own hosts
   return {
     id: `caltrans-d${String(district).padStart(2, '0')}-${s(c.index)}`,
     sourceId: 'caltrans',

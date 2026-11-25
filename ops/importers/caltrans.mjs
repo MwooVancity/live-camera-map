@@ -1,10 +1,14 @@
 // Caltrans CCTV importer. No key needed. Run: node ops/importers/caltrans.mjs [--allow-partial]
 import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
-import { normalizeCaltrans, dedupe, validateCamera, countsBy, writeJsonAtomic, readJsonOrNull, mergeSource, upsertSources, registryUnreadable } from './lib/registry.mjs';
+import { readFileSync } from 'node:fs';
+import { normalizeCaltrans, dedupe, countsBy, readJsonOrNull } from './lib/registry.mjs';
+import { commitSource } from './lib/runner.mjs';
+import { isEnabled } from '../../tests/licensing/gate.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const OUT_DIR = join(ROOT, 'data', 'camera-registry');
+export const loadPerms = () => JSON.parse(readFileSync(join(ROOT, 'data', 'source-permissions.json'), 'utf8')).sources;
 const districts = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
 const url = (nn) => `https://cwwp2.dot.ca.gov/data/d${Number(nn)}/cctv/cctvStatusD${nn}.json`;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -23,7 +27,8 @@ export async function fetchDistrict(nn, tries = 4) {
 }
 
 // fetcher(nn) -> parsed JSON or throws. Returns {written, reason, report}.
-export async function run({ fetcher = fetchDistrict, outDir = OUT_DIR, now = new Date().toISOString(), allowPartial = false, log = console.log } = {}) {
+export async function run({ fetcher = fetchDistrict, outDir = OUT_DIR, now = new Date().toISOString(), allowPartial = false, perms = loadPerms(), log = console.log } = {}) {
+  if (!isEnabled(perms.find((s) => s.id === 'caltrans-cwwp2-dot-ca-gov'), new Date(now))) { log('NOT WRITTEN: licence closed'); return { written: false, reason: 'licence closed', report: null }; }
   const perDistrict = {}, drop = {}, all = [];
   for (const nn of districts) {
     try {
@@ -37,24 +42,11 @@ export async function run({ fetcher = fetchDistrict, outDir = OUT_DIR, now = new
     log(`d${nn}: ${JSON.stringify(perDistrict[nn])}`);
   }
   const cams = dedupe(all, drop);
-  const bad = cams.filter((c) => validateCamera(c).length);
   const failed = districts.filter((nn) => !perDistrict[nn].ok);
   const report = { generatedAt: now, perDistrict, dropped: drop, total: cams.length, failedDistricts: failed, byCity: countsBy(cams, 'city') };
-  const camPath = join(outDir, 'cameras.json');
-  const all0 = readJsonOrNull(camPath); // the shared registry: other sources' rows are kept untouched
-  const old = Array.isArray(all0) ? all0.filter((c) => !c || !c.sourceId || c.sourceId === 'caltrans') : null; // only Caltrans rows count for the "count fell" guard
-  let reason = null;
-  if (registryUnreadable(camPath)) reason = 'cameras.json exists but is not a readable list; fix it first (other sources would be lost)';
-  else if (bad.length) reason = `${bad.length} cameras failed validation`;
-  else if (cams.length === 0) reason = 'zero cameras';
-  else if (failed.length && !allowPartial) reason = `incomplete: districts failed: ${failed.join(',')}`;
-  else if (failed.length && old) reason = 'partial run will not replace an existing good file';
-  else if (old && cams.length < old.length * 0.5) reason = `count fell from ${old.length} to ${cams.length}`;
-  if (reason) { log(`NOT WRITTEN: ${reason}`); return { written: false, reason, report }; }
-  writeJsonAtomic(camPath, mergeSource(all0, 'caltrans', cams));
-  writeJsonAtomic(join(outDir, 'sources.json'), upsertSources(readJsonOrNull(join(outDir, 'sources.json')), SOURCES));
-  writeJsonAtomic(join(outDir, 'import-report.json'), report);
-  return { written: true, reason: null, report };
+  const existing = Array.isArray(readJsonOrNull(join(outDir, 'cameras.json'))); // a partial run may only create the first file
+  const extraReason = failed.length && !allowPartial ? `incomplete: districts failed: ${failed.join(',')}` : failed.length && existing ? 'partial run will not replace an existing good file' : null;
+  return commitSource({ outDir, sourceId: 'caltrans', sourceRow: SOURCES, cams, raw: cams.length, report, reportFile: 'import-report.json', log, label: 'caltrans', extraReason });
 }
 
 const U = 'unverified';
