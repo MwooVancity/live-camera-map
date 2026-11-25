@@ -262,3 +262,12 @@ test('B14 FIXTURE: an nginx route regex that the JSON does not list makes the ch
   const v = checkExclusion({ ...real, nginxText: bad });
   assert.ok(v.some((x) => x.includes('no matching JSON pattern') && x.includes('/api/evil')), v.join('\n'));
 });
+
+// B15: GEV's own test fixtures (a proprietary TomTom/OpenFreeMap tile capture) are not needed over HTTP and stay closed.
+test('B15 /src/data/fixtures/ is denied by nginx and by the JSON mirror', () => {
+  const m = nginxModel(real.nginxText);
+  for (const p of ['/src/data/fixtures/ofm-austin-12-935-1686.pbf', '/src/data/fixtures/README.md']) {
+    assert.equal(nginxAllows(m, 'GET', p), false, 'nginx allows ' + p);
+    assert.equal(jsonAllows(real.allow, 'GET', p), false, 'JSON allows ' + p);
+  }
+});
