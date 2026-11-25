@@ -1,0 +1,10 @@
+{
+ "generatedAt": "2026-11-25T13:31:07.861Z",
+ "source": "https://www.medellin.gov.co/servidormapas/rest/services/transporte/VC_Infraest_Gestion_Transito/MapServer/2/query?where=1=1&outFields=*&outSR=4326&f=geojson",
+ "licenceUrl": "https://www.medellin.gov.co/giscatalogacion/srv/api/records/01af3090-cc7f-4f85-9a34-92a59b001a72",
+ "raw": 81,
+ "dropped": {
+  "noUrl": 11
+ },
+ "total": 70
+}

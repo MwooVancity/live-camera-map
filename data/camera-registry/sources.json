@@ -398,5 +398,45 @@
   "license": "No licence or terms found on the dataset or the portal pages read (2026-11-25); listed link-only on the owner's recorded approval (data/owner-approvals.json)",
   "licenseUrl": "https://opendata.maryland.gov/d/4z3c-43ce",
   "reviewedAt": "2026-11-25"
+ },
+ {
+  "id": "cita-lu-cameras",
+  "name": "CITA motorway webcams (Ponts et Chaussees, Luxembourg)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one KML request per run; none stated by the host; picture links are not checked by the health checker (the link is an HTML page)",
+   "docsUrl": "https://data.public.lu/fr/datasets/cita-cameras-autoroute/"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Source: CITA, Administration des Ponts et Chaussees (Luxembourg), motorway webcam list, CC0.",
+  "license": "Creative Commons Zero (CC0) dataset licence (data.public.lu); CITA FAQ: webcam information available without restrictions",
+  "licenseUrl": "https://www.cita.lu/en/faq.html",
+  "reviewedAt": "2026-11-25"
+ },
+ {
+  "id": "medellin-simm-cameras",
+  "name": "Medellín SIMM CCTV cameras (GeoMedellín)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one query per run (81 rows); none stated by the host; picture links are not checked by the health checker",
+   "docsUrl": "https://www.medellin.gov.co/giscatalogacion/srv/api/records/01af3090-cc7f-4f85-9a34-92a59b001a72"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Source: Distrito Especial de Ciencia, Tecnología e Innovación de Medellín, GeoMedellín (Departamento Administrativo de Planeación), Cámaras CCTV (SIMM), CC BY-SA 4.0. Our list of these points is shared under the same licence.",
+  "license": "CC BY SA (CC BY-SA 4.0), GeoMedellín catalogue record; joint circular 202660000054 of 2026",
+  "licenseUrl": "https://www.medellin.gov.co/giscatalogacion/srv/api/records/01af3090-cc7f-4f85-9a34-92a59b001a72",
+  "reviewedAt": "2026-11-25"
  }
 ]

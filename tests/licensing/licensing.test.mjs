@@ -195,3 +195,24 @@ test('B7: restricted pattern matches written permission, proprietary, subscripti
   for (const t of ['Written permission required', 'Proprietary data', 'Paid subscription needed', 'Bring your own key', 'Requires your own API key', 'non-commercial']) assert.match(t, RESTRICT_RE, t);
   for (const t of ['U.S. public domain', 'CC BY 4.0', 'ODbL']) assert.doesNotMatch(t, RESTRICT_RE, t);
 });
+
+// Human decision 2026-11-25: Luxembourg (CC0) and Medellin (CC BY-SA) open link-only. Entries name these two ids only.
+{
+  const rec = JSON.parse(readFileSync(resolve(root, 'data/owner-approvals.json'), 'utf8'));
+  const perm = JSON.parse(readFileSync(resolve(root, 'data/source-permissions.json'), 'utf8')).sources;
+  const open = rec.sources.filter((a) => a.kind === 'open-explicit-licence');
+  test('open-explicit-licence decisions: exactly cita-lu-cameras and medellin-simm-cameras, dated 2026-11-25, with the owner quote', () => {
+    assert.deepEqual(open.map((a) => a.id).sort(), ['cita-lu-cameras', 'medellin-simm-cameras']);
+    for (const a of open) { assert.equal(a.approvedAt, '2026-11-25'); assert.equal(a.quote, 'Open both, link-only (Recommended)'); assert.match(a.by, /Open both, link-only \(Recommended\)/); assert.match(a.scope, /THIS SOURCE ID ONLY/); }
+  });
+  test('open-explicit-licence rows: allowed_per_doc, enabled, image still unverified, only these ids opened by a decision', () => {
+    for (const a of open) {
+      const r = perm.find((p) => p.id === a.id);
+      assert.equal(r.commercialStatus, 'allowed_per_doc'); assert.equal(r.enabled, true); assert.equal(r.imagePermission.status, 'unverified'); assert.equal(r.mustNotShip, false);
+    }
+  });
+  test('Luxembourg keeps the footer conflict on record; Medellin carries the ShareAlike attribution', () => {
+    assert.match(perm.find((p) => p.id === 'cita-lu-cameras').licence, /All rights reserved/);
+    assert.match(perm.find((p) => p.id === 'medellin-simm-cameras').attribution, /ShareAlike[\s\S]*same licence/);
+  });
+}

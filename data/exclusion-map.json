@@ -422,7 +422,7 @@
         "CCTV-NOSWITCH"
       ],
       "note": "Images and streams are proxy-blocked for every pack. Metadata via /api/cctv/sources is only env-blocked.",
-      "permissionIds": ["cita-lu-cameras", "medellin-simm-cameras"]
+      "permissionIds": ["taiwan-wra-cameras"]
     },
     {
       "id": "transit-bike-rail",

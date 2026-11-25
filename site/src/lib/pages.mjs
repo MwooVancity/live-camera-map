@@ -19,6 +19,7 @@ import { MADRID_REGION } from '../../../ops/importers/lib/madrid.mjs';
 import { MD_REGION } from '../../../ops/importers/lib/mdchart.mjs';
 import { LU_REGION } from '../../../ops/importers/lib/citalu.mjs';
 import { MEDELLIN_REGION } from '../../../ops/importers/lib/medellin.mjs';
+import { TWRA_REGION } from '../../../ops/importers/lib/taiwanwra.mjs';
 
 // NFKD splits an accented letter into the letter plus a combining mark; the marks are removed first, otherwise "Hämeenlinna" became "ha-meenlinna".
 export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -181,6 +182,13 @@ export const REGIONS = {
     placeText: (x) => sentence(`These are the cameras of the Maryland DOT State Highway Administration CHART list only, not every camera in Maryland: the list has a location text and a county but no road or city field, so each of the ${x.total} cameras is named by the location text CHART gives (for example I-495 AT US-29) with its county kept as text, and there are no city pages.`),
     cityText: () => '',
     caveats: ['The camera pictures belong to the Maryland Department of Transportation State Highway Administration (CHART) and are not shown here. Each link goes to one CHART viewer page on chart.maryland.gov; it is a link only. CHART blocks automated requests, so live status is not checked and every camera here shows the status unknown by design, not broken. The State of Maryland open data portal publishes the list with no licence or terms that we could find, so it is listed with names, positions and links only, on the site owner approval, and removed the same day if the agency objects. MDOT SHA does not endorse this site.'],
+  },
+  // Taiwan rivers: one region from the Water Resources Agency's own river CCTV list (Government Open Data License 1.0); county and district are kept as text, not as cities, so no city pages.
+  [TWRA_REGION.slug]: {
+    sourceId: 'taiwan-wra-cameras', agency: 'Water Resources Agency river cameras (Taiwan)', cityLimit: 0, guide: null, credit: true, list: 'river camera list', listAll: true,
+    placeText: (x) => sentence(`Each of the ${x.total} cameras is named as the Agency names it (a river site or bridge, in Chinese) and carries its river basin, tributary, county and district where the Agency gives them, plus its own coordinates; the list has no city field, so there are no city pages here. These are river cameras, separate from the Highway Bureau road cameras.`),
+    cityText: () => '',
+    caveats: ['The camera pictures belong to the Water Resources Agency and are not shown here. Each link goes to the camera\'s own picture address on fmg.wra.gov.tw; it is a link only. The list is published under the Government Open Data License 1.0, but the Agency\'s open-data site footer claims all text and pictures as its copyright, so we do not copy, store or embed any picture. We have not checked whether each camera is live, so the status reads unknown.'],
   },
 };
 // The credit sentence for a source that asks for one (its attribution line from sources.json, without a leading "Source:").

@@ -57,6 +57,7 @@ export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 14000, bu
     'cita-lu-cameras': { skip: 'link-is-a-web-page' }, // the link is an HTML page (cita.lu/webcam/map/<n>) that wraps the picture, so a 200 proves nothing about the camera; reading the picture address behind it would fetch the picture, which stays unverified (footer: all rights reserved). Unknown by design, like Quebec (read 2026-11-25)
     'medellin-simm-cameras': { skip: 'picture-host-not-reviewed' }, // www.medellin.gov.co: robots.txt does not disallow /simm/, a picture address answers 301 to /SIMM/ (case change) then 200 image/jpeg (read 2026-11-25), but no stated limit and no picture terms were read, so no request is sent: unknown by design until a human sets a pace (picture links stay unverified)
     'maryland-chart-cameras': { skip: 'host-blocks-automated-checks' }, // chart.maryland.gov answers automated requests with a Cloudflare challenge (hunt batch 4, 2026-11-25): no request is sent, every Maryland camera is unknown by design
+    'taiwan-wra-cameras': { skip: 'unreviewed-scaffold' }, // TODO(new-source) scaffolded 2026-11-25: no request is sent until a human sets the real pace (or the host-blocks-automated-checks skip with its reason)
   } };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const STATUSES = ['reachable', 'stale', 'unavailable', 'unknown'];
