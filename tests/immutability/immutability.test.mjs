@@ -50,3 +50,9 @@ test('wrong HEAD fails', withClone((d) => {
   execFileSync('git', ['-C', d, '-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-q', '--allow-empty', '-m', 'x']);
   assert.match(checkImmutable(d, base).join(), /!= pinned/);
 }));
+
+test('GIT_DIR from a linked-worktree commit hook does not redirect the check to the outer repo', () => {
+  const saved = process.env.GIT_DIR;
+  process.env.GIT_DIR = resolve(root, '.git'); // what git exports to a hook that runs in a linked worktree (measured 2026-11-24)
+  try { assert.deepEqual(checkImmutable(), []); } finally { if (saved === undefined) delete process.env.GIT_DIR; else process.env.GIT_DIR = saved; }
+});

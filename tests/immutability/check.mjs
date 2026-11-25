@@ -5,7 +5,9 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const git = (dir, ...a) => execFileSync('git', ['-C', dir, ...a], { encoding: 'utf8' });
+// GIT_* variables (GIT_DIR, GIT_INDEX_FILE) leak in from a commit hook in a linked worktree and would aim these commands at the outer repo.
+const cleanEnv = () => Object.fromEntries(Object.entries(process.env).filter(([k]) => !k.startsWith('GIT_')));
+const git = (dir, ...a) => execFileSync('git', ['-C', dir, ...a], { encoding: 'utf8', env: cleanEnv() });
 
 export function checkImmutable(dir = resolve(root, 'gev'), baseFile = resolve(root, 'ops/upstream-base.txt')) {
   const base = readFileSync(baseFile, 'utf8').trim().split(/\s+/)[0];
