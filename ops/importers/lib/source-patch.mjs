@@ -2,7 +2,7 @@
 // buildPatch() is pure: it returns a reviewable object (ops/importers/patches/<id>.patch.json). applyPatch() edits files under `root` and is idempotent
 // (every edit has a marker; an edit whose marker is already in the file is skipped). It runs only in the merger's tree (new-source.mjs --apply).
 // Edit kinds: json-push, json-row-update, import-add, block-add, replace-once, append. Anything that needs words only a human has goes in `manual`.
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { validate, REAL_QUOTE } from '../../audit/licence-evidence.mjs';
 
@@ -27,7 +27,7 @@ export function buildPatch({ id, sourceId, name, regionSlug, countrySlug, worldC
     metadataPermission: { status: 'unverified', quote: evidence.metadata?.quote || '', url: evidence.metadata?.url || '' },
     imagePermission: { status: 'unverified', quote: '', url: '' },
   };
-  const R = `${UP(id)}_REGION`, C = `${UP(id)}_COUNTRY`, V = `src_${id}`;
+  const R = '{{REGION}}', C = '{{COUNTRY}}', V = `src_${id}`;
   const page = `/cameras/${countrySlug}/${regionSlug}/`;
   const edits = [
     { stage: 'now', file: 'ops/importers/run-all.json', kind: 'json-push', path: ['importers'], unique: 'id', value: { id, script: `${id}.mjs`, timeoutSec: 90 }, marker: id },
@@ -97,9 +97,22 @@ export function applyEdit(root, e) {
   if (status === 'applied') writeFileSync(p, crlf ? out.replace(/\n/g, '\r\n') : out);
   return status;
 }
+// A scaffolded lib still carries the TEMPLATE region slug until a human edits it: registered as is, it would replace the template source's region (found 2026-11-24: the site build crashed).
+export function checkRegionSlug(root, id) {
+  const dir = join(root, 'ops/importers/lib'), re = /export const \w+_REGION = \{ slug: '([^']+)'/;
+  const own = (readFileSync(join(dir, id + '.mjs'), 'utf8').match(re) || [])[1];
+  if (!own) throw new Error('ops/importers/lib/' + id + '.mjs: no "_REGION = { slug: ... }" export found');
+  const clash = readdirSync(dir).filter((f) => f !== id + '.mjs' && f.endsWith('.mjs')).find((f) => (readFileSync(join(dir, f), 'utf8').match(re) || [])[1] === own);
+  if (clash) throw new Error('refused: region slug "' + own + '" in ops/importers/lib/' + id + '.mjs is already used by ' + clash + ' (the scaffold copies the template slug: set the real region first)');
+}
 export function applyPatch(patch, { root, stage = 'now', log = console.log } = {}) {
+  if (stage === 'now') checkRegionSlug(root, patch.id);
+  const lib = readFileSync(join(root, 'ops/importers/lib', patch.id + '.mjs'), 'utf8');
+  const names = { REGION: (lib.match(/export const (\w+_REGION) = /) || [])[1], COUNTRY: (lib.match(/export const (\w+_COUNTRY) = /) || [])[1] };
+  if (!names.REGION || !names.COUNTRY) throw new Error('ops/importers/lib/' + patch.id + '.mjs must export one *_REGION and one *_COUNTRY');
+  const fill = (e) => JSON.parse(JSON.stringify(e).replace(/{{(REGION|COUNTRY)}}/g, (_, k) => names[k]));
   const res = [];
-  for (const e of patch.edits.filter((x) => x.stage === stage)) { const status = applyEdit(root, e); res.push({ file: e.file, kind: e.kind, status }); log(`${status}: ${e.file} (${e.kind})`); }
+  for (const e of patch.edits.filter((x) => x.stage === stage)) { const status = applyEdit(root, fill(e)); res.push({ file: e.file, kind: e.kind, status }); log(`${status}: ${e.file} (${e.kind})`); }
   if (stage === 'now') for (const m of patch.manual) log(`MANUAL: ${m}`);
   return res;
 }

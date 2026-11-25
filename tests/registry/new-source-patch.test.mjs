@@ -1,7 +1,7 @@
 // Plan item 40 step 2: the scaffold also emits every shared-file edit as a reviewable patch; three licence fixtures (clean, missing, conflicting).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, copyFileSync, readFileSync, existsSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, copyFileSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -20,6 +20,11 @@ function sandbox() {
 }
 const opts = (root, evidence, extra = {}) => ({ root, evidence, name: 'Example Highway Agency camera list', regionSlug: 'example-state', countrySlug: 'united-states', worldCountry: 'united-states-of-america', today: '2026-11-24', log: () => {}, ...extra });
 const read = (root, f) => readFileSync(join(root, f), 'utf8');
+const finish = (root, id, slug, rename = []) => { // what the agent does by hand before the merge: the real region slug (and, optionally, other export names)
+  const f = join(root, 'ops/importers/lib', id + '.mjs'); let t = readFileSync(f, 'utf8').replace("slug: 'new-south-wales'", "slug: '" + slug + "'");
+  for (const [a, b] of rename) t = t.split(a).join(b);
+  writeFileSync(f, t);
+};
 
 test('clean licence: patch is emitted, applies to the real shared files, is idempotent, and the new row stays disabled', () => {
   const root = sandbox();
@@ -29,6 +34,8 @@ test('clean licence: patch is emitted, applies to the real shared files, is idem
   assert.deepEqual([row.commercialStatus, row.metadataPermission.status, row.imagePermission.status, row.needsHumanReview, row.mustNotShip], ['unverified', 'unverified', 'unverified', true, true]);
   assert.ok(!JSON.stringify(row).includes('"allowed"'), 'never allowed');
   assert.ok(!JSON.parse(read(root, 'ops/importers/run-all.json')).importers.some((e) => e.id === 'wsdot'), 'run-all.json is shared: only the patch adds it');
+  assert.throws(() => apply('wsdot', { root, log: () => {} }), /region slug "new-south-wales".*already used by nsw.mjs/, 'an unfinished scaffold carries the template slug');
+  finish(root, 'wsdot', 'example-state', [['WSDOT_REGION', 'WS_REGION']]);
   for (const r of apply('wsdot', { root, log: () => {} })) assert.ok(/^applied|row not found/.test(r.status), `${r.file}: ${r.status}`);
   for (const r of apply('wsdot', { root, log: () => {} })) assert.ok(/already applied|row not found/.test(r.status), `second run ${r.file}: ${r.status}`);
   const rows = JSON.parse(read(root, 'data/source-permissions.manual.json')).sources;
@@ -37,7 +44,7 @@ test('clean licence: patch is emitted, applies to the real shared files, is idem
   assert.deepEqual(evidenceProblems(got, []), []);
   assert.equal(rows.filter((r) => r.id === 'wsdot-cameras').length, 1);
   for (const f of ['ops/importers/lib/registry.mjs', 'site/src/lib/pages.mjs', 'ops/health/check.mjs']) execFileSync(process.execPath, ['--check', join(root, f)]);
-  assert.match(read(root, 'ops/importers/lib/registry.mjs'), /\[WSDOT_REGION\.slug\]: WSDOT_COUNTRY/);
+  assert.match(read(root, 'ops/importers/lib/registry.mjs'), /\[WS_REGION\.slug\]: WSDOT_COUNTRY/);
   assert.match(read(root, 'ops/health/check.mjs'), /'wsdot-cameras': \{ skip: 'unreviewed-scaffold' \}/);
   const base = read(root, 'site/src/layouts/Base.astro');
   assert.match(base, /src_wsdot = sourceOf\('wsdot-cameras'\); \/\/ attribution lines/);
