@@ -1,0 +1,37 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SITE_NAME } from '../../config.mjs';
+import { countryName } from '../../lib/pages.mjs';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+// Same manifest the build step wrote next to the CSVs, so the counts here are the files' own counts.
+const m = JSON.parse(readFileSync(resolve(process.cwd(), 'public/data/manifest.json'), 'utf8'));
+const mb = (b) => (b / 1048576).toFixed(1) + ' MB';
+---
+<Base title={`Download camera lists as CSV | ${SITE_NAME}`} description={`${m.total} official traffic camera links as spreadsheet files, one per country, each row with its source, licence and credit.`} route="/data/" crumbs={[{ name: 'Camera list downloads', route: '/data/' }]}>
+  <h1>Camera list downloads (CSV)</h1>
+  <p>One spreadsheet row per camera: where it is, which agency runs it, the link to the agency's own camera page, our last link check, and the licence and credit that came with the data. The files hold links to official pages only, no pictures.</p>
+  <section data-block="csv-downloads" data-basis="registry" data-source="World Traffic Cameras camera registry" data-asof={m.asof} data-count={m.total}>
+    <h2>{m.total} cameras in {m.countries.length} countries</h2>
+    <p>Counted at build time, newest camera record {m.asof}. <a href="/data/cameras-all.csv">All countries in one file</a> ({m.total} rows, {mb(m.allBytes)}).</p>
+    <table>
+      <thead><tr><th>Country</th><th>Cameras</th><th>File</th><th>Size</th></tr></thead>
+      <tbody>{m.countries.map((c) => <tr><td>{countryName(c.slug) || c.slug}</td><td>{c.count}</td><td><a href={`/data/${c.file}`}>{c.file}</a></td><td>{mb(c.bytes)}</td></tr>)}</tbody>
+    </table>
+  </section>
+  <section data-block="csv-sources" data-basis="registry" data-source="World Traffic Cameras source licence records" data-asof={m.asof} data-count={m.sources.length}>
+    <h2>Sources, licences and credit</h2>
+    <p>The files have no single licence. Each source keeps its own licence, and its credit must be kept when you reuse its rows. A camera appears only if its source has a licence on record here and the link passes our checks. The licence and attribution columns repeat the lines below on every row.</p>
+    <table>
+      <thead><tr><th>Source</th><th>Rows</th><th>Licence on record</th><th>Credit wording</th></tr></thead>
+      <tbody>{m.sources.map((s) => <tr><td>{s.name}</td><td>{s.count}</td><td>{s.licence}</td><td>{s.attribution}</td></tr>)}</tbody>
+    </table>
+    <p class="meta">A licence on a camera list is not always a licence on the pictures behind the links; we show no pictures.</p>
+  </section>
+  <section data-block="csv-columns" data-basis="registry" data-source="World Traffic Cameras export format" data-asof={m.asof} data-count={m.columns.length}>
+    <h2>Columns</h2>
+    <p>{m.columns.join(', ')}.</p>
+    <p>health_status is our own link check (reachable, stale, unavailable or unknown) and health_last_checked says when; an unknown status means we did not check that link in time, not that it is broken. Text cells that start with a formula character are prefixed with an apostrophe so a spreadsheet never runs them.</p>
+  </section>
+  <p><a href="/cameras/">All countries and regions</a> | <a href="/status/">Camera network status</a></p>
+</Base>

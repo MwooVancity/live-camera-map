@@ -37,17 +37,27 @@ export function buildRows(cams, sources, health = {}, perms = []) {
 }
 export const toCsv = (rows) => [COLUMNS.join(','), ...rows.map((r) => COLUMNS.map((k) => cell(r[k], k === 'lat' || k === 'lon')).join(','))].join('\r\n') + '\r\n';
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-  const out = process.argv[2]; if (!out) { console.error('usage: node ops/exports/camera-exports.mjs <outDir>'); process.exit(2); }
-  const j = (p) => JSON.parse(readFileSync(join(ROOT, p), 'utf8'));
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+// Writes cameras-all.csv, cameras-<country>.csv and manifest.json (counts, sources, licences) into outDir; the site build and the CLI both call this, so the /data/ page and the files cannot disagree.
+export function writeExports(out, root = ROOT) {
+  const j = (p) => JSON.parse(readFileSync(join(root, p), 'utf8'));
   const cams = j('data/camera-registry/cameras.json'); const srcs = j('data/camera-registry/sources.json');
   let health = {}; try { health = j('data/health/health.json').cameras || {}; } catch { /* no health file: every status is unknown */ }
-  const perms = j('data/source-permissions.json').sources;
-  const { rows, skipped } = buildRows(Array.isArray(cams) ? cams : cams.cameras, Array.isArray(srcs) ? srcs : srcs.sources, health, perms);
+  const { rows, skipped } = buildRows(Array.isArray(cams) ? cams : cams.cameras, Array.isArray(srcs) ? srcs : srcs.sources, health, j('data/source-permissions.json').sources);
   mkdirSync(out, { recursive: true });
-  writeFileSync(join(out, 'cameras-all.csv'), toCsv(rows));
+  const put = (name, rs) => { const t = toCsv(rs); writeFileSync(join(out, name), t); return Buffer.byteLength(t); };
+  const allBytes = put('cameras-all.csv', rows);
   const by = {}; for (const r of rows) (by[r.country || 'unknown'] ||= []).push(r);
-  for (const [k, v] of Object.entries(by)) writeFileSync(join(out, `cameras-${k}.csv`), toCsv(v));
-  console.log(`exported ${rows.length} cameras in ${Object.keys(by).length} countries; skipped ${JSON.stringify(skipped)}`);
+  const countries = Object.entries(by).sort().map(([slug, v]) => ({ slug, count: v.length, file: `cameras-${slug}.csv`, bytes: put(`cameras-${slug}.csv`, v) }));
+  const bySrc = new Map(); for (const r of rows) { const x = bySrc.get(r.source_id) || { id: r.source_id, name: r.source_name, count: 0, licence: r.licence, attribution: r.attribution }; x.count++; bySrc.set(r.source_id, x); }
+  const asof = rows.map((r) => r.last_seen).filter(Boolean).sort().at(-1)?.slice(0, 10) || '';
+  const manifest = { asof, total: rows.length, allBytes, skipped, columns: COLUMNS, countries, sources: [...bySrc.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)) };
+  writeFileSync(join(out, 'manifest.json'), JSON.stringify(manifest, null, 1));
+  return manifest;
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const out = process.argv[2]; if (!out) { console.error('usage: node ops/exports/camera-exports.mjs <outDir>'); process.exit(2); }
+  const m = writeExports(out);
+  console.log(`exported ${m.total} cameras in ${m.countries.length} countries; skipped ${JSON.stringify(m.skipped)}`);
 }
