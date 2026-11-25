@@ -277,3 +277,19 @@ test('the MISSING: label check rejects a bare none', () => {
   assert.equal(ok('MISSING: file exists = VERIFIED(ops/x.mjs:3)'), true);
   assert.equal(ok('MISSING: nothing missing; checked: repo grep, CI run 123'), true);
 });
+
+// B2 (code review 2026-11-25): PowerShell, update-index and node -e fs writes reached gev/ unblocked.
+test('B2 PowerShell and fs-write attacks on gev/ are blocked', () => {
+  for (const [tool, command] of [
+    ['PowerShell', 'Add-Content gev/package.json "x"'],
+    ['PowerShell', 'Set-Content -Path .\\gev\\package.json -Value x'],
+    ['PowerShell', 'Remove-Item -Recurse gev\\src'],
+    ['PowerShell', '"x" | Out-File gev/a.txt'],
+    ['PowerShell', 'git -C gev update-index --skip-worktree package.json'],
+    ['Bash', 'git -C gev update-index --assume-unchanged package.json'],
+    ['Bash', `node -e "require('fs').appendFileSync('gev/package.json','x')"`],
+    ['Bash', 'git -C gev add -A'],
+  ]) assert.ok(decide(tool, { command }), `${tool}: ${command}`);
+  assert.strictEqual(decide('PowerShell', { command: 'Get-Content gev/package.json' }), null);
+  assert.strictEqual(decide('PowerShell', { command: 'git -C gev status --porcelain' }), null);
+});

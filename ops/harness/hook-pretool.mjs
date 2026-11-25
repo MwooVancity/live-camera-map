@@ -17,11 +17,11 @@ export function decide(tool, input) {
   if (['Edit', 'Write', 'NotebookEdit'].includes(tool) && inGev(input.file_path || input.notebook_path)) {
     return 'gev/ is immutable. Explain the blocker to Mike and use an external workaround.';
   }
-  if (tool === 'Bash' && typeof input.command === 'string') {
+  if ((tool === 'Bash' || tool === 'PowerShell') && typeof input.command === 'string') {
     const c = input.command;
     if (process.env.GEV_BASELINE === '1') return null;
     const touchesGev = /(^|[\s"'=(])\.?[\\/]?gev([\\/]|\s|$)|-C\s+gev|cd\s+gev/.test(c);
-    const writes = /\b(rm|mv|cp|touch|mkdir|tee|patch|truncate|ln)\b|sed\s+-i|>>?\s*\S*gev|git\s+(-C\s+gev\s+)?(checkout|reset|apply|commit|clean|restore|stash|merge|rebase)|npm\s+(install|ci|update)|prettier\s+--write|eslint\s+--fix/.test(c);
+    const writes = /\b(rm|mv|cp|touch|mkdir|tee|patch|truncate|ln)\b|sed\s+-i|>>?\s*\S*gev|git\s+(-C\s+\S*gev\s+)?(checkout|reset|apply|commit|clean|restore|stash|merge|rebase|update-index|add|rm|config|gc|prune|worktree|submodule|fetch|pull)|\b(Add-Content|Set-Content|Out-File|Remove-Item|Move-Item|Copy-Item|New-Item|Clear-Content|Rename-Item|Set-ItemProperty)\b|(append|write)File(Sync)?|createWriteStream|\b(rmSync|unlinkSync|renameSync|copyFileSync|mkdirSync)\b|npm\s+(install|ci|update)|prettier\s+--write|eslint\s+--fix/.test(c);
     // fresh clone of gev is allowed only as the initial setup: git clone ... gev
     const cloneOnly = /^\s*git\s+clone\s+\S+\s+gev\s*$/.test(c);
     if (touchesGev && writes && !cloneOnly) return 'command writes inside gev/. gev/ is immutable.';
