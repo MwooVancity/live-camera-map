@@ -1,0 +1,77 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SITE_NAME } from '../../config.mjs';
+import { cameras as allCameras } from '../../lib/data.mjs';
+import { loadCorridors } from '../../lib/corridors.mjs';
+import { regionRoute, isIndexable } from '../../lib/pages.mjs';
+import { loadHealth, cityHealth, linkCheckText, statusWords, MEANING } from '../../lib/health.mjs';
+import { cleanLabel } from '../../lib/labels.mjs';
+
+// Plan item 36 P2-12. Beats Argos by: a driving-order, health-stamped, official-link corridor list (see site/PAGES.md).
+export function getStaticPaths() {
+  return loadCorridors().map((c) => ({ params: { corridor: c.def.slug }, props: { c } }));
+}
+const { c } = Astro.props;
+const { def, n, segments, left, leftOut, sources, asof } = c;
+const title = def.title;
+const regionName = allCameras.find((x) => x.regionSlug === def.region).regionName;
+const region = regionRoute(def.region);
+const all = segments.flatMap((s) => s.cams.map((x) => x.camera));
+const hres = cityHealth(all, loadHealth());
+const { block: hb, reason: hReason } = hres;
+const when = (iso) => iso.slice(0, 16).replace('T', ' ') + ' UTC';
+const axisText = c.northish ? 'south end to the north end' : 'west end to the east end';
+const plural = (k, one, many) => `${k} ${k === 1 ? one : many}`;
+---
+<Base title={`${title} traffic cameras in order along the road, ${def.place}: ${n} official links | ${SITE_NAME}`} description={`${n} official traffic camera links on ${title} in ${def.place}, in order along the road, each with its source credit and the time our link check last ran. Links only, no pictures.`} route={`/corridors/${def.slug}/`} crumbs={[{ name: regionName, route: region }, { name: title, route: `/corridors/${def.slug}/` }]} noindex={!isIndexable(n)}>
+  <h1>{title} traffic cameras in order along the road</h1>
+  <p>{plural(n, 'official camera link', 'official camera links')} on {title} in {def.place}, listed from the {axisText}{segments.length > 1 ? `, in ${segments.length} separate segments` : ''}. Each name is a link to the official page; there are no pictures here. Part of <a href={region}>{regionName} traffic cameras</a>; <a href="/guides/how-to-read-last-checked-status/">how to read the statuses</a>.</p>
+  <p><strong>Do not use this page while driving.</strong></p>
+  <p><a class="cta" href="/map/">Open the map</a></p>
+
+  <section data-block="cameras" data-basis="registry" data-count={n} data-source={sources.map((s) => s.name).join('; ')} data-asof={asof}>
+    <h2>All {n} cameras on {title}, in order along the road</h2>
+    {hb && <p class="meta">Status words. {statusWords()}</p>}
+    {segments.map((s, i) => (<>
+      {segments.length > 1 && <h3 id={`segment-${i + 1}`}>Segment {i + 1} of {segments.length}: {plural(s.cams.length, 'camera', 'cameras')}, from {cleanLabel(s.cams[0].camera)} to {cleanLabel(s.cams.at(-1).camera)}</h3>}
+      <ol>{s.cams.map(({ camera: x }) => (
+        <li data-camera={x.id}><a href={x.officialUrl} rel="noopener" title={x.name}>{cleanLabel(x)}</a> <span class="meta">{[x.feedType === 'still' ? 'still image' : x.feedType === 'video' ? 'video' : ''].filter(Boolean).join(', ')}{sources.length > 1 ? ` Source: ${sources.find((q) => q.id === x.sourceId)?.name}.` : ''}</span>{hb && <> <span class="meta" data-status={hb.statusOf(x.id)} title={`${MEANING[hb.statusOf(x.id)]}${hb.record(x.id)?.lastChecked ? '; last checked ' + when(hb.record(x.id).lastChecked) : ''}`}>Status: {hb.statusOf(x.id)}.</span>{hb.checkedText(x.id) && <span class="meta"> {hb.checkedText(x.id)}.</span>}</>}</li>
+      ))}</ol>
+    </>))}
+  </section>
+
+  <section data-block="ordering" data-basis="registry" data-source={sources.map((s) => s.name).join('; ')} data-asof={asof}>
+    <h2>How the order is worked out</h2>
+    <p>We take each camera's latitude and longitude and project it onto the main line of the road (the straight line of best fit through all of its cameras), then sort from the {axisText}. This is a sort by position along the road, not a driving route: it says nothing about which way traffic runs, and a camera on a winding stretch can sit slightly out of order. Several views from one station share a position and are listed together.</p>
+    {segments.length > 1 && <p>A camera more than 40 km from every other camera of this road starts a new segment, so one list never jumps across a gap, a stretch with no camera, or a separate part of the road. Each segment is ordered on its own line and the segments are placed in the same direction along the corridor.</p>}
+    <p><strong>{plural(leftOut, 'camera', 'cameras')} near this road {leftOut === 1 ? 'was' : 'were'} left out because the source does not say which road they are on.</strong> {left.ambiguous > 0 ? `${left.ambiguous} carry ${title} in the source's road field but their own name points to another road. ` : ''}{left.noRoad > 0 ? `${left.noRoad} have no road field at all and sit within 1 km of a listed camera. ` : ''}{leftOut === 0 ? `No camera in the ${regionName} list was left out for this reason. ` : ''}Only the {regionName} list is used: a road with the same name in another region is a different corridor.</p>
+  </section>
+
+  <section data-block="credit" data-basis="registry" data-source={sources.map((s) => s.name).join('; ')} data-asof={asof}>
+    <h2>Source and credit</h2>
+    <ul>{sources.map((s) => <li>{s.name}: {plural(s.n, 'camera', 'cameras')}. {s.attribution}. Licence on record: {s.licence}.</li>)}</ul>
+    <p class="meta">Registry date {asof}. This page lists links to the agency's own camera pages and says nothing about road conditions.</p>
+  </section>
+
+  {hb ? (
+    <section data-block="health" data-source="World Traffic Cameras health checker" data-asof={hb.asof} data-count={hb.total}>
+      <h2>Camera health on {title}</h2>
+      <p>Last check {when(hb.asof)}: {hb.counts.reachable} reachable, {hb.counts.stale} stale, {hb.counts.unavailable} unavailable, {hb.counts.unknown} unknown, out of {hb.total} cameras. {linkCheckText(hres)}</p>
+    </section>
+  ) : (
+    <section data-block="health" data-source="World Traffic Cameras health checker" data-asof="not-checked">
+      <h2>Camera health on {title}</h2>
+      {hReason === 'stale'
+        ? <p>Not checked recently. Our last camera check is more than 24 hours old, so we show no status for these {n} links rather than an old one.</p>
+        : <p>Not checked yet. We have not run our camera checker, so we do not know which of these {n} links work today.</p>}
+    </section>
+  )}
+
+  <section data-block="tests" data-basis="registry" data-source="World Traffic Cameras" data-asof={asof}>
+    <h2>Why this page exists</h2>
+    <p class="meta">Helpful: one road, every licensed official camera link on it, sorted by position along the road, so you can open the right agency page first. Gain: the order, the left-out count and a checked status beside every link, which the agency lists do not give. HCU: every number comes from the agency list and our own link check, one source credit per camera, no pictures and no verdict on the road.</p>
+  </section>
+
+  <h2>Guides</h2>
+  <ul><li><a href="/guides/how-to-read-last-checked-status/">How to read "last checked" status</a></li></ul>
+</Base>

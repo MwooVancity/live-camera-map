@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "node scripts/build-search.mjs && node scripts/build-exports.mjs && astro build",
-    "test": "node --test --test-concurrency=1 tests/search.relevance.test.mjs tests/search.test.mjs tests/gate.test.mjs tests/dist.test.mjs tests/live.test.mjs tests/health.test.mjs tests/roads.test.mjs tests/area.test.mjs tests/design.test.mjs tests/data.test.mjs tests/privacy.test.mjs"
+    "test": "node --test --test-concurrency=1 tests/search.relevance.test.mjs tests/search.test.mjs tests/gate.test.mjs tests/dist.test.mjs tests/live.test.mjs tests/health.test.mjs tests/roads.test.mjs tests/area.test.mjs tests/design.test.mjs tests/data.test.mjs tests/privacy.test.mjs tests/corridors.test.mjs"
   },
   "dependencies": {
     "astro": "5.18.1"

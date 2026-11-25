@@ -200,7 +200,7 @@ export const regionsOfCountry = (cams, countrySlug) => regionsWithPages(cams).fi
 
 // Every page: { route, kind, count, indexable, lastmod }. cities are passed in so tests can use fixtures.
 // cities: names (one region) or curatedPlaces rows. dates: optional { regionSlug: 'YYYY-MM-DD' } so a region page carries ITS registry date.
-export function pageList(cams, cities, registryDate, roads = [], dates = {}) {
+export function pageList(cams, cities, registryDate, roads = [], dates = {}, corridors = []) {
   const byRegion = countsBy(cams, 'region');
   const dateOf = (r) => dates[r] || registryDate;
   const out = [
@@ -226,6 +226,7 @@ export function pageList(cams, cities, registryDate, roads = [], dates = {}) {
   if (roads.length) out.push({ route: '/roads/', kind: 'roads-hub', count: roads.length, indexable: true, lastmod: dateOf('california') }); // road pages are California-only
   const byRoad = countsBy(cams, 'road');
   for (const r of roads) out.push({ route: `/roads/${roadSlug(r)}/`, kind: 'road', count: byRoad[r] || 0, indexable: isIndexable(byRoad[r] || 0), lastmod: dateOf('california') });
+  for (const c of corridors) out.push({ route: `/corridors/${c.slug}/`, kind: 'corridor', count: c.n, indexable: isIndexable(c.n), lastmod: dateOf(c.region) }); // plan item 36 P2-12: five corridor pages outside California
   for (const g of GUIDES) out.push({ route: `/guides/${g.slug}/`, kind: 'guide', count: null, indexable: true, lastmod: g.date });
   return out;
 }
