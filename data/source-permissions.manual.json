@@ -565,6 +565,31 @@
         "quote": "",
         "url": ""
       }
+    },
+    {
+      "id": "mn-wzdx",
+      "name": "Minnesota DOT work zones, WZDx feed (mn.carsprogram.org/carsapi_v1/api/wzdx)",
+      "section": "Live conditions feeds (read by ops/importers/mn-wzdx.mjs)",
+      "folder": "",
+      "licence": "The feed states its own licence in road_event_feed_info (HTTP 200, no key, read 2026-11-25): \"license\":\"https://creativecommons.org/publicdomain/zero/1.0/\" (Creative Commons CC0 1.0 public domain dedication). robots.txt on mn.carsprogram.org answers 404 (no rules). The importer stops and writes nothing if that license field changes. No pictures in this feed.",
+      "commercialStatus": "allowed_per_doc",
+      "statusReason": "quoted text: the feed itself carries the CC0 licence URL; public domain dedication, commercial use fine; no key needed",
+      "attribution": "Source: Minnesota Department of Transportation (MnDOT), WZDx feed, CC0",
+      "provenance": "https://mn.carsprogram.org/carsapi_v1/api/wzdx (road_event_feed_info.license) and https://creativecommons.org/publicdomain/zero/1.0/, read 2026-11-25",
+      "reviewedAt": "2026-11-25",
+      "reviewedBy": "claude-doc-read",
+      "needsHumanReview": true,
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "\"license\":\"https://creativecommons.org/publicdomain/zero/1.0/\"",
+        "url": "https://mn.carsprogram.org/carsapi_v1/api/wzdx"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     }
   ]
 }

@@ -5,6 +5,7 @@
     { "id": "nws", "script": "nws.mjs", "timeoutSec": 300, "required": false },
     { "id": "wildfire", "script": "wildfire.mjs", "timeoutSec": 120, "required": false },
     { "id": "drivebc-events", "script": "drivebc.mjs", "args": ["--only=events"], "timeoutSec": 120, "required": false },
+    { "id": "mn-wzdx", "script": "mn-wzdx.mjs", "timeoutSec": 90, "required": false },
     { "id": "toronto", "script": "toronto.mjs", "timeoutSec": 90 },
     { "id": "calgary", "script": "calgary.mjs", "timeoutSec": 60 },
     { "id": "hongkong", "script": "hongkong.mjs", "timeoutSec": 90 },

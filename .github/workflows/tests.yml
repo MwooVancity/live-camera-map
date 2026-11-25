@@ -28,6 +28,7 @@ jobs:
           tests/registry/review-a-robots.test.mjs
           tests/conditions/conditions.test.mjs
           tests/conditions/drivebc-events.test.mjs
+          tests/conditions/mn-wzdx.test.mjs
           tests/conditions/wildfire.test.mjs
           tests/licensing/evidence.test.mjs
           tests/observability/observability.test.mjs
