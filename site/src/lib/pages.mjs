@@ -205,6 +205,12 @@ export const regionIsIndexable = (cams, slug) => {
   return isIndexable(n) && !(CONFIG.perSource?.[regionInfo(slug).sourceId]?.skip && n < MIN_UNCHECKED);
 };
 export const regionsOfCountry = (cams, countrySlug) => regionsWithPages(cams).filter((r) => countryOf(r).countrySlug === countrySlug);
+// C4: a country with one region and no city page repeats that region's page, so it stays out of the index.
+export const countryIsIndexable = (cams, country) => {
+  const total = countsBy(cams, 'country')[country];
+  const regions = regionsOfCountry(cams, country);
+  return isIndexable(total) && !(regions.length === 1 && !curatedPlaces(cams).some((p) => regions.includes(p.region)));
+};
 
 // Every page: { route, kind, count, indexable, lastmod }. cities are passed in so tests can use fixtures.
 // cities: names (one region) or curatedPlaces rows. dates: optional { regionSlug: 'YYYY-MM-DD' } so a region page carries ITS registry date.
@@ -222,7 +228,7 @@ export function pageList(cams, cities, registryDate, roads = [], dates = {}, cor
   ];
   const byCountry = countsBy(cams, 'country');
   const countryDate = (c) => regionsOfCountry(cams, c).map(dateOf).filter(Boolean).sort().at(-1) || registryDate;
-  for (const c of countriesWithPages(cams)) out.push({ route: countryRoute(c), kind: 'country', count: byCountry[c], indexable: isIndexable(byCountry[c]), lastmod: countryDate(c) });
+  for (const c of countriesWithPages(cams)) out.push({ route: countryRoute(c), kind: 'country', count: byCountry[c], indexable: countryIsIndexable(cams, c), lastmod: countryDate(c) });
   for (const r of regionsWithPages(cams)) out.push({ route: regionRoute(r), kind: 'region', count: byRegion[r], indexable: regionIsIndexable(cams, r), lastmod: dateOf(r) });
   for (const p of cities.map((x) => (typeof x === 'string' ? { city: x, region: null } : x))) {
     const sub = p.region ? cams.filter((c) => c.regionSlug === p.region) : cams;

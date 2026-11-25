@@ -232,7 +232,7 @@ test('levels built: 1 world hub, one country hub per country, one region hub per
     const html = pages.get(`/cameras/${country}/`);
     assert.ok(html, country);
     assert.ok(titleOf(html).includes(`${n} official links`), `${country}: title count`);
-    assert.ok(!isNoindex(html));
+    assert.equal(isNoindex(html), ONE_REGION_HUBS.has(country), `${country}: noindex only for one-region hubs`);
     for (const [region, c] of Object.entries(REGION_COUNTRY)) {
       if (c.countrySlug !== country || !hubRegions.includes(region)) continue;
       assert.ok(html.includes(`href="/cameras/${country}/${region}/"`), `${country} does not link ${region}`);
@@ -252,9 +252,11 @@ test('old two-level addresses are gone and nothing links them (no redirects need
   for (const old of ['/cameras/california/', '/cameras/british-columbia/', '/cameras/california/los-angeles/']) assert.ok(!pages.has(old), `${old} still built`);
   for (const [route, html] of pages) for (const m of html.matchAll(/href="(\/cameras\/(?:california|british-columbia)\/[^"]*)"/g)) assert.fail(`${route} links old address ${m[1]}`);
 });
+// C4: a country with one region and no city page repeats that region's page, so its hub is noindex and out of the sitemap.
+const ONE_REGION_HUBS = new Set(['hong-kong', 'iceland', 'taiwan', 'spain', 'united-kingdom', 'australia', 'italy']);
 test('country hubs: in the sitemap, canonical, and each region hub says which country it is in and links it', () => {
   const xml = readFileSync(join(DIST, 'sitemap.xml'), 'utf8');
-  for (const c of lvl(2)) { assert.ok(xml.includes(`<loc>${SITE_URL}${c}</loc>`), `${c} not in sitemap`); assert.ok(pages.get(c).includes(`<link rel="canonical" href="${SITE_URL}${c}">`)); }
+  for (const c of lvl(2)) { if (ONE_REGION_HUBS.has(c.split('/')[2])) { assert.ok(!xml.includes(`<loc>${SITE_URL}${c}</loc>`), `${c} noindex hub must stay out of the sitemap`); assert.ok(isNoindex(pages.get(c))); continue; } assert.ok(xml.includes(`<loc>${SITE_URL}${c}</loc>`), `${c} not in sitemap`); assert.ok(pages.get(c).includes(`<link rel="canonical" href="${SITE_URL}${c}">`)); }
   assert.ok(pages.get('/cameras/united-states/california/').includes('href="/cameras/united-states/"'));
   assert.ok(pages.get('/cameras/canada/british-columbia/').includes('href="/cameras/canada/"'));
   assert.ok(pages.get('/cameras/canada/british-columbia/mission/').includes('Canada.'), 'city page names its country');
@@ -375,7 +377,7 @@ test('Hong Kong: country hub and one region page, no city pages, every camera li
   assert.ok(!isNoindex(html), 'indexable');
   assert.equal(new Set(mine.map((c) => c.name)).size, mine.length, 'no two labels alike');
   assert.ok(pages.get('/cameras/hong-kong/').includes('/cameras/hong-kong/hong-kong/'), 'the country hub links to it');
-  assert.ok(!isNoindex(pages.get('/cameras/hong-kong/')), 'country hub indexable');
+  assert.ok(isNoindex(pages.get('/cameras/hong-kong/')), 'one-region country hub is noindex (C4)');
 });
 test('Texas (City of Austin): region page under the United States, Austin only said plainly, no city pages, every camera listed once as a link to the City picture address, the credit line printed, link-out only', () => {
   const r = '/cameras/united-states/texas/';
@@ -417,7 +419,7 @@ test('Iceland: country hub and one region page, no city pages, every camera view
   assert.ok(!isNoindex(html), 'indexable');
   assert.equal(new Set(mine.map((c) => c.name)).size, mine.length, 'no two labels alike');
   assert.ok(pages.get('/cameras/iceland/').includes('/cameras/iceland/iceland/'), 'the country hub links to it');
-  assert.ok(!isNoindex(pages.get('/cameras/iceland/')), 'country hub indexable');
+  assert.ok(isNoindex(pages.get('/cameras/iceland/')), 'one-region country hub is noindex (C4)');
 });
 test('country hub of Canada: BC and Quebec regions with their own text, and the one-camera Quebec region is counted in the total but said to have no page', () => {
   const html = pages.get('/cameras/canada/');

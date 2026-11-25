@@ -2,7 +2,7 @@
 import Base from '../../../layouts/Base.astro';
 import { SITE_NAME } from '../../../config.mjs';
 import { cameras, countsBy, registryDateOf, sourceOf } from '../../../lib/data.mjs';
-import { countriesWithPages, regionsOfCountry, countryName, curatedPlaces, regionInfo, regionRoute, cityRoute, countryRoute, isIndexable } from '../../../lib/pages.mjs';
+import { countriesWithPages, regionsOfCountry, countryName, curatedPlaces, regionInfo, regionRoute, cityRoute, countryRoute, isIndexable, countryIsIndexable } from '../../../lib/pages.mjs';
 
 export function getStaticPaths() {
   return countriesWithPages(cameras).map((country) => ({ params: { country } }));
@@ -26,7 +26,7 @@ const sourceNames = rows.map((x) => x.src.name).filter(Boolean).join('; ');
 const regionWord = rows.length === 1 ? 'region' : 'regions';
 const noHub = total - rows.reduce((s, x) => s + x.n, 0); // cameras in regions with fewer than 3 cameras: counted, but no region page
 ---
-<Base title={`${name} traffic cameras: ${total} official links in ${rows.length} ${regionWord} | ${SITE_NAME}`} description={`${total} ${name} traffic cameras linked to the official source: ${rows.map((x) => `${x.regionName} (${x.n}, ${x.info.agency})`).join(', ')}.`} route={countryRoute(country)} crumbs={[{ name: 'All cameras', route: '/cameras/' }, { name, route: countryRoute(country) }]} noindex={!isIndexable(total)}>
+<Base title={`${name} traffic cameras: ${total} official links in ${rows.length} ${regionWord} | ${SITE_NAME}`} description={`${total} ${name} traffic cameras linked to the official source: ${rows.map((x) => `${x.regionName} (${x.n}, ${x.info.agency})`).join(', ')}.`} route={countryRoute(country)} crumbs={[{ name: 'All cameras', route: '/cameras/' }, { name, route: countryRoute(country) }]} noindex={!countryIsIndexable(cameras, country)}>
   <h1>{name} traffic cameras</h1>
   <p>{total} {name} traffic cameras in {rows.length} {regionWord}: {rows.map((x) => `${x.regionName} ${x.n}`).join(', ')}. Part of <a href="/cameras/">all traffic cameras</a>.{noHub > 0 ? ` ${noHub} more ${noHub === 1 ? 'camera is' : 'cameras are'} in regions with fewer than 3 cameras, which get no region page.` : ''}</p>
   <section data-block="regions" data-basis="registry" data-source={sourceNames} data-asof={dates.at(-1)}>
