@@ -14,6 +14,7 @@ import { A22_REGION, A22_COUNTRY } from './a22.mjs';
 import { LA_REGION, LA_COUNTRY } from './brla.mjs';
 import { MADRID_REGION, MADRID_COUNTRY } from './madrid.mjs';
 import { LN_REGION, LN_COUNTRY } from './tfl.mjs';
+import { LU_REGION, LU_COUNTRY } from './citalu.mjs';
 
 export const CA_BOUNDS = { latMin: 32.3, latMax: 42.1, lonMin: -124.6, lonMax: -114.0 };
 // Optional text field (one source gives it, another does not): the source's own words for where the camera is. Text only, never a picture.
@@ -113,6 +114,7 @@ export const REGION_COUNTRY = {
   [LA_REGION.slug]: LA_COUNTRY, // Louisiana: one source, LADOTD cameras in Greater Baton Rouge as listed by the City of Baton Rouge open data portal (511LA camera code kept as the name, no city field, so no city pages; the region page says it is Greater Baton Rouge only)
   [MADRID_REGION.slug]: MADRID_COUNTRY, // Madrid (Spain): one source, the City of Madrid's own traffic camera list (camera number kept in the name text, no city or road field, so no city pages; the region page says it is the city of Madrid only, not the DGT national feed)
   [TX_REGION.slug]: TX_COUNTRY,// Texas: one source, the City of Austin's own list (no city field, so no city pages; the region page says it is Austin only)
+  [LU_REGION.slug]: LU_COUNTRY, // CITA motorway webcams (Ponts et Chaussees): one region, CITA's own motorway camera list (motorway number kept as the road, no place field, so no city pages)
 };
 export const countryOf = (regionSlug) => REGION_COUNTRY[regionSlug] || null;
 

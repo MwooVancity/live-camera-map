@@ -15,6 +15,7 @@ import { IA_REGION } from '../../../ops/importers/lib/iowa.mjs';
 import { A22_REGION } from '../../../ops/importers/lib/a22.mjs';
 import { LA_REGION } from '../../../ops/importers/lib/brla.mjs';
 import { MADRID_REGION } from '../../../ops/importers/lib/madrid.mjs';
+import { LU_REGION } from '../../../ops/importers/lib/citalu.mjs';
 
 // NFKD splits an accented letter into the letter plus a combining mark; the marks are removed first, otherwise "Hämeenlinna" became "ha-meenlinna".
 export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -149,6 +150,13 @@ export const REGIONS = {
     placeText: (x) => sentence(`These are the City of Austin's cameras only, not a list for the whole state of Texas: the City's list has no city field (it also covers cameras in the City's extra-territorial jurisdiction), so there are no city pages. Each of the ${x.total} cameras is one the City marks TURNED_ON, named as the City names it with its camera number in brackets, and carries its street and cross street where the City gives them; cameras the City marks DESIRED, VOID or REMOVED are left out.`),
     cityText: () => '',
     caveats: ['The camera pictures belong to the City of Austin and are not shown here. Each link goes to one still picture address on cctv.austinmobility.io; it is a link only. The City of Austin Open Data Terms of Use cover the data portal and put no controls on end use; they do not separately say whether the picture files are covered.'],
+  },
+  // Luxembourg: one region from CITA's own motorway webcam list (Ponts et Chaussees); the motorway (A1, A3, A4, A6, A7, A13) is the road, the list has no place field, so no city pages.
+  [LU_REGION.slug]: {
+    sourceId: 'cita-lu-cameras', agency: 'CITA motorway webcams (Ponts et Chaussees)', cityLimit: 0, guide: null, credit: true, list: 'motorway webcam list', listAll: true,
+    placeText: (x) => sentence(`CITA's list has no city or place field: each of the ${x.total} cameras is named as CITA names it (the motorway and a camera number, for example A6 - Camera 3) and has its own coordinates, so there are no city pages here.`),
+    cityText: () => '',
+    caveats: ['The camera pictures belong to CITA and are not shown here. Each link goes to the camera\'s own page on www.cita.lu; it is a link only. The list is published as CC0 open data on data.public.lu and CITA states that its webcam information is available without restrictions, but the CITA site footer still says all rights reserved, so we do not copy, store or embed any picture. We have not checked whether each camera is live: the link is a web page, not a picture address, so the status reads unknown.'],
   },
 };
 // The credit sentence for a source that asks for one (its attribution line from sources.json, without a leading "Source:").
