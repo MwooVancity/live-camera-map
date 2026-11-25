@@ -198,10 +198,10 @@ test('licence row: owner-approved for this id only, says plainly there is no lic
   assert.match(r.imageStatus, /^unverified/);
   assert.equal(r.imagePermission.status, 'unverified');
   assert.equal(isEnabled(r, new Date(NOW), ap), true);
-  assert.equal(isEnabled(r, new Date(NOW), { ...ap, sourceApprovals: [] }), false, 'without its own entry the all-rows date does not open it');
-  assert.equal(isEnabled(r, new Date(NOW), { ...ap, sourceApprovals: [{ ...ap.sourceApprovals[0], id: 'other-source' }] }), false, 'an approval for another id does not open it');
+  assert.equal(isEnabled(r, new Date(NOW), { ...ap, sources: [] }), false, 'without its own entry the all-rows date does not open it');
+  assert.equal(isEnabled(r, new Date(NOW), { ...ap, sources: [{ ...ap.sources[0], id: 'other-source' }] }), false, 'an approval for another id does not open it');
   assert.equal(isEnabled(r, new Date(NOW), null), false);
-  assert.deepEqual(ap.sourceApprovals.filter((a) => a.id === 'maryland-chart-cameras').map((a) => a.approvedAt), ['2026-11-25']);
+  assert.deepEqual(ap.sources.filter((a) => a.id === 'maryland-chart-cameras').map((a) => a.approvedAt), ['2026-11-25']);
 });
 
 test('health config: chart.maryland.gov is skipped (Cloudflare challenge); every Maryland camera is unknown by design', () => {
