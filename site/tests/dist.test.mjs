@@ -313,7 +313,7 @@ test('Quebec: 13 region hubs (Abitibi-Temiscamingue has 1 camera: no page), no c
     assert.ok(/bot-check page/.test(html) && /unknown by design/.test(html), `${r}: link check caveat`);
     assert.ok(/Credit: Contains data from the Ministere des Transports/.test(html), `${r}: credit line`);
     assert.ok(!/Fintraffic|DriveBC|Caltrans|HighwayCams/.test(body(r)), `${r} names another source`);
-    assert.ok(!isNoindex(html), r);
+    assert.equal(isNoindex(html), mine.length < 10, r); // code review C5: under 10 cameras of a never-checked source is noindex
   }
 });
 test('Toronto: one region hub, no city pages, every camera listed once as a link to the City picture address (a link only), credit and caveats printed, link-out only', () => {

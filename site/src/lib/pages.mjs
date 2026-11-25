@@ -1,5 +1,6 @@
 // Pure helpers (no Astro): page list, noindex gate, sitemap. Tested with fixtures in tests/gate.test.mjs.
 import { countsBy, roadSlug, countryOf, REGION_COUNTRY } from '../../../ops/importers/lib/registry.mjs';
+import { CONFIG } from '../../../ops/health/check.mjs';
 import { MIN_CAMERAS } from '../config.mjs';
 import { QC_REGIONS } from '../../../ops/importers/lib/quebec.mjs';
 import { TOR_REGION } from '../../../ops/importers/lib/toronto.mjs';
@@ -196,6 +197,13 @@ export function countriesWithPages(cams) {
   return Object.entries(countsBy(cams, 'country')).filter(([, n]) => n >= MIN_CAMERAS).map(([slug]) => slug);
 }
 export const countryName = (slug) => Object.values(REGION_COUNTRY).find((c) => c.countrySlug === slug)?.countryName;
+// A region of a source our checker never requests (every status unknown by design) needs MIN_UNCHECKED cameras to be indexable
+// (code review 2026-11-25 C5): a 3-camera Quebec page with only "unknown" statuses and a shared caveat is thin.
+export const MIN_UNCHECKED = 10;
+export const regionIsIndexable = (cams, slug) => {
+  const n = countsBy(cams, 'region')[slug] || 0;
+  return isIndexable(n) && !(CONFIG.perSource?.[regionInfo(slug).sourceId]?.skip && n < MIN_UNCHECKED);
+};
 export const regionsOfCountry = (cams, countrySlug) => regionsWithPages(cams).filter((r) => countryOf(r).countrySlug === countrySlug);
 
 // Every page: { route, kind, count, indexable, lastmod }. cities are passed in so tests can use fixtures.
@@ -215,7 +223,7 @@ export function pageList(cams, cities, registryDate, roads = [], dates = {}, cor
   const byCountry = countsBy(cams, 'country');
   const countryDate = (c) => regionsOfCountry(cams, c).map(dateOf).filter(Boolean).sort().at(-1) || registryDate;
   for (const c of countriesWithPages(cams)) out.push({ route: countryRoute(c), kind: 'country', count: byCountry[c], indexable: isIndexable(byCountry[c]), lastmod: countryDate(c) });
-  for (const r of regionsWithPages(cams)) out.push({ route: regionRoute(r), kind: 'region', count: byRegion[r], indexable: isIndexable(byRegion[r]), lastmod: dateOf(r) });
+  for (const r of regionsWithPages(cams)) out.push({ route: regionRoute(r), kind: 'region', count: byRegion[r], indexable: regionIsIndexable(cams, r), lastmod: dateOf(r) });
   for (const p of cities.map((x) => (typeof x === 'string' ? { city: x, region: null } : x))) {
     const sub = p.region ? cams.filter((c) => c.regionSlug === p.region) : cams;
     const rs = [...new Set(sub.filter((c) => c.city === p.city).map((c) => c.regionSlug))];

@@ -58,3 +58,23 @@ test('C8: the /map/ footer does not claim no third-party fonts; other pages keep
   assert.ok(/no third-party scripts or fonts/.test(foot(pages.get('/status/'))));
   assert.ok(!/Camera data: Caltrans \(California Department of Transportation\) for California and DriveBC/.test(foot(pages.get('/cameras/united-states/finland/') || pages.get('/'))));
 });
+
+test('C5: a region of a never-checked source with under 10 cameras is noindex and out of the sitemap; larger ones stay', async () => {
+  const { regionIsIndexable } = await import('../src/lib/pages.mjs');
+  const { isNoindex, sitemapRoutes } = await import('./helpers.mjs');
+  const sm = new Set(sitemapRoutes());
+  assert.equal(regionIsIndexable(cameras, 'nord-du-quebec'), false);
+  assert.ok(isNoindex(pages.get('/cameras/canada/nord-du-quebec/')));
+  assert.ok(!sm.has('/cameras/canada/nord-du-quebec/'));
+  assert.equal(regionIsIndexable(cameras, 'laval'), true);
+  assert.ok(sm.has('/cameras/canada/laval/') && !isNoindex(pages.get('/cameras/canada/laval/')));
+});
+
+// C9 (proposal only, behaviour NOT changed): the launch switch fails OPEN. This pins today's behaviour so a change is a deliberate edit.
+test('C9: NOINDEX_ALL is true only for PUBLIC_NOINDEX=1; unset builds are indexable (documented risk)', async () => {
+  const { execFileSync } = await import('node:child_process');
+  const run = (v) => execFileSync(process.execPath, ['-e', "import('./src/config.mjs').then((m) => console.log(m.NOINDEX_ALL))"], { env: v === undefined ? Object.fromEntries(Object.entries(process.env).filter(([k]) => k !== 'PUBLIC_NOINDEX')) : { ...process.env, PUBLIC_NOINDEX: v } }).toString().trim();
+  assert.equal(run('1'), 'true');
+  assert.equal(run('0'), 'false');
+  assert.equal(run(undefined), 'false');
+});

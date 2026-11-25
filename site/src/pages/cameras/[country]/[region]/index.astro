@@ -4,7 +4,7 @@ import { SITE_NAME } from '../../../../config.mjs';
 import { countryOf } from '../../../../../../ops/importers/lib/registry.mjs';
 import { cameras, countsBy, registryDateOf, sourceOf, loadedDistricts, failedDistricts, bcReport } from '../../../../lib/data.mjs';
 import { feedStatus, FEEDS_BY_REGION } from '../../../../lib/live.mjs';
-import { regionsWithPages, curatedPlaces, creditLine, cityRoute, regionRoute, countryRoute, isIndexable, GUIDES, regionInfo } from '../../../../lib/pages.mjs';
+import { regionsWithPages, curatedPlaces, creditLine, cityRoute, regionRoute, countryRoute, isIndexable, regionIsIndexable, GUIDES, regionInfo } from '../../../../lib/pages.mjs';
 import { cleanLabel } from '../../../../lib/labels.mjs';
 import { corridorsOfRegion } from '../../../../lib/corridors.mjs';
 import { loadHealth, cityHealth, linkCheckText, statusWords, MEANING } from '../../../../lib/health.mjs';
@@ -34,7 +34,7 @@ const hb = hres.block;
 const when = (iso) => iso.slice(0, 16).replace('T', ' ') + ' UTC';
 const guides = isCA ? GUIDES.slice(0, 3) : [GUIDES.find((g) => g.slug === info.guide), ...GUIDES.filter((g) => ['how-to-read-last-checked-status', 'camera-link-is-dead'].includes(g.slug))].filter(Boolean);
 ---
-<Base title={`${regionName} traffic cameras: ${total} official links | ${SITE_NAME}`} description={`${total} ${regionName} traffic cameras linked to the official source${cities.length ? ', by city' : ''}, with coverage and last update date.`} route={regionRoute(region)} crumbs={[{ name: 'All cameras', route: '/cameras/' }, { name: country.countryName, route: countryRoute(country.countrySlug) }, { name: regionName, route: regionRoute(region) }]} noindex={!isIndexable(total)}>
+<Base title={`${regionName} traffic cameras: ${total} official links | ${SITE_NAME}`} description={`${total} ${regionName} traffic cameras linked to the official source${cities.length ? ', by city' : ''}, with coverage and last update date.`} route={regionRoute(region)} crumbs={[{ name: 'All cameras', route: '/cameras/' }, { name: country.countryName, route: countryRoute(country.countrySlug) }, { name: regionName, route: regionRoute(region) }]} noindex={!regionIsIndexable(cameras, region)}>
   <h1>{regionName} traffic cameras</h1>
   <p class="meta">Part of <a href={countryRoute(country.countrySlug)}>{country.countryName} traffic cameras</a>.</p>
   {isCA
