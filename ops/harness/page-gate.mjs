@@ -7,6 +7,18 @@ import { fileURLToPath } from 'node:url';
 
 const CAMERA_HOSTS = ['cwwp2.dot.ca.gov', 'wzmedia.dot.ca.gov', 'drivebc.ca', 'weathercam.digitraffic.fi', 'quebec511.info', 'opendata.toronto.ca', 'trafficcam.calgary.ca', 'tdcctv.data.one.gov.hk', 'www.vegagerdin.is', 'cctv.austinmobility.io']; // drivebc.ca covers www.drivebc.ca picture addresses; the last four are the Finland, Quebec, Toronto and Calgary link-out hosts
 
+// B8: camera hosts = the fixed list above plus every host the registry names (officialUrl, imageUrl, streamUrl), so a new importer widens the rule by itself.
+function registryHosts() {
+  const f = fileURLToPath(new URL('../../data/camera-registry/cameras.json', import.meta.url));
+  if (!existsSync(f)) return [];
+  const j = JSON.parse(readFileSync(f, 'utf8'));
+  const hosts = new Set();
+  for (const c of Array.isArray(j) ? j : j.cameras || []) for (const k of ['officialUrl', 'imageUrl', 'streamUrl']) { try { if (c[k]) hosts.add(new URL(c[k]).hostname); } catch { /* not a URL */ } }
+  return [...hosts];
+}
+const REG_HOSTS = registryHosts();
+const isCameraHost = (url) => { try { const h = new URL(url, 'https://own.invalid/').hostname; return REG_HOSTS.some((x) => h === x || h.endsWith('.' + x)); } catch { return false; } };
+
 function walk(dir, out = []) {
   for (const f of readdirSync(dir)) {
     const p = join(dir, f);
@@ -50,10 +62,13 @@ export function gate(dist, pagesMd = '', now = new Date()) {
   for (const [route, p] of pages) {
     for (const m of p.html.matchAll(/<(img|video|source|iframe|embed|object)\s[^>]*?(?:src|srcset|data)=["']([^"']+)["']/gi)) {
       const url = m[2];
-      if (CAMERA_HOSTS.some((h) => url.includes(h)) || (m[1].toLowerCase() === 'img' && /cctv|\/camera\//i.test(url))) errors.push(`${route}: camera media on page (${m[1]} ${url.slice(0, 60)}) breaks link-out only`);
+      if (CAMERA_HOSTS.some((h) => url.includes(h)) || isCameraHost(url) || (m[1].toLowerCase() === 'img' && /cctv|\/camera\//i.test(url))) errors.push(`${route}: camera media on page (${m[1]} ${url.slice(0, 60)}) breaks link-out only`);
       if (m[1].toLowerCase() === 'video') errors.push(`${route}: <video> tag breaks link-out only`);
     }
   }
+
+  // 1b) a CSS url() in a style attribute is a way to show a picture without an <img> (B8)
+  for (const [route, p] of pages) for (const m of p.html.matchAll(/\sstyle=["']([^"']*url\([^"']*)["']/gi)) errors.push(`${route}: style attribute uses url( (${m[1].slice(0, 60)}) breaks link-out only`);
 
   // 2) silo: reachability and depth from /
   const depth = new Map([['/', 0]]);

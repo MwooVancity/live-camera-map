@@ -319,3 +319,16 @@ test('B10 deploy build check: indexable build fails, hidden build passes, only e
   assert.deepStrictEqual(noindexProblems(d, ''), []);
   assert.ok(noindexProblems(mkdtempSync(join(tmpdir(), 'nx-')), '').length, 'empty build is a failure');
 });
+
+// B8: the no-picture rule knew 10 camera hosts; the registry has 24 (NSW, TfL, Iowa, Madrid...), and CSS url() was checked nowhere.
+test('B8 an iframe to a registry camera host (NSW) fails the link-out rule', () => {
+  const errs = gate(site({ city: (c, b) => page(b + '<iframe src="https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/x.jpg"></iframe>') }), md);
+  assert.ok(errs.some((e) => /link-out/.test(e)), errs.join('\n'));
+});
+test('B8 a CSS url() background in a style attribute fails', () => {
+  const errs = gate(site({ city: (c, b) => page(b + '<div style="background:url(https://cwwp2.dot.ca.gov/x.jpg)">x</div>') }), md);
+  assert.ok(errs.some((e) => /url\(/.test(e)), errs.join('\n'));
+});
+test('B8 control: an own-origin image and a plain style attribute still pass', () => {
+  assert.deepStrictEqual(gate(site({ city: (c, b) => page(b + '<img src="/logo.svg" alt="x"><div style="color:red">x</div>') }), md), []);
+});
