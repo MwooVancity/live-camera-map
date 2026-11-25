@@ -87,3 +87,17 @@ test('bad names and slugs cannot reach code', () => {
   assert.throws(() => generate('abcd', opts(root, fx('clean'), { regionSlug: "a'b" })), /regionSlug/);
   assert.ok(!existsSync(join(root, 'ops/importers/abcd.mjs')));
 });
+
+test('A13: the copied importer, library and test use the same source id as the patch (no template id left behind)', () => {
+  for (const extra of [{ sourceId: 'wsdot-cameras' }, {}]) {
+    const root = sandbox();
+    const { patch } = generate('wsdot', opts(root, fx('clean'), extra));
+    assert.equal(patch.sourceId, 'wsdot-cameras');
+    const files = ['ops/importers/wsdot.mjs', 'ops/importers/lib/wsdot.mjs', 'tests/registry/wsdot.test.mjs'].map((f) => read(root, f));
+    assert.match(files[0], /s\.id === 'wsdot-cameras'/);
+    assert.match(files[0], /sourceId: 'wsdot-cameras', sourceRow/);
+    assert.match(files[1], /sourceId: 'wsdot-cameras'/);
+    assert.match(files[1], /`wsdot-cameras-\$\{/);
+    for (const t of files) assert.ok(!/wsdot-live-traffic/.test(t), 'the template id (swapped to wsdot-live-traffic) is gone');
+  }
+});

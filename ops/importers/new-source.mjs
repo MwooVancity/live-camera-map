@@ -26,7 +26,9 @@ export const CHECKLIST = (id) => [
   `8. data/world-coverage.json: flip the country row; run the importer once, then: node --test tests/registry/*.test.mjs tests/licensing/*.test.mjs ops/harness/*.test.mjs, then in site/: npm run build && npm test, then node ops/harness/page-gate.mjs site/dist site/PAGES.md.`,
 ];
 
-export function scaffold(id, { template = 'nsw', root = ROOT, log = console.log, runAll = true } = {}) {
+// sourceId (optional): the one id the importer, its tests and the patch all use. The copied files carry the template's own ids (nsw-live-traffic, nsw-live-traffic-cameras);
+// they are rewritten to sourceId so the gate row, the registry rows, the health entry and the test cannot name different sources (code review A13).
+export function scaffold(id, { template = 'nsw', root = ROOT, log = console.log, runAll = true, sourceId = null } = {}) {
   if (!/^[a-z][a-z0-9]{1,15}$/.test(id)) throw new Error('short id: 2 to 16 lowercase letters or digits, starting with a letter');
   if (!/^[a-z][a-z0-9]{1,15}$/.test(template)) throw new Error('bad template name');
   const pairs = [
@@ -38,7 +40,10 @@ export function scaffold(id, { template = 'nsw', root = ROOT, log = console.log,
   const swap = (t) => t.replace(new RegExp(template.toUpperCase(), 'g'), id.toUpperCase()).replace(new RegExp(template, 'g'), id);
   const banner = `// TODO(new-source): scaffolded from the ${template} template by ops/importers/new-source.mjs. Finish every item of the checklist it printed, then delete this line.\n`;
   const written = [];
-  for (const [from, to] of pairs) { writeFileSync(join(root, to), banner + swap(readFileSync(join(root, from), 'utf8'))); written.push(to); }
+  const tmplSrc = readFileSync(join(root, pairs[0][0]), 'utf8');
+  const tmplIds = [(tmplSrc.match(/s\.id === '([^']+)'/) || [])[1], (tmplSrc.match(/sourceId: '([^']+)', sourceRow/) || [])[1]].filter(Boolean).map(swap); // gate row id first: it contains the registry id
+  const reid = (t) => (sourceId ? tmplIds.reduce((x, tid) => x.split(tid).join(sourceId), t) : t); // gate id first (it contains the registry id), then the registry id, wherever each appears
+  for (const [from, to] of pairs) { writeFileSync(join(root, to), banner + reid(swap(readFileSync(join(root, from), 'utf8')))); written.push(to); }
   const planFile = join(root, 'ops/importers/run-all.json');
   const plan = JSON.parse(readFileSync(planFile, 'utf8'));
   if (runAll && !plan.importers.some((e) => e.id === id)) { plan.importers.push({ id, script: `${id}.mjs`, timeoutSec: 90 }); writeFileSync(planFile, JSON.stringify(plan, null, 2) + '\n'); written.push('ops/importers/run-all.json (entry added)'); }
@@ -55,7 +60,7 @@ export function generate(id, { evidence, sourceId = `${id}-cameras`, name, regio
   for (const [k, v] of Object.entries({ sourceId, regionSlug, countrySlug, worldCountry })) if (!SLUG.test(v || '')) throw new Error(`${k}: lowercase letters, digits and dashes only`);
   if (!name || !/^[^'\\\r\n`$]{3,120}$/.test(name)) throw new Error('name: 3 to 120 characters, no quotes, backslashes or $');
   const patch = buildPatch({ id, sourceId, name, regionSlug, countrySlug, worldCountry, evidence, today }); // throws REJECT before anything is written
-  const written = scaffold(id, { template, root, log, runAll: false }); // run-all.json is a shared file: its entry is in the patch
+  const written = scaffold(id, { template, root, log, runAll: false, sourceId }); // run-all.json is a shared file: its entry is in the patch
   const dir = join(root, 'ops/importers/patches'); mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, `${id}.patch.json`), JSON.stringify(patch, null, 2) + '\n');
   log(`patch ${patch.verdict}: ${patch.summary}`);
