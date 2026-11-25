@@ -1,0 +1,30 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { SITE_NAME } from '../../../config.mjs';
+import { mnWorkZones } from '../../../lib/live.mjs';
+
+const z = mnWorkZones();
+const when = (iso) => (iso ? iso.slice(0, 16).replace('T', ' ') + ' UTC' : 'not given');
+---
+<Base title={`Minnesota road work zones in effect now | ${SITE_NAME}`} description="Road work zones the Minnesota DOT feed marks as active, with road, direction, dates, and the feed's own timestamp. Official data, no pictures." route="/work-zones/minnesota/" crumbs={[{ name: 'Minnesota work zones', route: '/work-zones/minnesota/' }]} noindex={true}>
+  <h1>Minnesota road work zones</h1>
+  {z.state === 'fresh' ? (
+    <section data-block="mn-work-zones" data-source="Minnesota DOT WZDx feed" data-asof={z.asof} data-count={z.rows.length}>
+      <h2>{z.rows.length} work zones in effect now</h2>
+      <p>Source: Minnesota DOT work zone feed, copied {when(z.asof)}; the feed itself reported {when(z.feedUpdated)}. The page was built from that copy, so a zone may have changed since. Check the official 511 page before you drive.</p>
+      <table>
+        <thead><tr><th>Road</th><th>Direction</th><th>What</th><th>Starts (UTC)</th><th>Ends (UTC)</th><th>Position</th></tr></thead>
+        <tbody>
+          {z.rows.map((r) => <tr data-id={r.id}><td>{r.road || 'not named'}</td><td>{r.direction || 'not given'}</td><td>{r.text || 'no description'}</td><td>{r.start ? r.start.slice(0, 10) : 'not given'}</td><td>{r.end ? r.end.slice(0, 10) : 'not given'}</td><td>{Number(r.lat).toFixed(4)}, {Number(r.lon).toFixed(4)}</td></tr>)}
+        </tbody>
+      </table>
+      <p class="meta">Position is the first point of the zone. Credit: {z.attribution}. {z.link && <a href={z.link} rel="nofollow noopener">Open the official feed</a>}.</p>
+    </section>
+  ) : (
+    <section data-block="mn-work-zones" data-source="Minnesota DOT WZDx feed" data-asof="none">
+      <h2>No current work zone data</h2>
+      <p>We show nothing rather than old data: {z.state}.</p>
+    </section>
+  )}
+  <p><a href="/status/">Camera network status</a> | <a href="/sources/">Sources and licences</a></p>
+</Base>

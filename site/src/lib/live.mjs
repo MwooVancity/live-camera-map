@@ -5,7 +5,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { isEnabled } from '../../../tests/licensing/gate.mjs';
-import { usableItems, usableNws, SOURCE_IDS, MAX_AGE_MIN } from '../../../ops/importers/lib/conditions.mjs';
+import { usableItems, usableNws, isFresh, SOURCE_IDS, MAX_AGE_MIN } from '../../../ops/importers/lib/conditions.mjs';
 import { roadSlug } from '../../../ops/importers/lib/registry.mjs';
 import { WILDFIRE_SOURCE_ID, WILDFIRE_MAX_AGE_MIN, SOURCE_LABEL, DATASET_URL, usableWildfire, wildfiresNear } from '../../../ops/importers/lib/wildfire.mjs';
 
@@ -153,4 +153,18 @@ export function roadBlocks(slug, cams, cities, live = loadLive(), now = new Date
   }
   out.push(...wildfireBlocks(live, now, cams, `Wildfires near ${road}`, true));
   return out;
+}
+
+// Minnesota work zones page (plan item 41 step 3). Same gates as every block: licence row enabled, shape valid, file newer than MN_MAX_AGE_MIN
+// at build, else the page says there is no current data. Only zones the feed marks active are listed; the heading count is rows.length.
+export const MN_ID = 'mn-wzdx';
+export const MN_MAX_AGE_MIN = 24 * 60;
+export function mnWorkZones(live = loadLive(), now = new Date()) {
+  const row = live.rows.get(MN_ID);
+  if (!isEnabled(row, now)) return { state: 'licence not enabled', row };
+  const doc = live.doc('mn-wzdx');
+  if (!doc || !Array.isArray(doc.items) || typeof doc.generatedAt !== 'string') return { state: 'no data', row };
+  if (!isFresh(doc.generatedAt, MN_MAX_AGE_MIN, now)) return { state: 'older than its limit', row, asof: doc.generatedAt };
+  const rows = doc.items.filter((i) => i && i.active === true).sort((a, b) => String(a.road).localeCompare(String(b.road)) || String(a.id).localeCompare(String(b.id)));
+  return { state: 'fresh', row, rows, asof: doc.generatedAt, feedUpdated: doc.feedUpdated || null, link: firstUrl(row), attribution: String(row.attribution || '') };
 }
