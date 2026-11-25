@@ -1,0 +1,21 @@
+{
+ "note": "Maps each camera registry source id (data/camera-registry/sources.json) to the id of its row in data/source-permissions.json. Read by site/src/pages/sources/index.astro and tested by site/tests/sources.test.mjs. Caltrans has no camera-specific row, so it maps to the publisher-level row (status unverified).",
+ "map": {
+  "a22-brennero": "a22-brennero-cameras",
+  "austin-traffic": "austin-traffic-cameras",
+  "brla-dotd": "brla-dotd-cameras",
+  "calgary-traffic": "calgary-traffic-cameras",
+  "caltrans": "caltrans-cwwp2-dot-ca-gov",
+  "digitraffic": "digitraffic-weathercam",
+  "drivebc": "drivebc-cameras",
+  "hongkong-traffic": "hongkong-traffic-cameras",
+  "iceland-vegagerdin": "iceland-road-cameras",
+  "iowa-dot": "iowa-dot-cameras",
+  "madrid-camaras": "madrid-camaras-cameras",
+  "nsw-live-traffic": "nsw-live-traffic-cameras",
+  "quebec-mtmd": "quebec-cameras",
+  "taiwan-thb": "taiwan-thb-cameras",
+  "tfl-jamcams": "tfl-jamcam-cameras",
+  "toronto-traffic": "toronto-traffic-cameras"
+ }
+}

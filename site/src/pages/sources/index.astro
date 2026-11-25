@@ -1,0 +1,44 @@
+---
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import Base from '../../layouts/Base.astro';
+import { SITE_NAME } from '../../config.mjs';
+import { cameras, sources, registryDate } from '../../lib/data.mjs';
+import { loadHealth, answered } from '../../lib/health.mjs';
+
+const root = resolve(process.cwd(), '..');
+const rowsById = new Map(JSON.parse(readFileSync(resolve(root, 'data/source-permissions.json'), 'utf8')).sources.map((r) => [r.id, r]));
+const map = JSON.parse(readFileSync(resolve(root, 'data/source-cards.json'), 'utf8')).map;
+const hf = loadHealth();
+const cards = sources
+  .map((s) => ({ s, n: cameras.filter((c) => c.sourceId === s.id).length, row: rowsById.get(map[s.id]) }))
+  .filter((r) => r.n)
+  .sort((a, b) => b.n - a.n || a.s.name.localeCompare(b.s.name));
+const noUrl = (q) => q.replace(/https?:\/\/\S+/g, '[link]'); // a web address inside a quote shows as [link]; the source link beside it carries the address
+const isUrl = (u) => /^https?:\/\//.test(u || '');
+---
+<Base title={`Who runs each camera network and what licence lists it | ${SITE_NAME}`} description={`For each of ${cards.length} official traffic camera networks: the publisher, the licence sentence we rely on, the date we read it, and how often its links answered.`} route="/sources/" crumbs={[{ name: 'Camera sources', route: '/sources/' }]}>
+  <h1>Camera sources and licences</h1>
+  <p>{SITE_NAME} lists {cameras.length} cameras from {cards.length} official networks. Each card says who runs the network, the licence sentence that lets us list its camera data, the date we last read those terms, and the share of our link checks that answered. We show no camera pictures: every camera is a link to the official source.</p>
+  <div data-block="sources" data-basis="registry" data-source="data/source-permissions.json and data/camera-registry" data-asof={registryDate} data-count={cards.length}>
+  {cards.map(({ s, n, row }) => {
+    const mp = row?.metadataPermission;
+    return (
+      <section id={s.id} data-source-id={s.id}>
+        <h2>{s.name}</h2>
+        <dl>
+          <dt>Cameras listed</dt><dd>{n}</dd>
+          <dt>Official documentation</dt><dd>{isUrl(s.api?.docsUrl) ? <a href={s.api.docsUrl} rel="nofollow noopener">open the publisher page</a> : 'not recorded'}</dd>
+          <dt>Licence</dt><dd>{s.license && s.license !== 'unverified' ? s.license : 'unverified'}</dd>
+          <dt>Licence sentence</dt>
+          <dd>{!row ? 'licence evidence not recorded' : mp?.quote ? <>&ldquo;{noUrl(mp.quote)}&rdquo;{isUrl(mp.url) && <> (<a href={mp.url} rel="nofollow noopener">source</a>)</>}</> : 'no licence sentence recorded'}. Our record of it: {mp?.status ?? 'none'}{row ? `, terms read ${row.reviewedAt}` : ''}.</dd>
+          <dt>Pictures</dt><dd>Not shown: link-out only. Picture permission on record: {row?.imagePermission?.status ?? 'not recorded'}.</dd>
+          <dt>Credit line</dt><dd>{noUrl(row?.attribution || (s.attribution !== 'unverified' ? s.attribution : null) || 'not recorded')}</dd>
+          <dt>Links answered, recent runs</dt><dd>{hf ? answered(hf.perSource?.[s.id]?.history) : '-'}</dd>
+        </dl>
+      </section>
+    );
+  })}
+  </div>
+  <p class="meta">"Answered" is the share of the cameras we checked that answered with a picture or an official page, over up to the last 56 of our runs; a dash means we never check that source or have no run yet. "allowed" and "unverified" are our own records of what the cited sentence permits, not legal advice. See also <a href="/status/">network status</a>.</p>
+</Base>

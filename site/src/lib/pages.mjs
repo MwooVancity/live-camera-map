@@ -229,6 +229,7 @@ export function pageList(cams, cities, registryDate, roads = [], dates = {}, cor
     { route: '/', kind: 'home', count: cams.length, indexable: true, lastmod: registryDate },
     { route: '/map/', kind: 'map', count: cams.length, indexable: true, lastmod: registryDate },
     { route: '/status/', kind: 'status', count: cams.length, indexable: true, lastmod: registryDate },
+    { route: '/sources/', kind: 'sources', count: cams.length, indexable: true, lastmod: registryDate },
     { route: '/data/', kind: 'data', count: cams.length, indexable: true, lastmod: registryDate },
     { route: '/privacy/', kind: 'privacy', count: null, indexable: true, lastmod: '2026-11-24' }, // facts checked on this date; a test (site/tests/privacy.test.mjs) fails when they change
     { route: '/observability/iceland/', kind: 'observability', count: cams.filter((c) => c.country === 'iceland').length, indexable: true, lastmod: registryDate },

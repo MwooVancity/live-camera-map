@@ -60,3 +60,6 @@ export function cityHealth(cams, health, now = new Date()) {
 
 // Cameras of sources our checker never requests (CONFIG.perSource skip): unknown by design, so no page may say every camera is checked.
 export const neverChecked = (cams) => cams.filter((c) => CONFIG.perSource?.[c.sourceId]?.skip).length;
+
+// Share of checked cameras that answered over the recorded runs (one function for /status/ and /sources/); '-' when none.
+export const answered = (h) => { const a = Array.isArray(h) ? h.filter((x) => x && x.n > 0) : []; const n = a.reduce((s, x) => s + x.n, 0); return n ? `${Math.round((a.reduce((s, x) => s + x.ok, 0) / n) * 100)}% over ${a.length} run${a.length === 1 ? '' : 's'}` : '-'; };

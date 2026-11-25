@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { SITE_NAME } from '../../config.mjs';
 import { cameras, sources, registryDate } from '../../lib/data.mjs';
-import { loadHealth, tally, cityHealth, STATUSES, statusWords } from '../../lib/health.mjs';
+import { loadHealth, tally, cityHealth, STATUSES, statusWords, answered } from '../../lib/health.mjs';
 
 const hf = loadHealth();
 const { block, reason } = cityHealth(cameras, hf);
@@ -12,7 +12,6 @@ const rows = sources
   .filter((r) => r.cams.length)
   .map((r) => ({ ...r, n: block ? tally(r.cams, hf) : null, run: hf?.perSource?.[r.s.id] }))
   .sort((a, b) => b.cams.length - a.cams.length || a.s.name.localeCompare(b.s.name));
-const answered = (h) => { const a = Array.isArray(h) ? h.filter((x) => x && x.n > 0) : []; const n = a.reduce((s, x) => s + x.n, 0); return n ? `${Math.round((a.reduce((s, x) => s + x.ok, 0) / n) * 100)}% over ${a.length} run${a.length === 1 ? '' : 's'}` : '-'; };
 ---
 <Base title={`Camera network status: which official links work | ${SITE_NAME}`} description={`Per-source results of our own link check across ${cameras.length} official traffic camera links${block ? `, last run ${when(block.asof)}` : ''}.`} route="/status/" crumbs={[{ name: 'Network status', route: '/status/' }]}>
   <h1>Camera network status</h1>
@@ -52,5 +51,5 @@ const answered = (h) => { const a = Array.isArray(h) ? h.filter((x) => x && x.n 
       </tbody>
     </table>
   </section>
-  <p><a href="/cameras/">All countries and regions</a> | <a href="/map/">Open the map</a></p>
+  <p><a href="/cameras/">All countries and regions</a> | <a href="/map/">Open the map</a> | <a href="/sources/">Who runs each network, and its licence</a></p>
 </Base>
