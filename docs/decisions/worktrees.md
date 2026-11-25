@@ -4,10 +4,10 @@
 Several agents working in one folder share one git "staging area" (the index) and one `site/.astro` build folder. When two of them commit or build at the same time, one blocks or breaks the other (the pre-commit hook failed with `.astro` errors). Each agent should work in its own copy of the repo, and one person (the merger) puts the finished work together.
 
 ## How to use it
-- Make a workspace: `node ops/worktree/worktree.mjs create <agent>`. This makes branch `agent/<agent>` and the folder `C:\Users\mwoo7\Desktop\live-camera-map-worktrees\<agent>` (beside the repo, never inside it). The upstream clone (`gev/`) and `site/node_modules` are Windows junctions (folder shortcuts) to the main tree, so nothing is copied or installed.
+- Make a workspace: `node ops/worktree/worktree.mjs create <agent>`. This makes branch `agent/<agent>` and the folder `<repo folder>-worktrees/<agent>` (beside the repo, never inside it). The upstream clone (`gev/`) and `site/node_modules` are Windows junctions (folder shortcuts) to the main tree, so nothing is copied or installed.
 - Work and commit in that folder. The normal pre-commit hook runs there.
 - Merge: from the main repo, `node ops/worktree/worktree.mjs merge <agent>`. It refuses a dirty main tree, refuses a branch that touches `gev/` or a shared file, rebases the branch on main, runs the pre-commit suite once, then fast-forwards main (no merge commits).
-- Clean up: `node ops/worktree/worktree.mjs remove <agent>`. It removes the junctions first so nothing in the main tree is deleted.
+- Clean up: `node ops/worktree/worktree.mjs remove <agent>`. It removes the junctions first so nothing in the main tree is deleted. It refuses a branch with unmerged commits or a folder with uncommitted edits; `--force` overrides (A19). The merge helper checks ownership on the rebased branch and merges only the commit it checked.
 
 ## What an agent may edit
 Only its own files: `ops/importers/<id>.mjs`, `ops/importers/lib/<id>.mjs`, `tests/registry/<id>.test.mjs`, `tests/registry/fixtures/<id>-*`, source notes under `docs/`, and its patch `ops/importers/patches/<id>.patch.json`.

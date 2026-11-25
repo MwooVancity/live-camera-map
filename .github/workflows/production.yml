@@ -47,7 +47,7 @@ jobs:
           node tests/immutability/check.mjs
           node --test tests/licensing/licensing.test.mjs
           node ops/lint/preflight.mjs
-      - name: Refresh feeds and camera lists (ops/importers/run-all.json; each importer runs alone with its own time limit; a failed one keeps its last committed rows, shows as a red annotation here, and never stops the deploy)
+      - name: Refresh feeds and camera lists (ops/importers/run-all.json; each importer runs alone with its own time limit; a failed one keeps its last committed rows and never stops the deploy; `required` in run-all.json only picks an error or a warning annotation, because this step has continue-on-error)
         continue-on-error: true
         run: node ops/importers/run-all.mjs
       - name: Camera health check (fair budget by source, previous result from the live site or, on the first run, from staging)

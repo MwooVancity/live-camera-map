@@ -97,3 +97,35 @@ test('a worktree checks files out with LF even when the repo config says autocrl
   const a = createWorktree('lf', { repo, log: () => {} });
   assert.ok(!readFileSync(join(a, 'README.md'), 'utf8').includes('\r'), 'README.md has CR');
 });
+
+// ---- A19 (code review 2026-11-25) ----
+test('A19 remove refuses unmerged commits and uncommitted edits unless force is given', () => {
+  const repo = sandbox();
+  const a = createWorktree('wip', { repo, log: () => {} });
+  commitFile(a, 'a.txt', '1');
+  assert.throws(() => removeWorktree('wip', { repo, log: () => {} }), /unmerged/);
+  assert.ok(existsSync(a) && git(repo, 'branch', '--list', 'agent/wip'), 'nothing was removed');
+  removeWorktree('wip', { repo, force: true, log: () => {} });
+  assert.ok(!existsSync(a));
+  const b = createWorktree('dirty', { repo, log: () => {} });
+  writeFileSync(join(b, 'scratch.txt'), 'x');
+  assert.throws(() => removeWorktree('dirty', { repo, log: () => {} }), /uncommitted/);
+  removeWorktree('dirty', { repo, force: true, log: () => {} });
+});
+test('A19 a gitlink named exactly gev (no slash) is refused', () => {
+  const repo = sandbox();
+  const a = createWorktree('link', { repo, log: () => {} });
+  git(a, 'update-index', '--add', '--cacheinfo', `160000,${git(a, 'rev-parse', 'HEAD')},gev`); git(a, 'commit', '-qm', 'gitlink');
+  const before = git(repo, 'rev-parse', 'HEAD');
+  assert.throws(() => mergeWorktree('link', { repo, suite: OK, allowShared: true, log: () => {} }), /gev/);
+  assert.equal(git(repo, 'rev-parse', 'HEAD'), before);
+});
+test('A19 only the commit that was checked is merged: a commit made while the suite runs is left on the branch', () => {
+  const repo = sandbox();
+  const a = createWorktree('race', { repo, log: () => {} }); commitFile(a, 'a.txt', '1');
+  const late = "const{execFileSync:e}=require('child_process');require('fs').writeFileSync('late.txt','x');e('git',['add','late.txt']);e('git',['-c','user.name=t','-c','user.email=t@t','commit','-qm','late']);";
+  mergeWorktree('race', { repo, suite: ['node', '-e', late], log: () => {} });
+  assert.ok(existsSync(join(repo, 'a.txt')));
+  assert.ok(!existsSync(join(repo, 'late.txt')), 'the unchecked late commit must not reach main');
+  assert.ok(git(repo, 'log', '--format=%s', 'agent/race').split('\n').includes('late'));
+});

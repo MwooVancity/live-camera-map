@@ -49,9 +49,17 @@ export function createWorktree(agent, { repo = ROOT, log = console.log } = {}) {
   return dir;
 }
 
-export function removeWorktree(agent, { repo = ROOT, log = console.log } = {}) {
+export function removeWorktree(agent, { repo = ROOT, force = false, log = console.log } = {}) {
   okId(agent);
   const dir = worktreeDir(repo, agent);
+  // A19: refuse to throw away work; --force is the explicit way.
+  if (!force) {
+    const base = git(repo, 'rev-parse', '--abbrev-ref', 'HEAD');
+    let unmerged = '';
+    try { unmerged = git(repo, 'log', '--oneline', `${base}..${branchOf(agent)}`); } catch { /* branch already gone */ }
+    if (unmerged) throw new Error(`refused: ${branchOf(agent)} has unmerged commits (${unmerged.split('\n').length}); merge it or pass --force`);
+    if (existsSync(dir) && git(dir, 'status', '--porcelain', '--untracked-files=all')) throw new Error(`refused: ${dir} has uncommitted edits; commit them or pass --force`);
+  }
   // Unlink junctions FIRST: a recursive delete that follows one would empty the main tree's node_modules or the upstream clone.
   for (const rel of [UP, 'site/node_modules', 'node_modules']) { const p = join(dir, rel); if (isLink(p)) unlinkSync(p); }
   if (existsSync(dir)) { try { git(repo, 'worktree', 'remove', '--force', dir); } catch { /* half-removed or locked: fall through to the plain delete */ } }
@@ -68,18 +76,24 @@ export function mergeWorktree(agent, { repo = ROOT, suite = ['sh', '.githooks/pr
   const dir = worktreeDir(repo, agent);
   const base = git(repo, 'rev-parse', '--abbrev-ref', 'HEAD');
   if (git(repo, 'status', '--porcelain', '--untracked-files=no')) throw new Error('main tree has uncommitted changes: commit or stash first');
-  const files = changedFiles(repo, base, agent);
-  const up = files.filter((f) => f.startsWith(`${UP}/`));
-  if (up.length) throw new Error(`refused: branch edits ${UP}/ (${up.slice(0, 3).join(', ')}). The upstream clone is immutable.`);
-  const shared = files.filter((f) => SHARED_FILES.includes(f));
-  if (shared.length && !allowShared) throw new Error(`refused: branch edits shared file(s) ${shared.join(', ')}. Use the scaffold patch, or --allow-shared.`);
+  const refuse = (files) => {
+    const up = files.filter((f) => f === UP || f.startsWith(`${UP}/`)); // a gitlink is the bare name, no slash
+    if (up.length) throw new Error(`refused: branch edits ${UP}/ (${up.slice(0, 3).join(', ')}). The upstream clone is immutable.`);
+    const shared = files.filter((f) => SHARED_FILES.includes(f));
+    if (shared.length && !allowShared) throw new Error(`refused: branch edits shared file(s) ${shared.join(', ')}. Use the scaffold patch, or --allow-shared.`);
+  };
+  refuse(changedFiles(repo, base, agent)); // early refusal: a rebase over a path that collides with the upstream link would fail first
   try { git(dir, 'rebase', base); } catch (e) { try { git(dir, 'rebase', '--abort'); } catch { /* none */ } throw new Error(`rebase onto ${base} failed: resolve in ${dir}\n${e.stderr || e.message}`); }
-  const after = changedFiles(repo, base, agent);
+  // A19: ownership is checked on the rebased branch, and only the commit recorded here is merged (a later commit was never checked).
+  const tip = git(repo, 'rev-parse', branchOf(agent));
+  const after = git(repo, 'diff', '--name-only', `${base}...${tip}`).split('\n').filter(Boolean);
+  refuse(after);
   const t0 = Date.now();
   const r = spawnSync(suite[0], suite.slice(1), { cwd: dir, env: { ...cleanEnv(), PRECOMMIT_CHANGED_FILES: after.join('\n') || ' ' }, encoding: 'utf8' });
   log(`suite ${suite.join(' ')} exit ${r.status} in ${Date.now() - t0} ms`);
   if (r.status !== 0) throw new Error(`suite failed (exit ${r.status}):\n${r.stdout || ''}${r.stderr || ''}`);
-  git(repo, 'merge', '--ff-only', branchOf(agent));
+  if (git(repo, 'rev-parse', branchOf(agent)) !== tip) log(`note: ${branchOf(agent)} moved during the suite; merging only the checked commit ${tip.slice(0, 7)}`);
+  git(repo, 'merge', '--ff-only', tip);
   log(`fast-forwarded ${base} to ${git(repo, 'rev-parse', '--short', 'HEAD')}`);
 }
 
@@ -88,7 +102,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   try {
     if (cmd === 'create') createWorktree(agent);
     else if (cmd === 'merge') mergeWorktree(agent, { allowShared: rest.includes('--allow-shared') });
-    else if (cmd === 'remove') removeWorktree(agent);
+    else if (cmd === 'remove') removeWorktree(agent, { force: rest.includes('--force') });
     else if (cmd === 'rules') console.log(RULE);
     else { console.error('usage: node ops/worktree/worktree.mjs create|merge|remove <agent> | rules'); process.exit(2); }
   } catch (e) { console.error(e.message); process.exit(1); }
