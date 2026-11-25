@@ -1,0 +1,23 @@
+{
+ "payload": {
+  "nid": 36687,
+  "title": "水利署水利防災用影像",
+  "license_name": "政府資料開放授權條款-第1版",
+  "dataset_status": "c01",
+  "agency_name": "經濟部水利署",
+  "resources": [
+   {
+    "file_format": "CSV",
+    "url": "https://opendata.wra.gov.tw/api/v2/f71b74eb-cbe5-42c6-8be5-7500450e7db0?sort=_importdate asc&format=CSV"
+   },
+   {
+    "file_format": "JSON",
+    "url": "https://opendata.wra.gov.tw/api/v2/f71b74eb-cbe5-42c6-8be5-7500450e7db0?sort=_importdate asc&format=JSON"
+   },
+   {
+    "file_format": "XML",
+    "url": "https://opendata.wra.gov.tw/api/v2/f71b74eb-cbe5-42c6-8be5-7500450e7db0?sort=_importdate asc&format=XML"
+   }
+  ]
+ }
+}

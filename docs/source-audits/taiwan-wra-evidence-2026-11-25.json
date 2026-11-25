@@ -1,0 +1,23 @@
+{
+  "sourceId": "taiwan-wra-cameras",
+  "dataOwner": { "name": "Water Resources Agency, Ministry of Economic Affairs, Taiwan", "url": "https://opendata.wra.gov.tw/" },
+  "evidenceDate": "2026-11-25",
+  "statements": [
+    { "scope": "metadata", "where": "data.gov.tw licence page (Government Open Data License 1.0, clause 2.1)", "url": "https://data.gov.tw/license", "quote": "不限目的、時間及地域、非專屬、不可撤回、免授權金進行利用", "effect": "permits" },
+    { "scope": "metadata", "where": "data.gov.tw dataset 36687 record (license_name)", "url": "https://data.gov.tw/dataset/36687", "quote": "政府資料開放授權條款-第1版", "effect": "permits" },
+    { "scope": "metadata", "where": "WRA government website data open declaration", "url": "https://www.wra.gov.tw/cp.aspx?n=6274", "quote": "採 政府資料開放授權條款-第1版 發布，以無償、非專屬、得由使用者再轉授權之方式提供公眾使用", "effect": "permits" },
+    { "scope": "imageRights", "where": "opendata.wra.gov.tw page footer", "url": "https://opendata.wra.gov.tw/", "quote": "本網站全部圖文版權係屬本署所有，非經本署正式書面同意，不得將全部或部分內容，轉載於任何形式媒體。", "effect": "restricts" }
+  ],
+  "metadata": { "status": "allowed", "quote": "不限目的、時間及地域、非專屬、不可撤回、免授權金進行利用", "url": "https://data.gov.tw/license" },
+  "commercialReuse": { "status": "allowed", "quote": "不限目的、時間及地域、非專屬、不可撤回、免授權金進行利用", "url": "https://data.gov.tw/license" },
+  "ads": { "status": "allowed", "quote": "不限目的、時間及地域、非專屬、不可撤回、免授權金進行利用", "url": "https://data.gov.tw/license" },
+  "redistribution": { "status": "allowed", "quote": "使用者得再轉授權他人為前項之利用", "url": "https://data.gov.tw/license" },
+  "imageRights": { "status": "unverified", "quote": "", "url": "" },
+  "attribution": { "wording": "Source: Water Resources Agency, Ministry of Economic Affairs (Taiwan), river CCTV list, Government Open Data License 1.0.", "url": "https://data.gov.tw/license" },
+  "access": { "keyOrRegistration": false, "note": "opendata.wra.gov.tw/api/v2 answered 200 JSON with no key on 2026-11-25; an unverified agency note says the API is for approved agencies only" },
+  "rateLimit": { "value": "none published; one list request per run", "url": "https://opendata.wra.gov.tw/openapi" },
+  "robots": { "result": "allowed", "url": "https://opendata.wra.gov.tw/robots.txt", "checkedAt": "2026-11-25", "note": "answers 404: no rules" },
+  "botCheck": { "result": "none", "httpStatus": 200, "checkedAt": "2026-11-25" },
+  "stability": { "value": "dataset 36687 listed on data.gov.tw since 2017-09-12; picture URL stability over a week not yet checked", "note": "unverified for pictures; list URL is the dataset's own JSON resource" },
+  "humanDecision": { "decision": "pending", "by": "", "at": "", "note": "needs Mike: confirm the footer copyright line does not override the open licence for the camera list" }
+}
