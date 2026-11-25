@@ -12,6 +12,7 @@ const rows = sources
   .filter((r) => r.cams.length)
   .map((r) => ({ ...r, n: block ? tally(r.cams, hf) : null, run: hf?.perSource?.[r.s.id] }))
   .sort((a, b) => b.cams.length - a.cams.length || a.s.name.localeCompare(b.s.name));
+const answered = (h) => { const a = Array.isArray(h) ? h.filter((x) => x && x.n > 0) : []; const n = a.reduce((s, x) => s + x.n, 0); return n ? `${Math.round((a.reduce((s, x) => s + x.ok, 0) / n) * 100)}% over ${a.length} run${a.length === 1 ? '' : 's'}` : '-'; };
 ---
 <Base title={`Camera network status: which official links work | ${SITE_NAME}`} description={`Per-source results of our own link check across ${cameras.length} official traffic camera links${block ? `, last run ${when(block.asof)}` : ''}.`} route="/status/" crumbs={[{ name: 'Network status', route: '/status/' }]}>
   <h1>Camera network status</h1>
@@ -21,11 +22,12 @@ const rows = sources
       <h2>{block.total - block.counts.unknown === 0 ? 'No camera checked in the last run' : `${block.counts.reachable} of ${block.total - block.counts.unknown} checked cameras reachable`}</h2>
       <p>Last run {when(block.asof)}: {block.counts.reachable} reachable, {block.counts.stale} stale, {block.counts.unavailable} unavailable, {block.counts.unknown} unknown (not checked in time), out of {block.total} cameras. The headline counts only cameras we actually checked.</p>
       <table>
-        <thead><tr><th>Source</th><th>Cameras</th><th>Reachable</th><th>Stale</th><th>Unavailable</th><th>Unknown</th><th>Whole source checked every</th></tr></thead>
+        <thead><tr><th>Source</th><th>Cameras</th><th>Reachable</th><th>Stale</th><th>Unavailable</th><th>Unknown</th><th>Whole source checked every</th><th>Answered, recent runs</th></tr></thead>
         <tbody>
-          {rows.map((r) => <tr><td>{r.s.name}</td><td>{r.cams.length}</td>{STATUSES.map((st) => <td>{r.n[st]}</td>)}<td>{r.run?.cycleHours ? `${r.run.cycleHours} h` : 'not reported'}</td></tr>)}
+          {rows.map((r) => <tr><td>{r.s.name}</td><td>{r.cams.length}</td>{STATUSES.map((st) => <td>{r.n[st]}</td>)}<td>{r.run?.cycleHours ? `${r.run.cycleHours} h` : 'not reported'}</td><td>{answered(r.run?.history)}</td></tr>)}
         </tbody>
       </table>
+      <p class="meta">"Answered, recent runs" is the share of the cameras we checked that answered with a picture or an official page, over up to the last 56 of our runs (about 7 days). It is our own measurement of the link, not proof that a camera shows a current scene. A source we never check shows a dash.</p>
       <p class="meta">{statusWords()}</p>
     </section>
   ) : (

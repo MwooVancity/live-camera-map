@@ -492,3 +492,19 @@ test("fair budget: with the REAL registry and config every probed source is sche
     assert.ok(p[id].hours <= CONFIG.maxCheckAgeH, `${id}: ${cycleText(id, p[id], CONFIG.maxCheckAgeH)} must stay inside the ${CONFIG.maxCheckAgeH} h limit (${n} cameras)`);
   }
 });
+
+test('item 41: per-source history carries forward, caps at HISTORY, and a source with nothing checked adds no point', async () => {
+  handler = (req, res) => sendJpeg(res);
+  const first = await go([cam(1), cam(2)]);
+  const h1 = first.doc.perSource.t.history;
+  assert.equal(h1.length, 1);
+  assert.deepEqual([h1[0].ok, h1[0].n], [2, 2]);
+  const second = await go([cam(1), cam(2)], { previous: first.doc });
+  assert.equal(second.doc.perSource.t.history.length, 2);
+  const long = { ...first.doc, perSource: { t: { ...first.doc.perSource.t, history: Array.from({ length: 56 }, (_, i) => ({ t: `2026-01-01T00:0${i % 10}:00Z`, ok: 1, n: 1 })) } } };
+  const third = await go([cam(1), cam(2)], { previous: long });
+  assert.equal(third.doc.perSource.t.history.length, 56);
+  assert.equal(third.doc.perSource.t.history.at(-1).n, 2, 'newest point is this run');
+  const skip = await go([cam(1)], { previous: first.doc, config: { perSource: { t: { skip: 'never probed' } } } });
+  assert.equal(skip.doc.perSource.t.history.length, 1, 'nothing checked: the old record is kept, no new point');
+});

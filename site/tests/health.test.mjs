@@ -181,3 +181,17 @@ test('built Toronto page: carried-forward cameras say how long ago they were che
   assert.ok(/Link check by us: last run /.test(html));
   assert.deepEqual(gate(out, readFileSync('PAGES.md', 'utf8')), []);
 });
+
+test('item 41: /status/ shows the answered share from the per-source history, and a dash when a source has none', () => {
+  const f = healthFile();
+  const h = load(f);
+  const id = cameras[0].sourceId;
+  h.perSource = { [id]: { cycleHours: 3, history: [{ t: ago(6), ok: 3, n: 4 }, { t: ago(3), ok: 1, n: 4 }] } };
+  writeFileSync(f, JSON.stringify(h));
+  const { pages } = build(f);
+  const html = pages.get('/status/');
+  assert.match(html, /Answered, recent runs/);
+  assert.match(html, /50% over 2 runs/, '4 of 8 answered');
+  assert.match(html, /<td>-<\/td>/, 'a source with no history shows a dash');
+  assert.ok(html.includes('not proof that a camera shows a current scene'), 'the claim is bounded');
+});

@@ -56,6 +56,7 @@ export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 14000, bu
   } };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const STATUSES = ['reachable', 'stale', 'unavailable', 'unknown'];
+export const HISTORY = 56;
 
 // st.failed is set when a previous file should exist but could not be read (network error, 5xx, cut-off JSON, unreadable local file):
 // that is not a first run, so the caller runs as partial instead of wiping lastSuccess/lastChanged/consecutiveFailures. A 404 or a missing local file = first run.
@@ -190,6 +191,15 @@ export async function run(opts) {
   const drop = probed.length >= cfg.minProbedForDrop ? (okBefore - okNow) / probed.length : 0;
   const collapsed = drop > cfg.maxReachableDrop;
   const runOk = total > 0 && !state.hit && !collapsed && !opts.previousFailed;
+  // Item 41: rolling per-source record (last HISTORY runs, about 7 days at 3 h) carried forward from the previous file, so the status page can
+  // show a measured answer rate. Only a run that is ok adds a point; a source with nothing checked adds none (no invented 100 percent).
+  for (const [id, s] of Object.entries(summary)) {
+    const old = Array.isArray(opts.previous?.perSource?.[id]?.history) ? opts.previous.perSource[id].history : [];
+    const checked = (s.reachable || 0) + (s.stale || 0) + (s.unavailable || 0);
+    const h = old.slice(-(HISTORY - 1));
+    if (runOk && checked > 0) h.push({ t: stamp, ok: (s.reachable || 0) + (s.stale || 0), n: checked });
+    s.history = runOk && checked > 0 ? h : old.slice(-HISTORY);
+  }
   const doc = { generatedAt: stamp, runOk, requests: state.requests, elapsedMs: Date.now() - t0, staleHours: cfg.staleHours, maxCheckAgeHours: cfg.maxCheckAgeH, perSource: summary, cameras };
   if (!runOk) doc.incomplete = state.hit ? 'request cap reached' : opts.previousFailed ? 'previous health file could not be read (not a first run)' : collapsed ? `reachable share fell ${(drop * 100).toFixed(0)} points against the previous file (limit ${cfg.maxReachableDrop * 100})` : 'no cameras';
   // Strip our private bookkeeping key from the published record.
