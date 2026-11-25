@@ -1,14 +1,24 @@
 #!/bin/sh
 # Commit gate: preflight, harness selftest, unit tests. gev/ immutability is checked when gev/ exists.
 # Quiet on success (owner 2026-11-24: 130 lines per commit filled the agent's context); full output only on failure.
+# Plan item 40 step 4: every stage is timed (milliseconds) and one line is appended to ops/logs/precommit-times.log (gitignored). Nothing here changes what runs.
 set -e
-run() { out=$("$@" 2>&1) || { echo "$out"; echo "COMMIT BLOCKED: $* failed"; exit 1; }; }
-run node ops/lint/preflight.mjs --offline
-run node ops/harness/selftest.mjs
-run node --test ops/lint/preflight.test.mjs ops/harness/harness.test.mjs tests/exclusion/exclusion.test.mjs tests/deploy/compose-lint.test.mjs tests/deploy/headers.test.mjs tests/health/health.test.mjs tests/worktree/worktree.test.mjs tests/licensing/licence-evidence.test.mjs tests/registry/new-source.test.mjs tests/registry/new-source-patch.test.mjs
-if [ -d gev/.git ]; then run node tests/immutability/check.mjs; fi
+LOGF=ops/logs/precommit-times.log
+T0=$(date +%s%N); TIMES=""
+# stage <label> <command...>: run quietly, record elapsed ms, show full output only on failure.
+stage() { label=$1; shift; s=$(date +%s%N); out=$("$@" 2>&1) || { echo "$out"; echo "COMMIT BLOCKED: $* failed"; exit 1; }; TIMES="$TIMES $label=$(( ($(date +%s%N) - s) / 1000000 ))"; }
+stage preflight node ops/lint/preflight.mjs --offline
+stage selftest node ops/harness/selftest.mjs
+stage unit node --test ops/lint/preflight.test.mjs ops/harness/harness.test.mjs tests/exclusion/exclusion.test.mjs tests/deploy/compose-lint.test.mjs tests/deploy/headers.test.mjs tests/health/health.test.mjs tests/worktree/worktree.test.mjs tests/licensing/licence-evidence.test.mjs tests/registry/new-source.test.mjs tests/registry/new-source-patch.test.mjs
+if [ -d gev/.git ]; then stage immutability node tests/immutability/check.mjs; fi
 # Site tests only when site/ or the registry changed (build 2 s + tests); a broken site test was committed once without this.
 if { [ -n "${PRECOMMIT_CHANGED_FILES:-}" ] && echo "$PRECOMMIT_CHANGED_FILES" || git diff --cached --name-only; } | grep -qE '^(site/|data/camera-registry/)'; then
-  run sh -c 'cd site && npm run build && npm test'
+  stage site-build sh -c 'cd site && npm run build'
+  stage site-tests sh -c 'cd site && npm test'
+  TIMES="$TIMES site=ran"
+else
+  TIMES="$TIMES site=skipped"
 fi
-echo "pre-commit OK"
+TOTAL=$(( ($(date +%s%N) - T0) / 1000000 ))
+mkdir -p ops/logs 2>/dev/null && echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) total=$TOTAL$TIMES" >> "$LOGF" 2>/dev/null || true
+echo "pre-commit OK (${TOTAL} ms, stages in $LOGF)"
