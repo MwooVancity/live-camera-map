@@ -253,7 +253,7 @@ test('old two-level addresses are gone and nothing links them (no redirects need
   for (const [route, html] of pages) for (const m of html.matchAll(/href="(\/cameras\/(?:california|british-columbia)\/[^"]*)"/g)) assert.fail(`${route} links old address ${m[1]}`);
 });
 // C4: a country with one region and no city page repeats that region's page, so its hub is noindex and out of the sitemap.
-const ONE_REGION_HUBS = new Set(['hong-kong', 'iceland', 'taiwan', 'spain', 'united-kingdom', 'australia', 'italy', 'luxembourg', 'colombia']);
+const ONE_REGION_HUBS = new Set(['hong-kong', 'iceland', 'spain', 'united-kingdom', 'australia', 'italy', 'luxembourg', 'colombia']);
 test('country hubs: in the sitemap, canonical, and each region hub says which country it is in and links it', () => {
   const xml = readFileSync(join(DIST, 'sitemap.xml'), 'utf8');
   for (const c of lvl(2)) { if (ONE_REGION_HUBS.has(c.split('/')[2])) { assert.ok(!xml.includes(`<loc>${SITE_URL}${c}</loc>`), `${c} noindex hub must stay out of the sitemap`); assert.ok(isNoindex(pages.get(c))); continue; } assert.ok(xml.includes(`<loc>${SITE_URL}${c}</loc>`), `${c} not in sitemap`); assert.ok(pages.get(c).includes(`<link rel="canonical" href="${SITE_URL}${c}">`)); }

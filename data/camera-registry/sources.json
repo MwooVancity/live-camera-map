@@ -438,5 +438,25 @@
   "license": "CC BY SA (CC BY-SA 4.0), GeoMedellín catalogue record; joint circular 202660000054 of 2026",
   "licenseUrl": "https://www.medellin.gov.co/giscatalogacion/srv/api/records/01af3090-cc7f-4f85-9a34-92a59b001a72",
   "reviewedAt": "2026-11-25"
+ },
+ {
+  "id": "taiwan-wra-cameras",
+  "name": "Water Resources Agency river cameras (Taiwan)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one list request per run; none stated by the host; picture links are not checked by the health checker",
+   "docsUrl": "https://data.gov.tw/dataset/36687"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Source: Water Resources Agency, Ministry of Economic Affairs (Taiwan), river CCTV list, Government Open Data License 1.0 (https://data.gov.tw/license).",
+  "license": "Government Open Data License 1.0 (data.gov.tw dataset 36687): use for any purpose, royalty-free, with attribution",
+  "licenseUrl": "https://data.gov.tw/license",
+  "reviewedAt": "2026-11-25"
  }
 ]

@@ -19,6 +19,7 @@
   "nsw-live-traffic": "nsw-live-traffic-cameras",
   "quebec-mtmd": "quebec-cameras",
   "taiwan-thb": "taiwan-thb-cameras",
+  "taiwan-wra-cameras": "taiwan-wra-cameras",
   "tfl-jamcams": "tfl-jamcam-cameras",
   "toronto-traffic": "toronto-traffic-cameras"
  }

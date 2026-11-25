@@ -31,6 +31,14 @@
       "quote": "Open both, link-only (Recommended)",
       "by": "Mike (owner), in chat 2026-11-25: asked 'Two sources have an explicit open licence but are built with the licence row closed until you confirm: Luxembourg (96 cameras, CC0) and Medellin (70 cameras, CC BY-SA, ShareAlike). Open them link-only?' he answered 'Open both, link-only (Recommended)'",
       "scope": "THIS SOURCE ID ONLY (medellin-simm-cameras): the row may be allowed_per_doc (CC BY-SA 4.0, ShareAlike) and only link-only, with the attribution sentence shown wherever its cameras appear; imagePermission stays unverified. Does not open any other source."
+    },
+    {
+      "id": "taiwan-wra-cameras",
+      "kind": "open-explicit-licence",
+      "approvedAt": "2026-11-25",
+      "quote": "Yes",
+      "by": "Mike (owner), in chat 2026-11-25: asked 'Taiwan's Water Resources Agency has an explicit open licence (Government Open Data License 1.0), and 132 river cameras are ready to turn on. Open them link-only like the other two?' he answered 'Yes'",
+      "scope": "THIS SOURCE ID ONLY (taiwan-wra-cameras): the row may be allowed_per_doc (Government Open Data License 1.0) and only link-only, with the attribution shown wherever its cameras appear; imagePermission stays unverified. Does not open any other source."
     }
   ]
 }

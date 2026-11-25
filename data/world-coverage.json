@@ -132,9 +132,9 @@
   {
    "country": "taiwan",
    "argosPlacePages": 13,
-   "ourCameras": 2354,
+   "ourCameras": 2484,
    "status": "partial",
-   "next": "WRA river cameras (taiwanwra, 132 cameras, Government Open Data License 1.0) merged and wired 2026-11-25 but the licence row stays CLOSED until the owner approves it; importer not yet run | previous: THB provincial roads built 2026-11-24 (Highway Bureau, MOTC, 2,354 cameras, free public use with the Bureau named as source, link-out; picture host answers HEAD with 404 so health is unknown by design). Freeway bureau feed tisvcloud.freeway.gov.tw does not answer from our network: not built",
+   "next": "WRA river cameras (taiwanwra, 130 imported of 132 listed, 2 marked not in use; Government Open Data License 1.0) OPENED link-only 2026-11-25 on the owner decision (river cameras, not traffic; pictures not shown) | previous: THB provincial roads built 2026-11-24 (Highway Bureau, MOTC, 2,354 cameras, free public use with the Bureau named as source, link-out; picture host answers HEAD with 404 so health is unknown by design). Freeway bureau feed tisvcloud.freeway.gov.tw does not answer from our network: not built",
    "note": null,
    "owner": null
   },

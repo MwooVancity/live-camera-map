@@ -201,9 +201,9 @@ test('B7: restricted pattern matches written permission, proprietary, subscripti
   const rec = JSON.parse(readFileSync(resolve(root, 'data/owner-approvals.json'), 'utf8'));
   const perm = JSON.parse(readFileSync(resolve(root, 'data/source-permissions.json'), 'utf8')).sources;
   const open = rec.sources.filter((a) => a.kind === 'open-explicit-licence');
-  test('open-explicit-licence decisions: exactly cita-lu-cameras and medellin-simm-cameras, dated 2026-11-25, with the owner quote', () => {
-    assert.deepEqual(open.map((a) => a.id).sort(), ['cita-lu-cameras', 'medellin-simm-cameras']);
-    for (const a of open) { assert.equal(a.approvedAt, '2026-11-25'); assert.equal(a.quote, 'Open both, link-only (Recommended)'); assert.match(a.by, /Open both, link-only \(Recommended\)/); assert.match(a.scope, /THIS SOURCE ID ONLY/); }
+  test('open-explicit-licence decisions: exactly cita-lu-cameras, medellin-simm-cameras and taiwan-wra-cameras, dated 2026-11-25, with the owner quote', () => {
+    assert.deepEqual(open.map((a) => a.id).sort(), ['cita-lu-cameras', 'medellin-simm-cameras', 'taiwan-wra-cameras']);
+    for (const a of open) { assert.equal(a.approvedAt, '2026-11-25'); assert.equal(a.quote, a.id === 'taiwan-wra-cameras' ? 'Yes' : 'Open both, link-only (Recommended)'); assert.match(a.by, a.id === 'taiwan-wra-cameras' ? /answered 'Yes'/ : /Open both, link-only \(Recommended\)/); assert.match(a.scope, /THIS SOURCE ID ONLY/); }
   });
   test('open-explicit-licence rows: allowed_per_doc, enabled, image still unverified, only these ids opened by a decision', () => {
     for (const a of open) {
@@ -214,5 +214,9 @@ test('B7: restricted pattern matches written permission, proprietary, subscripti
   test('Luxembourg keeps the footer conflict on record; Medellin carries the ShareAlike attribution', () => {
     assert.match(perm.find((p) => p.id === 'cita-lu-cameras').licence, /All rights reserved/);
     assert.match(perm.find((p) => p.id === 'medellin-simm-cameras').attribution, /ShareAlike[\s\S]*same licence/);
+  });
+  test('Taiwan WRA: attribution kept, river cameras not called traffic, image unverified', () => {
+    const r = perm.find((p) => p.id === 'taiwan-wra-cameras');
+    assert.match(r.attribution, /Government Open Data License 1\.0/); assert.match(r.statusReason, /river cameras, not traffic/); assert.equal(r.imagePermission.status, 'unverified');
   });
 }
