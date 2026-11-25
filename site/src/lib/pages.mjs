@@ -16,6 +16,7 @@ import { GA_REGION } from '../../../ops/importers/lib/georgia.mjs';
 import { A22_REGION } from '../../../ops/importers/lib/a22.mjs';
 import { LA_REGION } from '../../../ops/importers/lib/brla.mjs';
 import { MADRID_REGION } from '../../../ops/importers/lib/madrid.mjs';
+import { MD_REGION } from '../../../ops/importers/lib/mdchart.mjs';
 import { LU_REGION } from '../../../ops/importers/lib/citalu.mjs';
 import { MEDELLIN_REGION } from '../../../ops/importers/lib/medellin.mjs';
 
@@ -173,6 +174,13 @@ export const REGIONS = {
     placeText: (x) => sentence(`The city's list names each of the ${x.total} cameras by a place (for example El Castillo) and a street corner, and gives its coordinates; it has no city field, so there are no city pages here.`),
     cityText: () => '',
     caveats: ['The camera pictures belong to the Alcaldía de Medellín and are not shown here. Each link goes to the camera\'s own picture address on www.medellin.gov.co; it is a link only. The point list is published in the GeoMedellín catalogue as CC BY SA (Creative Commons Attribution-ShareAlike); we found no separate terms for the pictures, so we do not copy, store or embed any. We have not checked whether each camera is live, so the status reads unknown. The city\'s list has 81 points and 11 have no picture address, so they are not listed.'],
+  },
+  // Maryland: one source, the MDOT SHA CHART camera list on the State of Maryland open data portal (451 cameras); the list has a location text and a county but no road or city field, so the location text is the name, the county is kept as text and there are no city pages.
+  [MD_REGION.slug]: {
+    sourceId: 'maryland-chart-cameras', agency: 'Maryland DOT State Highway Administration (CHART)', cityLimit: 0, guide: null, credit: true, list: 'CHART camera list', listAll: true,
+    placeText: (x) => sentence(`These are the cameras of the Maryland DOT State Highway Administration CHART list only, not every camera in Maryland: the list has a location text and a county but no road or city field, so each of the ${x.total} cameras is named by the location text CHART gives (for example I-495 AT US-29) with its county kept as text, and there are no city pages.`),
+    cityText: () => '',
+    caveats: ['The camera pictures belong to the Maryland Department of Transportation State Highway Administration (CHART) and are not shown here. Each link goes to one CHART viewer page on chart.maryland.gov; it is a link only. CHART blocks automated requests, so live status is not checked and every camera here shows the status unknown by design, not broken. The State of Maryland open data portal publishes the list with no licence or terms that we could find, so it is listed with names, positions and links only, on the site owner approval, and removed the same day if the agency objects. MDOT SHA does not endorse this site.'],
   },
 };
 // The credit sentence for a source that asks for one (its attribution line from sources.json, without a leading "Source:").

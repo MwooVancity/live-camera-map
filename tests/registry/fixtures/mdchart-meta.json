@@ -1,0 +1,20 @@
+{
+ "id": "4z3c-43ce",
+ "name": "Traffic Cameras",
+ "description": "This dataset provides the locations of Traffic Cameras in Maryland from the Coordinated Highways Action Response Team (CHART). The data also includes a URL to the live camera feeds.",
+ "attributionLink": "https://mdgeodata.md.gov/imap/rest/services/Transportation/MD_TrafficCameras/FeatureServer/0",
+ "tags": [
+  "maryland",
+  "maryland open data",
+  "doit",
+  "coordinated highways",
+  "highways action",
+  "action response",
+  "response team",
+  "team chart",
+  "traffic cameras",
+  "camera feeds",
+  "live camera"
+ ],
+ "provenance": "official"
+}

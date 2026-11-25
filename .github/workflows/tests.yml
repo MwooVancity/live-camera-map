@@ -52,6 +52,7 @@ jobs:
           tests/registry/iowa.test.mjs
           tests/registry/georgia.test.mjs
           tests/registry/madrid.test.mjs
+          tests/registry/mdchart.test.mjs
           tests/registry/nsw.test.mjs
           tests/registry/registry.test.mjs
           tests/registry/run-all.test.mjs

@@ -17,6 +17,7 @@ import { MADRID_REGION, MADRID_COUNTRY } from './madrid.mjs';
 import { LN_REGION, LN_COUNTRY } from './tfl.mjs';
 import { LU_REGION, LU_COUNTRY } from './citalu.mjs';
 import { MEDELLIN_REGION, MEDELLIN_COUNTRY } from './medellin.mjs';
+import { MD_REGION, MD_COUNTRY } from './mdchart.mjs';
 
 export const CA_BOUNDS = { latMin: 32.3, latMax: 42.1, lonMin: -124.6, lonMax: -114.0 };
 // Optional text field (one source gives it, another does not): the source's own words for where the camera is. Text only, never a picture.
@@ -119,6 +120,7 @@ export const REGION_COUNTRY = {
   [TX_REGION.slug]: TX_COUNTRY,// Texas: one source, the City of Austin's own list (no city field, so no city pages; the region page says it is Austin only)
   [LU_REGION.slug]: LU_COUNTRY, // CITA motorway webcams (Ponts et Chaussees): one region, CITA's own motorway camera list (motorway number kept as the road, no place field, so no city pages)
   [MEDELLIN_REGION.slug]: MEDELLIN_COUNTRY, // Medellin SIMM CCTV cameras: one list of the Medellín traffic-control (SIMM) camera points from GeoMedellín (CC BY SA)
+  [MD_REGION.slug]: MD_COUNTRY, // Maryland CHART traffic camera list: one source, the MDOT SHA CHART camera list on the State of Maryland open data portal (location text as the name, county kept as text, no city field, so no city pages)
 };
 export const countryOf = (regionSlug) => REGION_COUNTRY[regionSlug] || null;
 

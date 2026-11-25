@@ -112,6 +112,11 @@
       "id": "medellin",
       "script": "medellin.mjs",
       "timeoutSec": 90
+    },
+    {
+      "id": "mdchart",
+      "script": "mdchart.mjs",
+      "timeoutSec": 90
     }
   ]
 }

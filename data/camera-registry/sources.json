@@ -378,5 +378,25 @@
   "license": "No licence or terms page found; shown under the owner approval of 2026-11-25 (link-out only)",
   "licenseUrl": "https://www.arcgis.com/home/item.html?id=12c979ba84b54b83b834fdd2d861677d",
   "reviewedAt": "2026-11-25"
+ },
+ {
+  "id": "maryland-chart-cameras",
+  "name": "Traffic Cameras (Maryland DOT State Highway Administration, CHART, via State of Maryland open data)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one dataset-record request and one list request per run, 1.1 s apart (portal robots.txt asks Crawl-delay 1); chart.maryland.gov is never requested by us",
+   "docsUrl": "https://opendata.maryland.gov/d/4z3c-43ce"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Source: Maryland Department of Transportation State Highway Administration (CHART), Traffic Cameras list, via the State of Maryland open data portal (opendata.maryland.gov). The list carries no licence or terms; listed link-only on the site owner's approval.",
+  "license": "No licence or terms found on the dataset or the portal pages read (2026-11-25); listed link-only on the owner's recorded approval (data/owner-approvals.json)",
+  "licenseUrl": "https://opendata.maryland.gov/d/4z3c-43ce",
+  "reviewedAt": "2026-11-25"
  }
 ]

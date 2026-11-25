@@ -1,0 +1,66 @@
+[
+ {
+  "the_geom": {
+   "type": "Point",
+   "coordinates": [
+    -77.217020000233,
+    39.148937000167
+   ]
+  },
+  "objectid": "55",
+  "location": "I-270 & Montgomery Village Ave (MD 124)",
+  "county": "Montgomery County",
+  "feedid": "3d010dec036a0075004d823633235daa",
+  "url": "https://chart.maryland.gov/video/video.php?feed=3d010dec036a0075004d823633235daa",
+  "lat": "39.148937",
+  "long": "-77.21702"
+ },
+ {
+  "the_geom": {
+   "type": "Point",
+   "coordinates": [
+    -77.01699999977,
+    39.015640000333
+   ]
+  },
+  "objectid": "211",
+  "location": "I-495 AT US-29",
+  "county": "Montgomery County",
+  "feedid": "470011e600ef003a004ee33696235daa",
+  "url": "https://chart.maryland.gov/video/video.php?feed=470011e600ef003a004ee33696235daa",
+  "lat": "39.01564",
+  "long": "-77.017"
+ },
+ {
+  "the_geom": {
+   "type": "Point",
+   "coordinates": [
+    -76.493705999907,
+    39.342945000333
+   ]
+  },
+  "objectid": "450",
+  "location": "I-695 O/L, East of I-95, West of MD 7 (C025A) | MP32.8",
+  "county": "Baltimore County",
+  "feedid": "23011ea3006a0009004c06363d235daa",
+  "url": "https://chart.maryland.gov/video/video.php?feed=23011ea3006a0009004c06363d235daa",
+  "lat": "39.342945",
+  "long": "-76.493706"
+ },
+ {
+  "the_geom": {
+   "type": "Point",
+   "coordinates": [
+    -77.313790000017,
+    39.701840000001
+   ]
+  },
+  "objectid": "321",
+  "location": "RWIS US 15 AT MD 140",
+  "county": "Frederick County",
+  "feedid": "e7008978002900f00050fa36c4235c0a",
+  "url": "https://chart.maryland.gov/video/video.php?feed=e7008978002900f00050fa36c4235c0a",
+  "lat": "39.70184",
+  "long": "-77.31379"
+ }
+]

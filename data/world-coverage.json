@@ -8,7 +8,7 @@
    "argosPlacePages": 156,
    "ourCameras": 5456,
    "status": "partial",
-   "next": "hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
+   "next": "MARYLAND CHART BUILT 2026-11-25 (ops/importers/mdchart.mjs, 451 cameras, dataset has no licence, owner-approved link-only listing, chart.maryland.gov Cloudflare-walled so health is skipped; remove the same day if MDOT SHA objects) | previous: hunt ledger task (plan item 33 round 3): find the national road agency or DATEX II / 511 / open-data portal page that lists camera locations, read its licence, test one picture link for stability (a stable camera page or id passes, a timestamped file fails), then add a verified source or record why not",
    "note": "Caltrans 3,263, Austin 823 and Georgia 511GA 3,829 (no licence found, owner-approved link-only 2026-11-25), Iowa DOT 1,252 (1,253 rows, one duplicate picture path; CC BY 4.0, indemnification clause flagged for the owner) and Baton Rouge LADOTD 118 (city-portal Public Domain tag, owner review pending) built; NY (511NY agreement unread), Oregon (account plus ODOT written ok), Florida and Houston restricted, Washington needs an access code, Texas DriveTexas ruled out",
    "owner": null
   },

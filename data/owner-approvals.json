@@ -9,6 +9,12 @@
       "approvedAt": "2026-11-25",
       "by": "Mike (owner), in chat 2026-11-25: approved 'Approve all four, link-only (Recommended)' for four camera lists with no licence either way (Georgia 3,829, Maryland 451, Medellin 80, Luzern 36)",
       "scope": "THIS SOURCE ID ONLY (georgia-511-cameras): link-only, names and links only, no pictures; removed the same day if GDOT or the Georgia Emergency Management Agency objects. Does not widen to any other source, and never to a restricted or mustNotShip row."
+    },
+    {
+      "id": "maryland-chart-cameras",
+      "approvedAt": "2026-11-25",
+      "by": "Mike (owner), in chat 2026-11-25: 'Approve all four, link-only (Recommended)'",
+      "scope": "This source id only. Link-only: camera names, coordinates and the link to the agency page; no pictures, no image embed, no image cache. The list has no licence or terms. Removed the same day if the agency objects."
     }
   ]
 }
