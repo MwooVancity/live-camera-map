@@ -66,3 +66,13 @@ test('A15: Caltrans officialUrl must be on a dot.ca.gov host', () => {
   assert.equal(normalizeCaltrans(mk('https://evil.example.com/a.jpg'), 7, NOW, drop), null);
   assert.equal(drop.badHost, 1);
 });
+
+test('A18: writeJsonAtomic leaves no temp file and two writers never share one', async () => {
+  const { writeJsonAtomic } = await import('../../ops/importers/lib/registry.mjs');
+  const { readdirSync } = await import('node:fs');
+  const d = dirWith({});
+  const f = join(d, 'x.json');
+  for (let i = 0; i < 20; i++) writeJsonAtomic(f, { i });
+  assert.deepEqual(readdirSync(d), ['x.json']);
+  assert.deepEqual(JSON.parse(readFileSync(f, 'utf8')), { i: 19 });
+});

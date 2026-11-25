@@ -1,5 +1,5 @@
 // Shared registry helpers: normalize, validate, count, safe write.
-import { writeFileSync, readFileSync, renameSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, renameSync, existsSync, mkdirSync, openSync, writeSync, fsyncSync, closeSync, unlinkSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { QC_REGIONS } from './quebec.mjs';
 import { TOR_REGION } from './toronto.mjs';
@@ -129,9 +129,15 @@ export function countsBy(cams, by) {
 
 export function writeJsonAtomic(path, data) {
   mkdirSync(dirname(path), { recursive: true });
-  const tmp = path + '.tmp';
-  writeFileSync(tmp, JSON.stringify(data, null, 1) + '\n');
-  renameSync(tmp, path);
+  const tmp = `${path}.${process.pid}.${Math.random().toString(36).slice(2)}.tmp`; // unique: two runs never share a temp file
+  const fd = openSync(tmp, 'w');
+  try { writeSync(fd, JSON.stringify(data, null, 1) + '\n'); fsyncSync(fd); } finally { closeSync(fd); } // flushed before the rename
+  for (let i = 0; ; i++) {
+    try { renameSync(tmp, path); return; } catch (e) {
+      if (i >= 5 || !['EPERM', 'EBUSY', 'EACCES'].includes(e.code)) { try { unlinkSync(tmp); } catch { /* already gone */ } throw e; }
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 50 * (i + 1)); // Windows: a scanner or reader may hold the target for a moment
+    }
+  }
 }
 
 export function readJsonOrNull(path) {

@@ -7,6 +7,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { run, loadPrevious } from '../../ops/health/check.mjs';
 import { classify } from '../../ops/health/lib/classify.mjs';
+import { retryAfterMs } from '../../ops/health/lib/probe.mjs';
+import { dirname } from 'node:path';
 
 const JPEG = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(2500, 7)]);
 let server, base, handler;
@@ -83,4 +85,21 @@ test('A8: a run where the reachable share collapses against the previous file is
   assert.equal(r.partial, true);
   assert.match(r.doc.incomplete, /reachable share fell/);
   assert.ok(!existsSync(join(r.outDir, 'health.json')));
+});
+
+test('A18: --out names the file (outName), with .sample and .partial before .json for runs that must not replace it', async () => {
+  handler = (req, res) => sendJpeg(res);
+  const ok = await run({ cameras: [cam(1)], outDir: mkdtempSync(join(tmpdir(), 'rah-')), outName: 'mine.json', config: fast });
+  assert.equal(ok.name, 'mine.json');
+  assert.ok(existsSync(join(dirname(ok.path), 'mine.json')));
+  const sample = await run({ cameras: [cam(1)], outDir: mkdtempSync(join(tmpdir(), 'rah-')), outName: 'mine.json', sample: 1, config: fast });
+  assert.equal(sample.name, 'mine.sample.json');
+});
+
+test('A18: Retry-After is read as seconds or as an HTTP date', () => {
+  const now = Date.parse('2026-11-25T12:00:00Z');
+  assert.equal(retryAfterMs('7', now), 7000);
+  assert.equal(retryAfterMs('Wed, 25 Nov 2026 12:00:20 GMT', now), 20000);
+  assert.equal(retryAfterMs('Wed, 25 Nov 2026 11:00:00 GMT', now), 0, 'a date in the past');
+  for (const v of [null, undefined, '', 'soon', '-5']) assert.equal(retryAfterMs(v, now), 0, String(v));
 });

@@ -41,6 +41,15 @@ async function once(url, method, ctx) {
   return { error: 'too-many-redirects' };
 }
 
+// Retry-After is seconds or an HTTP date; returns milliseconds, or 0 when absent or unreadable.
+export function retryAfterMs(v, nowMs = Date.now()) {
+  if (v === null || v === undefined || v === '') return 0;
+  const n = Number(v);
+  if (Number.isFinite(n)) return n > 0 ? n * 1000 : 0;
+  const t = Date.parse(v);
+  return Number.isFinite(t) ? Math.max(0, t - nowMs) : 0;
+}
+
 // Retry 429 / 5xx / transport errors with exponential backoff (Retry-After honoured, capped).
 async function withBackoff(fn, ctx) {
   let o;
@@ -49,9 +58,9 @@ async function withBackoff(fn, ctx) {
     const transient = o.error === 'timeout' || o.error === 'network' || o.httpStatus === 429 || o.httpStatus >= 500;
     if (!transient) return o;
     if (i < ctx.retries) {
-      const ra = Number(o.retryAfter);
+      const ra = retryAfterMs(o.retryAfter);
       // never sleep past the run deadline: the next ctx.before() then stops the run on time
-      const wait = Math.min(ctx.backoffMaxMs, Number.isFinite(ra) && ra > 0 ? ra * 1000 : ctx.backoffMs * 2 ** i);
+      const wait = Math.min(ctx.backoffMaxMs, ra > 0 ? ra : ctx.backoffMs * 2 ** i);
       await sleep(ctx.deadline ? Math.max(0, Math.min(wait, ctx.deadline - Date.now())) : wait);
     }
   }

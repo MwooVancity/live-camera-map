@@ -11,7 +11,7 @@
 // A run that is not ok, or leaves more than 20% 'unknown' (breaker, budget, cap), is written to health.partial.json and
 // never replaces a good health.json. --limit / --sample runs write health.sample.json only.
 import { readFileSync, existsSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { writeJsonAtomic, readJsonOrNull } from '../importers/lib/registry.mjs';
 import { observe, Limit } from './lib/probe.mjs';
@@ -197,7 +197,8 @@ export async function run(opts) {
 
   const dir = opts.outDir;
   const partial = !runOk || share > cfg.maxUnknownShare;
-  const name = isSample ? 'health.sample.json' : partial ? 'health.partial.json' : 'health.json';
+  const base = opts.outName || 'health.json'; // --out names the file: its own name, with .sample / .partial before .json for runs that must not replace it
+  const name = isSample ? base.replace(/\.json$/, '.sample.json') : partial ? base.replace(/\.json$/, '.partial.json') : base;
   const path = join(dir, name);
   writeJsonAtomic(path, doc);
   const line = partial && !isSample
@@ -230,7 +231,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const log = (m) => console.log(m);
   const pst = {};
   const previous = await loadPrevious(a.previous, log, pst);
-  const r = await run({ cameras: JSON.parse(readFileSync(regFile, 'utf8')), previous, previousFailed: Boolean(pst.failed), outDir: dirname(out), config, log, limit: a.limit && !a.sample ? Number(a.limit) : 0, sample: a.sample ? Number(a.sample) : 0, source: a.source || '' });
+  const r = await run({ cameras: JSON.parse(readFileSync(regFile, 'utf8')), previous, previousFailed: Boolean(pst.failed), outDir: dirname(out), outName: basename(out), config, log, limit: a.limit && !a.sample ? Number(a.limit) : 0, sample: a.sample ? Number(a.sample) : 0, source: a.source || '' });
   console.log(JSON.stringify(Object.fromEntries(Object.entries(r.doc.perSource).map(([k, v]) => [k, v])), null, 1));
   process.exit(0);
 }
