@@ -14,7 +14,17 @@
       "reviewedAt": "2026-11-22",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "There is no charge for the use of this data.",
+        "url": "https://cwwp2.dot.ca.gov/documentation/lcs/lcs.htm"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "caltrans-cc",
@@ -29,7 +39,17 @@
       "reviewedAt": "2026-11-22",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "There is no charge for the use of this data.",
+        "url": "https://cwwp2.dot.ca.gov/documentation/cc/cc.htm"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "caltrans-cms",
@@ -44,7 +64,17 @@
       "reviewedAt": "2026-11-22",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "There is no charge for the use of this data.",
+        "url": "https://cwwp2.dot.ca.gov/documentation/cms/cms.htm"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "caltrans-rwis",
@@ -59,7 +89,17 @@
       "reviewedAt": "2026-11-22",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "There is no charge for the use of this data.",
+        "url": "https://cwwp2.dot.ca.gov/documentation/rwis/rwis.htm"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "nws-forecast",
@@ -74,7 +114,17 @@
       "reviewedAt": "2026-11-22",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "The information on National Weather Service (NWS) Web pages are in the public domain, unless specifically noted otherwise, and may be used without charge for any lawful purpose so long as you do not: 1) claim it is your own ..., 2) use it in a manner that implies an endorsement or affiliation with NOAA/NWS, or 3) modify its content and then present it as official government material.",
+        "url": "https://www.weather.gov/disclaimer"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "nws-alerts",
@@ -89,7 +139,17 @@
       "reviewedAt": "2026-11-22",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "The information on National Weather Service (NWS) Web pages are in the public domain, unless specifically noted otherwise, and may be used without charge for any lawful purpose so long as you do not: 1) claim it is your own ..., 2) use it in a manner that implies an endorsement or affiliation with NOAA/NWS, or 3) modify its content and then present it as official government material.",
+        "url": "https://www.weather.gov/disclaimer"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "drivebc-cameras",
@@ -105,7 +165,17 @@
       "reviewedAt": "2026-11-22",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "Open Government Licence - British Columbia",
+        "url": "https://catalogue.data.gov.bc.ca/api/3/action/package_show?id=bc-highwaycams"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "drivebc-events",
@@ -120,7 +190,17 @@
       "reviewedAt": "2026-11-22",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "Use of the Information provided by this API is governed by the Open Government Licence – British Columbia (",
+        "url": "https://api.open511.gov.bc.ca/help"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "digitraffic-weathercam",
@@ -136,7 +216,17 @@
       "reviewedAt": "2026-11-23",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "Fintraffic's open data is licensed under the Creative Commons 4.0 By license. It gives the right to distribute, remix, tweak, and build upon our data, even commercially, as long as you credit the source for the original creation.",
+        "url": "https://www.digitraffic.fi/en/terms-of-service/"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "quebec-cameras",
@@ -152,7 +242,17 @@
       "reviewedAt": "2026-11-23",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": ", license_title",
+        "url": "https://www.donneesquebec.ca/recherche/api/3/action/package_show?id=camera-de-circulation"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "toronto-traffic-cameras",
@@ -168,7 +268,17 @@
       "reviewedAt": "2026-11-23",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "open-government-licence-toronto",
+        "url": "https://open.toronto.ca/open-data-licence/"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "calgary-traffic-cameras",
@@ -184,7 +294,17 @@
       "reviewedAt": "2026-11-23",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "The Information Provider grants you a worldwide, royalty-free, perpetual, non-exclusive license to use the Information, including for commercial purposes, subject to the terms below.",
+        "url": "https://data.calgary.ca/stories/s/Open-Data-Terms/u45n-7awa"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "hongkong-traffic-cameras",
@@ -200,7 +320,17 @@
       "reviewedAt": "2026-11-24",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "You are allowed to browse, download, distribute, reproduce, hyperlink to, and print the Data for both commercial and non-commercial purposes on a free-of-charge basis on condition that:- you shall comply with the Terms of Use; you shall identify clearly the source of the Data and acknowledge the Government and the Relevant Organisations' ownership of the intellectual property rights in the Data ...; you shall also give proper attribution to the Government, the Relevant Organisations and DATA.GOV.HK.",
+        "url": "https://data.gov.hk/en/terms-and-conditions"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "iceland-road-cameras",
@@ -216,7 +346,17 @@
       "reviewedAt": "2026-11-24",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "All IRCA data made available for reuse is licensed under the international Creative Commons Attribution 4.0 International licence (CC BY 4.0), in accordance with Act No. 45/2018 on the Re-use of Public Sector Information.",
+        "url": "https://www.vegagerdin.is/vegagerdin/gagnasafn/vefthjonustur/terms-and-conditions"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "tfl-jamcam-cameras",
@@ -232,7 +372,17 @@
       "reviewedAt": "2026-11-24",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "These licence terms and conditions apply to TfL's free transport data service and are based on version 2.0 of the Open Government Licence with specific amendments for Transport for London (the",
+        "url": "https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "austin-traffic-cameras",
@@ -248,7 +398,17 @@
       "reviewedAt": "2026-11-24",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "Data available through the City of Austin Open Data Portal are offered free and without restriction.",
+        "url": "https://data.austintexas.gov/stories/s/ranj-cccq"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "nsw-live-traffic-cameras",
@@ -264,7 +424,17 @@
       "reviewedAt": "2026-11-24",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "page (https://opendata.transport.nsw.gov.au/datalicence, linked from the dataset page https://opendata.transport.nsw.gov.au/dataset/live-traffic-cameras which says",
+        "url": "https://opendata.transport.nsw.gov.au/datalicence"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "taiwan-thb-cameras",
@@ -280,7 +450,17 @@
       "reviewedAt": "2026-11-24",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "at https://thbapp.thb.gov.tw/opendata/ (Chinese; read by Claude 2026-11-24 and re-read as page text by the importer every run). Quoted: (purpose)",
+        "url": "https://thbapp.thb.gov.tw/opendata/"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "iowa-dot-cameras",
@@ -296,7 +476,17 @@
       "reviewedAt": "2026-11-24",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "Traffic Cameras",
+        "url": "https://www.arcgis.com/sharing/rest/content/items/c4063f200a7b4da5826e2ac86c677cf5?f=json"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "a22-brennero-cameras",
@@ -312,7 +502,17 @@
       "reviewedAt": "2026-11-24",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": ", ClosedData false, LicenseHolder",
+        "url": "https://tourism.opendatahub.com/v1/WebcamInfo?pagesize=20&source=a22"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "brla-dotd-cameras",
@@ -328,7 +528,17 @@
       "reviewedAt": "2026-11-24",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "}; attribution",
+        "url": "https://data.brla.gov/api/views/6z6u-ts44.json"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     },
     {
       "id": "madrid-camaras-cameras",
@@ -344,7 +554,17 @@
       "reviewedAt": "2026-11-24",
       "reviewedBy": "claude-doc-read",
       "needsHumanReview": true,
-      "mustNotShip": false
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "Licencia Creative Commons Attribution 4.0 International (CC BY 4.0)",
+        "url": "https://datos.madrid.es/dataset/202088-0-trafico-camaras"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     }
   ]
 }

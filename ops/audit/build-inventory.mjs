@@ -7,8 +7,9 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { isEnabled } from '../../tests/licensing/gate.mjs';
+import { isEnabled, metadataOk } from '../../tests/licensing/gate.mjs';
 import { keepReviewDates } from './review-dates.mjs';
+import { derive } from './permission-evidence.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const SRC = 'gev/DATA_SOURCES.md';
@@ -140,11 +141,13 @@ let prevRows = null;
 // Only a missing file (first run) means "no old dates"; an unreadable or BOM-prefixed one must stop the run, not silently re-date every row.
 if (existsSync(prevFile)) { try { prevRows = JSON.parse(readFileSync(prevFile, 'utf8').replace(/^﻿/, '')).sources; } catch (e) { throw new Error(`cannot read ${prevFile} to keep review dates: ${e.message}`); } }
 out.splice(0, out.length, ...keepReviewDates(out, prevRows));
+// P0-4: structured metadata and image evidence; a row whose metadata is neither allowed nor grandfathered closes (restricted rows stay restricted).
+for (const o of out) { Object.assign(o, derive(o)); o.enabled = o.enabled && metadataOk(o); }
 
 // Hand-read rows (sources not in gev/DATA_SOURCES.md). Appended so regenerating never drops them; `enabled` comes from the gate.
 for (const m of JSON.parse(readFileSync(resolve(root, 'data/source-permissions.manual.json'), 'utf8')).sources) {
   if (out.some((o) => o.id === m.id)) throw new Error(`manual row ${m.id} duplicates a generated id`);
-  out.push({ ...m, enabled: isEnabled(m, new Date(m.reviewedAt)) });
+  out.push({ ...m, enabled: isEnabled(m, new Date(m.reviewedAt)) }); // manual rows carry their own evidence fields (npm: node ops/audit/permission-evidence.mjs --migrate-manual)
 }
 
 mkdirSync(resolve(root, 'docs/source-audits'), { recursive: true });

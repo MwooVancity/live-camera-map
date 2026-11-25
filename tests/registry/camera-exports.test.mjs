@@ -43,3 +43,14 @@ test('a source labelled unverified is exported only through an enabled gate row,
   assert.equal(buildRows(c, s, {}, [{ id: 'caltrans-cwwp2-dot-ca-gov', enabled: false, licence: 'L', attribution: 'A' }]).rows.length, 0);
   assert.equal(buildRows(c, s, {}, [{ id: 'caltrans-cwwp2-dot-ca-gov', enabled: true, licence: 'L', attribution: 'A', commercialStatus: 'allowed_per_owner' }]).rows.length, 1);
 });
+
+test('P0-4: a source whose licence row has no metadata permission exports nothing; an allowed row, or a source with no row, exports', () => {
+  const row = (m, extra = {}) => [{ id: 'toronto-traffic-cameras', metadataPermission: m, ...extra }];
+  const s = [{ id: 'toronto-traffic', name: 'T', license: 'OGL', attribution: 'T' }, ...src];
+  const c = [cam({ sourceId: 'toronto-traffic', id: 'toronto-traffic-1' }), cam()];
+  assert.equal(buildRows(c, s, {}, row({ status: 'unverified', quote: '', url: '' })).rows.length, 1, 'unverified: Toronto closed, source s still exports');
+  assert.equal(buildRows(c, s, {}, row({ status: 'unverified', quote: '', url: '' })).skipped.noMetadata, 1);
+  assert.equal(buildRows(c, s, {}, row({ status: 'unverified', quote: '', url: '' }, { metadataGrandfather: { reason: 'owner approval' } })).rows.length, 2);
+  assert.equal(buildRows(c, s, {}, row({ status: 'allowed', quote: 'q', url: 'u' })).rows.length, 2);
+  assert.equal(buildRows(c, s, {}, []).rows.length, 2, 'no row: unchanged behaviour');
+});
