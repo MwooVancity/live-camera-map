@@ -155,8 +155,39 @@ test('B6: a restricted licence text is never opened by an owner approval', () =>
 });
 test('B6: every real owner-approved row matches the recorded approval and has no restricted text', () => {
   const rec = JSON.parse(readFileSync(resolve(root, 'data/owner-approvals.json'), 'utf8'));
-  const bad = sources.filter((s) => s.commercialStatus === 'allowed_per_owner' && (s.ownerApprovedAt !== rec.approvedAt || RESTRICT_RE.test(s.licence)));
+  const own = (s) => (rec.sources || []).some((a) => a.id === s.id && a.approvedAt === s.ownerApprovedAt);
+  const bad = sources.filter((s) => s.commercialStatus === 'allowed_per_owner' && ((s.ownerApprovedAt !== rec.approvedAt && !own(s)) || RESTRICT_RE.test(s.licence)));
   assert.deepEqual(bad.map((s) => s.id), []);
+});
+
+// per-source approvals (2026-11-25): an entry opens exactly its own id and date
+const approvals2 = { approvedAt: '2026-11-24', sources: [{ id: 'georgia-511-cameras', approvedAt: '2026-11-25', scope: 'this source only' }] };
+const ga = { ...owner, id: 'georgia-511-cameras', ownerApprovedAt: '2026-11-25' };
+const t25 = new Date('2026-11-26');
+test('B6 per-source: the named source with the entry date passes (control)', () => assert.equal(isEnabled(ga, t25, approvals2), true));
+test('B6 per-source: the approval cannot widen to another source id', () => {
+  assert.equal(isEnabled({ ...ga, id: 'maryland-chart-cameras' }, t25, approvals2), false);
+  assert.equal(isEnabled({ ...ga, id: 'georgia-511-cameras-2' }, t25, approvals2), false);
+  assert.equal(isEnabled({ ...ga, id: undefined }, t25, approvals2), false);
+});
+test('B6 per-source: the right source with another date, or with no entry, stays closed', () => {
+  assert.equal(isEnabled({ ...ga, ownerApprovedAt: '2026-11-20' }, t25, approvals2), false);
+  assert.equal(isEnabled(ga, t25, { approvedAt: '2026-11-24' }), false);
+  assert.equal(isEnabled(ga, t25, { approvedAt: '2026-11-24', sources: [] }), false);
+  assert.equal(isEnabled(ga, t25, null), false);
+});
+test('B6 per-source: a restricted licence text or mustNotShip is not opened by a per-source entry', () => {
+  assert.equal(isEnabled({ ...ga, licence: 'Non-commercial use only' }, t25, approvals2), false);
+  assert.equal(isEnabled({ ...ga, mustNotShip: true }, t25, approvals2), false);
+});
+test('B6 per-source: the real file lists georgia-511-cameras only for 2026-11-25, and the real row matches it', () => {
+  const rec = JSON.parse(readFileSync(resolve(root, 'data/owner-approvals.json'), 'utf8'));
+  const e = rec.sources.filter((a) => a.id === 'georgia-511-cameras');
+  assert.equal(e.length, 1);
+  assert.equal(e[0].approvedAt, '2026-11-25');
+  const row = sources.find((s) => s.id === 'georgia-511-cameras');
+  assert.equal(row.ownerApprovedAt, e[0].approvedAt);
+  assert.equal(row.commercialStatus, 'allowed_per_owner');
 });
 
 // ---- B7: the restricted pattern covers the wording the owner-approval scope forbids ----

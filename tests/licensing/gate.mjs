@@ -12,7 +12,9 @@ export function isEnabled(s, today = new Date(), approvals = loadApprovals()) {
   if (!s || s.mustNotShip) return false;
   if (!metadataOk(s)) return false; // P0-4: names, coordinates and links need a quoted permission (rows that carry the field)
   if (s.commercialStatus === 'allowed_per_owner') { // B6: the date must be the recorded approval, and a restricted licence text is out of its scope
-    if (!approvals || !s.ownerApprovedAt || s.ownerApprovedAt !== approvals.approvedAt || RESTRICT_RE.test(String(s.licence || ''))) return false;
+    if (!approvals || !s.ownerApprovedAt || RESTRICT_RE.test(String(s.licence || ''))) return false;
+    const own = Array.isArray(approvals.sources) && approvals.sources.some((a) => a && a.id === s.id && a.approvedAt === s.ownerApprovedAt); // per-source approval: this id and this date only
+    if (s.ownerApprovedAt !== approvals.approvedAt && !own) return false;
   }
   else if (s.commercialStatus !== 'allowed_per_doc') return false; // unknown, restricted, anything else: closed
   if (!s.attribution || !String(s.attribution).trim() || /^[-—n/a\s]*$/i.test(String(s.attribution))) return false; // a dash or n/a is no attribution (same rule as build-inventory)

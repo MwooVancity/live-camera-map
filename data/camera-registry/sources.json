@@ -358,5 +358,25 @@
   "license": "Creative Commons Attribution 4.0 International (CC BY 4.0) per the dataset page; Ayuntamiento de Madrid general reuse conditions allow commercial and non-commercial reuse with credit; the legal notice says this reuse criterion does not apply to images, videos or other multimedia",
   "licenseUrl": "https://datos.madrid.es/dataset/202088-0-trafico-camaras",
   "reviewedAt": "2026-11-24"
+ },
+ {
+  "id": "georgia-511",
+  "name": "GDOT 511 Cameras (Georgia DOT 511GA, copy published by Georgia Emergency Management, ArcGIS)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "a count query and four list pages per run; no limit stated by the host; 511ga.org is never requested by us",
+   "docsUrl": "https://www.arcgis.com/home/item.html?id=12c979ba84b54b83b834fdd2d861677d"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Georgia Department of Transportation (511GA)",
+  "license": "No licence or terms page found; shown under the owner approval of 2026-11-25 (link-out only)",
+  "licenseUrl": "https://www.arcgis.com/home/item.html?id=12c979ba84b54b83b834fdd2d861677d",
+  "reviewedAt": "2026-11-25"
  }
 ]

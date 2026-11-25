@@ -50,6 +50,7 @@ jobs:
           tests/registry/iceland.test.mjs
           tests/registry/importers-listed.test.mjs
           tests/registry/iowa.test.mjs
+          tests/registry/georgia.test.mjs
           tests/registry/madrid.test.mjs
           tests/registry/nsw.test.mjs
           tests/registry/registry.test.mjs

@@ -84,6 +84,11 @@
       "timeoutSec": 90
     },
     {
+      "id": "georgia",
+      "script": "georgia.mjs",
+      "timeoutSec": 120
+    },
+    {
       "id": "a22",
       "script": "a22.mjs",
       "timeoutSec": 90

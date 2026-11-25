@@ -10,6 +10,7 @@ import { TX_REGION, TX_COUNTRY } from './austin.mjs';
 import { NSW_REGION, NSW_COUNTRY } from './nsw.mjs';
 import { TW_REGION, TW_COUNTRY } from './taiwan.mjs';
 import { IA_REGION, IA_COUNTRY } from './iowa.mjs';
+import { GA_REGION, GA_COUNTRY } from './georgia.mjs';
 import { A22_REGION, A22_COUNTRY } from './a22.mjs';
 import { LA_REGION, LA_COUNTRY } from './brla.mjs';
 import { MADRID_REGION, MADRID_COUNTRY } from './madrid.mjs';
@@ -111,6 +112,7 @@ export const REGION_COUNTRY = {
   [NSW_REGION.slug]: NSW_COUNTRY, // New South Wales: one region, Transport for NSW's own Live Traffic list (region code kept as text, no city field, so no city pages)
   [TW_REGION.slug]: TW_COUNTRY, // Taiwan: one region, the Highway Bureau provincial-road CCTV list (road code and kilometre mark kept as text, no city field, so no city pages)
   [IA_REGION.slug]: IA_COUNTRY, // Iowa: one region, the Iowa DOT's own camera list (route kept as road, DOT type and function kept as text, no city field, so no city pages)
+  [GA_REGION.slug]: GA_COUNTRY, // Georgia: one region, GDOT 511GA's camera list as copied by Georgia Emergency Management (road kept as road, direction kept as text, no city field, so no city pages); owner-approved link-out, no licence found
   [A22_REGION.slug]: A22_COUNTRY, // A22 Brenner motorway (Italy): one region, Autobrennero's own webcams from the Open Data Hub (kilometre mark and carriageway side kept as text, no city field, so no city pages)
   [LA_REGION.slug]: LA_COUNTRY, // Louisiana: one source, LADOTD cameras in Greater Baton Rouge as listed by the City of Baton Rouge open data portal (511LA camera code kept as the name, no city field, so no city pages; the region page says it is Greater Baton Rouge only)
   [MADRID_REGION.slug]: MADRID_COUNTRY, // Madrid (Spain): one source, the City of Madrid's own traffic camera list (camera number kept in the name text, no city or road field, so no city pages; the region page says it is the city of Madrid only, not the DGT national feed)

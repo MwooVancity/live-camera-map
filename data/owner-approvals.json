@@ -2,5 +2,13 @@
   "approvedAt": "2026-11-24",
   "by": "Mike (owner), in chat 2026-11-24: \"Everything is confirmed approved. I want everything in gev\"",
   "scope": "Every row whose commercialStatus is unknown (licence unclear in the doc). NEVER a restricted row and never a mustNotShip row: ads make the site commercial, so non-commercial and agreement-only data stays closed until the licensor allows it.",
-  "doc": "Read by ops/audit/build-inventory.mjs. An approved row becomes commercialStatus allowed_per_owner and is enabled only if it also has attribution, provenance, licence text and a review date. Roll back by deleting this file and regenerating."
+  "doc": "Read by ops/audit/build-inventory.mjs. An approved row becomes commercialStatus allowed_per_owner and is enabled only if it also has attribution, provenance, licence text and a review date. Roll back by deleting this file and regenerating. Per-source approvals (sources[]): a row whose ownerApprovedAt differs from approvedAt is open only when an entry here has the same id AND the same date (tests/licensing/gate.mjs); an entry never opens another source.",
+  "sources": [
+    {
+      "id": "georgia-511-cameras",
+      "approvedAt": "2026-11-25",
+      "by": "Mike (owner), in chat 2026-11-25: approved 'Approve all four, link-only (Recommended)' for four camera lists with no licence either way (Georgia 3,829, Maryland 451, Medellin 80, Luzern 36)",
+      "scope": "THIS SOURCE ID ONLY (georgia-511-cameras): link-only, names and links only, no pictures; removed the same day if GDOT or the Georgia Emergency Management Agency objects. Does not widen to any other source, and never to a restricted or mustNotShip row."
+    }
+  ]
 }

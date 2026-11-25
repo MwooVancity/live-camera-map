@@ -1,0 +1,75 @@
+{
+ "features": [
+  {
+   "attributes": {
+    "Id": "10651",
+    "Latitude": 0,
+    "Longitude": 0,
+    "Url": "https://511ga.org/map/Cctv/10651",
+    "VideoUrl": "https://sfs-lr-40.dot.ga.gov:443/rtplive/GWIN-CCTV-SatelliteBlvd_BoggsRd-111_249-N/playlist.m3u8",
+    "Status": "Disabled",
+    "Description": "N/A",
+    "ObjectId": 1,
+    "Roadway": "I-20",
+    "Direction": "Unknown"
+   }
+  },
+  {
+   "attributes": {
+    "Id": "18549",
+    "Latitude": 33.995518,
+    "Longitude": -83.733475,
+    "Url": "https://511ga.org/map/Cctv/18549",
+    "VideoUrl": "https://sfs-msc-pub-lq-01.navigator.dot.ga.gov:443/rtplive/BARR-CCTV-0003/playlist.m3u8",
+    "Status": "Enabled",
+    "Description": "BARR-0003: SR 211 at Horton St (Barrow)",
+    "ObjectId": 2,
+    "Roadway": "SR 211",
+    "Direction": "East"
+   }
+  },
+  {
+   "attributes": {
+    "Id": "18550",
+    "Latitude": 34.176594,
+    "Longitude": -84.786095,
+    "Url": "https://511ga.org/map/Cctv/18550",
+    "VideoUrl": "https://sfs-msc-pub-lq-01.navigator.dot.ga.gov:443/rtplive/BART-CCTV-0004/playlist.m3u8",
+    "Status": "Enabled",
+    "Description": "BART-0004: SR 3 at MLK (Bartow)",
+    "ObjectId": 3,
+    "Roadway": "SR 3",
+    "Direction": "South"
+   }
+  },
+  {
+   "attributes": {
+    "Id": "18551",
+    "Latitude": 34.37697,
+    "Longitude": -84.91445,
+    "Url": "https://511ga.org/map/Cctv/18551",
+    "VideoUrl": "https://sfs-msc-pub-lq-01.navigator.dot.ga.gov:443/rtplive/BART-CCTV-0209/playlist.m3u8",
+    "Status": "Enabled",
+    "Description": "BART-0209: SR 140 at Princeton Blvd (Bartow)",
+    "ObjectId": 4,
+    "Roadway": "SR 140",
+    "Direction": "East"
+   }
+  },
+  {
+   "attributes": {
+    "Id": "18552",
+    "Latitude": 33.568897,
+    "Longitude": -85.04876,
+    "Url": "https://511ga.org/map/Cctv/18552",
+    "VideoUrl": "https://sfs-msc-pub-lq-01.navigator.dot.ga.gov:443/rtplive/CARR-CCTV-0401/playlist.m3u8",
+    "Status": "Enabled",
+    "Description": "CARR-0401: SR 166 at SR 16 (Carroll)",
+    "ObjectId": 5,
+    "Roadway": "SR 166",
+    "Direction": "North"
+   }
+  }
+ ],
+ "exceededTransferLimit": true
+}

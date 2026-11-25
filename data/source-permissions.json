@@ -8750,6 +8750,37 @@
         "url": ""
       },
       "enabled": false
+    },
+    {
+      "id": "georgia-511-cameras",
+      "name": "GDOT 511 Cameras, Georgia Department of Transportation (511GA), copy published by the Georgia Emergency Management Agency (ArcGIS FeatureServer layer GDOT_511_Cameras/0)",
+      "section": "Camera registry sources (read by ops/importers/georgia.mjs)",
+      "folder": "",
+      "licence": "No licence or terms page was found for this list (read by Claude 2026-11-25). The ArcGIS item record (https://www.arcgis.com/sharing/rest/content/items/12c979ba84b54b83b834fdd2d861677d?f=json, title \"GDOT 511 Cameras\", owner rbagby_gema, snippet \"GDOT cameras from their 511 site.\") has no licence text and the layer has no copyright text. 511ga.org has no terms page we could open (its Terms paths redirect, only /privacy is linked). The list is a copy published by the Georgia Emergency Management Agency, not by GDOT. 511ga.org/robots.txt (read 2026-11-25) disallows /my511/, /map/map*/, /bundles/, /list/getdata/, /eventdetails/ and /error/ but not /map/Cctv/; services1.arcgis.com/robots.txt answers 403 (no rules read, same as Iowa and Austin). Feed: https://services1.arcgis.com/2iUE8l8JKrP2tygQ/arcgis/rest/services/GDOT_511_Cameras/FeatureServer/0 (no key, 3,830 rows on 2026-11-25, 3,829 Enabled and 1 Disabled; the layer was last edited by its publisher on 2025-09-09). OWNER APPROVAL: shown only under the owner decision of 2026-11-25 recorded in data/owner-approvals.json (sources[] entry georgia-511-cameras, this source only): link-only, names and links only, no pictures, removed the same day if GDOT or the agency objects. Only rows with Status Enabled and a link https://511ga.org/map/Cctv/<Id> with the same Id are kept; the HLS VideoUrl is never kept.",
+      "commercialStatus": "allowed_per_owner",
+      "statusReason": "owner approval 2026-11-25 for this source only (data/owner-approvals.json sources[]): no licence or terms page was found for this list, so nothing permits or forbids reuse; link-only (names, coordinates and the 511ga.org camera link), no pictures; needs human review: remove the same day if GDOT or the Georgia Emergency Management Agency objects",
+      "ownerApprovedAt": "2026-11-25",
+      "attribution": "Georgia Department of Transportation (511GA)",
+      "provenance": "https://www.arcgis.com/sharing/rest/content/items/12c979ba84b54b83b834fdd2d861677d?f=json and https://services1.arcgis.com/2iUE8l8JKrP2tygQ/arcgis/rest/services/GDOT_511_Cameras/FeatureServer/0 and https://511ga.org/robots.txt, read 2026-11-25; the layer answered a count of 3,830 the same day; docs/source-audits/hunt-batch4-us-canada-2026-11-25.md",
+      "imageStatus": "unverified: no licence or terms found for the picture files; https://511ga.org/map/Cctv/<id> answered 200 image/png on a GET and a HEAD for three ids (18549, 18550, 18551, 2026-11-25), but it also answers 200 image/png (15,136 bytes) for a made-up id, so a status check proves nothing; image display, caching and redistribution not stated; link-out only",
+      "reviewedAt": "2026-11-25",
+      "reviewedBy": "claude-doc-read",
+      "needsHumanReview": true,
+      "mustNotShip": false,
+      "metadataPermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": "https://www.arcgis.com/sharing/rest/content/items/12c979ba84b54b83b834fdd2d861677d?f=json"
+      },
+      "metadataGrandfather": {
+        "reason": "owner approval 2026-11-25 (data/owner-approvals.json sources[] georgia-511-cameras): no licence or terms page was found, so no sentence permits publishing names and coordinates; shown link-only under that approval for this source only"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      },
+      "enabled": true
     }
   ]
 }

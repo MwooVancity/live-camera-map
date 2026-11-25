@@ -1,0 +1,10 @@
+{
+ "generatedAt": "2026-11-25T12:45:10.666Z",
+ "source": "https://services1.arcgis.com/2iUE8l8JKrP2tygQ/arcgis/rest/services/GDOT_511_Cameras/FeatureServer/0",
+ "datasetRecord": "https://www.arcgis.com/home/item.html?id=12c979ba84b54b83b834fdd2d861677d",
+ "raw": 3830,
+ "dropped": {
+  "notEnabled": 1
+ },
+ "total": 3829
+}

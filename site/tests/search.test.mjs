@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, mkdtempSync, writeFileSync, existsSync, readdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { buildEntries, validateEntries, pageRoutes } from '../src/lib/search-index.mjs';
+import { buildEntries, validateEntries, pageRoutes, SEARCH_SKIP_CAMERAS } from '../src/lib/search-index.mjs';
 import { packIndex, sizeGate, writeIndex, verifyIndex, BUDGET_BYTES } from '../scripts/build-search.mjs';
 import { createLoader, MAX_FALLBACK_SHARDS } from '../src/lib/search-core.mjs';
 import { parseMapParams, gevHash, nearest, altFromZoom } from '../src/lib/map-params.mjs';
@@ -28,7 +28,7 @@ test('failing fixture: validateEntries catches a duplicate id, a missing region,
 });
 test('entries per kind add up to the registry: one camera entry per usable camera, a city or town for each named place', () => {
   const by = (k) => entries.filter((e) => e.kind === k).length;
-  assert.equal(by('camera'), cams.length);
+  assert.equal(by('camera'), cams.filter((c) => !SEARCH_SKIP_CAMERAS.has(c.regionSlug)).length, 'every usable camera except the regions named in SEARCH_SKIP_CAMERAS (search size budget)');
   assert.equal(by('city') + by('town'), new Set(cams.filter((c) => c.city).map((c) => `${c.regionSlug}|${c.city}`)).size);
 });
 test('town entries link to the map position only; cameras link to a city page, a road page or the official source', () => {

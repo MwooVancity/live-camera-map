@@ -12,6 +12,7 @@ import { LN_REGION } from '../../../ops/importers/lib/tfl.mjs';
 import { NSW_REGION } from '../../../ops/importers/lib/nsw.mjs';
 import { TW_REGION } from '../../../ops/importers/lib/taiwan.mjs';
 import { IA_REGION } from '../../../ops/importers/lib/iowa.mjs';
+import { GA_REGION } from '../../../ops/importers/lib/georgia.mjs';
 import { A22_REGION } from '../../../ops/importers/lib/a22.mjs';
 import { LA_REGION } from '../../../ops/importers/lib/brla.mjs';
 import { MADRID_REGION } from '../../../ops/importers/lib/madrid.mjs';
@@ -123,6 +124,13 @@ export const REGIONS = {
     placeText: (x) => sentence(`The Iowa DOT's list has no city or place field: each camera is named as the DOT names it, usually a route and a mile marker (for example I-80 @ MM 114.2), and carries the DOT's own type (Iowa DOT, RWIS road weather station or rest area) and function as text, so there are no city pages; all ${x.total} cameras are listed below. A weather station or rest area with several views has one link per view.`),
     cityText: () => '',
     caveats: ['The camera pictures belong to the Iowa Department of Transportation and are not shown here. Each link goes to one still picture address on atmsqf.iowadot.gov; it is a link only, and the DOT\'s live video streams are not linked. The DOT licenses the camera list under Creative Commons Attribution 4.0 with credit to the DOT; that licence covers the data, and we do not suggest the DOT endorses this site.'],
+  },
+  // Georgia: one region from GDOT 511GA's camera list as copied by the Georgia Emergency Management Agency; the road is the road, GDOT's direction label is kept as text, no place field, so no city pages. No licence found: owner-approved link-out only.
+  [GA_REGION.slug]: {
+    sourceId: 'georgia-511', agency: 'Georgia Department of Transportation (511GA)', cityLimit: 0, guide: null, credit: true, list: '511GA camera list', listAll: true,
+    placeText: (x) => sentence(`The list has no city or place field: each of the ${x.total} cameras is named as GDOT names it, usually a camera code, a road and a cross street with a county or city in brackets (for example BARR-0003: SR 211 at Horton St (Barrow)), and carries GDOT's own direction label as text, so there are no city pages. Cameras GDOT marks Disabled are left out.`),
+    cityText: () => '',
+    caveats: ['The camera pictures belong to the Georgia Department of Transportation and are not shown here. Each link goes to one camera page on 511ga.org; it is a link only, and the live video streams are not linked. We found no licence or terms page for this camera list: it is a copy published by the Georgia Emergency Management Agency, and we show only names and links, which are listed here with the approval of our owner. If GDOT or the agency asks us to remove it, we remove it the same day. Live status is not checked: 511ga.org answers a picture request for any number, even one that is not a camera, so a check would prove nothing and every camera here shows the status unknown by design, not broken. The list was last edited by its publisher in September 2025, so a camera may have moved or been retired since. We do not suggest GDOT or the agency endorses this site.'],
   },
   // A22 Brenner motorway (Italy): one region from Autobrennero's own webcams as listed by the Open Data Hub; kilometre mark and carriageway side are kept as text, no city field, so no city pages.
   [A22_REGION.slug]: {
