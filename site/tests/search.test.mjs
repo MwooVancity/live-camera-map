@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, mkdtempSync, writeFileSync, existsSync, readdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { buildEntries, validateEntries, pageRoutes, SEARCH_SKIP_CAMERAS } from '../src/lib/search-index.mjs';
+import { buildEntries, validateEntries, pageRoutes } from '../src/lib/search-index.mjs';
 import { packIndex, sizeGate, writeIndex, verifyIndex, BUDGET_BYTES } from '../scripts/build-search.mjs';
 import { createLoader, MAX_FALLBACK_SHARDS } from '../src/lib/search-core.mjs';
 import { parseMapParams, gevHash, nearest, altFromZoom } from '../src/lib/map-params.mjs';
@@ -28,7 +28,7 @@ test('failing fixture: validateEntries catches a duplicate id, a missing region,
 });
 test('entries per kind add up to the registry: one camera entry per usable camera, a city or town for each named place', () => {
   const by = (k) => entries.filter((e) => e.kind === k).length;
-  assert.equal(by('camera'), cams.filter((c) => !SEARCH_SKIP_CAMERAS.has(c.regionSlug)).length, 'every usable camera except the regions named in SEARCH_SKIP_CAMERAS (search size budget)');
+  assert.equal(by('camera'), cams.length, 'every camera has a search entry (no region is left out of search)');
   assert.equal(by('city') + by('town'), new Set(cams.filter((c) => c.city).map((c) => `${c.regionSlug}|${c.city}`)).size);
 });
 test('town entries link to the map position only; cameras link to a city page, a road page or the official source', () => {
@@ -41,7 +41,7 @@ test('build writes a manifest that points only to existing files with matching h
   const out = join(tmp(), 'search'); writeIndex(entries, out);
   assert.deepEqual(verifyIndex(out), []);
   const m = JSON.parse(readFileSync(join(out, 'manifest.json'), 'utf8'));
-  assert.equal(m.shards.length, new Set(entries.map((e) => e.countrySlug)).size, 'one shard per country'); assert.match(m.global.file, /^global\.[0-9a-f]{12}\.json$/);
+  assert.equal(m.shards.length, new Set(entries.map((e) => `${e.country}|${e.region}`)).size, 'one shard per country and region'); assert.match(m.global.file, /^global\.[0-9a-f]{12}\.json$/);
 });
 test('failing fixture: a missing file, a changed byte and a stray file are each reported by verifyIndex', () => {
   const out = join(tmp(), 'search'); writeIndex(entries, out);
@@ -114,7 +114,7 @@ test('a country shard is fetched only when a query needs it, and only once', asy
   const { f, calls } = stubFetch(), l = createLoader(f); await l.focus();
   const r = await l.query('i-405'); assert.equal(r[0].url, '/roads/i-405/');
   const shards = () => calls.filter((c) => c.includes('shard-'));
-  assert.equal(shards().length, 1); assert.match(shards()[0], /shard-united-states/);
+  assert.equal(shards().length, 1); assert.match(shards()[0], /shard-united-states-/);
   await l.query('i-405'); await l.query('santa'); assert.equal(shards().length, 1);
 });
 test('a query with no country hint reads at most MAX_FALLBACK_SHARDS shards, and finds a town that has no page', async () => {

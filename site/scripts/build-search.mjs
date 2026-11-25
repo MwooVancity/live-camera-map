@@ -1,6 +1,6 @@
 // Builds the static search index into site/public/search/ BEFORE astro build. Usage (from site/): node scripts/build-search.mjs
 // Files: manifest.json (entry point), global.<hash>.json (country, region, city, town, road names: the only file read on first focus besides the manifest),
-// shard-<country>.<hash>.json (everything of one country). Deterministic (no clock, sorted rows). Written to a temp folder, verified, then swapped in:
+// shard-<country>-<region>.<hash>.json (everything of one region). Deterministic (no clock, sorted rows). Written to a temp folder, verified, then swapped in:
 // a failed or over-budget build throws and leaves the old folder untouched (never a half-written manifest).
 import { createHash } from 'node:crypto';
 import { gzipSync } from 'node:zlib';
@@ -22,10 +22,12 @@ export function packIndex(entries) {
   const put = (name, obj) => { const text = JSON.stringify(obj); const hash = sha(text); const file = name.replace('.json', `.${hash.slice(0, 12)}.json`); files.set(file, text); return { file, bytes: Buffer.byteLength(text), gzip: gz(text), sha256: hash }; };
   const sorted = [...entries].sort(byOrder);
   const global = put('global.json', { rows: sorted.filter((e) => GLOBAL_KINDS.has(e.kind)).map((e) => [...row(e), e.country]) });
-  const countries = [...new Map(sorted.map((e) => [e.country, e.countrySlug])).entries()].sort((a, b) => (a[1] < b[1] ? -1 : 1));
-  const shards = countries.map(([country, slug]) => {
-    const mine = sorted.filter((e) => e.country === country);
-    return { country, slug, entries: mine.length, ...put(`shard-${slug}.json`, { country, rows: mine.map(row) }) };
+  // one shard per country+region: the global file already holds every place name, so a shard only holds camera names, and a region is the unit a query needs
+  const keys = [...new Map(sorted.map((e) => [`${e.country}|${e.region}`, e])).values()].sort((a, b) => (`${a.countrySlug}/${a.region}` < `${b.countrySlug}/${b.region}` ? -1 : 1));
+  const shards = keys.map((k) => {
+    const mine = sorted.filter((e) => e.country === k.country && e.region === k.region);
+    const slug = `${k.countrySlug}-${k.region.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'region'}`;
+    return { country: k.country, region: k.region, slug, entries: mine.length, ...put(`shard-${slug}.json`, { country: k.country, region: k.region, rows: mine.map(row) }) };
   });
   const kinds = {};
   for (const e of entries) kinds[e.kind] = (kinds[e.kind] || 0) + 1;
@@ -44,7 +46,7 @@ export function sizeGate(manifest) {
 export function writeIndex(entries, outDir, budgetCheck = sizeGate) {
   const { files, manifest } = packIndex(entries);
   const gate = budgetCheck(manifest);
-  if (!gate.ok) throw new Error(`search index over budget: first search ${gate.total} B gzip (manifest ${gate.manifestGzip} + global ${gate.globalGzip} + largest shard ${gate.largestShardGzip}) > ${gate.budget} B. Shard by region or adopt a library.`);
+  if (!gate.ok) throw new Error(`search index over budget: first search ${gate.total} B gzip (manifest ${gate.manifestGzip} + global ${gate.globalGzip} + largest shard ${gate.largestShardGzip}) > ${gate.budget} B. Split the largest region or adopt a library.`);
   const tmp = `${outDir}.tmp`;
   rmSync(tmp, { recursive: true, force: true });
   mkdirSync(tmp, { recursive: true });

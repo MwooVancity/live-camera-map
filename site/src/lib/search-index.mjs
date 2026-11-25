@@ -7,9 +7,6 @@ import { pageList, curatedPlaces, curatedRoads, countryRoute, regionRoute, cityR
 import { normalize, roadNorm } from './search-core.mjs';
 
 export const MAP_ZOOM = 11;
-// Regions whose camera NAMES are left out of the search index (their region page, roads and places stay searchable): Georgia's 3,829 cameras put the United States shard at 379 KB gzip, over the 300 KB first-search budget (2026-11-25).
-// Remove an entry when the region shards exist (plan.md item 3: fix = region shards past 300 KB). The budget itself is never raised to fit.
-export const SEARCH_SKIP_CAMERAS = new Set(['georgia']);
 export const mapUrl = (lat, lon, z = MAP_ZOOM) => `/map/?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}&z=${z}`;
 const r5 = (x) => Math.round(x * 1e5) / 1e5;
 const centre = (list) => ({ lat: r5(list.reduce((s, c) => s + c.lat, 0) / list.length), lon: r5(list.reduce((s, c) => s + c.lon, 0) / list.length) });
@@ -57,7 +54,6 @@ export function buildEntries(cams) {
   }
   // camera names: the link goes to the camera's city page, else its road page, else the official source. Neither city nor road pages have per-camera anchors, so no anchor is added.
   for (const c of usable) {
-    if (SEARCH_SKIP_CAMERAS.has(c.regionSlug)) continue;
     const cityUrl = c.city ? cityRoute(c.regionSlug, c.city) : null;
     const roadUrl = c.regionSlug === 'california' && roadSlug(c.road) ? `/roads/${roadSlug(c.road)}/` : null;
     const url = cityUrl && routes.has(cityUrl) ? cityUrl : roadUrl && routes.has(roadUrl) ? roadUrl : c.officialUrl;

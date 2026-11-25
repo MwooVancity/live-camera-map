@@ -54,7 +54,7 @@ const guides = isCA ? GUIDES.slice(0, 3) : [GUIDES.find((g) => g.slug === info.g
       <li><a href={c.officialUrl} rel="noopener" title={c.name}>{cleanLabel(c)}</a> <span class="meta">{[c.road, c.direction, c.feedType === 'still' ? 'still image' : 'video'].filter(Boolean).join(', ')}.</span>{c.locationText && <span class="meta"> {c.locationText}</span>}{hb && <> <span class="meta" data-status={hb.statusOf(c.id)} title={`${MEANING[hb.statusOf(c.id)]}${hb.record(c.id)?.lastChecked ? '; last checked ' + when(hb.record(c.id).lastChecked) : ''}`}>Status: {hb.statusOf(c.id)}.</span>{hb.checkedText(c.id) && <span class="meta"> {hb.checkedText(c.id)}.</span>}</>}</li>
     ))}</ul>
   </section>}
-  {feeds.length > 0 && <section data-block="feed-freshness" data-source={isCA ? 'Caltrans CWWP feeds and NOAA National Weather Service, checked by our importers' : `${info.agency} Open511 events feed, checked by our importer`} data-asof={feeds.map((f) => f.asof).filter(Boolean).sort().at(-1) || 'not-fetched'}>
+  {feeds.length > 0 && <section data-block="feed-freshness" data-basis="registry" data-source={isCA ? 'Caltrans CWWP feeds and NOAA National Weather Service, checked by our importers' : `${info.agency} Open511 events feed, checked by our importer`} data-asof={feeds.map((f) => f.asof).filter(Boolean).sort().at(-1) || 'not-fetched'}>
     <h2>Live data freshness</h2>
     <ul>{feeds.map((f) => <li>{f.name}: {f.state}{f.failed.length ? `, districts ${f.failed.join(', ')} did not load` : ''}{f.asof ? `, last fetched ${f.asof.slice(0, 16).replace('T', ' ')} UTC` : ''}. <span class="meta">Shown on city pages only when newer than {f.maxAgeMin} minutes at build.</span></li>)}</ul>
   </section>}

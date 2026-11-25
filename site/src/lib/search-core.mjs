@@ -52,27 +52,29 @@ export function search(sets, query, max = MAX_RESULTS) {
 // city and road names); a country shard is fetched only when a query needs it (town and camera names live there).
 export function createLoader(fetchFn, base = '/search/') {
   let started = null, manifest = null, global = null;
-  const shards = new Map(); // country -> rows
+  const shards = new Map(); // country + region -> { rows, country }
+  const skey = (s) => `${s.country}|${s.region}`;
   const get = async (file) => { const res = await fetchFn(base + file); if (!res.ok) throw new Error(`search: ${file} ${res.status}`); return res.json(); };
   const focus = () => (started ||= (async () => {
     manifest = await get('manifest.json');
     if (manifest.version !== 1) throw new Error('search: unknown manifest version');
     global = await get(manifest.global.file);
   })().catch((e) => { started = null; throw e; }));
-  const shard = async (country) => {
-    if (!shards.has(country)) { const f = manifest.shards.find((s) => s.country === country); shards.set(country, f ? (await get(f.file)).rows : []); }
+  const shard = async (s) => {
+    if (!shards.has(skey(s))) shards.set(skey(s), { rows: (await get(s.file)).rows, country: s.country });
   };
   const query = async (q) => {
     await focus();
-    const sets = () => [{ rows: global.rows }, ...[...shards].map(([country, rows]) => ({ rows, country }))];
+    const sets = () => [{ rows: global.rows }, ...[...shards.values()]];
     let res = search(sets(), q);
     if (res.length >= MAX_RESULTS) return res;
-    let need = [...new Set(res.map((x) => x.country))].filter((c) => !shards.has(c));
-    if (!res.length) need = manifest.shards.filter((s) => !shards.has(s.country)).sort((a, b) => a.gzip - b.gzip).slice(0, MAX_FALLBACK_SHARDS).map((s) => s.country);
+    // a result names its country and region: fetch that region's shard (a country-level result has no single region: it fetches nothing extra)
+    let need = manifest.shards.filter((s) => !shards.has(skey(s)) && res.some((x) => x.country === s.country && x.region === s.region));
+    if (!res.length) need = manifest.shards.filter((s) => !shards.has(skey(s))).sort((a, b) => a.gzip - b.gzip).slice(0, MAX_FALLBACK_SHARDS);
     if (!need.length) return res;
     await Promise.all(need.map(shard));
     res = search(sets(), q);
     return res;
   };
-  return { focus, query, loaded: () => ({ manifest: !!manifest, shards: [...shards.keys()] }) };
+  return { focus, query, loaded: () => ({ manifest: !!manifest, shards: [...shards.keys()].map((k) => k.replace('|', ' / ')) }) };
 }
