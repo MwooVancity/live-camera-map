@@ -1,0 +1,46 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SITE_NAME } from '../../config.mjs';
+import { MAP_BROWSER_HOSTS } from '../../lib/privacy-facts.mjs';
+const embedded = Boolean((import.meta.env.PUBLIC_GEV_EMBED_URL || '').trim());
+---
+<Base title={`Privacy: what ${SITE_NAME} stores and loads`} description={`What this site sets in your browser, which outside hosts its pages contact, what the saved list and the near-me button do, and what the map page adds. Checked 2026-11-24.`} route="/privacy/" crumbs={[{ name: 'Privacy', route: '/privacy/' }]}>
+  <h1>Privacy</h1>
+  <p class="meta">Checked against the site's code and built pages on 2026-11-24. A test fails if these facts change without this page being updated.</p>
+
+  <h2>Our own pages</h2>
+  <ul>
+    <li>We set no cookies on our own pages today. No page writes a cookie, and the built site has no cookie-writing code.</li>
+    <li>Our own pages load no script, font, style or picture from another host. Scripts, fonts and styles come from this site only. The only web addresses inside our pages other than this site's are standard format identifiers (schema.org, w3.org, sitemaps.org), which are labels, not requests.</li>
+    <li>We run no advertising and no analytics on the site today.</li>
+    <li>Camera pictures are never loaded by our pages. Each camera is a link: when you click it you leave this site for the official source, which has its own privacy rules.</li>
+  </ul>
+
+  <h2>Saved cameras</h2>
+  <p>The Save buttons keep your list in this browser's local storage, under one key. The list is never sent to us or anyone else; we have no account system and no copy. Clearing your browser data removes it.</p>
+
+  <h2>Search box</h2>
+  <p>Search runs in your browser. It downloads index files from this site when you first use the box, and the text you type is not sent anywhere. The name of an index file requested can show which country's index your search needed.</p>
+
+  <h2>Cameras near me</h2>
+  <p>The home page button asks your browser for your position only after you click it. The position is compared with a list of pages already loaded in your browser, and the nearest pages are shown. The code makes no network request with your position, and your position is not stored. If you refuse, nothing happens. The map page can be opened with a position in its address (for example from a search result for a town); that position is passed to the map engine's page described below.</p>
+
+  <h2>The map page</h2>
+  {embedded
+    ? <p>This build of the map page embeds the map engine (an open-source globe) in a frame. The engine runs on its own host, apart from this site.</p>
+    : <p>This build of the map page does not embed the map engine yet, so it loads nothing from outside hosts. When the engine is switched on it runs in a frame on its own host, apart from this site, and the rest of this section applies.</p>}
+  <p>When the engine is shown, your browser contacts these outside hosts directly, verified in the engine's own files and by a measurement in a real browser:</p>
+  <ul>
+    {MAP_BROWSER_HOSTS.map((h) => <li><code>{h.host}</code>: {h.what}</li>)}
+  </ul>
+  <p>Each of those hosts sees your IP address and your browser's details, as any web server does. Other map layers you switch on inside the engine load tiles or data from that layer's own public provider; we have not audited every such host, so this list is not complete for layers you turn on. We have not verified whether the engine stores its own settings or cookies in your browser; we found no cookie-writing code in its files, which is not a guarantee. The engine's server also asks public data providers for some layers; we have not inspected what those requests carry.</p>
+
+  <h2>Hosting and logs</h2>
+  <p>The site is hosted on Cloudflare Pages; a test copy runs on GitHub Pages. Like any web host, they receive your IP address and the page you request, and keep server logs under their own policies, which we do not control. We have not yet read the live site's response headers, because the site is not live; we expect no cookies from the host but will not claim it until checked.</p>
+
+  <h2>If this changes</h2>
+  <p>If we add advertising or analytics later, they may set cookies or use other identifiers. Before that happens we will show a consent notice and update this page. Until then, the statements above are the whole of what we know.</p>
+
+  <h2>Contact</h2>
+  <p>A contact address will be published here. Until it is, there is no way to reach us from this page.</p>
+</Base>

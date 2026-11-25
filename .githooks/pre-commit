@@ -5,7 +5,7 @@ set -e
 run() { out=$("$@" 2>&1) || { echo "$out"; echo "COMMIT BLOCKED: $* failed"; exit 1; }; }
 run node ops/lint/preflight.mjs --offline
 run node ops/harness/selftest.mjs
-run node --test ops/lint/preflight.test.mjs ops/harness/harness.test.mjs tests/exclusion/exclusion.test.mjs tests/deploy/compose-lint.test.mjs tests/health/health.test.mjs
+run node --test ops/lint/preflight.test.mjs ops/harness/harness.test.mjs tests/exclusion/exclusion.test.mjs tests/deploy/compose-lint.test.mjs tests/deploy/headers.test.mjs tests/health/health.test.mjs
 if [ -d gev/.git ]; then run node tests/immutability/check.mjs; fi
 # Site tests only when site/ or the registry changed (build 2 s + tests); a broken site test was committed once without this.
 if git diff --cached --name-only | grep -qE '^(site/|data/camera-registry/)'; then

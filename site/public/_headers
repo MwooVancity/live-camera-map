@@ -1,0 +1,28 @@
+# Cloudflare Pages headers for the static site (read by Pages only; GitHub Pages staging ignores this file).
+# Checked by tests/deploy/headers.test.mjs. Pages JOINS the same header from every matching rule with commas, so each
+# more specific Cache-Control rule first detaches the one from /* with "! Cache-Control".
+# No Content-Security-Policy yet: /map/ frames the map engine from another host and Astro emits inline scripts; a CSP
+# needs a test against the deployed host first (plan.md item 38). No Strict-Transport-Security: set it at the zone, after launch.
+# ops/proxy/nginx*.conf front the map engine only (its /assets/ rule), not these paths, so nothing here contradicts them.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(self), camera=(), microphone=()
+  X-Frame-Options: SAMEORIGIN
+  Cache-Control: public, max-age=0, must-revalidate
+
+/_astro/*
+  ! Cache-Control
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/*
+  ! Cache-Control
+  Cache-Control: public, max-age=31536000, immutable
+
+/data/*
+  ! Cache-Control
+  Cache-Control: public, max-age=300, must-revalidate
+
+/health.json
+  ! Cache-Control
+  Cache-Control: public, max-age=300, must-revalidate

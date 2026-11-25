@@ -55,7 +55,7 @@ test('no camera image or media on any page (link-out only)', () => {
 test('no third-party scripts or fonts', () => {
   for (const [route, html] of pages) {
     for (const m of html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"/gi)) assert.ok(m[1].startsWith('/'), `${route}: external script ${m[1]}`);
-    assert.ok(!/fonts\.(googleapis|gstatic)/.test(html), `${route}: external fonts`);
+    if (route !== '/privacy/') assert.ok(!/fonts\.(googleapis|gstatic)/.test(html), `${route}: external fonts`); // /privacy/ names the map engine's font hosts as text; requests are checked in privacy.test.mjs
   }
 });
 
