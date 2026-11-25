@@ -8,7 +8,7 @@ const OKURL = /^(https:\/\/|\/(?!\/))/;
 export function readSaved(): Saved[] {
   try {
     const raw = JSON.parse(localStorage.getItem(KEY) || '[]');
-    return Array.isArray(raw) ? raw.filter((s) => s && typeof s.url === 'string' && OKURL.test(s.url) && typeof s.label === 'string').slice(0, MAX) : [];
+    return Array.isArray(raw) ? raw.filter((s) => s && typeof s.url === 'string' && OKURL.test(s.url) && typeof s.label === 'string').map((s) => ({ ...s, place: typeof s.place === 'string' ? s.place : '', savedAt: typeof s.savedAt === 'string' ? s.savedAt : '' })).slice(0, MAX) : [];
   } catch { return []; }
 }
 function write(list: Saved[]): boolean {

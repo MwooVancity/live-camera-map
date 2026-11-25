@@ -20,13 +20,16 @@ const agencies = regions.map((r) => regionInfo(r).agency).join(' and ');
 const byCountry = countsBy(cameras, 'country');
 const countryList = countriesWithPages(cameras);
 const nCountries = Object.keys(countsBy(cameras, 'country')).length;
+import { loadHealth, neverChecked } from '../lib/health.mjs';
+const unchecked = neverChecked(cameras);
+const healthOk = loadHealth() !== null;
 const sourcesN = new Set(cameras.map((c) => c.sourceId)).size;
 ---
 <Base title={`Free live traffic cameras: ${total} official links, no sign-in | ${SITE_NAME}`} description={`Free traffic camera directory: ${total} official camera links in ${nCountries} countries. No account, no quota, no ad before a camera. Each links to its official source.`} route="/">
   <section class="hero">
     <h1>Free live traffic cameras</h1>
-    <p class="lead"><strong>{total}</strong> official camera links in <strong>{nCountries}</strong> countries, each one checked by us. No account, no pictures copied: every name goes to the official source.</p>
-    <p class="stats"><span>List updated {registryDate}</span><span>{sourcesN} official sources</span><span>Health checked every few hours</span></p>
+    <p class="lead"><strong>{total}</strong> official camera links in <strong>{nCountries}</strong> countries{unchecked > 0 ? <>; our link check covers {total - unchecked} of them, and {unchecked} cannot be checked (<a href="/status/">see status</a>)</> : <>, each one checked by us</>}. No account, no pictures copied: every name goes to the official source.</p>
+    <p class="stats"><span>List updated {registryDate}</span><span>{sourcesN} official sources</span>{healthOk && <span>Health checked every few hours</span>}</p>
     <p class="actions"><a class="cta" href="/map/">Open the map</a> <a class="cta2" href="/cameras/">Browse all cameras</a> <button type="button" id="near-btn" class="cta2" hidden>Cameras near me</button></p>
     <div id="near" aria-live="polite" hidden><p id="near-msg" class="meta"></p><ul id="near-list"></ul></div>
     <script type="application/json" id="near-data" set:html={JSON.stringify(near).replace(/</g, '\\u003c')}></script>

@@ -22,7 +22,7 @@ import { SITE_NAME } from '../../config.mjs';
       for (const s of list) {
         const li = document.createElement('li');
         const a = document.createElement('a'); a.href = s.url; a.rel = 'noopener'; a.textContent = s.label; li.append(a);
-        const m = document.createElement('span'); m.className = 'meta'; m.textContent = ` ${s.place}. Saved ${s.savedAt.slice(0, 10)}. `; li.append(m);
+        const m = document.createElement('span'); m.className = 'meta'; m.textContent = `${s.place ? ` ${s.place}.` : ''}${s.savedAt ? ` Saved ${s.savedAt.slice(0, 10)}.` : ''} `; li.append(m);
         const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Remove'; b.addEventListener('click', () => { removeSaved(s.url); render(); }); li.append(b);
         ul.append(li);
       }

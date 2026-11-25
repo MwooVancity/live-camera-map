@@ -152,7 +152,7 @@ export const REGIONS = {
 };
 // The credit sentence for a source that asks for one (its attribution line from sources.json, without a leading "Source:").
 export const creditLine = (source) => `Credit: ${String(source.attribution).replace(/^Source:\s*/i, '').replace(/\.$/, '')}.`; // one full stop whether or not the licence's own statement ends with one
-export const regionInfo = (slug) => REGIONS[slug] || { sourceId: null, agency: 'the official source', cityLimit: 5, guide: null };
+export const regionInfo = (slug) => REGIONS[slug] || { sourceId: null, agency: 'the official source', cityLimit: 5, guide: null, list: 'camera list', placeText: () => '', cityText: () => '', caveats: [] };
 
 // Curated places: [{ region, city, n }]. Counted PER REGION, so the same place name in two regions never merges into one count
 // or one page. Bigger regions first; inside a region by camera count, ties A to Z. Provisional.

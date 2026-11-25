@@ -5,6 +5,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { countsBy } from '../../../ops/importers/lib/registry.mjs';
+import { CONFIG } from '../../../ops/health/check.mjs';
 import { effectiveStatus, checkedAgoText, MAX_CHECK_AGE_H } from '../../../ops/health/lib/age.mjs';
 
 export const HEALTH_MAX_AGE_H = 24; // the whole file: the last run is older than this at build = no statuses at all
@@ -56,3 +57,6 @@ export function cityHealth(cams, health, now = new Date()) {
     .map((road) => { const here = cams.filter((c) => c.road === road); return { road, n: here.length, counts: tally(here, health, now) }; });
   return { block: { asof: health.generatedAt, total: cams.length, counts: tally(cams, health, now), roads, statusOf: (id) => statusOf(id, health, now), checkedText: (id) => checkedText(id, health, now), record: (id) => health.cameras[id] || null }, reason: null };
 }
+
+// Cameras of sources our checker never requests (CONFIG.perSource skip): unknown by design, so no page may say every camera is checked.
+export const neverChecked = (cams) => cams.filter((c) => CONFIG.perSource?.[c.sourceId]?.skip).length;
