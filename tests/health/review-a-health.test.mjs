@@ -49,8 +49,8 @@ test('A1: a source whose every response is 403 never marks cameras unavailable, 
 
 test('A2: a source that runs out of time marks only its own cameras unknown; the others keep fresh results and health.json is written', async () => {
   handler = (req, res) => (req.url.startsWith('/slow') ? setTimeout(() => sendJpeg(res), 60) : sendJpeg(res));
-  const cams = [...Array.from({ length: 8 }, (_, i) => cam(i, 'slow', `/slow${i}.jpg`)), ...Array.from({ length: 92 }, (_, i) => cam(i, 'fast'))];
-  const r = await go(cams, { config: { budgetMs: 250, concurrency: 6, perSource: { slow: { concurrency: 1, hostDelayMs: 0 } } } });
+  const cams = [...Array.from({ length: 12 }, (_, i) => cam(i, 'slow', `/slow${i}.jpg`)), ...Array.from({ length: 150 }, (_, i) => cam(i, 'fast'))];
+  const r = await go(cams, { config: { budgetMs: 500, concurrency: 6, perSource: { slow: { concurrency: 1, hostDelayMs: 0 } } } });
   const by = (s) => Object.values(r.doc.cameras).filter((c, i) => cams[i].sourceId === s);
   assert.ok(by('fast').every((c) => c.status === 'reachable'));
   assert.ok(by('slow').some((c) => c.status === 'unknown' && c.reason === 'time-budget'));

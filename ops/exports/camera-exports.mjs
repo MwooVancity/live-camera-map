@@ -6,7 +6,8 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { eligibility } from '../importers/lib/eligibility.mjs';
 import { countryOf } from '../importers/lib/registry.mjs';
-import { metadataOk } from '../../tests/licensing/gate.mjs';
+import { isEnabled } from '../../tests/licensing/gate.mjs';
+import { effectiveStatus } from '../health/lib/age.mjs';
 
 export const COLUMNS = ['camera_id', 'name', 'road', 'direction', 'country', 'region', 'city', 'lat', 'lon', 'source_id', 'source_name', 'official_url', 'link_class', 'first_seen', 'last_seen', 'health_status', 'health_last_checked', 'licence', 'attribution'];
 // Spreadsheet formula injection guard: a text cell never starts with = + - @ (our own numbers are written bare).
@@ -22,14 +23,15 @@ export const GATE_FALLBACK = { caltrans: 'caltrans-cwwp2-dot-ca-gov' };
 // Registry source id -> its hand-read licence row (P0-4). A mapped row must pass the gate's metadata rule or its cameras are not exported; a source with no row here is judged by its own licence label as before.
 export const PERMISSION_ROW = { caltrans: 'caltrans-cwwp2-dot-ca-gov', digitraffic: 'digitraffic-weathercam', 'quebec-mtmd': 'quebec-cameras', 'toronto-traffic': 'toronto-traffic-cameras', 'calgary-traffic': 'calgary-traffic-cameras', 'hongkong-traffic': 'hongkong-traffic-cameras', 'iceland-vegagerdin': 'iceland-road-cameras', 'austin-traffic': 'austin-traffic-cameras', drivebc: 'drivebc-cameras', 'tfl-jamcams': 'tfl-jamcam-cameras', 'nsw-live-traffic': 'nsw-live-traffic-cameras', 'taiwan-thb': 'taiwan-thb-cameras', 'iowa-dot': 'iowa-dot-cameras', 'a22-brennero': 'a22-brennero-cameras', 'brla-dotd': 'brla-dotd-cameras', 'madrid-camaras': 'madrid-camaras-cameras' };
 
-export function buildRows(cams, sources, health = {}, perms = []) {
+// now = the clock for the 180-day licence expiry and the 48 h health rule; asofMs = the health file's generatedAt (fallback for a record without lastChecked).
+export function buildRows(cams, sources, health = {}, perms = [], now = new Date(), asofMs = NaN) {
   const src = new Map(sources.map((s) => [s.id, s]));
   for (const [sid, pid] of Object.entries(GATE_FALLBACK)) {
     const s = src.get(sid), p = perms.find((x) => x.id === pid);
     if (s && (!s.license || s.license === 'unverified') && p && p.enabled === true && p.licence && p.attribution) src.set(sid, { ...s, license: `${p.licence} (licence gate row ${pid}: ${p.commercialStatus})`, attribution: p.attribution });
   }
   const rows = [], skipped = { notEligible: 0, noLicence: 0, noMetadata: 0 };
-  const metaClosed = new Set([...src.keys()].filter((sid) => { const p = perms.find((x) => x.id === (PERMISSION_ROW[sid] || sid)); return p && !metadataOk(p); }));
+  const metaClosed = new Set([...src.keys()].filter((sid) => { const p = perms.find((x) => x.id === (PERMISSION_ROW[sid] || sid)); return !isEnabled(p, now); })); // no row, expired, restricted, mustNotShip or no metadata permission = closed (A5)
   for (const c of cams) {
     const e = eligibility(c); if (!e.directory_eligible) { skipped.notEligible++; continue; }
     if (metaClosed.has(c.sourceId)) { skipped.noMetadata++; continue; }
@@ -37,7 +39,7 @@ export function buildRows(cams, sources, health = {}, perms = []) {
     const licence = s && s.license && s.license !== 'unverified' ? s.license : '';
     if (!licence || !s.attribution) { skipped.noLicence++; continue; }
     const h = health[c.id] || {};
-    rows.push({ camera_id: c.id, name: c.name, road: c.road, direction: c.direction, country: (countryOf(c.regionSlug) || {}).countrySlug || '', region: c.regionName, city: c.city || '', lat: c.lat, lon: c.lon, source_id: c.sourceId, source_name: s.name, official_url: c.officialUrl, link_class: e.link_class, first_seen: c.firstSeen || '', last_seen: c.lastSeen || '', health_status: h.status || 'unknown', health_last_checked: h.lastChecked || '', licence, attribution: s.attribution });
+    rows.push({ camera_id: c.id, name: c.name, road: c.road, direction: c.direction, country: (countryOf(c.regionSlug) || {}).countrySlug || '', region: c.regionName, city: c.city || '', lat: c.lat, lon: c.lon, source_id: c.sourceId, source_name: s.name, official_url: c.officialUrl, link_class: e.link_class, first_seen: c.firstSeen || '', last_seen: c.lastSeen || '', health_status: effectiveStatus(h, new Date(now).getTime(), asofMs), health_last_checked: h.lastChecked || '', licence, attribution: s.attribution });
   }
   return { rows, skipped };
 }
@@ -48,8 +50,8 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 export function writeExports(out, root = ROOT) {
   const j = (p) => JSON.parse(readFileSync(join(root, p), 'utf8'));
   const cams = j('data/camera-registry/cameras.json'); const srcs = j('data/camera-registry/sources.json');
-  let health = {}; try { health = j('data/health/health.json').cameras || {}; } catch { /* no health file: every status is unknown */ }
-  const { rows, skipped } = buildRows(Array.isArray(cams) ? cams : cams.cameras, Array.isArray(srcs) ? srcs : srcs.sources, health, j('data/source-permissions.json').sources);
+  let health = {}, asofMs = NaN; try { const h = j('data/health/health.json'); health = h.cameras || {}; asofMs = Date.parse(h.generatedAt); } catch { /* no health file: every status is unknown */ }
+  const { rows, skipped } = buildRows(Array.isArray(cams) ? cams : cams.cameras, Array.isArray(srcs) ? srcs : srcs.sources, health, j('data/source-permissions.json').sources, new Date(), asofMs);
   mkdirSync(out, { recursive: true });
   const put = (name, rs) => { const t = toCsv(rs); writeFileSync(join(out, name), t); return Buffer.byteLength(t); };
   const allBytes = put('cameras-all.csv', rows);

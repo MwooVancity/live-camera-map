@@ -51,14 +51,14 @@ test('a camera exactly 5 km away counts, 5.01 km does not', () => {
 test('a camera that is not eligible or whose source has no metadata permission is not counted', () => {
   const mk = (o) => ({ id: 'iceland-vegagerdin-1', sourceId: 'iceland-vegagerdin', name: 'N', road: 'R', direction: '', city: null, regionSlug: 'iceland', regionName: 'Iceland', lat: 64.1, lon: -21.9, feedType: 'still', officialUrl: 'https://x.is/1.jpg', lastSeen: '2026-11-24T00:00:00Z', ...o });
   const srcs = [{ id: 'iceland-vegagerdin', name: 'V', license: 'CC BY 4.0', attribution: 'Source: V' }];
-  const perm = (st) => [{ id: 'iceland-road-cameras', metadataPermission: { status: st } }];
+  const perm = (st) => [{ id: 'iceland-road-cameras', commercialStatus: 'allowed_per_doc', attribution: 'Attribution X', provenance: 'p', licence: 'L', reviewedAt: new Date().toISOString().slice(0, 10), metadataPermission: { status: st } }]; // a full gate row: the export gate closes a source whose row is missing or fails isEnabled (A5)
   const cams = [mk(), mk({ id: 'iceland-vegagerdin-2', officialUrl: 'https://x.is/2026/11/a.jpg' }), mk({ id: 'iceland-vegagerdin-3', lat: 0, lon: 0 }), mk({ id: 'iceland-vegagerdin-4', lat: -21.9, lon: 64.1 })];
   const ok = eligibleCameras(cams, srcs, {}, perm('allowed'));
   assert.equal(ok.cameras.length, 1);
   assert.deepEqual([ok.excluded.notEligible, ok.excluded.outsideCountryBox], [2, 1], 'temporary link and zero coordinates are not eligible; swapped lat/lon falls outside the Iceland box');
   const closed = eligibleCameras(cams, srcs, {}, perm('restricted'));
   assert.equal(closed.cameras.length, 0); assert.equal(closed.excluded.noMetadata, 2, 'the two eligible cameras (the swapped one is eligible by the shared rule) are closed by the permission row');
-  assert.equal(eligibleCameras(cams, [{ ...srcs[0], license: 'unverified' }], {}, []).cameras.length, 0, 'no licence label, no count');
+  assert.equal(eligibleCameras(cams, [{ ...srcs[0], license: 'unverified' }], {}, perm('allowed')).cameras.length, 0, 'no licence label, no count');
 });
 
 test('no roads or no cameras: zero percent, no divide by zero, no NaN', () => {
