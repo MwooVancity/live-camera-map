@@ -12,3 +12,6 @@ Same body as europe-road-agencies.md, one email per agency. Find the contact add
 Subject: Question: camera locations and links on an advertising-supported directory
 
 Body: as in europe-road-agencies.md, with "your road cameras" naming the state system above and question 1 replaced by "whether the camera list we found at <URL> may be linked, with names and locations, on an advertising-supported site".
+
+## Added 2026-11-25: CBP border wait times
+Ask: may the XML feed https://bwt.cbp.gov/xml/bwt.xml be read and its wait times shown on an advertising-supported site with the credit "Source: U.S. Customs and Border Protection"? Reason: cbp.gov's privacy policy says public information may be copied "for non-commercial purposes" while its copyright notice says public domain, used "without the permission of the CBP". Evidence: docs/source-audits/cbp-border-wait-2026-11-25.md.
