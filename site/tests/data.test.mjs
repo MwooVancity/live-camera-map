@@ -52,3 +52,12 @@ test('formula injection guard holds on a hostile row', () => {
   assert.equal(t.length, 2);
   for (const [i, v] of t[1].entries()) if (!['lat', 'lon'].includes(COLUMNS[i])) assert.match(v, /^'/, COLUMNS[i]);
 });
+
+test('/observability/iceland/ carries the OSM credit, the dates, the query and the table totals, no competitor name and no road-state verdict', () => {
+  const html = readPages().get('/observability/iceland/'); assert.ok(html, 'no observability page');
+  const r = JSON.parse(readFileSync(resolve(process.cwd(), '../data/observability/iceland/result.json'), 'utf8'));
+  assert.ok(html.includes('(c) OpenStreetMap contributors, ODbL') && html.includes(r.cameraAsOf) && html.includes('out geom;'));
+  assert.ok(html.includes(`${r.total.observed}`) && html.includes(`${r.total.points}`));
+  assert.ok(!/argos/i.test(html) && !/<img|<video/i.test(html));
+  assert.ok(!/road (is )?(safe|clear)|safe to drive|all clear/i.test(html.replace(/<[^>]+>/g, ' ').replace(/does not say a road is[^.]*./i, '')), 'no verdict on road state');
+});

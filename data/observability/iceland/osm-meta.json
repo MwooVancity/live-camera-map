@@ -1,0 +1,14 @@
+{
+ "what": "OpenStreetMap roads for the Iceland road observability calculation (plan item 36 P2-11): osm-sampled.json holds the joined road lines sampled every 1 km (the raw answer is stored as osm-roads.json only when under 2 MB). Re-run offline with: node ops/observability/run.mjs",
+ "endpoint": "https://overpass-api.de/api/interpreter",
+ "query": "[out:json][timeout:90];\narea[\"ISO3166-1\"=\"IS\"][admin_level=2]->.a;\nway(area.a)[\"highway\"~\"^(motorway|trunk|primary)$\"];\nout geom;",
+ "queriedAt": "2026-11-25T00:29:37.051Z",
+ "osmDataTimestamp": "2026-11-25T00:28:05Z",
+ "ways": 4601,
+ "bytes": 6757946,
+ "rawStored": false,
+ "sampledFile": "osm-sampled.json",
+ "sha256": "4f381e3d8ff80b48c8dcc4939c44d30d7300ede7d97a57ba15efe66647be2442",
+ "licence": "(c) OpenStreetMap contributors, ODbL 1.0 (https://www.openstreetmap.org/copyright). Derived counts and tables on this page are a Produced Work from that database and carry the same credit.",
+ "overpassCopyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+}

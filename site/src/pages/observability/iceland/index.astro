@@ -1,0 +1,53 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { SITE_NAME } from '../../../config.mjs';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+// The calculation is ops/observability/run.mjs; this page only prints data/observability/iceland/result.json, so the page and the file cannot disagree.
+const r = JSON.parse(readFileSync(resolve(process.cwd(), '../data/observability/iceland/result.json'), 'utf8'));
+const cls = [['motorway', 'Motorway'], ['trunk', 'Trunk road'], ['primary', 'Primary road']];
+const km = (n) => n.toLocaleString('en-US', { maximumFractionDigits: 1 });
+const pos = (p) => `${p.lat.toFixed(3)}, ${p.lon.toFixed(3)}`;
+const osmDate = (r.osm.dataTimestamp || r.osm.queriedAt || '').slice(0, 10);
+---
+<Base title={`Iceland road camera coverage | ${SITE_NAME}`} description={`${r.total.percent} percent of sampled points on Iceland's motorways, trunk and primary roads have an official camera within ${r.params.radiusM / 1000} km. Method, tables and the longest gaps.`} route="/observability/iceland/" crumbs={[{ name: 'Iceland road camera coverage', route: '/observability/iceland/' }]}>
+  <h1>How much of Iceland's main road network has an official camera within {r.params.radiusM / 1000} km</h1>
+  <p class="meta">Helpful: shows which stretches of Iceland's main roads have no official camera near them, so a driver knows where a camera link cannot help. Gain: one reproducible number per road class with its method, instead of a bare camera count. HCU: a method, two tables and a source line, no filler, no pictures.</p>
+  <section data-block="observability-summary" data-basis="registry" data-source="World Traffic Cameras camera registry and OpenStreetMap roads" data-asof={r.cameraAsOf} data-count={r.total.points}>
+    <h2>{r.total.percent} percent of sampled points are within {r.params.radiusM / 1000} km of a camera</h2>
+    <p>{r.total.observed} of {r.total.points} points, spaced {r.params.spacingM / 1000} km apart along {km(r.total.km)} km of road. Cameras counted: {r.camerasCounted} of {r.camerasInRegistry} Iceland camera records. Camera list as of {r.cameraAsOf}. Road data from OpenStreetMap as of {osmDate}.</p>
+    <p>This shows where an official camera link exists near a road. It does not say a road is open, clear or safe, and it does not say a camera is working now.</p>
+  </section>
+  <section data-block="observability-classes" data-basis="registry" data-source="World Traffic Cameras camera registry and OpenStreetMap roads" data-asof={r.cameraAsOf} data-count={cls.length}>
+    <h2>By road class</h2>
+    <table>
+      <thead><tr><th>Road class</th><th>Road length (km)</th><th>Sample points</th><th>Points with a camera within {r.params.radiusM / 1000} km</th><th>Share</th></tr></thead>
+      <tbody>
+        {cls.map(([k, n]) => <tr><td>{n}</td><td>{km(r.byClass[k].km)}</td><td>{r.byClass[k].points}</td><td>{r.byClass[k].observed}</td><td>{r.byClass[k].percent} %</td></tr>)}
+        <tr><td><strong>All three</strong></td><td>{km(r.total.km)}</td><td>{r.total.points}</td><td>{r.total.observed}</td><td>{r.total.percent} %</td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section data-block="observability-gaps" data-basis="registry" data-source="World Traffic Cameras camera registry and OpenStreetMap roads" data-asof={r.cameraAsOf} data-count={r.stretches.length}>
+    <h2>Longest stretches with no camera within {r.params.radiusM / 1000} km</h2>
+    <p>A stretch is a run of neighbouring sample points that all have no camera in range. Its length is the number of points in the run times {r.params.spacingM / 1000} km, so it is accurate to about a kilometre. Coordinates are latitude, longitude.</p>
+    <table>
+      <thead><tr><th>Road</th><th>Class</th><th>Length (km)</th><th>From</th><th>To</th></tr></thead>
+      <tbody>{r.stretches.map((s) => <tr><td>{s.ref}</td><td>{s.highway}</td><td>{s.km}</td><td>{pos(s.start)}</td><td>{pos(s.end)}</td></tr>)}</tbody>
+    </table>
+  </section>
+  <section data-block="observability-method" data-basis="registry" data-source="ops/observability/observability.mjs" data-asof={r.cameraAsOf} data-count="3">
+    <h2>How this is counted</h2>
+    <p><strong>Road network.</strong> {r.method.denominator}</p>
+    <p><strong>Observed.</strong> {r.method.observed}</p>
+    <p><strong>Not claimed.</strong> {r.method.notClaimed}</p>
+    <p>Cameras left out: {r.camerasExcluded.notEligible} failed the link or coordinate checks, {r.camerasExcluded.noMetadata} came from a source whose licence record does not allow publishing its list, {r.camerasExcluded.outsideCountryBox} had coordinates outside Iceland. Query run {r.osm.queriedAt.slice(0, 10)} against OpenStreetMap through the Overpass API:</p>
+    <pre>{r.osm.query}</pre>
+  </section>
+  <section data-block="observability-credit" data-basis="registry" data-source="OpenStreetMap contributors, Icelandic Road and Coastal Administration" data-asof={r.cameraAsOf} data-count="2">
+    <h2>Credit</h2>
+    <p>Road data: (c) OpenStreetMap contributors, ODbL. <a href="https://www.openstreetmap.org/copyright" rel="noopener">openstreetmap.org/copyright</a>. The tables above are derived from that database and are shared under the same licence.</p>
+    <p>Camera list: Icelandic Road and Coastal Administration (Vegagerðin), road camera list, CC BY 4.0.</p>
+  </section>
+  <p><a href="/data/">Camera list downloads</a> | <a href="/cameras/">All countries and regions</a></p>
+</Base>

@@ -1,0 +1,326 @@
+{
+ "country": "Iceland",
+ "cameraAsOf": "2026-11-24",
+ "camerasInRegistry": 499,
+ "camerasCounted": 499,
+ "camerasExcluded": {
+  "notEligible": 0,
+  "noLicence": 0,
+  "noMetadata": 0,
+  "otherCountry": 0,
+  "outsideCountryBox": 0
+ },
+ "osm": {
+  "query": "[out:json][timeout:90];\narea[\"ISO3166-1\"=\"IS\"][admin_level=2]->.a;\nway(area.a)[\"highway\"~\"^(motorway|trunk|primary)$\"];\nout geom;",
+  "queriedAt": "2026-11-25T00:29:37.051Z",
+  "dataTimestamp": "2026-11-25T00:28:05Z",
+  "sha256": "4f381e3d8ff80b48c8dcc4939c44d30d7300ede7d97a57ba15efe66647be2442",
+  "endpoint": "https://overpass-api.de/api/interpreter"
+ },
+ "method": {
+  "denominator": "Road network = OpenStreetMap ways tagged highway=motorway, highway=trunk or highway=primary inside Iceland. Ways with the same class and road number that meet end to end at a junction of exactly two ways are joined, then sampled every 1 km from their start (a line shorter than 1 km keeps its start point). Points that fall on the same spot (within about 10 m) are counted once. Kilometres are the summed length of the joined lines as drawn in OpenStreetMap; two carriageways of one road count twice.",
+  "observed": "A point is observed when at least one directory-eligible camera whose source licence allows publishing its metadata lies within 5 km in a straight line (haversine). A camera is a camera view in our registry; no picture is used.",
+  "notClaimed": "This measures where an official camera link exists near a road, not whether the road is open, clear or safe, and not whether a camera currently works.",
+  "osmLicence": "(c) OpenStreetMap contributors, ODbL 1.0 (https://www.openstreetmap.org/copyright). Derived counts and tables on this page are a Produced Work from that database and carry the same credit."
+ },
+ "params": {
+  "spacingM": 1000,
+  "radiusM": 5000
+ },
+ "ways": {
+  "inInput": 4601,
+  "used": 4601,
+  "ignored": 0,
+  "joinedLines": 740
+ },
+ "camerasUsed": 499,
+ "droppedOutsideBox": 0,
+ "byClass": {
+  "motorway": {
+   "points": 0,
+   "observed": 0,
+   "percent": 0,
+   "km": 0
+  },
+  "trunk": {
+   "points": 1601,
+   "observed": 842,
+   "percent": 52.6,
+   "km": 1478.6
+  },
+  "primary": {
+   "points": 3299,
+   "observed": 1377,
+   "percent": 41.7,
+   "km": 3012.9
+  }
+ },
+ "total": {
+  "points": 4900,
+  "observed": 2219,
+  "percent": 45.3,
+  "km": 4491.5
+ },
+ "stretches": [
+  {
+   "ref": "54",
+   "highway": "primary",
+   "km": 102,
+   "start": {
+    "lat": 64.9414,
+    "lon": -23.38206
+   },
+   "end": {
+    "lat": 65.04138,
+    "lon": -21.70462
+   }
+  },
+  {
+   "ref": "85",
+   "highway": "primary",
+   "km": 66,
+   "start": {
+    "lat": 65.78945,
+    "lon": -17.57692
+   },
+   "end": {
+    "lat": 66.1757,
+    "lon": -16.99184
+   }
+  },
+  {
+   "ref": "68",
+   "highway": "primary",
+   "km": 57,
+   "start": {
+    "lat": 65.20629,
+    "lon": -21.10194
+   },
+   "end": {
+    "lat": 65.52663,
+    "lon": -21.30774
+   }
+  },
+  {
+   "ref": "76",
+   "highway": "primary",
+   "km": 56,
+   "start": {
+    "lat": 66.03207,
+    "lon": -19.36314
+   },
+   "end": {
+    "lat": 65.57444,
+    "lon": -19.3427
+   }
+  },
+  {
+   "ref": "1",
+   "highway": "trunk",
+   "km": 51,
+   "start": {
+    "lat": 63.94562,
+    "lon": -17.23815
+   },
+   "end": {
+    "lat": 63.9274,
+    "lon": -16.47726
+   }
+  },
+  {
+   "ref": "32",
+   "highway": "primary",
+   "km": 51,
+   "start": {
+    "lat": 64.04601,
+    "lon": -20.41148
+   },
+   "end": {
+    "lat": 64.15602,
+    "lon": -19.53799
+   }
+  },
+  {
+   "ref": "54",
+   "highway": "primary",
+   "km": 51,
+   "start": {
+    "lat": 64.84216,
+    "lon": -22.43682
+   },
+   "end": {
+    "lat": 64.84465,
+    "lon": -23.3669
+   }
+  },
+  {
+   "ref": "60",
+   "highway": "primary",
+   "km": 48,
+   "start": {
+    "lat": 64.91253,
+    "lon": -21.52455
+   },
+   "end": {
+    "lat": 65.26128,
+    "lon": -21.76097
+   }
+  },
+  {
+   "ref": "1",
+   "highway": "trunk",
+   "km": 47,
+   "start": {
+    "lat": 64.4969,
+    "lon": -14.47541
+   },
+   "end": {
+    "lat": 64.69324,
+    "lon": -14.37881
+   }
+  },
+  {
+   "ref": "94",
+   "highway": "primary",
+   "km": 45,
+   "start": {
+    "lat": 65.27138,
+    "lon": -14.3742
+   },
+   "end": {
+    "lat": 65.57997,
+    "lon": -14.1039
+   }
+  },
+  {
+   "ref": "87",
+   "highway": "primary",
+   "km": 42,
+   "start": {
+    "lat": 65.97115,
+    "lon": -17.38384
+   },
+   "end": {
+    "lat": 65.66558,
+    "lon": -16.99185
+   }
+  },
+  {
+   "ref": "60",
+   "highway": "primary",
+   "km": 41,
+   "start": {
+    "lat": 65.35559,
+    "lon": -21.77126
+   },
+   "end": {
+    "lat": 65.53659,
+    "lon": -22.2219
+   }
+  },
+  {
+   "ref": "60",
+   "highway": "primary",
+   "km": 40,
+   "start": {
+    "lat": 65.54801,
+    "lon": -22.99259
+   },
+   "end": {
+    "lat": 65.74379,
+    "lon": -23.14276
+   }
+  },
+  {
+   "ref": "95",
+   "highway": "primary",
+   "km": 38,
+   "start": {
+    "lat": 64.95396,
+    "lon": -14.63458
+   },
+   "end": {
+    "lat": 65.25708,
+    "lon": -14.41477
+   }
+  },
+  {
+   "ref": "85",
+   "highway": "primary",
+   "km": 37,
+   "start": {
+    "lat": 66.1133,
+    "lon": -16.43554
+   },
+   "end": {
+    "lat": 66.28668,
+    "lon": -16.06425
+   }
+  },
+  {
+   "ref": "54",
+   "highway": "primary",
+   "km": 36,
+   "start": {
+    "lat": 64.56015,
+    "lon": -21.89895
+   },
+   "end": {
+    "lat": 64.79709,
+    "lon": -22.26495
+   }
+  },
+  {
+   "ref": "63",
+   "highway": "primary",
+   "km": 36,
+   "start": {
+    "lat": 65.67448,
+    "lon": -23.61783
+   },
+   "end": {
+    "lat": 65.63142,
+    "lon": -23.26124
+   }
+  },
+  {
+   "ref": "1",
+   "highway": "trunk",
+   "km": 35,
+   "start": {
+    "lat": 65.51633,
+    "lon": -18.60258
+   },
+   "end": {
+    "lat": 65.74267,
+    "lon": -18.19931
+   }
+  },
+  {
+   "ref": "1",
+   "highway": "trunk",
+   "km": 34,
+   "start": {
+    "lat": 64.01366,
+    "lon": -16.35527
+   },
+   "end": {
+    "lat": 64.17878,
+    "lon": -15.85652
+   }
+  },
+  {
+   "ref": "61",
+   "highway": "primary",
+   "km": 34,
+   "start": {
+    "lat": 65.74462,
+    "lon": -21.96641
+   },
+   "end": {
+    "lat": 65.59588,
+    "lon": -21.76069
+   }
+  }
+ ]
+}

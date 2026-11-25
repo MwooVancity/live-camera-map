@@ -208,6 +208,7 @@ export function pageList(cams, cities, registryDate, roads = [], dates = {}) {
     { route: '/map/', kind: 'map', count: cams.length, indexable: true, lastmod: registryDate },
     { route: '/status/', kind: 'status', count: cams.length, indexable: true, lastmod: registryDate },
     { route: '/data/', kind: 'data', count: cams.length, indexable: true, lastmod: registryDate },
+    { route: '/observability/iceland/', kind: 'observability', count: cams.filter((c) => c.country === 'iceland').length, indexable: true, lastmod: registryDate },
     { route: '/cameras/', kind: 'hub', count: cams.length, indexable: isIndexable(cams.length), lastmod: registryDate },
   ];
   const byCountry = countsBy(cams, 'country');
