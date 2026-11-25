@@ -23,7 +23,7 @@ import { MAX_CHECK_AGE_H } from './lib/age.mjs';
 // (lib/plan.mjs); inside a source the cameras checked longest ago (never checked first) go first; the cameras a run does not reach keep
 // their previous record, and one whose own last check is older than maxCheckAgeH becomes 'unknown' (lib/age.mjs, also used by the site).
 // runEveryHours is the staging cron spacing ('17 */3 * * *'); it only turns "runs per full cycle" into hours for the report.
-export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 14000, budgetMs: 18 * 60000, breakerAt: 25, retries: 2, backoffMs: 1000, backoffMaxMs: 30000, timeoutMs: 15000, staleHours: 6, minBytes: 1000, maxUnknownShare: 0.2, magicAll: false,
+export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 14000, budgetMs: 18 * 60000, breakerAt: 25, retries: 2, backoffMs: 1000, backoffMaxMs: 30000, timeoutMs: 15000, staleHours: 6, minBytes: 1000, maxUnknownShare: 0.2, maxReachableDrop: 0.3, minProbedForDrop: 20, magicAll: false,
   maxCheckAgeH: MAX_CHECK_AGE_H, runEveryHours: 3, retrySlack: 0.9,
   // Per-source overrides (concurrency, hostDelayMs = minimum gap between requests to that source's host, staleHours).
   // drivebc: www.drivebc.ca publishes no rate limit and its API terms say limits may change without notice, so it gets its own
@@ -57,14 +57,17 @@ export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 14000, bu
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const STATUSES = ['reachable', 'stale', 'unavailable', 'unknown'];
 
-export async function loadPrevious(arg, log = () => {}) {
+// st.failed is set when a previous file should exist but could not be read (network error, 5xx, cut-off JSON, unreadable local file):
+// that is not a first run, so the caller runs as partial instead of wiping lastSuccess/lastChanged/consecutiveFailures. A 404 or a missing local file = first run.
+export async function loadPrevious(arg, log = () => {}, st = {}) {
   let doc = null;
   try {
     if (/^https?:\/\//i.test(arg || '')) {
       const r = await fetch(arg, { headers: { 'User-Agent': 'NearbyCams-build' }, signal: AbortSignal.timeout(20000) });
       if (r.ok) doc = await r.json();
-    } else if (arg) doc = readJsonOrNull(arg);
-  } catch { doc = null; }
+      else if (r.status !== 404 && r.status !== 410) st.failed = true;
+    } else if (arg && existsSync(arg)) { doc = readJsonOrNull(arg); if (!doc) st.failed = true; }
+  } catch { doc = null; st.failed = true; }
   if (!doc || typeof doc !== 'object' || !doc.cameras || typeof doc.cameras !== 'object') {
     log(arg ? `previous health file unusable (${arg}): starting fresh` : 'no previous health file: starting fresh (first run)');
     return null;
@@ -135,7 +138,7 @@ export async function run(opts) {
     if (src.open) { src.skipped++; return unknownRec(c, 'circuit-breaker'); }
     let o;
     try { new URL(c.officialUrl); } catch { return { ...unknownRec(c, 'bad-url'), status: 'unavailable', reason: 'bad-url', unknownReason: undefined, lastChecked: stamp }; }
-    try { o = await observe(c.officialUrl, ctx); } catch (e) { if (e instanceof Limit) { state.hit = state.hit || e.reason; src.skipped++; return unknownRec(c, e.reason === 'cap' ? 'request-cap' : 'time-budget'); } throw e; }
+    try { o = await observe(c.officialUrl, ctx); } catch (e) { if (e instanceof Limit) { if (e.reason === 'cap') state.hit = state.hit || 'cap'; else src.timedOut = true; src.skipped++; return unknownRec(c, e.reason === 'cap' ? 'request-cap' : 'time-budget'); } throw e; }
     const k = classify(c.officialUrl, o, { staleHours: src.staleHours, minBytes: cfg.minBytes, needValidators: src.needValidators }, now());
     if (k.transient) { if (++src.consec >= cfg.breakerAt) src.open = true; } else src.consec = 0;
     const p = prev[c.id] || {}, ok = k.status === 'reachable' || k.status === 'stale';
@@ -172,7 +175,7 @@ export async function run(opts) {
     const n = Object.fromEntries(STATUSES.map((x) => [x, 0]));
     for (const c of bySource.get(id)) n[cameras[c.id].status]++;
     const dn = bySource.get(id).filter((c) => deferredIds.has(c.id)).length;
-    summary[id] = { total: s.total, ...n, requests: s.requests, ms: s.ms ?? 0, circuitOpen: s.open, staleHours: s.staleHours, scheduled: s.skip ? 0 : s.scheduled, carriedForward: dn, cycleRuns: plan[id].runs, cycleHours: plan[id].hours, cycle: cycleText(id, s.skip ? null : plan[id], cfg.maxCheckAgeH), ...(s.skip ? { skipped: s.skip } : {}) };
+    summary[id] = { total: s.total, ...n, requests: s.requests, ms: s.ms ?? 0, circuitOpen: s.open, ...(s.timedOut ? { timedOut: true } : {}), staleHours: s.staleHours, scheduled: s.skip ? 0 : s.scheduled, carriedForward: dn, cycleRuns: plan[id].runs, cycleHours: plan[id].hours, cycle: cycleText(id, s.skip ? null : plan[id], cfg.maxCheckAgeH), ...(s.skip ? { skipped: s.skip } : {}) };
   }
   const skippedIds = new Set(cams.filter((c) => perSource[c.sourceId].skip).map((c) => c.id)); // never probed on purpose: not a failure of this run
   // Failures only: breaker, budget, cap and survived-429. A camera this run never scheduled (carried forward, or never checked yet) is not a failure;
@@ -180,9 +183,15 @@ export async function run(opts) {
   const unknownRun = cams.filter((c) => cameras[c.id].status === 'unknown' && !skippedIds.has(c.id) && !deferredIds.has(c.id)).length;
   const checkable = total - skippedIds.size - deferredIds.size;
   const share = checkable ? unknownRun / checkable : total ? 0 : 1;
-  const runOk = total > 0 && !state.hit;
+  // Only the shared request cap fails the whole run. A source that runs out of time (A2) left its own remaining cameras unknown 'time-budget'; the unknown share still decides.
+  // A8: if far fewer of the cameras probed this run are reachable than the same cameras were in the previous file, one bad run must not become the published state.
+  const probed = cams.filter((c) => !deferredIds.has(c.id) && cameras[c.id].status !== 'unknown' && prev[c.id] && ['reachable', 'stale', 'unavailable'].includes(prev[c.id].status));
+  const okNow = probed.filter((c) => ['reachable', 'stale'].includes(cameras[c.id].status)).length, okBefore = probed.filter((c) => ['reachable', 'stale'].includes(prev[c.id].status)).length;
+  const drop = probed.length >= cfg.minProbedForDrop ? (okBefore - okNow) / probed.length : 0;
+  const collapsed = drop > cfg.maxReachableDrop;
+  const runOk = total > 0 && !state.hit && !collapsed && !opts.previousFailed;
   const doc = { generatedAt: stamp, runOk, requests: state.requests, elapsedMs: Date.now() - t0, staleHours: cfg.staleHours, maxCheckAgeHours: cfg.maxCheckAgeH, perSource: summary, cameras };
-  if (!runOk) doc.incomplete = state.hit ? `${state.hit === 'cap' ? 'request cap' : 'time budget'} reached` : 'no cameras';
+  if (!runOk) doc.incomplete = state.hit ? 'request cap reached' : opts.previousFailed ? 'previous health file could not be read (not a first run)' : collapsed ? `reachable share fell ${(drop * 100).toFixed(0)} points against the previous file (limit ${cfg.maxReachableDrop * 100})` : 'no cameras';
   // Strip our private bookkeeping key from the published record.
   for (const c of Object.values(cameras)) { if (c.unknownReason) { c.reason = c.unknownReason; } delete c.unknownReason; }
 
@@ -219,8 +228,9 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const config = { concurrency: num(a.concurrency, CONFIG.concurrency), hostDelayMs: num(a['host-delay-ms'], CONFIG.hostDelayMs), maxRequests: num(a['max-requests'], CONFIG.maxRequests), budgetMs: num(a['budget-min'], CONFIG.budgetMs / 60000) * 60000, staleHours: num(a['stale-hours'], CONFIG.staleHours), maxCheckAgeH: num(a['max-check-age-h'], CONFIG.maxCheckAgeH), runEveryHours: num(a['run-every-h'], CONFIG.runEveryHours), magicAll: Boolean(a['magic-all']) };
   if (!existsSync(regFile)) { console.error(`registry not found: ${regFile}`); process.exit(2); }
   const log = (m) => console.log(m);
-  const previous = await loadPrevious(a.previous, log);
-  const r = await run({ cameras: JSON.parse(readFileSync(regFile, 'utf8')), previous, outDir: dirname(out), config, log, limit: a.limit && !a.sample ? Number(a.limit) : 0, sample: a.sample ? Number(a.sample) : 0, source: a.source || '' });
+  const pst = {};
+  const previous = await loadPrevious(a.previous, log, pst);
+  const r = await run({ cameras: JSON.parse(readFileSync(regFile, 'utf8')), previous, previousFailed: Boolean(pst.failed), outDir: dirname(out), config, log, limit: a.limit && !a.sample ? Number(a.limit) : 0, sample: a.sample ? Number(a.sample) : 0, source: a.source || '' });
   console.log(JSON.stringify(Object.fromEntries(Object.entries(r.doc.perSource).map(([k, v]) => [k, v])), null, 1));
   process.exit(0);
 }

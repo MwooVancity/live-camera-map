@@ -37,6 +37,8 @@ export function classify(url, o, cfg = {}, now = new Date()) {
   const out = (status, reason, transient = false) => ({ status, feedKind, fingerprint: status === 'reachable' || status === 'stale' ? fingerprintOf(o) : null, transient, reason });
   if (o.error) return out('unavailable', o.error, true);
   if (o.httpStatus === 429) return out('unknown', 'throttled-429', true);
+  // A host that blocks us (Cloudflare challenge, 401/403) says nothing about the camera: unknown, counted by the breaker, never unavailable.
+  if (o.cfMitigated || o.httpStatus === 401 || o.httpStatus === 403) return out('unknown', 'host-blocked', true);
   if (o.httpStatus >= 500) return out('unavailable', `http-${o.httpStatus}`, true);
   if (!(o.httpStatus >= 200 && o.httpStatus < 300)) return out('unavailable', `http-${o.httpStatus}`);
   const ct = String(o.contentType || '').toLowerCase();

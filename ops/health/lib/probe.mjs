@@ -31,7 +31,7 @@ async function once(url, method, ctx) {
     const h = (n) => res.headers.get(n);
     const range = /\/(\d+)\s*$/.exec(h('content-range') || '');
     const len = range ? Number(range[1]) : h('content-length') !== null && h('content-length') !== '' ? Number(h('content-length')) : null;
-    const o = { httpStatus: res.status, contentType: h('content-type'), contentLength: Number.isFinite(len) ? len : null, etag: h('etag'), lastModified: h('last-modified'), retryAfter: h('retry-after'), method, signature: null };
+    const o = { httpStatus: res.status, contentType: h('content-type'), contentLength: Number.isFinite(len) ? len : null, etag: h('etag'), lastModified: h('last-modified'), retryAfter: h('retry-after'), cfMitigated: h('cf-mitigated'), method, signature: null };
     if (method === 'GET' && res.status >= 200 && res.status < 300 && res.body) {
       // '' = we read the body and it was empty (never a valid picture); null = could not read (nothing to contradict)
       try { const r = res.body.getReader(); const { value } = await r.read(); await r.cancel(); o.signature = value && value.length ? Buffer.from(value.subarray(0, 3)).toString('hex') : ''; } catch { /* signature stays null */ }

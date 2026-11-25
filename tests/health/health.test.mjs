@@ -151,7 +151,7 @@ test('request cap and time budget are respected when retries or a slow server ov
   handler = (req, res) => setTimeout(() => sendJpeg(res), 40);
   const timed = await go(Array.from({ length: 30 }, (_, i) => cam(i)), { config: { budgetMs: 100, hostDelayMs: 0, concurrency: 2 } });
   assert.ok(seen.length < 30, `time budget stopped the run (${seen.length} requests)`);
-  assert.equal(timed.doc.runOk, false);
+  assert.equal(timed.partial, true, 'A2: a source out of time no longer fails the run by itself, but most of it unknown still makes it partial');
   assert.ok(Object.values(timed.doc.cameras).some((c) => c.reason === 'time-budget'));
 });
 
