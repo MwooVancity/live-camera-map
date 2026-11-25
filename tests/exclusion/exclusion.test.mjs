@@ -11,7 +11,7 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const read = (p) => readFileSync(resolve(root, p), 'utf8');
+const read = (p) => readFileSync(resolve(root, p), 'utf8').replace(/\r\n/g, '\n'); // LF so fixtures match on Windows CRLF checkouts
 const real = {
   nginxText: read('ops/proxy/nginx.allowlist.conf'),
   allow: JSON.parse(read('data/proxy-allowlist.json')),

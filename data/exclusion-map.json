@@ -285,6 +285,27 @@
       ]
     },
     {
+      "id": "opensnowmap",
+      "title": "OpenSnowMap pistes overlay (licence text unclear, closed 2026-11-25)",
+      "mechanism": "GEV client overlay, browser-direct (browser calls www.opensnowmap.org itself)",
+      "routes": [
+        {
+          "route": "/api/library/tile/opensnowmap-pistes/z/x/y",
+          "evidence": "gev/src/data/osmOverlays.js:47 urlTemplate https://www.opensnowmap.org/pistes/{z}/{x}/{y}.png; no server route, so the proxy cannot see the real traffic"
+        }
+      ],
+      "probePaths": [
+        "/api/library/tile/opensnowmap-pistes/1/1/1"
+      ],
+      "proxyEnforced": true,
+      "gaps": [
+        "BD-1"
+      ],
+      "permissionIds": [
+        "opensnowmap-www-opensnowmap-org"
+      ]
+    },
+    {
       "id": "telegeography",
       "title": "TeleGeography submarine cables (CC BY-NC-SA, mustNotShip)",
       "mechanism": "bundled data files under /src/",

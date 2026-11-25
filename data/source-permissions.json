@@ -383,14 +383,17 @@
       "mustNotShip": false,
       "enabled": true,
       "metadataPermission": {
-        "status": "allowed",
-        "quote": "is the work of David Taylor, Edinburgh and Jim Mason, Glasgow, and may not be copied, published, or incorporated into other databases without the explicit permission of David J Taylor, Edinburgh",
+        "status": "unverified",
+        "quote": "",
         "url": "gev/DATA_SOURCES.md:32"
       },
       "imagePermission": {
         "status": "unverified",
         "quote": "",
         "url": ""
+      },
+      "metadataGrandfather": {
+        "reason": "owner approval 2026-11-24 (data/owner-approvals.json): the doc licence text is unclear, so no sentence permits publishing names and coordinates"
       }
     },
     {
@@ -4661,10 +4664,10 @@
       "reviewedBy": "claude-doc-parse",
       "needsHumanReview": true,
       "mustNotShip": false,
-      "enabled": true,
+      "enabled": false,
       "metadataPermission": {
-        "status": "allowed",
-        "quote": "Tiles CC BY-SA; data ODbL 1.0 via OpenStreetMap; bulk tile download forbidden without prior agreement",
+        "status": "unverified",
+        "quote": "",
         "url": "gev/DATA_SOURCES.md:185"
       },
       "imagePermission": {
