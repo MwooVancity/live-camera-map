@@ -1,5 +1,7 @@
 // Scaffold for a new camera source (plan item 28 stage 4).
-// Usage: node ops/importers/new-source.mjs <short-id> [--template=nsw]
+// Usage: node ops/importers/new-source.mjs <short-id> --licence=<evidence.json> --name=... --region-slug=... --country-slug=...   (generate: checks the licence evidence first, then scaffolds and writes ops/importers/patches/<id>.patch.json)
+//        node ops/importers/new-source.mjs <short-id> --apply [--stage=import]   (merger tree only: applies the patch to the shared files; docs/decisions/worktrees.md)
+// scaffold() below is the old copy-only step, still used by generate().
 //   <short-id> lowercase letters and digits only, e.g. "wsdot" or "oregon"
 // Copies the template source's importer, helper library and offline test to ops/importers/<id>.mjs, ops/importers/lib/<id>.mjs and
 // tests/registry/<id>.test.mjs with the template's short name swapped for <id> (and its upper-case form for the new upper-case prefix),
@@ -8,6 +10,8 @@
 // and the copied tests fail until the fixture, phrases and bounds are real (a scaffold that passes would hide an unfinished source).
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
+import { mkdirSync } from 'node:fs';
+import { buildPatch, applyPatch } from './lib/source-patch.mjs';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -43,9 +47,39 @@ export function scaffold(id, { template = 'nsw', root = ROOT, log = console.log 
   return written;
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const id = process.argv[2];
-  const template = process.argv.find((a) => a.startsWith('--template='))?.slice(11) || 'nsw';
-  if (!id) { console.error('usage: node ops/importers/new-source.mjs <short-id> [--template=nsw]'); process.exit(2); }
-  try { scaffold(id, { template }); } catch (e) { console.error(e.message); process.exit(1); }
+// Licence-first generator (plan item 40 step 2): checks the evidence record BEFORE writing anything, then scaffolds the three files and run-all entry and writes the
+// shared-file patch to ops/importers/patches/<id>.patch.json. It never edits a shared file (that is --apply, in the merger's tree) and never enables a source.
+const SLUG = /^[a-z0-9][a-z0-9-]{1,63}$/;
+export function generate(id, { evidence, sourceId = `${id}-cameras`, name, regionSlug, countrySlug, worldCountry = countrySlug, template = 'nsw', root = ROOT, today = new Date().toISOString().slice(0, 10), log = console.log } = {}) {
+  if (!/^[a-z][a-z0-9]{1,15}$/.test(id)) throw new Error('short id: 2 to 16 lowercase letters or digits, starting with a letter');
+  for (const [k, v] of Object.entries({ sourceId, regionSlug, countrySlug, worldCountry })) if (!SLUG.test(v || '')) throw new Error(`${k}: lowercase letters, digits and dashes only`);
+  if (!name || !/^[^'\\\r\n`$]{3,120}$/.test(name)) throw new Error('name: 3 to 120 characters, no quotes, backslashes or $');
+  const patch = buildPatch({ id, sourceId, name, regionSlug, countrySlug, worldCountry, evidence, today }); // throws REJECT before anything is written
+  const written = scaffold(id, { template, root, log });
+  const dir = join(root, 'ops/importers/patches'); mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, `${id}.patch.json`), JSON.stringify(patch, null, 2) + '\n');
+  log(`patch ${patch.verdict}: ${patch.summary}`);
+  for (const r of patch.reasons) log(`  - ${r}`);
+  return { written: [...written, `ops/importers/patches/${id}.patch.json`], patch };
 }
+export function apply(id, { root = ROOT, stage = 'now', log = console.log } = {}) {
+  const file = join(root, 'ops/importers/patches', `${id}.patch.json`);
+  if (!existsSync(file)) throw new Error(`${file} not found: generate it first`);
+  return applyPatch(JSON.parse(readFileSync(file, 'utf8')), { root, stage, log });
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const [id, ...rest] = process.argv.slice(2);
+  const flag = (n) => rest.find((a) => a.startsWith(`--${n}=`))?.slice(n.length + 3);
+  const usage = 'usage: node ops/importers/new-source.mjs <short-id> --licence=<evidence.json> --name="Agency camera list" --region-slug=<slug> --country-slug=<slug> [--source-id=<id>] [--world-country=<row>] [--template=nsw]\n       node ops/importers/new-source.mjs <short-id> --apply [--stage=now|import]   (merger tree only)\n       evidence record: node ops/audit/licence-evidence.mjs --init <source-id>';
+  if (!id) { console.error(usage); process.exit(2); }
+  try {
+    if (rest.includes('--apply')) apply(id, { stage: flag('stage') || 'now' });
+    else {
+      const lic = flag('licence');
+      if (!lic) throw new Error('REJECT: --licence=<evidence record> is required: a source without quoted licence evidence is never scaffolded.\n' + usage);
+      generate(id, { evidence: JSON.parse(readFileSync(lic, 'utf8')), sourceId: flag('source-id') || undefined, name: flag('name'), regionSlug: flag('region-slug'), countrySlug: flag('country-slug'), worldCountry: flag('world-country') || undefined, template: flag('template') || 'nsw' });
+    }
+  } catch (e) { console.error(e.message); process.exit(1); }
+}
+
