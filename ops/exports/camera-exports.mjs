@@ -45,6 +45,12 @@ export function buildRows(cams, sources, health = {}, perms = [], now = new Date
 }
 export const toCsv = (rows) => [COLUMNS.join(','), ...rows.map((r) => COLUMNS.map((k) => cell(r[k], k === 'lat' || k === 'lon')).join(','))].join('\r\n') + '\r\n';
 
+// GeoJSON and KML (P2-13): built from the SAME gated rows as the CSV, so a source without redistribution permission cannot appear; properties are the CSV columns minus lat/lon, no picture URLs (official_url is the agency page link).
+const PROPS = COLUMNS.filter((k) => k !== 'lat' && k !== 'lon');
+export const toGeoJson = (rows) => JSON.stringify({ type: 'FeatureCollection', features: rows.map((r) => ({ type: 'Feature', geometry: { type: 'Point', coordinates: [r.lon, r.lat] }, properties: Object.fromEntries(PROPS.map((k) => [k, r[k]])) })) }) + '\n';
+const esc = (v) => String(v ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+export const toKml = (rows) => `<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2"><Document>\n${rows.map((r) => `<Placemark><name>${esc(r.name)}</name><ExtendedData>${PROPS.map((k) => `<Data name="${k}"><value>${esc(r[k])}</value></Data>`).join('')}</ExtendedData><Point><coordinates>${r.lon},${r.lat},0</coordinates></Point></Placemark>`).join('\n')}\n</Document></kml>\n`;
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 // Writes cameras-all.csv, cameras-<country>.csv and manifest.json (counts, sources, licences) into outDir; the site build and the CLI both call this, so the /data/ page and the files cannot disagree.
 export function writeExports(out, root = ROOT) {
@@ -54,12 +60,14 @@ export function writeExports(out, root = ROOT) {
   const { rows, skipped } = buildRows(Array.isArray(cams) ? cams : cams.cameras, Array.isArray(srcs) ? srcs : srcs.sources, health, j('data/source-permissions.json').sources, new Date(), asofMs);
   mkdirSync(out, { recursive: true });
   const put = (name, rs) => { const t = toCsv(rs); writeFileSync(join(out, name), t); return Buffer.byteLength(t); };
+  const putAs = (name, rs, fn) => { const t = fn(rs); writeFileSync(join(out, name), t); return Buffer.byteLength(t); };
   const allBytes = put('cameras-all.csv', rows);
+  const geoAll = putAs('cameras-all.geojson', rows, toGeoJson), kmlAll = putAs('cameras-all.kml', rows, toKml);
   const by = {}; for (const r of rows) (by[r.country || 'unknown'] ||= []).push(r);
-  const countries = Object.entries(by).sort().map(([slug, v]) => ({ slug, count: v.length, file: `cameras-${slug}.csv`, bytes: put(`cameras-${slug}.csv`, v) }));
+  const countries = Object.entries(by).sort().map(([slug, v]) => ({ slug, count: v.length, file: `cameras-${slug}.csv`, bytes: put(`cameras-${slug}.csv`, v), geojson: `cameras-${slug}.geojson`, geojsonBytes: putAs(`cameras-${slug}.geojson`, v, toGeoJson), kml: `cameras-${slug}.kml`, kmlBytes: putAs(`cameras-${slug}.kml`, v, toKml) }));
   const bySrc = new Map(); for (const r of rows) { const x = bySrc.get(r.source_id) || { id: r.source_id, name: r.source_name, count: 0, licence: r.licence, attribution: r.attribution }; x.count++; bySrc.set(r.source_id, x); }
   const asof = rows.map((r) => r.last_seen).filter(Boolean).sort().at(-1)?.slice(0, 10) || '';
-  const manifest = { asof, total: rows.length, allBytes, skipped, columns: COLUMNS, countries, sources: [...bySrc.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)) };
+  const manifest = { asof, total: rows.length, allBytes, geoAll, kmlAll, skipped, columns: COLUMNS, countries, sources: [...bySrc.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)) };
   writeFileSync(join(out, 'manifest.json'), JSON.stringify(manifest, null, 1));
   return manifest;
 }

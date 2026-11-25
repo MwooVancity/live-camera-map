@@ -65,7 +65,7 @@ test('all internal links resolve to a built page', () => {
       const h = m[1];
       if (/^(https?:|mailto:|#)/.test(h)) continue;
       const target = h.split('#')[0].split('?')[0];
-      assert.ok(pages.has(target) || (target.startsWith('/data/') && target.endsWith('.csv') && existsSync(join(DIST, target))), `${route}: broken link ${h}`); // generated CSV downloads are files, not pages
+      assert.ok(pages.has(target) || (target.startsWith('/data/') && /\.(csv|geojson|kml)$/.test(target) && existsSync(join(DIST, target))), `${route}: broken link ${h}`); // generated CSV downloads are files, not pages
     }
   }
 });

@@ -56,7 +56,7 @@ export const FEEDS_BY_REGION = { california: FEED_LIST, 'british-columbia': ['bc
 
 const metaOf = (live, now, feeds, asofs) => {
   const rs = feeds.map((f) => src(live, f, now).row);
-  return { source: rs.map((r) => r.name.replace(/ \(.*$/, '')).join('; '), attribution: [...new Set(rs.map((r) => r.attribution))].join(' | '), link: firstUrl(rs[0]), asof: [...asofs].sort()[0] };
+  return { source: rs.map((r) => r.name.replace(/ \(.*$/, '')).join('; '), attribution: [...new Set(rs.map((r) => String(r.attribution || '').replace(/\s*\(?https?:\/\/[^\s)]+\)?/g, '').trim()))].join(" | "), link: firstUrl(rs[0]), asof: [...asofs].sort()[0] };
 };
 const caItemsOf = (live, now, feed) => (src(live, feed, now).ok ? usableItems(live.doc(`ca-${feed}`), feed, now) : []);
 

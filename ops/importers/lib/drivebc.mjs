@@ -112,7 +112,9 @@ export function parseOpen511(e, now, drop = {}) {
   if (!spans.length) return bump('noSchedule');
   const t = new Date(now).getTime();
   const live = spans.find((x) => Date.parse(x.start) <= t && (!x.end || Date.parse(x.end) >= t));
-  const text = s(e.description) || s(e.headline);
+  // Bare web addresses in feed text are dropped: they are untrusted and name hosts the privacy page does not list.
+  const noUrl = (v) => (v ? v.replace(/\s*(More info:?\s*)?https?:\/\/\S+/gi, '').trim() : v);
+  const text = noUrl(s(e.description)) || noUrl(s(e.headline));
   if (!text) return bump('noText');
   return {
     id: `bc-evt-${s(e.id).replace(/^.*\//, '')}`,

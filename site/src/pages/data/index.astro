@@ -13,10 +13,10 @@ const mb = (b) => (b / 1048576).toFixed(1) + ' MB';
   <p>One spreadsheet row per camera: where it is, which agency runs it, the link to the agency's own camera page, our last link check, and the licence and credit that came with the data. The files hold links to official pages only, no pictures.</p>
   <section data-block="csv-downloads" data-basis="registry" data-source="World Traffic Cameras camera registry" data-asof={m.asof} data-count={m.total}>
     <h2>{m.total} cameras in {m.countries.length} countries</h2>
-    <p>Counted at build time, newest camera record {m.asof}. <a href="/data/cameras-all.csv">All countries in one file</a> ({m.total} rows, {mb(m.allBytes)}).</p>
+    <p>Counted at build time, newest camera record {m.asof}. <a href="/data/cameras-all.csv">All countries in one file</a> ({m.total} rows, {mb(m.allBytes)}); also <a href="/data/cameras-all.geojson">GeoJSON</a> and <a href="/data/cameras-all.kml">KML</a> for maps and GIS.</p>
     <table>
-      <thead><tr><th>Country</th><th>Cameras</th><th>File</th><th>Size</th></tr></thead>
-      <tbody>{m.countries.map((c) => <tr><td>{countryName(c.slug) || c.slug}</td><td>{c.count}</td><td><a href={`/data/${c.file}`}>{c.file}</a></td><td>{mb(c.bytes)}</td></tr>)}</tbody>
+      <thead><tr><th>Country</th><th>Cameras</th><th>CSV</th><th>Size</th><th>Map files</th></tr></thead>
+      <tbody>{m.countries.map((c) => <tr><td>{countryName(c.slug) || c.slug}</td><td>{c.count}</td><td><a href={`/data/${c.file}`}>{c.file}</a></td><td>{mb(c.bytes)}</td><td><a href={`/data/${c.geojson}`}>GeoJSON</a> ({mb(c.geojsonBytes)}), <a href={`/data/${c.kml}`}>KML</a> ({mb(c.kmlBytes)})</td></tr>)}</tbody>
     </table>
   </section>
   <section data-block="csv-sources" data-basis="registry" data-source="World Traffic Cameras source licence records" data-asof={m.asof} data-count={m.sources.length}>

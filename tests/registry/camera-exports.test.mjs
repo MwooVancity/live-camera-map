@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { buildRows, toCsv, COLUMNS, PERMISSION_ROW, GATE_FALLBACK } from '../../ops/exports/camera-exports.mjs';
+import { buildRows, toCsv, toGeoJson, toKml, COLUMNS, PERMISSION_ROW, GATE_FALLBACK } from '../../ops/exports/camera-exports.mjs';
 import { eligibility } from '../../ops/importers/lib/eligibility.mjs';
 import { isEnabled } from '../licensing/gate.mjs';
 
