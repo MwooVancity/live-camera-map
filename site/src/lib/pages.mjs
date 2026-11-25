@@ -16,6 +16,7 @@ import { A22_REGION } from '../../../ops/importers/lib/a22.mjs';
 import { LA_REGION } from '../../../ops/importers/lib/brla.mjs';
 import { MADRID_REGION } from '../../../ops/importers/lib/madrid.mjs';
 import { LU_REGION } from '../../../ops/importers/lib/citalu.mjs';
+import { MEDELLIN_REGION } from '../../../ops/importers/lib/medellin.mjs';
 
 // NFKD splits an accented letter into the letter plus a combining mark; the marks are removed first, otherwise "Hämeenlinna" became "ha-meenlinna".
 export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -157,6 +158,13 @@ export const REGIONS = {
     placeText: (x) => sentence(`CITA's list has no city or place field: each of the ${x.total} cameras is named as CITA names it (the motorway and a camera number, for example A6 - Camera 3) and has its own coordinates, so there are no city pages here.`),
     cityText: () => '',
     caveats: ['The camera pictures belong to CITA and are not shown here. Each link goes to the camera\'s own page on www.cita.lu; it is a link only. The list is published as CC0 open data on data.public.lu and CITA states that its webcam information is available without restrictions, but the CITA site footer still says all rights reserved, so we do not copy, store or embed any picture. We have not checked whether each camera is live: the link is a web page, not a picture address, so the status reads unknown.'],
+  },
+  // Medellín: one region from the city's own SIMM CCTV point list (GeoMedellín, CC BY SA); the list names a place and a street corner, not a city, so no city pages.
+  [MEDELLIN_REGION.slug]: {
+    sourceId: 'medellin-simm-cameras', agency: 'Medellín SIMM CCTV cameras (GeoMedellín)', cityLimit: 0, guide: null, credit: true, list: 'camera list', listAll: true,
+    placeText: (x) => sentence(`The city's list names each of the ${x.total} cameras by a place (for example El Castillo) and a street corner, and gives its coordinates; it has no city field, so there are no city pages here.`),
+    cityText: () => '',
+    caveats: ['The camera pictures belong to the Alcaldía de Medellín and are not shown here. Each link goes to the camera\'s own picture address on www.medellin.gov.co; it is a link only. The point list is published in the GeoMedellín catalogue as CC BY SA (Creative Commons Attribution-ShareAlike); we found no separate terms for the pictures, so we do not copy, store or embed any. We have not checked whether each camera is live, so the status reads unknown. The city\'s list has 81 points and 11 have no picture address, so they are not listed.'],
   },
 };
 // The credit sentence for a source that asks for one (its attribution line from sources.json, without a leading "Source:").

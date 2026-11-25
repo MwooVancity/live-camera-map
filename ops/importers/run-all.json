@@ -102,6 +102,11 @@
       "id": "citalu",
       "script": "citalu.mjs",
       "timeoutSec": 90
+    },
+    {
+      "id": "medellin",
+      "script": "medellin.mjs",
+      "timeoutSec": 90
     }
   ]
 }
