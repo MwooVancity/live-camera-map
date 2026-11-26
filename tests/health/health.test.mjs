@@ -508,3 +508,16 @@ test('item 41: per-source history carries forward, caps at HISTORY, and a source
   const skip = await go([cam(1)], { previous: first.doc, config: { perSource: { t: { skip: 'never probed' } } } });
   assert.equal(skip.doc.perSource.t.history.length, 1, 'nothing checked: the old record is kept, no new point');
 });
+
+// Sources whose picture permission is unverified and whose host was never reviewed or blocks us must never be probed (no request, unknown by design, not a red on /status/).
+test('recent sources (georgia-511, maryland chart, cita-lu, medellin, taiwan-wra) are skip with a real reason, never the scaffold TODO, and get quota 0', () => {
+  const perms = JSON.parse(readFileSync(new URL('../../data/source-permissions.json', import.meta.url), 'utf8')).sources;
+  for (const id of ['georgia-511', 'maryland-chart-cameras', 'cita-lu-cameras', 'medellin-simm-cameras', 'taiwan-wra-cameras']) {
+    const sk = CONFIG.perSource[id] && CONFIG.perSource[id].skip;
+    assert.ok(sk && sk !== 'unreviewed-scaffold', `${id}: must be skipped with a real reason, got ${sk}`);
+    const row = perms.find((p) => p.id === id || p.id === `${id}-cameras`);
+    if (row) assert.notEqual(row.imagePermission && row.imagePermission.status, 'allowed', `${id}: image permission is not allowed, so it must stay unprobed`);
+    const p = planRun([{ id, total: 100, delayMs: 0, skip: sk }, { id: 'other', total: 100, delayMs: 0 }], CONFIG);
+    assert.equal(p[id].quota, 0, id);
+  }
+});

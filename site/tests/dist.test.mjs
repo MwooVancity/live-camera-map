@@ -505,3 +505,12 @@ test('road pages carry the save-road script and the saved page explains saving r
   for (const r of roads) assert.ok(/<script[^>]*type="module"/.test(pages.get(r)), `${r}: no script (the save-road button is added by it)`);
   assert.ok(pages.get('/saved/').includes('Save this road'));
 });
+
+test('Taiwan rivers: the licence row attribution (Government Open Data License 1.0, required) is printed on the region page and in every footer', () => {
+  const row = JSON.parse(readFileSync('../data/source-permissions.json', 'utf8')).sources.find((s) => s.id === 'taiwan-wra-cameras');
+  const credit = row.attribution.replace(/^Source:\s*/i, '').replace(/\.$/, '');
+  const html = pages.get('/cameras/taiwan/taiwan-rivers/');
+  assert.ok(html, 'Taiwan rivers page built');
+  assert.ok(html.replace(/&#39;/g, "'").includes(credit), 'region page credit');
+  for (const [route, h] of pages) { if (route === '/404/') continue; assert.ok(h.match(/<footer[^>]*>[\s\S]*<\/footer>/)[0].includes(credit), `${route}: footer credit`); }
+});
