@@ -6,8 +6,8 @@
 
 Definition of a working website: the domain loads, /map/ runs God's Eye View, and every camera GEV says is usable is listed. Noindex stays until Mike says go live.
 
-1. IMPORT every GEV camera pack into the registry (agent building in worktree `oregon`, 2026-11-26). Done when: merged, tests pass, new count read from the live site.
-2. MAP LIVE: run GEV on a host behind our allowlist proxy and embed it in /map/. Done when: the live /map/ shows the globe with cameras. Free-host check in progress (audit agent).
+1. DONE 2026-11-26: GEV camera packs imported (live site 24,371+ links). Left out: WSDOT beyond 1,200, Ontario and Ottawa (credentials), Tarktee (timeout).
+2. DONE 2026-11-26: static GEV on Pages project worldtrafficcameras-map, in /map/, up to 8,000 cameras. Left: more than 8,000 cameras, server-only layers, phone test.
 3. REPO LEADS (docs/decisions/github-repos-2026-11-26.md): OpenTrafficCamMap and canada-cams for cameras we lack; osiris CCTV code; worldmonitor only as a separate AGPL app or for ideas.
 3b. GAP LIST: work the audit agent's ranked table (GEV layers, keys, Argos gaps, slow process), highest visitor value first.
 4. DONE 2026-11-26: domain DNS (apex and www answer 200, noindex).
