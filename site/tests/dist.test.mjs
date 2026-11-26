@@ -253,7 +253,8 @@ test('old two-level addresses are gone and nothing links them (no redirects need
   for (const [route, html] of pages) for (const m of html.matchAll(/href="(\/cameras\/(?:california|british-columbia)\/[^"]*)"/g)) assert.fail(`${route} links old address ${m[1]}`);
 });
 // C4: a country with one region and no city page repeats that region's page, so its hub is noindex and out of the sitemap.
-const ONE_REGION_HUBS = new Set(['hong-kong', 'iceland', 'spain', 'united-kingdom', 'australia', 'italy', 'luxembourg', 'colombia']);
+const ONE_REGION_HUBS = new Set(['hong-kong', 'iceland', 'united-kingdom', 'australia', 'italy', 'luxembourg', 'colombia', 'japan', 'norway',
+  ...(cameras.some((c) => c.sourceId === 'tarktee-cameras') ? [] : ['estonia'])]); // Estonia has a second region only when the Tarktee pack has loaded
 test('country hubs: in the sitemap, canonical, and each region hub says which country it is in and links it', () => {
   const xml = readFileSync(join(DIST, 'sitemap.xml'), 'utf8');
   for (const c of lvl(2)) { if (ONE_REGION_HUBS.has(c.split('/')[2])) { assert.ok(!xml.includes(`<loc>${SITE_URL}${c}</loc>`), `${c} noindex hub must stay out of the sitemap`); assert.ok(isNoindex(pages.get(c))); continue; } assert.ok(xml.includes(`<loc>${SITE_URL}${c}</loc>`), `${c} not in sitemap`); assert.ok(pages.get(c).includes(`<link rel="canonical" href="${SITE_URL}${c}">`)); }
@@ -275,7 +276,7 @@ test('country hubs hold their own data, not swapped names: the sources and count
 // ---- world sources: Finland (Fintraffic) and Quebec (MTMD), added 2026-11-23 ----
 const body = (route) => pages.get(route).replace(/<footer[\s\S]*<\/footer>/, ''); // the footer names every source on every page
 const finlandRoutes = [...pages.keys()].filter((r) => r.startsWith('/cameras/finland/'));
-const quebecRoutes = [...pages.keys()].filter((r) => /^\/cameras\/canada\/(?!british-columbia\/|toronto\/|calgary\/)[a-z-]+\/$/.test(r));
+const quebecRoutes = [...pages.keys()].filter((r) => /^\/cameras\/canada\/(?!british-columbia\/|toronto\/|calgary\/|montreal-city\/)[a-z-]+\/$/.test(r));
 test('Finland pages: world hub, country, region, 8 city pages; they name Fintraffic and never another source', () => {
   assert.equal(finlandRoutes.length, 1 + 1 + 8, 'country + region + 8 cities');
   for (const r of finlandRoutes) {
@@ -302,7 +303,7 @@ test('Finland city pages: every link goes to weathercam.digitraffic.fi as a link
 test('Quebec: 13 region hubs (Abitibi-Temiscamingue has 1 camera: no page), no city pages, every camera of the region listed once with a quebec511.info link', () => {
   assert.equal(quebecRoutes.length, 13);
   assert.ok(!pages.has('/cameras/canada/abitibi-temiscamingue/'));
-  assert.ok(![...pages.keys()].some((r) => /^\/cameras\/canada\/(?!british-columbia\/|toronto\/|calgary\/)[a-z-]+\/[a-z0-9-]+\/$/.test(r)), 'no Quebec city page: the feed has no place field');
+  assert.ok(![...pages.keys()].some((r) => /^\/cameras\/canada\/(?!british-columbia\/|toronto\/|calgary\/|montreal-city\/)[a-z-]+\/[a-z0-9-]+\/$/.test(r)), 'no Quebec city page: the feed has no place field');
   for (const r of quebecRoutes) {
     const slug = r.split('/')[3];
     const mine = cameras.filter((c) => c.regionSlug === slug);

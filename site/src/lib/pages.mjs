@@ -20,6 +20,7 @@ import { MD_REGION } from '../../../ops/importers/lib/mdchart.mjs';
 import { LU_REGION } from '../../../ops/importers/lib/citalu.mjs';
 import { MEDELLIN_REGION } from '../../../ops/importers/lib/medellin.mjs';
 import { TWRA_REGION } from '../../../ops/importers/lib/taiwanwra.mjs';
+import { GEV_REGIONS } from '../../../ops/importers/lib/gevpacks.mjs';
 
 // NFKD splits an accented letter into the letter plus a combining mark; the marks are removed first, otherwise "Hämeenlinna" became "ha-meenlinna".
 export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -190,6 +191,7 @@ export const REGIONS = {
     cityText: () => '',
     caveats: ['The camera pictures belong to the Water Resources Agency and are not shown here. Each link goes to the camera\'s own picture address on fmg.wra.gov.tw; it is a link only. The list is published under the Government Open Data License 1.0, but the Agency\'s open-data site footer claims all text and pictures as its copyright, so we do not copy, store or embed any picture. We have not checked whether each camera is live, so the status reads unknown.'],
   },
+  ...GEV_REGIONS, // the GEV camera packs: names and wording come from their table in ops/importers/lib/gevpacks.mjs
 };
 // The credit sentence for a source that asks for one (its attribution line from sources.json, without a leading "Source:").
 export const creditLine = (source) => `Credit: ${String(source.attribution).replace(/^Source:\s*/i, '').replace(/\.$/, '')}.`; // one full stop whether or not the licence's own statement ends with one

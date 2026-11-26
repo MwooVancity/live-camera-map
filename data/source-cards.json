@@ -1,6 +1,17 @@
 {
  "note": "Maps each camera registry source id (data/camera-registry/sources.json) to the id of its row in data/source-permissions.json. Read by site/src/pages/sources/index.astro and tested by site/tests/sources.test.mjs. Caltrans has no camera-specific row, so it maps to the publisher-level row (status unverified).",
  "map": {
+  "odot-tripcheck": "world-camera-image-subset-2-230-locations",
+  "mlit-river": "world-camera-image-subset-2-230-locations",
+  "tallinn-ristmikud": "city-of-tallinn-ristmikud-tallinn-ee",
+  "tarktee-cameras": "transpordiamet-tarktee",
+  "catalonia-transit": "servei-catal-de-tr-nsit-ajuntament-de-barcelona-ajuntament-de-terrassa",
+  "delaware-deldot": "deldot-video-deldot-gov",
+  "king-county-roads": "king-county-road-services-services-arcgis-com-king-county-gis",
+  "txdot-its": "txdot-its-its-txdot-gov",
+  "wsdot-cameras": "wsdot-data-wsdot-wa-gov",
+  "vegvesen-cameras": "statens-vegvesen-catalog-ogckart-sn1-atlas-vegvesen-no-frames-kamera-atlas-vegve",
+  "montreal-osm-cameras": "qu-bec-cctv-source-catalog-1-120-locations",
   "a22-brennero": "a22-brennero-cameras",
   "austin-traffic": "austin-traffic-cameras",
   "brla-dotd": "brla-dotd-cameras",

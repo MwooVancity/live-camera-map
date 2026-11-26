@@ -7,6 +7,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { run } from '../../ops/importers/caltrans.mjs';
 import { normalizeCaltrans, dedupe, validateCamera, countsBy, countryOf, REGION_COUNTRY, CA_BOUNDS, FORBIDDEN_FIELDS } from '../../ops/importers/lib/registry.mjs';
+import { GEV_PACKS } from '../../ops/importers/lib/gevpacks.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fixture = JSON.parse(readFileSync(join(here, 'fixtures', 'caltrans-small.json'), 'utf8'));
@@ -130,7 +131,7 @@ test('real data: no image fields while image_display is not allowed', () => {
 });
 
 test('real sources.json: every source has all four permissions, none set to allowed', () => {
-  assert.deepEqual(sources.map((s) => s.id).sort(), ['alberta-511', 'caltrans', 'digitraffic', 'drivebc', 'ontario-511', 'quebec-mtmd', 'toronto-traffic'].concat('calgary-traffic', 'hongkong-traffic', 'iceland-vegagerdin', 'austin-traffic', 'tfl-jamcams', 'nsw-live-traffic', 'taiwan-thb', 'iowa-dot', 'georgia-511', 'a22-brennero', 'brla-dotd', 'madrid-camaras', 'maryland-chart-cameras', 'cita-lu-cameras', 'medellin-simm-cameras', 'taiwan-wra-cameras').sort());
+  assert.deepEqual(sources.map((s) => s.id).filter((id) => !GEV_PACKS.some((p) => p.sourceId === id)).sort(), ['alberta-511', 'caltrans', 'digitraffic', 'drivebc', 'ontario-511', 'quebec-mtmd', 'toronto-traffic'].concat('calgary-traffic', 'hongkong-traffic', 'iceland-vegagerdin', 'austin-traffic', 'tfl-jamcams', 'nsw-live-traffic', 'taiwan-thb', 'iowa-dot', 'georgia-511', 'a22-brennero', 'brla-dotd', 'madrid-camaras', 'maryland-chart-cameras', 'cita-lu-cameras', 'medellin-simm-cameras', 'taiwan-wra-cameras').sort());
   for (const s of sources) {
     for (const k of ['metadata_commercial', 'image_display', 'image_caching', 'image_redistribution']) {
       assert.equal(s.permissions[k], 'unverified', `${s.id}.${k}`);
@@ -142,7 +143,7 @@ test('real sources.json: every source has all four permissions, none set to allo
 test('real data: region count equals the camera count of that source', () => {
   assert.equal(countsBy(allCams, 'region').california, cams.length);
   assert.equal(countsBy(allCams, 'region')['british-columbia'], allCams.filter((c) => c.sourceId === 'drivebc').length);
-  assert.equal(allCams.length, cams.length + ['drivebc', 'digitraffic', 'quebec-mtmd', 'toronto-traffic', 'calgary-traffic', 'hongkong-traffic', 'iceland-vegagerdin', 'austin-traffic', 'tfl-jamcams', 'nsw-live-traffic', 'taiwan-thb', 'iowa-dot', 'georgia-511', 'a22-brennero', 'brla-dotd', 'madrid-camaras', 'maryland-chart-cameras', 'cita-lu-cameras', 'medellin-simm-cameras', 'taiwan-wra-cameras'].reduce((s, id) => s + allCams.filter((c) => c.sourceId === id).length, 0), 'every row belongs to a known source');
+  assert.equal(allCams.length, cams.length + [...GEV_PACKS.map((p) => p.sourceId), 'drivebc', 'digitraffic', 'quebec-mtmd', 'toronto-traffic', 'calgary-traffic', 'hongkong-traffic', 'iceland-vegagerdin', 'austin-traffic', 'tfl-jamcams', 'nsw-live-traffic', 'taiwan-thb', 'iowa-dot', 'georgia-511', 'a22-brennero', 'brla-dotd', 'madrid-camaras', 'maryland-chart-cameras', 'cita-lu-cameras', 'medellin-simm-cameras', 'taiwan-wra-cameras'].reduce((s, id) => s + allCams.filter((c) => c.sourceId === id).length, 0), 'every row belongs to a known source');
 });
 
 test('real data: every region in the registry has a country row, and the country counts add up to the camera count', () => {

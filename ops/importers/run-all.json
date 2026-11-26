@@ -122,6 +122,11 @@
       "id": "taiwanwra",
       "script": "taiwanwra.mjs",
       "timeoutSec": 90
+    },
+    {
+      "id": "gevpacks",
+      "script": "gevpacks.mjs",
+      "timeoutSec": 300
     }
   ]
 }

@@ -1,0 +1,86 @@
+{
+ "odot-tripcheck": {
+  "generatedAt": "2026-11-26T12:55:03.198Z",
+  "gevCount": 1182,
+  "gevOffered": 1182,
+  "dropped": {
+   "outOfState": 37,
+   "outOfBounds": 8
+  },
+  "total": 1137
+ },
+ "mlit-river": {
+  "generatedAt": "2026-11-26T12:55:03.198Z",
+  "gevCount": 1054,
+  "gevOffered": 1054,
+  "dropped": {},
+  "total": 1054
+ },
+ "tallinn-ristmikud": {
+  "generatedAt": "2026-11-26T12:55:03.198Z",
+  "gevCount": 255,
+  "gevOffered": 255,
+  "dropped": {},
+  "total": 255
+ },
+ "tarktee-cameras": {
+  "written": false,
+  "reason": "only 0 usable cameras, need 100 (download failed or shape changed?)",
+  "generatedAt": "2026-11-26T12:55:03.198Z",
+  "gevCount": 0,
+  "gevOffered": 0,
+  "dropped": {},
+  "total": 0
+ },
+ "catalonia-transit": {
+  "generatedAt": "2026-11-26T12:55:03.198Z",
+  "gevCount": 36,
+  "gevOffered": 36,
+  "dropped": {},
+  "total": 36
+ },
+ "delaware-deldot": {
+  "generatedAt": "2026-11-26T12:55:03.198Z",
+  "gevCount": 367,
+  "gevOffered": 367,
+  "dropped": {},
+  "total": 367
+ },
+ "king-county-roads": {
+  "generatedAt": "2026-11-26T12:55:03.198Z",
+  "gevCount": 58,
+  "gevOffered": 58,
+  "dropped": {},
+  "total": 58
+ },
+ "txdot-its": {
+  "generatedAt": "2026-11-26T12:55:03.198Z",
+  "gevCount": 575,
+  "gevOffered": 575,
+  "dropped": {},
+  "total": 575
+ },
+ "wsdot-cameras": {
+  "generatedAt": "2026-11-26T12:55:03.198Z",
+  "gevCount": 1200,
+  "gevOffered": 1635,
+  "dropped": {
+   "dupUrl": 1
+  },
+  "total": 1199
+ },
+ "vegvesen-cameras": {
+  "generatedAt": "2026-11-26T12:55:03.198Z",
+  "gevCount": 898,
+  "gevOffered": 898,
+  "dropped": {},
+  "total": 898
+ },
+ "montreal-osm-cameras": {
+  "generatedAt": "2026-11-26T12:55:03.198Z",
+  "gevCount": 426,
+  "gevOffered": 426,
+  "dropped": {},
+  "total": 426
+ }
+}

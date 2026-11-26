@@ -18,6 +18,7 @@ import { observe, Limit } from './lib/probe.mjs';
 import { classify } from './lib/classify.mjs';
 import { planRun, oldestFirst, cycleText } from './lib/plan.mjs';
 import { MAX_CHECK_AGE_H } from './lib/age.mjs';
+import { GEV_PACKS } from '../importers/lib/gevpacks.mjs';
 
 // Fair budget (rule 'health-fair-budget'): each source gets a share of the time budget and of the request cap by its own polite pace
 // (lib/plan.mjs); inside a source the cameras checked longest ago (never checked first) go first; the cameras a run does not reach keep
@@ -58,6 +59,8 @@ export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 14000, bu
     'medellin-simm-cameras': { skip: 'picture-host-not-reviewed' }, // www.medellin.gov.co: robots.txt does not disallow /simm/, a picture address answers 301 to /SIMM/ (case change) then 200 image/jpeg (read 2026-11-25), but no stated limit and no picture terms were read, so no request is sent: unknown by design until a human sets a pace (picture links stay unverified)
     'maryland-chart-cameras': { skip: 'host-blocks-automated-checks' }, // chart.maryland.gov answers automated requests with a Cloudflare challenge (hunt batch 4, 2026-11-25): no request is sent, every Maryland camera is unknown by design
     'taiwan-wra-cameras': { skip: 'picture-host-not-reviewed' }, // fmg.wra.gov.tw (picture host): no robots.txt, rate or picture terms read, imagePermission unverified (the agency footer claims the pictures), so no request is sent: every river camera unknown by design until a human sets a pace
+    // GEV camera packs: no picture host here has had its limits or picture terms reviewed, so no request is sent: every camera unknown by design
+    ...Object.fromEntries(GEV_PACKS.map((p) => [p.sourceId, { skip: 'picture-host-not-reviewed' }])),
   } };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const STATUSES = ['reachable', 'stale', 'unavailable', 'unknown'];

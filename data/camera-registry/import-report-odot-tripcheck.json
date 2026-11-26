@@ -1,0 +1,10 @@
+{
+ "generatedAt": "2026-11-26T12:55:03.198Z",
+ "gevCount": 1182,
+ "gevOffered": 1182,
+ "dropped": {
+  "outOfState": 37,
+  "outOfBounds": 8
+ },
+ "total": 1137
+}

@@ -458,5 +458,205 @@
   "license": "Government Open Data License 1.0 (data.gov.tw dataset 36687): use for any purpose, royalty-free, with attribution",
   "licenseUrl": "https://data.gov.tw/license",
   "reviewedAt": "2026-11-25"
+ },
+ {
+  "id": "odot-tripcheck",
+  "name": "Oregon Department of Transportation (TripCheck): traffic and road cameras",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one catalog read per run, at most every 3 h (the run-all schedule); picture links are not checked by the health checker",
+   "docsUrl": "https://tripcheck.com/Pages/Frequently-Asked-Questions"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Camera courtesy of ODOT",
+  "license": "Mixed: ODOT TripCheck public images (ODOT permits use with credit) and MLIT site content under terms compatible with CC BY 4.0. Frames are not bundled or persisted; the server holds a bounded in-memory cache.",
+  "licenseUrl": "https://tripcheck.com/Pages/Frequently-Asked-Questions",
+  "reviewedAt": "2026-11-22"
+ },
+ {
+  "id": "mlit-river",
+  "name": "MLIT river cameras (Japan): river cameras (they watch rivers, not roads)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one catalog read per run, at most every 3 h (the run-all schedule); picture links are not checked by the health checker",
+   "docsUrl": "https://github.com/bilawalsidhu/gods-eye-view/blob/aac6be77735f6bcad583204724a43302227abc4d/DATA_SOURCES.md"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "出典：国土交通省 川の防災情報 (Ministry of Land, Infrastructure, Transport and Tourism, Japan)",
+  "license": "Mixed: ODOT TripCheck public images (ODOT permits use with credit) and MLIT site content under terms compatible with CC BY 4.0. Frames are not bundled or persisted; the server holds a bounded in-memory cache.",
+  "licenseUrl": "https://github.com/bilawalsidhu/gods-eye-view/blob/aac6be77735f6bcad583204724a43302227abc4d/DATA_SOURCES.md",
+  "reviewedAt": "2026-11-22"
+ },
+ {
+  "id": "tallinn-ristmikud",
+  "name": "City of Tallinn: intersection cameras",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one catalog read per run, at most every 3 h (the run-all schedule); picture links are not checked by the health checker",
+   "docsUrl": "https://github.com/bilawalsidhu/gods-eye-view/blob/aac6be77735f6bcad583204724a43302227abc4d/DATA_SOURCES.md"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "City of Tallinn — ristmikud.tallinn.ee",
+  "license": "Public City of Tallinn traffic camera data",
+  "licenseUrl": "https://github.com/bilawalsidhu/gods-eye-view/blob/aac6be77735f6bcad583204724a43302227abc4d/DATA_SOURCES.md",
+  "reviewedAt": "2026-11-24"
+ },
+ {
+  "id": "catalonia-transit",
+  "name": "Servei Català de Trànsit: traffic cameras",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one catalog read per run, at most every 3 h (the run-all schedule); picture links are not checked by the health checker",
+   "docsUrl": "https://github.com/bilawalsidhu/gods-eye-view/blob/aac6be77735f6bcad583204724a43302227abc4d/DATA_SOURCES.md"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Servei Català de Trànsit; partner-supplied cameras also name their owner",
+  "license": "Llicència oberta d'ús d'informació - Catalunya — attribution REQUIRED",
+  "licenseUrl": "https://github.com/bilawalsidhu/gods-eye-view/blob/aac6be77735f6bcad583204724a43302227abc4d/DATA_SOURCES.md",
+  "reviewedAt": "2026-11-24"
+ },
+ {
+  "id": "delaware-deldot",
+  "name": "DelDOT (Delaware Department of Transportation): traffic cameras",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one catalog read per run, at most every 3 h (the run-all schedule); picture links are not checked by the health checker",
+   "docsUrl": "https://github.com/bilawalsidhu/gods-eye-view/blob/aac6be77735f6bcad583204724a43302227abc4d/DATA_SOURCES.md"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "DelDOT — Delaware Department of Transportation",
+  "license": "Public DelDOT traffic camera streams via the DelDOT traffic map",
+  "licenseUrl": "https://github.com/bilawalsidhu/gods-eye-view/blob/aac6be77735f6bcad583204724a43302227abc4d/DATA_SOURCES.md",
+  "reviewedAt": "2026-11-24"
+ },
+ {
+  "id": "king-county-roads",
+  "name": "King County Road Services: county road cameras",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one catalog read per run, at most every 3 h (the run-all schedule); picture links are not checked by the health checker",
+   "docsUrl": "https://github.com/bilawalsidhu/gods-eye-view/blob/aac6be77735f6bcad583204724a43302227abc4d/DATA_SOURCES.md"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "King County Road Services (partner-city cameras name their owner)",
+  "license": "KCGIS Center terms — attribution required; public ArcGIS layer",
+  "licenseUrl": "https://github.com/bilawalsidhu/gods-eye-view/blob/aac6be77735f6bcad583204724a43302227abc4d/DATA_SOURCES.md",
+  "reviewedAt": "2026-11-24"
+ },
+ {
+  "id": "txdot-its",
+  "name": "Texas Department of Transportation: highway cameras (Austin and San Antonio districts)",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one catalog read per run, at most every 3 h (the run-all schedule); picture links are not checked by the health checker",
+   "docsUrl": "https://github.com/bilawalsidhu/gods-eye-view/blob/aac6be77735f6bcad583204724a43302227abc4d/DATA_SOURCES.md"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Texas Department of Transportation",
+  "license": "Public TxDOT traffic camera data",
+  "licenseUrl": "https://github.com/bilawalsidhu/gods-eye-view/blob/aac6be77735f6bcad583204724a43302227abc4d/DATA_SOURCES.md",
+  "reviewedAt": "2026-11-24"
+ },
+ {
+  "id": "wsdot-cameras",
+  "name": "Washington State Department of Transportation: highway cameras",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one catalog read per run, at most every 3 h (the run-all schedule); picture links are not checked by the health checker",
+   "docsUrl": "https://github.com/bilawalsidhu/gods-eye-view/blob/aac6be77735f6bcad583204724a43302227abc4d/DATA_SOURCES.md"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Washington State Department of Transportation (Travel Center)",
+  "license": "WSDOT travel information disclaimer — public \"low volume\" feed; catalog cached, frames on WSDOT's own image host only",
+  "licenseUrl": "https://github.com/bilawalsidhu/gods-eye-view/blob/aac6be77735f6bcad583204724a43302227abc4d/DATA_SOURCES.md",
+  "reviewedAt": "2026-11-24"
+ },
+ {
+  "id": "vegvesen-cameras",
+  "name": "Statens vegvesen: road cameras",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one catalog read per run, at most every 3 h (the run-all schedule); picture links are not checked by the health checker",
+   "docsUrl": "https://data.norge.no/nlod/en/2.0"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "Contains data under the Norwegian licence for Open Government data (NLOD) distributed by Statens vegvesen",
+  "license": "NLOD 2.0 — attribution REQUIRED",
+  "licenseUrl": "https://data.norge.no/nlod/en/2.0",
+  "reviewedAt": "2026-11-24"
+ },
+ {
+  "id": "montreal-osm-cameras",
+  "name": "Ville de Montréal camera locations (OpenStreetMap): intersection cameras",
+  "status": "active",
+  "api": {
+   "auth": "none",
+   "rateLimit": "one catalog read per run, at most every 3 h (the run-all schedule); picture links are not checked by the health checker",
+   "docsUrl": "https://www.openstreetmap.org/copyright"
+  },
+  "permissions": {
+   "metadata_commercial": "unverified",
+   "image_display": "unverified",
+   "image_caching": "unverified",
+   "image_redistribution": "unverified"
+  },
+  "attribution": "© OpenStreetMap contributors (ODbL)",
+  "license": "Mixed: MTQ locations CC BY 4.0; Montréal camera nodes ODbL 1.0; scenic records retain per-record provenance. No video files are bundled or cached.",
+  "licenseUrl": "https://www.openstreetmap.org/copyright",
+  "reviewedAt": "2026-11-22"
  }
 ]

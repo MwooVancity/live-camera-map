@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { DIST, SITE_URL } from './helpers.mjs';
+import { GEV_PACKS } from '../../ops/importers/lib/gevpacks.mjs';
 
 const root = resolve(process.cwd(), '..');
 const J = (f) => JSON.parse(readFileSync(resolve(root, f), 'utf8'));
@@ -15,7 +16,8 @@ const withCams = sources.filter((s) => cams.some((c) => c.sourceId === s.id));
 
 test('every registry source with cameras maps to an existing licence row', () => {
   for (const s of withCams) { assert.ok(map[s.id], `no mapping for ${s.id}`); assert.ok(rows.has(map[s.id]), `row ${map[s.id]} missing for ${s.id}`); }
-  for (const id of Object.keys(map)) assert.ok(sources.some((s) => s.id === id), `mapping for unknown source ${id}`);
+  // a GEV pack is mapped before its first successful download (ops/importers/lib/gevpacks.mjs): its row must exist even then
+  for (const id of Object.keys(map)) assert.ok(sources.some((s) => s.id === id) || (GEV_PACKS.some((p) => p.sourceId === id) && rows.has(map[id])), `mapping for unknown source ${id}`);
 });
 
 test('/sources/ renders one card per source with the data-file numbers, no pictures, no Argos name, in the sitemap', () => {
