@@ -1,5 +1,5 @@
 ---
-// Beats Argos by: a plain-words Iceland briefing built from our own link check: which official Vegagerdin cameras answered, which pictures changed in the last 24 h, which failed, with the check time; Argos shows no check result or age.
+// Beats Argos by: a plain-words Iceland briefing built from our own link check: which official Vegagerdin cameras answered, which picture files changed in the last 24 h, which failed, with the check time; Argos shows no check result or age.
 // Helpful: a driver sees which Icelandic camera links work now. Gain: our own timestamped check. HCU: three short sections, source credit, no pictures, no road verdict.
 import Base from '../../layouts/Base.astro';
 import { SITE_NAME } from '../../config.mjs';
@@ -11,7 +11,7 @@ import { icelandBriefing, ICELAND_ROW_ID } from '../../lib/iceland-briefing.mjs'
 const b = icelandBriefing({ cams: cameras, health: loadHealth(), row: loadLive().rows.get(ICELAND_ROW_ID) });
 const when = (iso) => (iso ? iso.slice(0, 16).replace('T', ' ') + ' UTC' : 'not given');
 ---
-<Base title={`Iceland road camera briefing | ${SITE_NAME}`} description="Which official Icelandic road cameras answered in our last check, which pictures changed in the last 24 hours and which failed." route="/briefing/iceland/" crumbs={[{ name: 'Iceland briefing', route: '/briefing/iceland/' }]} noindex={true}>
+<Base title={`Iceland road camera briefing | ${SITE_NAME}`} description="Which official Icelandic road cameras answered in our last check, which picture files changed in the last 24 hours and which failed." route="/briefing/iceland/" crumbs={[{ name: 'Iceland briefing', route: '/briefing/iceland/' }]} noindex={true}>
   <h1>Iceland road camera briefing</h1>
   {b.state === 'checked' || b.state === 'registry only' ? (
     <>
@@ -19,14 +19,15 @@ const when = (iso) => (iso ? iso.slice(0, 16).replace('T', ' ') + ' UTC' : 'not 
         <h2>{b.total} camera views at {b.stations} stations</h2>
         <p>Camera list imported {b.asof ? b.asof.slice(0, 10) : 'on a date not given'}. This page links to the official pictures; it does not copy them, and it does not say a road is open, clear or safe.</p>
         {b.state === 'checked' ? (
-          <p>Our link check ran {when(b.healthAsof)}. Of {b.checked} views checked: {b.counts.reachable} answered with a picture, {b.counts.stale} answered with an old file, {b.counts.unavailable} did not answer. {b.counts.unknown} were not checked in time.</p>
+          <p>Our link check ran {when(b.healthAsof)}. Of {b.checked} views checked: {b.counts.reachable} returned an image file, {b.counts.stale} returned an old file, {b.counts.unavailable} did not answer. {b.counts.unknown} were not checked in time.</p>
         ) : (
           <p>We have no link check newer than 24 hours, so we show no answer counts rather than old ones.</p>
         )}
       </section>
       {b.state === 'checked' && (
         <section data-block="iceland-briefing-changed" data-source="World Traffic Cameras health checker" data-asof={b.healthAsof} data-count={b.changed.length}>
-          <h2>{b.changed.length} pictures changed in the last 24 hours</h2>
+          <h2>{b.changed.length} picture files changed in the last 24 hours</h2>
+          <p>This comes from the file headers (change tag, time or size) that our checker reads. We do not look at the picture, so it does not show what changed in the scene.</p>
           {b.changed.length ? <ul>{b.changed.slice(0, 40).map((x) => <li data-id={x.c.id}><a href={x.c.officialUrl} rel="nofollow noopener">{x.c.name}</a>, changed {when(x.at)}</li>)}</ul> : <p>None. A picture that did not change is not always a dead camera.</p>}
           {b.changed.length > 40 && <p class="meta">Showing 40 of {b.changed.length}.</p>}
         </section>
