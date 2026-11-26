@@ -17,5 +17,6 @@ Do these in order. A step is done only with the proof listed.
 7. Finish: tests pass, deploy run is green, live pages read back, commit and push.
 
 Ask me only for: payment, passwords, CAPTCHAs, accepting terms, "go live". Ask for all of them in one message at the end.
+Never ask me about anything you would mark "recommended": do it and report it.
 
 Report: edge cases first, then what is proven, in plain words, under 150 words.

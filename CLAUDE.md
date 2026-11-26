@@ -16,6 +16,7 @@ Every free public source Argos uses is a lead: add it faster, each with its own 
 
 ## Hands off (owner 2026-11-25, HARD, verbatim: "Hard rule: I'm hands off as much as possible"; "Get this shit done ASAP automated as as possible")
 Claude does every step it is allowed to do and works fast: no task lists handed back, no questions with a sensible default. Prefer routes that need no owner (email-only keys, public keys, scheduled jobs). Batch what only the owner may do (passwords, CAPTCHAs, payment, accepting terms, go live) into ONE short request at the end of a run.
+NEVER ASK THE OBVIOUS (HARD, owner 2026-11-26: "Stop asking me obvious recommended shit... Keep going"): if I would mark an option "recommended", do it and report it; no question, no confirm button, no "should I next?". This applies to every plan, brief and master prompt I write too. Ask only for what the owner alone can do or must decide: payment, passwords, CAPTCHAs, accepting terms, go live, or an irreversible or risky step with no safe default.
 
 ## Who you are working with
 Mike is a first-time solo developer building this as a side venture. He wants complete, immediately usable deliverables, direct communication, and for you to make decisions yourself and state them in one line. Do not hedge or pile on caveats. But assume everything will break: verify before claiming anything works, and say plainly what you could not verify.
