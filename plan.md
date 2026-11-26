@@ -8,7 +8,8 @@ Definition of a working website: the domain loads, /map/ runs God's Eye View, an
 
 1. IMPORT every GEV camera pack into the registry (agent building in worktree `oregon`, 2026-11-26). Done when: merged, tests pass, new count read from the live site.
 2. MAP LIVE: run GEV on a host behind our allowlist proxy and embed it in /map/. Done when: the live /map/ shows the globe with cameras. Free-host check in progress (audit agent).
-3. GAP LIST: work the audit agent's ranked table (GEV layers, keys, Argos gaps, slow process), highest visitor value first.
+3. REPO LEADS (docs/decisions/github-repos-2026-11-26.md): OpenTrafficCamMap and canada-cams for cameras we lack; osiris CCTV code; worldmonitor only as a separate AGPL app or for ideas.
+3b. GAP LIST: work the audit agent's ranked table (GEV layers, keys, Argos gaps, slow process), highest visitor value first.
 4. DONE 2026-11-26: domain DNS (apex and www answer 200, noindex).
 
 Speed rules: only NOW items get worked; a new idea goes under section 3, not in front. Add status as one short line per item (under 300 characters); evidence and long notes go in docs/. Full history: `docs/plan-archive-2026-11-26.md`.
