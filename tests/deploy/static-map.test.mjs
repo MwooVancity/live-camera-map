@@ -1,0 +1,76 @@
+// Run: node --test tests/deploy/static-map.test.mjs
+// The static map build (ops/deploy/build-static-map.mjs) on a tiny fake upstream checkout in a temp folder.
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, dirname } from 'node:path';
+import { buildStaticMap, cctvSources, RESTRICTED_SOURCES } from '../../ops/deploy/build-static-map.mjs';
+
+const SECRET = Array.from({ length: 40 }, (_, i) => [85.123456 + i, 28.654321 + i]);
+const put = (root, p, text) => { mkdirSync(dirname(join(root, p)), { recursive: true }); writeFileSync(join(root, p), text); };
+function fake(extra = {}) {
+  const base = mkdtempSync(join(tmpdir(), 'staticmap-')), up = join(base, 'up'), out = join(base, 'out');
+  for (const [i, dir] of RESTRICTED_SOURCES.entries()) put(up, `${dir}/data${i}.json`, JSON.stringify(SECRET.map(([a, b]) => [a + i * 100, b + i * 100])));
+  const files = { 'index.html': '<title>x</title>', 'assets/index-AAAAAAAA.js': 'ok()', 'assets/cable-geo-AAAAAAAA.json': '{}', 'assets/imagingSensors-AAAAAAAA.js': 'x', 'events/e/event.json': '{}', ...extra };
+  for (const [p, t] of Object.entries(files)) put(up, `dist/${p}`, t);
+  return { base, up, out, done: () => rmSync(base, { recursive: true, force: true }) };
+}
+const row = (id, source = 's1', url = 'https://agency.example/cam') => ({ camera_id: id, name: id, city: '', region: 'R', source_id: source, source_name: 'N', lat: 1, lon: 2, official_url: url, licence: 'L', attribution: 'A' });
+const build = (f, launch) => buildStaticMap({ gevDir: f.up, outDir: f.out, launch, rows: [row('s1-1')] });
+
+test('restricted files and events/ are removed; headers, 404, robots and camera file are written', () => {
+  const f = fake(); build(f, '');
+  for (const p of ['assets/cable-geo-AAAAAAAA.json', 'assets/imagingSensors-AAAAAAAA.js', 'events']) assert.ok(!existsSync(join(f.out, p)), p);
+  const h = readFileSync(join(f.out, '_headers'), 'utf8');
+  assert.match(h, /X-Robots-Tag: noindex/);
+  assert.match(h, /frame-ancestors https:\/\/worldtrafficcameras\.com https:\/\/www\.worldtrafficcameras\.com https:\/\/worldtrafficcameras\.pages\.dev/);
+  assert.match(h, /connect-src 'self'/);
+  assert.doesNotMatch(h, /open-meteo|gbif|opensnowmap|google\.com|news\./, 'restricted hosts are not in the CSP allowlist');
+  assert.ok(h.split('\n').every((l) => l.length <= 2000), 'Cloudflare Pages line limit');
+  assert.match(h, /\/api\/cctv\/sources\n {2}Content-Type: application\/json/);
+  assert.match(readFileSync(join(f.out, 'robots.txt'), 'utf8'), /Disallow: \//);
+  assert.ok(existsSync(join(f.out, '404.html')));
+  assert.equal(JSON.parse(readFileSync(join(f.out, 'api/cctv/sources'), 'utf8')).sources.length, 1);
+  f.done();
+});
+
+test('only LAUNCH exactly "live" removes noindex', () => {
+  const f = fake(); build(f, 'live');
+  assert.doesNotMatch(readFileSync(join(f.out, '_headers'), 'utf8'), /noindex/);
+  build(f, 'LIVE');
+  assert.match(readFileSync(join(f.out, '_headers'), 'utf8'), /noindex/);
+  f.done();
+});
+
+test('restricted content under another name fails the build (copy, or data inlined in a bundle)', () => {
+  for (const extra of [{ 'assets/innocent.bin': JSON.stringify(SECRET) }, { 'assets/index-BBBBBBBB.js': `const p=${JSON.stringify(SECRET.slice(0, 30))};` }]) {
+    const f = fake(extra);
+    assert.throws(() => build(f, ''), /restricted content in output/);
+    f.done();
+  }
+});
+
+test('a missing restricted source folder fails closed (upstream moved it: the content check would be blind)', () => {
+  const f = fake(); rmSync(join(f.up, RESTRICTED_SOURCES[0]), { recursive: true });
+  assert.throws(() => build(f, ''), /cannot check content/);
+  f.done();
+});
+
+test('camera file: metadata and an https link only, nothing the map would fetch a picture for; the cap keeps every source', () => {
+  const rows = [row('a-1', 'a'), row('a-2', 'a'), row('a-3', 'a'), row('b-1', 'b'), row('c-1', 'c', 'http://agency.example/x')];
+  const { sources } = cctvSources(rows, 3);
+  assert.deepEqual(sources.map((s) => s.id), ['a-1', 'b-1', 'a-2']);
+  for (const s of sources) {
+    assert.ok(s.sourceKind.startsWith('quebec-'), 'the client asks for no frame only for this prefix');
+    assert.equal(s.browserMediaUrl, '');
+    assert.ok(!('url' in s) && !('snapshotUrl' in s));
+    assert.match(s.sourceUrl, /^https:/);
+  }
+});
+
+test('real registry: rows come from the CSV licence gate and stay under the cap', () => {
+  const f = fake(); const r = buildStaticMap({ gevDir: f.up, outDir: f.out });
+  assert.ok(r.cameras > 1000 && r.cameras <= 8000, JSON.stringify(r));
+  f.done();
+});

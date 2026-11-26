@@ -145,7 +145,7 @@ test('map page: works without JS, fallback when no engine, iframe src ends ?embe
   const built = readFileSync(join(out, 'map', 'index.html'), 'utf8');
   const src = built.match(/<iframe[^>]*\bsrc="([^"]+)"/)[1];
   assert.equal(src.replace(/&#38;|&amp;/g, '&'), 'https://gev.example/app?embed=1#v=2&lat=35&lon=-82.5&alt=23000000&heading=360&pitch=-90&roll=0&style=normal&map=osm', 'iframe src: embed shape plus a complete hash that selects the OSM basemap (not the default Esri)');
-  assert.match(built, /<iframe[^>]*sandbox="allow-scripts allow-same-origin"/);
+  assert.match(built, /<iframe[^>]*sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"/);
 });
 
 test('map page links to every region hub and city page', () => {

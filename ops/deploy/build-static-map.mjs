@@ -1,0 +1,149 @@
+// Turns a keyless GEV `vite build` into a static folder for the Cloudflare Pages project worldtrafficcameras-map (no server).
+// Usage: node ops/deploy/build-static-map.mjs <gevDir> <outDir>   (reads <gevDir>/dist; never writes inside gevDir)
+// LAUNCH=live removes noindex and the robots Disallow; any other value keeps the map hidden from search.
+// /api/* does not exist on static hosting, so every server-proxied feed is unreachable; the one file we add is /api/cctv/sources.
+import { readFileSync, writeFileSync, readdirSync, rmSync, cpSync, mkdirSync, existsSync, statSync } from 'node:fs';
+import { join, resolve, relative, sep, dirname } from 'node:path';
+import { createHash } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import { buildRows } from '../exports/camera-exports.mjs';
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+
+// Same list as deny-built-restricted-data in data/proxy-allowlist.json (plus the camelCase loader chunks it also names).
+const RESTRICTED_NAME = /(^|\/)(cable-geo|landing-point-geo|ucs_satellites|imaging_sensors|cctv_ground_heights)(-[A-Za-z0-9_-]{8})?\.(json|js|geojson)$|(^|\/)(ucsSatellites|imagingSensors)-[A-Za-z0-9_-]{8}\.(json|js)$|(^|\/)events(\/|$)|telegeography_submarine_cables/;
+// Source files (inside the GEV checkout) whose CONTENT must not be anywhere in the output, under any name.
+export const RESTRICTED_SOURCES = ['src/data/local_data/telegeography_submarine_cables', 'src/data/local_data/ucs_satellites', 'src/data/local_data/imaging_sensors', 'src/data/local_data/cctv_ground_heights', 'public/events'];
+
+// The most cameras GEV's own server ever sends its client: CCTV_MAX_SOURCES_CEILING (gev/server/providers/cctv/constants.js). The client has no cap of its own.
+export const CAMERA_CAP = 8000;
+
+export const FRAME_ANCESTORS = 'https://worldtrafficcameras.com https://www.worldtrafficcameras.com https://worldtrafficcameras.pages.dev';
+// Browser-direct hosts the keyless globe may call. Allowlist = every other host (open-meteo, GBIF, OpenSnowMap, Google, news...) is blocked by the browser.
+// Each has an allowed row in data/source-permissions.json (OpenStreetMap, the map=osm share links; Esri, OpenFreeMap, Re:Earth/Mapterhorn, NASA GIBS, USGS).
+const DATA_HOSTS = 'https://tile.openstreetmap.org https://services.arcgisonline.com https://server.arcgisonline.com https://tiles.openfreemap.org https://terrain.reearth.land https://tiles.mapterhorn.com https://gibs.earthdata.nasa.gov https://basemap.nationalmap.gov';
+export const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob:",
+  "worker-src 'self' blob:",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' data: https://fonts.gstatic.com",
+  `img-src 'self' data: blob: ${DATA_HOSTS}`,
+  `connect-src 'self' data: blob: ${DATA_HOSTS}`,
+  "media-src 'self' blob:",
+  "frame-src 'none'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  `frame-ancestors ${FRAME_ANCESTORS}`,
+].join('; ');
+
+export function headersFile(launch) {
+  return `/*
+${launch === 'live' ? '' : '  X-Robots-Tag: noindex\n'}  Content-Security-Policy: ${CSP}
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/api/cctv/sources
+  Content-Type: application/json; charset=utf-8
+
+/api/cctv/health
+  Content-Type: application/json; charset=utf-8
+`;
+}
+
+// Registry rows that pass the CSV export licence gate, in the shape of GEV's GET /api/cctv/sources (gev/server/providers/cctv.js, '/sources').
+// sourceKind starts with 'quebec-': GEV's switch (cctv/model.js isBrowserOverlayCamera) for "browser overlay camera": it then asks for NO frame
+// (cards, hover, projection and the panel all skip it) and shows the credit plus a link to sourceUrl. With browserMediaUrl '' it plays no media.
+// No url / snapshotUrl is ever written. GEV shows the link only for https, so http-only rows are left out.
+export function cctvSources(rows, cap = CAMERA_CAP) {
+  const lanes = new Map();
+  for (const r of rows) if (String(r.official_url).startsWith('https://')) (lanes.get(r.source_id) || lanes.set(r.source_id, []).get(r.source_id)).push(r);
+  const picked = [], queues = [...lanes.values()];
+  for (let i = 0; picked.length < cap && queues.some((q) => i < q.length); i++) for (const q of queues) if (i < q.length && picked.length < cap) picked.push(q[i]); // round-robin, like GEV's cap.js: a cap thins every source, drops none
+  return {
+    trimmedPacks: [],
+    sources: picked.map((r) => ({
+      id: r.camera_id, pack: r.source_id, name: r.name, city: r.city || r.region, cityId: '', provider: r.source_name,
+      lat: r.lat, lon: r.lon, feedType: 'image', sourceKind: 'quebec-link-only', sourceUrl: r.official_url, browserMediaUrl: '',
+      headingConfidence: 'low', license: r.licence, credit: r.attribution, groundHeights: null,
+    })),
+  };
+}
+
+function registryRows(root = ROOT) {
+  const j = (p) => JSON.parse(readFileSync(join(root, p), 'utf8'));
+  const c = j('data/camera-registry/cameras.json'), s = j('data/camera-registry/sources.json');
+  return buildRows(c.cameras || c, s.sources || s, {}, j('data/source-permissions.json').sources).rows;
+}
+
+const walk = (d) => (statSync(d).isDirectory() ? readdirSync(d).flatMap((e) => walk(join(d, e))) : [d]);
+const rel = (base, f) => relative(base, f).split(sep).join('/');
+const sha = (b) => createHash('sha256').update(b).digest('hex');
+
+// Distinctive values (long decimals, long strings) from a restricted text file; survives renaming and re-minifying.
+function fingerprints(text) {
+  const all = [...new Set(text.match(/-?\d{1,3}\.\d{5,}|"[^"\\\n]{24,120}"/g) || [])].map((t) => t.replace(/^"|"$/g, ''));
+  const step = Math.max(1, Math.floor(all.length / 200));
+  return all.filter((_, i) => i % step === 0).slice(0, 200);
+}
+
+export function restrictedProblems(outDir, gevDir) {
+  const problems = [], marks = [], hashes = new Map();
+  for (const s of RESTRICTED_SOURCES) {
+    if (!existsSync(join(gevDir, s))) { problems.push(`restricted source folder missing in the GEV checkout, cannot check content: ${s}`); continue; }
+    for (const f of walk(join(gevDir, s))) {
+      if (/(README\.md|source\.json)$/i.test(f)) continue;
+      const buf = readFileSync(f), name = rel(gevDir, f);
+      hashes.set(sha(buf), name);
+      if (/\.(json|geojson|geojsonl)$/.test(f)) marks.push([name, fingerprints(buf.toString('utf8'))]);
+    }
+  }
+  const outFiles = walk(outDir);
+  const texts = [];
+  for (const f of outFiles) {
+    const name = rel(outDir, f), buf = readFileSync(f);
+    if (RESTRICTED_NAME.test(name)) problems.push(`restricted file in output: ${name}`);
+    if (hashes.has(sha(buf))) problems.push(`restricted content in output: ${name} is a copy of ${hashes.get(sha(buf))}`);
+    if (/\.(json|js|geojson|geojsonl|txt|html|czml)$/.test(f) && !name.startsWith('cesium/')) texts.push([name, buf.toString('utf8')]);
+  }
+  // 20 or more of one file's sampled values (or half, for small files) inside one output file = that data was copied in.
+  for (const [src, list] of marks) {
+    const need = Math.max(3, Math.min(20, Math.ceil(list.length / 2)));
+    for (const [name, text] of texts) {
+      let hit = 0;
+      for (const m of list) if (text.includes(m) && ++hit >= need) { problems.push(`restricted content in output: ${name} contains data from ${src}`); break; }
+    }
+  }
+  return problems;
+}
+
+export function buildStaticMap({ gevDir, outDir, launch = '', rows = registryRows() }) {
+  const dist = join(gevDir, 'dist'), out = resolve(outDir);
+  if (!existsSync(join(dist, 'index.html'))) throw new Error(`no GEV build at ${dist}`);
+  if ((out + sep).startsWith(resolve(gevDir) + sep)) throw new Error('outDir must be outside the GEV checkout');
+  rmSync(out, { recursive: true, force: true });
+  cpSync(dist, out, { recursive: true });
+  rmSync(join(out, 'events'), { recursive: true, force: true });
+  for (const f of walk(out)) if (RESTRICTED_NAME.test(rel(out, f))) rmSync(f);
+  const problems = restrictedProblems(out, gevDir);
+  if (problems.length) throw new Error(`restricted data in the static map:\n${problems.join('\n')}`);
+  const catalog = cctvSources(rows);
+  if (!catalog.sources.length) throw new Error('no licensed cameras: refusing to publish an empty camera layer');
+  mkdirSync(join(out, 'api', 'cctv'), { recursive: true });
+  writeFileSync(join(out, 'api', 'cctv', 'sources'), JSON.stringify(catalog));
+  writeFileSync(join(out, 'api', 'cctv', 'health'), '{"cameras":[]}'); // GEV polls this every 7 s; empty = status unknown
+  writeFileSync(join(out, '_headers'), headersFile(launch));
+  writeFileSync(join(out, 'robots.txt'), launch === 'live' ? 'User-agent: *\nAllow: /\n' : 'User-agent: *\nDisallow: /\n');
+  // Without a 404.html Pages answers every unknown path (/api/x included) with index.html and 200.
+  writeFileSync(join(out, '404.html'), '<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex"><title>Not found</title><p>Not found.</p>\n');
+  const files = walk(out);
+  const big = files.filter((f) => statSync(f).size > 25 * 1024 * 1024);
+  if (big.length || files.length > 20000) throw new Error(`over the Cloudflare Pages limits: ${files.length} files, over 25 MB: ${big.join(', ')}`);
+  return { files: files.length, cameras: catalog.sources.length, eligible: rows.length, sources: new Set(catalog.sources.map((s) => s.pack)).size };
+}
+
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
+  const [gevDir, outDir] = process.argv.slice(2);
+  if (!gevDir || !outDir) { console.error('usage: node ops/deploy/build-static-map.mjs <gevDir> <outDir>'); process.exit(2); }
+  console.log(JSON.stringify(buildStaticMap({ gevDir: resolve(gevDir), outDir, launch: process.env.LAUNCH || '' })));
+}

@@ -33,7 +33,7 @@ jobs:
     needs: configured
     if: needs.configured.outputs.ok == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 32
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -60,6 +60,37 @@ jobs:
           mkdir -p site/public
           if [ ! -f data/health/health.json ] && [ -s previous-health.json ]; then mkdir -p data/health; cp previous-health.json data/health/health.json; fi
           if [ -f data/health/health.json ]; then cp data/health/health.json site/public/health.json; else echo "no health.json to publish"; fi
+      # The map (God's Eye View as static files, no server) is its own Pages project. Every map step may fail without stopping the directory
+      # deploy; the LAST step of the job turns the run red. Keyless: the build step gets no secrets and the fresh clone has no .env.
+      - name: Map - keyless engine build in the CI clone, then the static folder (restricted data removed and checked)
+        id: mapbuild
+        continue-on-error: true
+        timeout-minutes: 10
+        env:
+          LAUNCH: ${{ vars.LAUNCH }}
+          PUPPETEER_SKIP_DOWNLOAD: '1'
+        run: |
+          (cd gev && npm ci --no-audit --no-fund && GEV_DIR="$PWD" npx vite build --config ../ops/deploy/gev-static.vite.config.mjs)
+          node tests/immutability/check.mjs
+          node ops/deploy/build-static-map.mjs gev "$RUNNER_TEMP/map-dist"
+          echo "dir=$RUNNER_TEMP/map-dist" >> "$GITHUB_OUTPUT"
+      - name: Map - create the Cloudflare Pages project if it does not exist yet (harmless when it does)
+        if: steps.mapbuild.outcome == 'success'
+        continue-on-error: true
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages project create worldtrafficcameras-map --production-branch=main
+      - name: Map - deploy to Cloudflare Pages
+        id: mapdeploy
+        if: steps.mapbuild.outcome == 'success'
+        continue-on-error: true
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy ${{ steps.mapbuild.outputs.dir }} --project-name=worldtrafficcameras-map --branch=main
       - run: npm ci
         working-directory: site
       - name: Build and test the normal site (the tests expect the indexable build)
@@ -72,9 +103,14 @@ jobs:
       - name: Build the site to deploy (hidden from search unless the repository variable LAUNCH is exactly live; GitHub's == ignores case, so the shell compares it)
         env:
           LAUNCH: ${{ vars.LAUNCH }}
+          MAP_URL: https://worldtrafficcameras-map.pages.dev/
+          MAP_DEPLOY: ${{ steps.mapdeploy.outcome }}
         run: |
           if [ "$LAUNCH" = "live" ]; then export PUBLIC_NOINDEX=0; else export PUBLIC_NOINDEX=1; fi
           echo "LAUNCH=$LAUNCH -> PUBLIC_NOINDEX=$PUBLIC_NOINDEX"
+          # Frame the map when this run deployed it or an earlier deploy still answers; otherwise /map/ keeps its "not deployed" text.
+          if [ "$MAP_DEPLOY" = "success" ] || curl -sf --max-time 20 -o /dev/null "$MAP_URL"; then export PUBLIC_GEV_EMBED_URL="$MAP_URL"; fi
+          echo "PUBLIC_GEV_EMBED_URL=$PUBLIC_GEV_EMBED_URL"
           npm run build -- --outDir dist-deploy
         working-directory: site
       - name: Check the build that is uploaded (B10; the tests above ran on the indexable build)
@@ -109,3 +145,8 @@ jobs:
             curl -sSf --retry 5 --retry-delay 20 --retry-all-errors --max-time 30 -o /dev/null "$U"
             echo "OK $U"
           done
+      - name: Map result (a failed map never blocks the directory, but the run must be red)
+        if: ${{ !cancelled() && (steps.mapbuild.outcome == 'failure' || steps.mapdeploy.outcome == 'failure') }}
+        run: |
+          echo "::error::The map was not deployed: build=${{ steps.mapbuild.outcome }} deploy=${{ steps.mapdeploy.outcome }}. See the Map steps."
+          exit 1
