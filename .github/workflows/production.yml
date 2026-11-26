@@ -94,7 +94,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy site/dist-deploy --project-name=worldtrafficcameras --branch=main
-      - name: Attach the custom domain (idempotent; Cloudflare adds the DNS record because the domain is in the same account)
+      - name: Attach the custom domain (idempotent; this does NOT create DNS records, they were added by hand 2026-11-26, the last step checks them)
         continue-on-error: true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -102,4 +102,10 @@ jobs:
         run: |
           for D in worldtrafficcameras.com www.worldtrafficcameras.com; do
             curl -s -X POST "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/worldtrafficcameras/domains" -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" --data "{\"name\":\"$D\"}" | head -c 300; echo
+          done
+      - name: The live domain must load (runs after the deploy, so it blocks nothing; a red run means visitors cannot reach the site)
+        run: |
+          for U in https://worldtrafficcameras.com/ https://www.worldtrafficcameras.com/; do
+            curl -sSf --retry 5 --retry-delay 20 --retry-all-errors --max-time 30 -o /dev/null "$U"
+            echo "OK $U"
           done
