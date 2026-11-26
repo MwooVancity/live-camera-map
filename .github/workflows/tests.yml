@@ -23,6 +23,7 @@ jobs:
           node --test --test-concurrency=4
           tests/licensing/licensing.test.mjs
           tests/health/review-a-health.test.mjs
+          tests/health/iceland-briefing.test.mjs
           tests/registry/review-a-audit.test.mjs
           tests/registry/review-a-importers.test.mjs
           tests/registry/review-a-robots.test.mjs
