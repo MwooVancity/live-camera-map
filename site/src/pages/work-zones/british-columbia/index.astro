@@ -1,0 +1,37 @@
+---
+// Beats Argos by: closures, incidents and construction from the official DriveBC feed on one page, grouped by type with closed-to-traffic first, one source and one feed timestamp, and nothing shown when the feed is old or the licence row is closed.
+import Base from '../../../layouts/Base.astro';
+import { SITE_NAME } from '../../../config.mjs';
+import { bcEvents } from '../../../lib/live.mjs';
+
+const z = bcEvents();
+const when = (iso) => (iso ? iso.slice(0, 16).replace('T', ' ') + ' UTC' : 'not given');
+const label = { INCIDENT: 'Incidents', CONSTRUCTION: 'Construction and road work', ROAD_CONDITION: 'Road conditions' };
+---
+<Base title={`British Columbia road closures and incidents now | ${SITE_NAME}`} description="Road closures, incidents and construction the DriveBC feed marks as active, by type, with the feed's own timestamp. Official data, no pictures." route="/work-zones/british-columbia/" crumbs={[{ name: 'British Columbia road events', route: '/work-zones/british-columbia/' }]} noindex={true}>
+  <h1>British Columbia road closures and incidents</h1>
+  {z.state === 'fresh' ? (
+    <section data-block="bc-road-events" data-source="DriveBC Open511" data-asof={z.asof} data-count={z.total}>
+      <h2>{z.total} events in effect now, {z.closedCount} closed to traffic</h2>
+      <p>Source: DriveBC Open511 feed, copied {when(z.asof)}. The page was built from that copy, so an event may have changed since. Check DriveBC before you drive.</p>
+      {z.types.map((t) => (
+        <div data-type={t.type}>
+          <h3>{label[t.type] || t.type} ({t.rows.length})</h3>
+          <table>
+            <thead><tr><th>Road</th><th>Status</th><th>What</th><th>Updated (UTC)</th><th>Position</th></tr></thead>
+            <tbody>
+              {t.rows.map((r) => <tr data-id={r.id}><td>{r.road || 'not named'}</td><td>{r.closed ? 'Closed' : (r.roadState || 'not given')}</td><td>{r.text || 'no description'}</td><td>{r.updated ? r.updated.slice(0, 16).replace('T', ' ') : 'not given'}</td><td>{Number(r.lat).toFixed(4)}, {Number(r.lon).toFixed(4)}</td></tr>)}
+            </tbody>
+          </table>
+        </div>
+      ))}
+      <p class="meta">Position is the first point of the event. Credit: {z.attribution}. {z.link && <a href={z.link} rel="nofollow noopener">Open the licence and feed notes</a>}.</p>
+    </section>
+  ) : (
+    <section data-block="bc-road-events" data-source="DriveBC Open511" data-asof="none">
+      <h2>No current road event data</h2>
+      <p>We show nothing rather than old data: {z.state}.</p>
+    </section>
+  )}
+  <p><a href="/status/">Camera network status</a> | <a href="/sources/">Sources and licences</a></p>
+</Base>

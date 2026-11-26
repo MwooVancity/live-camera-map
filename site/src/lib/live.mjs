@@ -168,3 +168,22 @@ export function mnWorkZones(live = loadLive(), now = new Date()) {
   const rows = doc.items.filter((i) => i && i.active === true).sort((a, b) => String(a.road).localeCompare(String(b.road)) || String(a.id).localeCompare(String(b.id)));
   return { state: 'fresh', row, rows, asof: doc.generatedAt, feedUpdated: doc.feedUpdated || null, link: firstUrl(row), attribution: String(row.attribution || '') };
 }
+
+// British Columbia road events page. Same gates as mnWorkZones (licence row enabled, shape valid, file newer than 24 h at build).
+// Only events the feed marks active; grouped by type, closed-to-traffic ones first. Feed text has URLs stripped (privacy test).
+export const BC_ID = 'drivebc-events';
+export const BC_TYPES = ['INCIDENT', 'CONSTRUCTION', 'ROAD_CONDITION'];
+export function bcEvents(live = loadLive(), now = new Date()) {
+  const row = live.rows.get(BC_ID);
+  if (!isEnabled(row, now)) return { state: 'licence not enabled', row };
+  const doc = live.doc('bc-events');
+  if (!doc || !Array.isArray(doc.items) || typeof doc.generatedAt !== 'string') return { state: 'no data', row };
+  if (!isFresh(doc.generatedAt, MN_MAX_AGE_MIN, now)) return { state: 'older than its limit', row, asof: doc.generatedAt };
+  const noUrl = (s) => String(s || '').replace(/\s*\(?https?:\/\/[^\s)]+\)?/g, '').trim();
+  const active = doc.items.filter((i) => i && i.active === true).map((i) => ({ ...i, text: noUrl(i.text) }));
+  const types = [...new Set([...BC_TYPES, ...active.map((i) => i.eventType)])].map((type) => ({
+    type,
+    rows: active.filter((i) => i.eventType === type).sort((a, b) => Number(b.closed === true) - Number(a.closed === true) || String(a.road).localeCompare(String(b.road)) || String(a.id).localeCompare(String(b.id))),
+  })).filter((t) => t.rows.length);
+  return { state: 'fresh', row, types, total: active.length, closedCount: active.filter((i) => i.closed === true).length, asof: doc.generatedAt, link: firstUrl(row), attribution: noUrl(row.attribution) };
+}
