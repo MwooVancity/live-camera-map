@@ -1,0 +1,169 @@
+{
+  "generated": "2026-11-26",
+  "id": "gevpacks",
+  "sourceId": "gev-packs",
+  "summary": "gevpacks: 19 shared-file edits; no licence row is added or changed (every pack uses an existing data/source-permissions.json row).",
+  "edits": [
+    {
+      "stage": "now",
+      "file": "ops/importers/run-all.json",
+      "kind": "json-push",
+      "path": [
+        "importers"
+      ],
+      "unique": "id",
+      "value": {
+        "id": "gevpacks",
+        "script": "gevpacks.mjs",
+        "timeoutSec": 300
+      },
+      "marker": "gevpacks"
+    },
+    {
+      "stage": "now",
+      "file": "ops/importers/lib/registry.mjs",
+      "kind": "import-add",
+      "line": "import { GEV_REGION_COUNTRY } from './gevpacks.mjs';",
+      "marker": "from './gevpacks.mjs'"
+    },
+    {
+      "stage": "now",
+      "file": "ops/importers/lib/registry.mjs",
+      "kind": "block-add",
+      "start": "export const REGION_COUNTRY = {",
+      "end": "};",
+      "text": "  ...GEV_REGION_COUNTRY, // the GEV camera packs: one region per pack (ops/importers/lib/gevpacks.mjs)\n",
+      "marker": "...GEV_REGION_COUNTRY"
+    },
+    {
+      "stage": "now",
+      "file": "site/src/lib/pages.mjs",
+      "kind": "import-add",
+      "line": "import { GEV_REGIONS } from '../../../ops/importers/lib/gevpacks.mjs';",
+      "marker": "lib/gevpacks.mjs"
+    },
+    {
+      "stage": "now",
+      "file": "site/src/lib/pages.mjs",
+      "kind": "block-add",
+      "start": "export const REGIONS = {",
+      "end": "};",
+      "text": "  ...GEV_REGIONS, // the GEV camera packs: names and wording come from their table in ops/importers/lib/gevpacks.mjs\n",
+      "marker": "...GEV_REGIONS"
+    },
+    {
+      "stage": "now",
+      "file": "site/src/layouts/Base.astro",
+      "kind": "import-add",
+      "line": "import { GEV_PACKS } from '../../../ops/importers/lib/gevpacks.mjs';",
+      "marker": "lib/gevpacks.mjs"
+    },
+    {
+      "stage": "now",
+      "file": "site/src/layouts/Base.astro",
+      "kind": "replace-once",
+      "regex": "(const fi = sourceOf)",
+      "replace": "const gev = GEV_PACKS.map((p) => sourceOf(p.sourceId));\n$1",
+      "marker": "gev = GEV_PACKS"
+    },
+    {
+      "stage": "now",
+      "file": "site/src/layouts/Base.astro",
+      "kind": "replace-once",
+      "regex": "(\\{\\()(fi \\|\\|)",
+      "replace": "$1gev.some(Boolean) || $2",
+      "marker": "gev.some(Boolean)"
+    },
+    {
+      "stage": "now",
+      "file": "site/src/layouts/Base.astro",
+      "kind": "replace-once",
+      "regex": "(\\{\\[)(fi, )",
+      "replace": "$1...gev, $2",
+      "marker": "...gev, fi"
+    },
+    {
+      "stage": "now",
+      "file": "data/source-cards.json",
+      "kind": "replace-once",
+      "regex": "(\"map\": \\{\\n)",
+      "replace": "$1  \"odot-tripcheck\": \"world-camera-image-subset-2-230-locations\",\n  \"mlit-river\": \"world-camera-image-subset-2-230-locations\",\n  \"tallinn-ristmikud\": \"city-of-tallinn-ristmikud-tallinn-ee\",\n  \"tarktee-cameras\": \"transpordiamet-tarktee\",\n  \"catalonia-transit\": \"servei-catal-de-tr-nsit-ajuntament-de-barcelona-ajuntament-de-terrassa\",\n  \"delaware-deldot\": \"deldot-video-deldot-gov\",\n  \"king-county-roads\": \"king-county-road-services-services-arcgis-com-king-county-gis\",\n  \"txdot-its\": \"txdot-its-its-txdot-gov\",\n  \"wsdot-cameras\": \"wsdot-data-wsdot-wa-gov\",\n  \"vegvesen-cameras\": \"statens-vegvesen-catalog-ogckart-sn1-atlas-vegvesen-no-frames-kamera-atlas-vegve\",\n  \"montreal-osm-cameras\": \"qu-bec-cctv-source-catalog-1-120-locations\",\n",
+      "marker": "\"odot-tripcheck\":"
+    },
+    {
+      "stage": "now",
+      "file": "ops/health/check.mjs",
+      "kind": "import-add",
+      "line": "import { GEV_PACKS } from '../importers/lib/gevpacks.mjs';",
+      "marker": "lib/gevpacks.mjs"
+    },
+    {
+      "stage": "now",
+      "file": "ops/health/check.mjs",
+      "kind": "block-add",
+      "start": "  perSource: {",
+      "end": "  } };",
+      "text": "    // GEV camera packs: no picture host here has had its limits or picture terms reviewed, so no request is sent: every camera unknown by design\n    ...Object.fromEntries(GEV_PACKS.map((p) => [p.sourceId, { skip: 'picture-host-not-reviewed' }])),\n",
+      "marker": "GEV_PACKS.map((p) => [p.sourceId"
+    },
+    {
+      "stage": "now",
+      "file": "site/PAGES.md",
+      "kind": "append",
+      "marker": "`/cameras/japan/japan-rivers/` Beats Argos by:",
+      "text": "- `/cameras/united-states/oregon/` Beats Argos by: every Oregon Department of Transportation (TripCheck) camera we read is named as its own list names it, with its coordinates, a printed credit and an honest \"status not checked\" line.\n  - Helpful: a visitor can find a camera by name and open the operator's page or picture. Gain: coordinates, credit and status honesty. HCU: one real list, no filler, link-out only.\n- `/cameras/japan/japan-rivers/` Beats Argos by: every MLIT river cameras (Japan) camera we read is named as its own list names it, with its coordinates, a printed credit and an honest \"status not checked\" line.\n  - Helpful: a visitor can find a camera by name and open the operator's page or picture. Gain: coordinates, credit and status honesty. HCU: one real list, no filler, link-out only.\n- `/cameras/estonia/tallinn/` Beats Argos by: every City of Tallinn camera we read is named as its own list names it, with its coordinates, a printed credit and an honest \"status not checked\" line.\n  - Helpful: a visitor can find a camera by name and open the operator's page or picture. Gain: coordinates, credit and status honesty. HCU: one real list, no filler, link-out only.\n- `/cameras/estonia/estonia-roads/` Beats Argos by: every Transpordiamet (Tarktee) camera we read is named as its own list names it, with its coordinates, a printed credit and an honest \"status not checked\" line.\n  - Helpful: a visitor can find a camera by name and open the operator's page or picture. Gain: coordinates, credit and status honesty. HCU: one real list, no filler, link-out only.\n- `/cameras/spain/catalonia/` Beats Argos by: every Servei Català de Trànsit camera we read is named as its own list names it, with its coordinates, a printed credit and an honest \"status not checked\" line.\n  - Helpful: a visitor can find a camera by name and open the operator's page or picture. Gain: coordinates, credit and status honesty. HCU: one real list, no filler, link-out only.\n- `/cameras/united-states/delaware/` Beats Argos by: every DelDOT (Delaware Department of Transportation) camera we read is named as its own list names it, with its coordinates, a printed credit and an honest \"status not checked\" line.\n  - Helpful: a visitor can find a camera by name and open the operator's page or picture. Gain: coordinates, credit and status honesty. HCU: one real list, no filler, link-out only.\n- `/cameras/united-states/king-county/` Beats Argos by: every King County Road Services camera we read is named as its own list names it, with its coordinates, a printed credit and an honest \"status not checked\" line.\n  - Helpful: a visitor can find a camera by name and open the operator's page or picture. Gain: coordinates, credit and status honesty. HCU: one real list, no filler, link-out only.\n- `/cameras/united-states/texas-highways/` Beats Argos by: every Texas Department of Transportation camera we read is named as its own list names it, with its coordinates, a printed credit and an honest \"status not checked\" line.\n  - Helpful: a visitor can find a camera by name and open the operator's page or picture. Gain: coordinates, credit and status honesty. HCU: one real list, no filler, link-out only.\n- `/cameras/united-states/washington-state/` Beats Argos by: every Washington State Department of Transportation camera we read is named as its own list names it, with its coordinates, a printed credit and an honest \"status not checked\" line.\n  - Helpful: a visitor can find a camera by name and open the operator's page or picture. Gain: coordinates, credit and status honesty. HCU: one real list, no filler, link-out only.\n- `/cameras/norway/norway/` Beats Argos by: every Statens vegvesen camera we read is named as its own list names it, with its coordinates, a printed credit and an honest \"status not checked\" line.\n  - Helpful: a visitor can find a camera by name and open the operator's page or picture. Gain: coordinates, credit and status honesty. HCU: one real list, no filler, link-out only.\n- `/cameras/canada/montreal-city/` Beats Argos by: every Ville de Montréal camera locations (OpenStreetMap) camera we read is named as its own list names it, with its coordinates, a printed credit and an honest \"status not checked\" line.\n  - Helpful: a visitor can find a camera by name and open the operator's page or picture. Gain: coordinates, credit and status honesty. HCU: one real list, no filler, link-out only.\n"
+    },
+    {
+      "stage": "now",
+      "file": "tests/registry/registry.test.mjs",
+      "kind": "import-add",
+      "line": "import { GEV_PACKS } from '../../ops/importers/lib/gevpacks.mjs';",
+      "marker": "lib/gevpacks.mjs"
+    },
+    {
+      "stage": "now",
+      "file": "tests/registry/registry.test.mjs",
+      "kind": "replace-once",
+      "regex": "(sources\\.map\\(\\(s\\) => s\\.id\\))(\\.sort\\(\\), \\[)",
+      "replace": "$1.filter((id) => !GEV_PACKS.some((p) => p.sourceId === id))$2",
+      "marker": "!GEV_PACKS.some"
+    },
+    {
+      "stage": "now",
+      "file": "tests/registry/registry.test.mjs",
+      "kind": "replace-once",
+      "regex": "(\\+ \\[)('drivebc', )",
+      "replace": "$1...GEV_PACKS.map((p) => p.sourceId), $2",
+      "marker": "...GEV_PACKS.map((p) => p.sourceId), "
+    },
+    {
+      "stage": "now",
+      "file": "ops/harness/rules.mjs",
+      "kind": "replace-once",
+      "regex": "(id: 'world-importers', text: 'A world-source importer \\()",
+      "replace": "$1GEV camera packs ops/importers/gevpacks.mjs (each pack opens only through its existing licence row, reads GEV catalog loaders read-only, Oregon reads the ODOT TripCheck list after robots.txt; no picture is requested and no key is sent; one failed or short pack leaves its old rows), ",
+      "marker": "GEV camera packs ops/importers/gevpacks.mjs"
+    },
+    {
+      "stage": "now",
+      "file": "ops/harness/rules.mjs",
+      "kind": "replace-once",
+      "regex": "(id: 'world-importers'.*?enforcedBy: \\[)",
+      "replace": "$1'tests/registry/gevpacks.test.mjs', ",
+      "marker": "'tests/registry/gevpacks.test.mjs'"
+    },
+    {
+      "stage": "now",
+      "file": ".github/workflows/tests.yml",
+      "kind": "replace-once",
+      "regex": "(tests/registry/firstseen\\.test\\.mjs)",
+      "replace": "tests/registry/gevpacks.test.mjs\n          $1",
+      "marker": "tests/registry/gevpacks.test.mjs"
+    }
+  ],
+  "manual": [
+    "Run the importer (node ops/importers/gevpacks.mjs) after applying; commit data/camera-registry/.",
+    "ops/harness/rules.mjs \"honest-place-world\", data/world-coverage.json country rows and plan.md are not edited by this patch.",
+    "Confirm the CI job that runs run-all.json clones gev/ and that GEV catalog modules import without npm install in gev/."
+  ]
+}

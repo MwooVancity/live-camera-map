@@ -46,6 +46,7 @@ jobs:
           tests/registry/citalu.test.mjs
           tests/registry/medellin.test.mjs
           tests/registry/taiwanwra.test.mjs
+          tests/registry/gevpacks.test.mjs
           tests/registry/firstseen.test.mjs
           tests/registry/hongkong.test.mjs
           tests/registry/iceland.test.mjs
