@@ -37,7 +37,7 @@ From the GEV README read 2026-11-27 (first list came from a code read and missed
 - NYC cameras: GEV ships them opt-in only, needing your own NYC DOT agreement; stays off.
 
 FULL GEV READ 2026-11-27 (all docs and code, 5 agents): docs/gev-full-read-2026-11-27.md lists every feature as works / free work left / needs server or key / must stay off. Free work left, in order:
-- [ ] Live-test the 2026-11-27 deploy: rename, 54 library entries, street level, share link, Acartia, installations
+- [x] Live 2026-11-27: map header "World Traffic Cameras"; Street Level (KartaView) 314 near Seattle; licence file and probe files served. [ ] Share link (fix deploying), 54 library entries, Acartia, installations, traffic sim: browser test pending
 - [x] Wind (GFS default) as a 3-hour copy: built, local run wrote the 521 KB grid; live test pending
 - [ ] Photon place search: licence row + privacy line, or decide to keep only bundled names
 - [ ] Sea Marks and Ski Pistes hosts if licence rows allow
