@@ -97,13 +97,20 @@ test('layer snapshots: only a good, fresh answer is written; a bad one never sto
   const dir = mkdtempSync(join(tmpdir(), 'snap-'));
   const plugin = (route, body, status = 200) => () => ({ configurePreviewServer: ({ middlewares }) => middlewares.use(route, async (req, res) => { res.writeHead(status); res.end(JSON.stringify(body)); }) });
   const bodies = { '/api/cyclones': { storms: [], unavailable: true }, '/api/fire-perimeters': { fetchedAt: 1, rows: [] } };
-  const load = async (s) => ({ [s.factory]: plugin(s.route, bodies[s.route]) });
+  const load = async (s) => ({ [s.factory]: bodies[s.route] ? plugin(s.route, bodies[s.route]) : plugin(s.mount || s.route, {}, 502) });
   const r = await writeSnapshots('unused', dir, { load });
   assert.deepEqual(r.written, ['/api/fire-perimeters']);
-  assert.equal(r.skipped.length, 1);
+  assert.equal(r.skipped.length, SNAPSHOTS.length - 1);
   assert.ok(!existsSync(join(dir, 'api', 'cyclones')));
   const closed = await writeSnapshots('unused', dir, { load, rows: [] });
   assert.equal(closed.written.length, 0, 'no licence row, no file');
   assert.equal(closed.skipped.length, SNAPSHOTS.length);
   rmSync(dir, { recursive: true, force: true });
+});
+
+test('layer snapshots: an old cached copy or an empty answer is refused', async () => {
+  const { problemWith } = await import('../../ops/deploy/gev-snapshots.mjs');
+  assert.ok(problemWith({ status: 200, body: '1 x', headers: { 'x-tle-cache': 'STALE-ERROR' } }, true));
+  assert.ok(problemWith({ status: 200, body: '' }, true));
+  assert.equal(problemWith({ status: 200, body: '1 x' }, true), '');
 });

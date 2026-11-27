@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { buildRows, PERMISSION_ROW } from '../exports/camera-exports.mjs';
 import { GEV_PACKS } from '../importers/lib/gevpacks.mjs';
 import { isEnabled } from '../../tests/licensing/gate.mjs';
-import { SNAPSHOTS, writeSnapshots } from './gev-snapshots.mjs';
+import { SNAPSHOTS, contentType, writeSnapshots } from './gev-snapshots.mjs';
 import { MAP_LAYER_HOSTS } from '../../site/src/lib/privacy-facts.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -53,7 +53,7 @@ ${launch === 'live' ? '' : '  X-Robots-Tag: noindex\n'}  Content-Security-Policy
   Content-Type: application/json; charset=utf-8
 ${SNAPSHOTS.map((s) => `
 ${s.route}
-  Content-Type: application/json; charset=utf-8
+  Content-Type: ${contentType(s)}; charset=utf-8
 `).join('')}
 /api/cctv/health
   Content-Type: application/json; charset=utf-8

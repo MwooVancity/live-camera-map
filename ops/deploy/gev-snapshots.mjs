@@ -7,29 +7,42 @@ import { join, dirname } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { isEnabled } from '../../tests/licensing/gate.mjs';
 
+function celestrak(mount, group) {
+  return { route: `${mount}/${group}`, mount, path: `/${group}`, text: true, file: 'space/celestrak.js', factory: 'celestrakProxy', permId: 'celestrak' };
+}
 export const SNAPSHOTS = [
   { route: '/api/cyclones', file: 'cyclones.js', factory: 'cycloneProxy', permId: 'noaa-nhc-cphc-advisories-www-nhc-noaa-gov-currentstorms-json-the-mapservices-wea' },
   { route: '/api/fire-perimeters', file: 'firePerimeters.js', factory: 'firePerimetersProxy', permId: 'nifc-wfigs-wildland-fire-interagency-geospatial-services-arcgis-feature-service' },
+  { route: '/api/drone-airspace', file: 'droneAirspace.js', factory: 'droneAirspaceProxy', permId: 'faa-special-use-airspace-services6-arcgis-com-featureserver-special-use-airspace' },
+  { route: '/api/shipwrecks', file: 'shipwrecks.js', factory: 'shipwrecksProxy', permId: ['emodnet-human-activities-ship-wrecks-ows-emodnet-humanactivities-eu-wfs-layer-em', 'wikidata-shipwrecks-query-wikidata-org-sparql'] },
+  { route: '/api/launches', file: 'space/launch-library.js', factory: 'rocketLaunchesProxy', permId: 'the-space-devs-launch-library-2-v2-3' },
+  // CelesTrak asks for no more than one download every 2 hours; the build runs every 3. Plain text, one file per group GEV asks for.
+  ...['stations', 'visual', 'gps-ops', 'glo-ops', 'galileo', 'geo', 'resource', 'weather', 'planet', 'sar', 'science', 'starlink', 'active'].map((g) => celestrak('/api/celestrak', g)),
+  ...['stations', 'visual', 'gps-ops', 'glo-ops', 'galileo', 'geo', 'resource', 'weather', 'planet', 'sar', 'science'].map((g) => celestrak('/api/celestrak-satcat', g)),
 ];
+export const contentType = (s) => (s.text ? 'text/plain' : 'application/json');
 export const MAX_FILE_BYTES = 24 * 1024 * 1024; // Cloudflare Pages refuses files over 25 MB
 
 const permissions = () => JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'data', 'source-permissions.json'), 'utf8')).sources;
 
 // Calls the handler GEV registers for `route` with a plain GET and returns { status, body }.
-export async function callHandler(plugin, route) {
+export async function callHandler(plugin, route, path = '/') {
   let handler;
   plugin.configurePreviewServer({ middlewares: { use: (path, fn) => { if (path === route) handler = fn; } } });
   if (!handler) throw new Error(`no handler for ${route}`);
   return new Promise((resolve, reject) => {
-    let status = 0;
-    const res = { destroyed: false, once() {}, removeListener() {}, setHeader() {}, writeHead(s) { status = s; }, end(body) { resolve({ status, body: String(body) }); } };
-    Promise.resolve(handler({ method: 'GET', url: '/', headers: {}, socket: { remoteAddress: '127.0.0.1' } }, res)).catch(reject);
+    let status = 0, headers = {};
+    const res = { destroyed: false, headersSent: false, once() {}, removeListener() {}, setHeader() {}, writeHead(s, h = {}) { status = s; headers = h; }, end(body) { resolve({ status, headers, body: String(body) }); } };
+    Promise.resolve(handler({ method: 'GET', url: path, headers: {}, socket: { remoteAddress: '127.0.0.1' } }, res)).catch(reject);
   });
 }
 
-export function problemWith({ status, body }) {
+export function problemWith({ status, body, headers = {} }, text = false) {
   if (status !== 200) return `status ${status}`;
+  if (Object.values(headers).includes('STALE-ERROR')) return 'an old cached copy';
+  if (!body) return 'empty';
   if (Buffer.byteLength(body) > MAX_FILE_BYTES) return 'too large for the host';
+  if (text) return '';
   let j; try { j = JSON.parse(body); } catch { return 'not JSON'; }
   if (j.stale === true || j.unavailable === true || j.error) return 'stale, unavailable or an error';
   return '';
@@ -37,12 +50,14 @@ export function problemWith({ status, body }) {
 
 export async function writeSnapshots(gevDir, outDir, { load, rows = permissions(), now = new Date() } = {}) {
   const written = [], skipped = [];
+  const plugins = new Map(); // one plugin per factory: GEV's own cooldown then covers all its routes
   for (const s of SNAPSHOTS) {
     try {
-      if (!isEnabled(rows.find((r) => r.id === s.permId), now)) throw new Error(`licence row ${s.permId} is not enabled`);
+      for (const id of [s.permId].flat()) if (!isEnabled(rows.find((r) => r.id === id), now)) throw new Error(`licence row ${id} is not enabled`);
       const mod = load ? await load(s) : await import(pathToFileURL(join(gevDir, 'server', 'providers', s.file)).href);
-      const answer = await callHandler(mod[s.factory](), s.route);
-      const problem = problemWith(answer);
+      if (!plugins.has(s.factory)) plugins.set(s.factory, mod[s.factory]());
+      const answer = await callHandler(plugins.get(s.factory), s.mount || s.route, s.path);
+      const problem = problemWith(answer, s.text);
       if (problem) throw new Error(problem);
       const target = join(outDir, ...s.route.split('/').filter(Boolean));
       mkdirSync(dirname(target), { recursive: true });
