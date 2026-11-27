@@ -109,6 +109,8 @@ export const BRAND = [
   [/content="God's Eye"/g, 'content="World Traffic Cameras"'],
   [/NO PLACE LEFT BEHIND/g, 'EVERY OFFICIAL CAMERA, ONE MAP'],
   [/ENTER GOD MODE/g, 'EXPLORE THE MAP'],
+  [/"short_name": "God's Eye"/g, '"short_name": "Traffic Cameras"'],
+  [/Live spatial intelligence in the browser\./g, 'Official traffic cameras and live world data on one map.'],
   [/GEV Stories/g, 'Map Stories'],
   [/Talk to GEV/g, 'Talk to the map'],
 ];
@@ -190,6 +192,9 @@ export function buildStaticMap({ gevDir, outDir, launch = '', rows = registryRow
   cpSync(dist, out, { recursive: true });
   rmSync(join(out, 'events'), { recursive: true, force: true });
   for (const f of walk(out)) if (/\.(html|js|json|css|webmanifest)$/.test(f) && !rel(out, f).startsWith('cesium/')) { const s = readFileSync(f, 'utf8'), r = rebrand(s); if (r !== s) writeFileSync(f, r); }
+  // Our own mark in place of GEV's logo (the site's favicon); GEV's PNG app icons stay until we make PNGs of our own.
+  const mark = join(ROOT, 'site', 'public', 'favicon.svg');
+  if (existsSync(mark)) for (const f of ['logo.svg', 'favicon.svg']) if (existsSync(join(out, f))) cpSync(mark, join(out, f));
   if (existsSync(join(gevDir, 'LICENSE'))) cpSync(join(gevDir, 'LICENSE'), join(out, 'LICENSE-gods-eye-view.txt'));
   for (const f of walk(out)) if (RESTRICTED_NAME.test(rel(out, f))) rmSync(f);
   const problems = restrictedProblems(out, gevDir);
