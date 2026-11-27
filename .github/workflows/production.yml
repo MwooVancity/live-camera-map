@@ -69,6 +69,8 @@ jobs:
         env:
           LAUNCH: ${{ vars.LAUNCH }}
           PUPPETEER_SKIP_DOWNLOAD: '1'
+          # The one key here: Mapillary's client token is public by design (gev/SECURITY.md:37) and ends up in the browser anyway.
+          MAPILLARY_CLIENT_TOKEN: ${{ secrets.MAPILLARY_CLIENT_TOKEN }}
         run: |
           (cd gev && npm ci --no-audit --no-fund && GEV_DIR="$PWD" npx vite build --config ../ops/deploy/gev-static.vite.config.mjs)
           node tests/immutability/check.mjs

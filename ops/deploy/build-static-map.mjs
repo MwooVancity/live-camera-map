@@ -139,7 +139,13 @@ export const STATIC_ANSWERS = {
   '/api/geocode/status': { configured: false },
   '/api/overpass/status': { configured: false, unavailable: true, code: 'OVERPASS_NOT_CONFIGURED' },
   '/api/openai/hud-summary/status': { configured: false },
+  '/api/mapillary/status': { configured: false },
 };
+// Street Level photos from Mapillary without GEV's tile proxy. The client token is public by design (gev/SECURITY.md:37).
+// z11-13 coverage tiles go straight to Mapillary; z14 tiles carry a ~12 MB image layer the proxy would trim
+// (gev/server/providers/mapillary/tiles.js), so they are answered empty instead of sent to phones untrimmed.
+// ponytail: no z14 coverage lines until a server or a trimming Worker exists.
+export const mapillaryRedirects = (token) => (token ? [11, 12, 13].map((z) => `/api/mapillary/tiles/coverage/${z}/:x/:y https://tiles.mapillary.com/maps/vtp/mly1_public/2/${z}/:x/:y?access_token=${encodeURIComponent(token)} 302`).join('\n') + '\n/api/mapillary/tiles/coverage/14/* /api/mapillary/empty 200\n' : '');
 // Copy-link gives /share/<code>; the page reads the code itself, so every such path serves the map.
 export const REDIRECTS = '/share/* / 200\n';
 
@@ -208,8 +214,10 @@ export function buildStaticMap({ gevDir, outDir, launch = '', rows = registryRow
   // Our name is 21 letters against GEV's 14: a smaller title keeps it clear of the top-centre buttons (owner 2026-11-27).
   const meta = `<meta http-equiv="Content-Security-Policy" content="${cspFor(lib.hosts)}"><style>#title-bar h1{font-size:17px;letter-spacing:4px}</style>`;
   for (const f of walk(out).filter((x) => x.endsWith('.html'))) { const s = readFileSync(f, 'utf8'); writeFileSync(f, /<head[^>]*>/i.test(s) ? s.replace(/<head[^>]*>/i, (h) => h + meta) : meta + s); }
-  writeFileSync(join(out, '_redirects'), REDIRECTS);
-  for (const [route, body] of Object.entries(STATIC_ANSWERS)) { const p = join(out, ...route.split('/').filter(Boolean)); mkdirSync(dirname(p), { recursive: true }); writeFileSync(p, JSON.stringify(body)); }
+  const mly = String(process.env.MAPILLARY_CLIENT_TOKEN || '').trim();
+  writeFileSync(join(out, '_redirects'), REDIRECTS + mapillaryRedirects(mly));
+  for (const [route, body] of Object.entries(STATIC_ANSWERS)) { const p = join(out, ...route.split('/').filter(Boolean)); mkdirSync(dirname(p), { recursive: true }); writeFileSync(p, JSON.stringify(route === '/api/mapillary/status' ? { configured: Boolean(mly) } : body)); }
+  if (mly) writeFileSync(join(out, 'api', 'mapillary', 'empty'), '');
   const headers = headersFile(launch);
   if (headers.split('\n').some((l) => l.length > 2000)) throw new Error('a _headers line is over Cloudflare Pages\' 2,000-character limit');
   const perms = JSON.parse(readFileSync(join(ROOT, 'data', 'source-permissions.json'), 'utf8')).sources;

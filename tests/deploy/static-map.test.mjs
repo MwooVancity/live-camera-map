@@ -145,3 +145,13 @@ test('share links resolve, "no server" probes answer, and the Nepal story is stu
   assert.match(STUBS['/src/scenes/nepalEvidencePack.js'], /return null/);
   assert.equal(rebrand('ENTER GOD MODE'), 'EXPLORE THE MAP');
 });
+
+test('Mapillary: no token, no redirects; with one, z11-13 go to Mapillary and z14 is answered empty', async () => {
+  const { mapillaryRedirects, STATIC_ANSWERS } = await import('../../ops/deploy/build-static-map.mjs');
+  assert.equal(mapillaryRedirects(''), '');
+  const r = mapillaryRedirects('MLY|1|a');
+  assert.match(r, /^\/api\/mapillary\/tiles\/coverage\/11\/:x\/:y https:\/\/tiles\.mapillary\.com\/maps\/vtp\/mly1_public\/2\/11\/:x\/:y\?access_token=MLY%7C1%7Ca 302$/m);
+  assert.match(r, /coverage\/14\/\* \/api\/mapillary\/empty 200/);
+  assert.doesNotMatch(r, /\/2\/14\//, 'untrimmed z14 tiles are never sent');
+  assert.equal(STATIC_ANSWERS['/api/mapillary/status'].configured, false);
+});
