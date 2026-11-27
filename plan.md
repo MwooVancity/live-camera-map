@@ -16,18 +16,19 @@ Speed rules: only NOW items get worked; a new idea goes under section 3, not in 
 
 ### MAP LAYERS WITHOUT A SERVER (added 2026-11-27 from a code read; supersedes "waiting" in items 17 and 19 for these)
 Done = switched on in a real browser on the live map with data showing, not just deployed.
-- [ ] Earthquakes (live in the map policy; browser test pending)
+- [x] Earthquakes (seen live in Chrome 2026-11-27)
 - [ ] US weather alerts, NASA natural events, GDACS disaster alerts (live in the map policy; browser test pending)
 - [ ] Canada air quality; NASA recent imagery (live in the map policy; browser test pending)
-- [ ] Hurricanes (Atlantic, east and central Pacific); wildfire outlines, US (live 3-hour copies; browser test pending; a red map-freshness run means they went stale)
-- [ ] Satellites; space launches (live 3-hour copies; browser test pending)
+- [x] Wildfire outlines 39 seen live 2026-11-27. [ ] Hurricanes: no active storms in the feed, untestable today ( a red map-freshness run means they went stale)
+- [x] Satellites 11.8K; space launches 26 (seen live 2026-11-27)
 - [ ] Active fires, NASA FIRMS (3-hour copy; needs the key in CI; measure file size first)
-- [ ] Restricted airspace; shipwrecks (live 3-hour copies; browser test pending). Wind: needs a server (client checks the query of each answer)
+- [x] Restricted airspace 569; shipwrecks 8.0K (seen live 2026-11-27). Wind: needs a server (client checks the query of each answer)
 - [ ] Data Library shows ~90 entries and most fail (hosts blocked; cannot hide them without editing GEV). Rest of the Data Library (imagery, power plants, tide stations, bridges and others): one licence row per host
 - [ ] Bundled layers (dams, datacenters), USGS topo and night lights: may already work, test them
 - Needs a server, a key or permission: weather radar and clouds, live flights (OpenSky off), live ships, directions, transit, rail, military flights and sites. Full missing-feature rows: data/gev-parity.json (gap 813 on 2026-11-27), data/argos-maps-matrix.json (gap 17).
 
 From the GEV README read 2026-11-27 (first list came from a code read and missed these):
+- [ ] Submarine Cables toggle still shows in the layer list (data removed, TeleGeography); confirm it loads nothing
 - [ ] Test, may work with no server: visual styles 1-6, HUD, detection overlay, Draw, Director mode, share links, North Up/tilt, bundled submarine cables stay OFF (TeleGeography)
 - [x] GEV search cause found (audit): only 9 bundled cities; others need Photon (photon.komoot.io, fair-use limits) or a server; /map/ note corrected. Was: Test GEV keyless search: README says coordinates and bundled cities need no geocoder; "Seattle" and "Atlanta" gave "Location not found" in our test, cause unknown; fix the note on /map/ to match what the test shows
 - [ ] Check licence and whether browser-direct: Street Level (KartaView, Panoramax), Mapped ALPR, Radio, Wildlife, Bikeshare
