@@ -20,6 +20,10 @@ NEVER ASK THE OBVIOUS (HARD, owner 2026-11-26: "Stop asking me obvious recommend
 TRIM PLAN.MD (HARD, owner 2026-11-26: "trim plan MD whenever smart and possible"): whenever it is smart and possible, trim it without asking: finished items, old logs and long evidence move to a docs/ archive (nothing deleted), the NOW list stays on top, one short line per item. Check after every batch.
 GEV SAYS USABLE = USE IT (HARD, owner 2026-11-26: "if GEV says you can use it, then we should use it. We don't need to double check shit like this. It's already been double checked"): a source that GEV's own data notes say can be used is imported on that basis; no second read of the provider terms, no waiting. Quote GEV's note as the licence evidence. This does not open anything GEV marks restricted or non-commercial, and does not change link-out only or upstream immutability. For those sources it wins over the primary-source re-check lines.
 
+## Use it like a human, with screenshots (HARD, owner 2026-11-27)
+Owner: "Why don't you actually use it and take screenshots? That should be a hard rule." Before saying any page, map or feature works, is better, or is ready: open the live build (or say it is local) in a real browser, do the visitor's task by clicking, typing, scrolling and zooming, take screenshots at desktop and phone size, LOOK at them, and send the owner the ones that show the result. Tests, curl and DOM reads do not count. Say what could not be tried (no real phone = say so). Argos itself: not browsed by Claude (its robots.txt disallows ClaudeBot); the owner does that by hand.
+NO INDEXING (owner 2026-11-27): noindex stays until the site is at least at Argos Maps or GEV level AND the owner says "go live".
+
 ## Who you are working with
 Mike is a first-time solo developer building this as a side venture. He wants complete, immediately usable deliverables, direct communication, and for you to make decisions yourself and state them in one line. Do not hedge or pile on caveats. But assume everything will break: verify before claiming anything works, and say plainly what you could not verify.
 

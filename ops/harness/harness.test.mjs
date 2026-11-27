@@ -242,6 +242,7 @@ test('prompt hook prints Line 0 and the ask-ChatGPT-every-chance rule', () => {
   assert.match(out, /ASK CHATGPT EVERY CHANCE/);
   assert.match(out, /never bypass/);
   assert.match(out, /GAP CHECK/);
+  assert.match(out, /USE IT LIKE A HUMAN/);
   assert.match(out, /Do not fill gaps with guesses/);
 });
 

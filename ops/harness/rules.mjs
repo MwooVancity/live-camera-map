@@ -17,6 +17,7 @@ export const RULES = [
   { id: 'beats-argos', text: 'Every page and block states "Beats Argos by: ..." in its PAGES.md entry.', enforcedBy: ['ops/harness/page-gate.mjs'] },
   { id: 'no-argos-in-site', text: 'The shipped site never names, links or copies the competitor: no file name or text in site/dist mentions it (studying it is allowed, its words, brand, logo and images never reach a visitor).', enforcedBy: ['tests/parity/no-argos-in-site.test.mjs'] },
   { id: 'chatgpt-gap-check', text: 'Every prompt to ChatGPT ends with the gap-check block (what is missing from my situation or prompt), the reply is resolved with tools before acting, and the plan.md section 9 row carries a MISSING: line.', enforcedBy: ['ops/harness/hook-prompt.mjs', 'ops/harness/harness.test.mjs'] },
+  { id: 'use-it-with-screenshots', text: 'No claim that a page, map or feature works or is ready without using the live build in a real browser and looking at screenshots (desktop and phone size); tests, curl and DOM reads do not count. Noindex stays until Argos Maps or GEV level and the owner says go live.', enforcedBy: ['ops/harness/hook-prompt.mjs', 'ops/harness/harness.test.mjs'] },
   { id: 'prompt-line0', text: 'Line 0 is printed every request.', enforcedBy: ['ops/harness/hook-prompt.mjs'] },
   { id: 'commit-gate', text: 'A commit runs preflight, harness selftest and the unit tests.', enforcedBy: ['.githooks/pre-commit'] },
   { id: 'no-near-duplicate', text: 'No two landing pages share more than 60% of their sentences.', enforcedBy: ['ops/harness/page-gate.mjs'] },
