@@ -8838,6 +8838,32 @@
         "url": ""
       },
       "enabled": true
+    },
+    {
+      "id": "nasa-firms-active-fires",
+      "name": "NASA FIRMS active fires (nasa-firms-active-fires, firms.modaps.eosdis.nasa.gov)",
+      "section": "Live sources (fetched at runtime — not stored in this repo)",
+      "folder": "",
+      "licence": "CC0 / U.S. public domain data; free FIRMS MAP_KEY",
+      "commercialStatus": "allowed_per_doc",
+      "statusReason": "GEV's data notes say usable: public domain (owner rule 2026-11-26, GEV says usable = use it)",
+      "attribution": "We acknowledge the use of data and/or imagery from NASA's Fire Information for Resource Management System (FIRMS), part of NASA's Earth Observing System Data and Information System (EOSDIS).",
+      "provenance": "gev/DATA_SOURCES.md:498",
+      "reviewedAt": "2026-11-27",
+      "reviewedBy": "claude-doc-parse",
+      "needsHumanReview": false,
+      "mustNotShip": false,
+      "enabled": true,
+      "metadataPermission": {
+        "status": "allowed",
+        "quote": "CC0 / U.S. public domain data; free FIRMS MAP_KEY",
+        "url": "gev/DATA_SOURCES.md:498"
+      },
+      "imagePermission": {
+        "status": "unverified",
+        "quote": "",
+        "url": ""
+      }
     }
   ]
 }

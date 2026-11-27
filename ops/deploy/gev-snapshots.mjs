@@ -19,6 +19,8 @@ export const SNAPSHOTS = [
   // Wind: the default view only (GFS, no overlay). GEV's client checks that the answer echoes its query, so other models and
   // overlays cannot be served as files and keep saying unavailable. The grid file named in the manifest is written beside it.
   { route: '/api/wind/manifest', mount: '/api/wind', path: '/manifest?model=gfs', follow: 'gridUrl', file: 'wind.js', factory: 'windProxy', permId: 'noaa-gfs-wind-noaa-gfs-bdp-pds-s3-amazonaws-com' },
+  // Needs FIRMS_MAP_KEY (free); without it the handler answers hasKey:false and nothing is written.
+  { route: '/api/firms', mount: '/api/firms', path: '/', file: 'firms.js', factory: 'firmsProxy', permId: 'nasa-firms-active-fires' },
   { route: '/api/launches', file: 'space/launch-library.js', factory: 'rocketLaunchesProxy', permId: 'the-space-devs-launch-library-2-v2-3' },
   // CelesTrak asks for no more than one download every 2 hours; the build runs every 3. Plain text, one file per group GEV asks for.
   ...['stations', 'visual', 'gps-ops', 'glo-ops', 'galileo', 'geo', 'resource', 'weather', 'planet', 'sar', 'science', 'starlink', 'active'].map((g) => celestrak('/api/celestrak', g)),
