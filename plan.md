@@ -14,6 +14,19 @@ Definition of a working website: the domain loads, /map/ runs God's Eye View, an
 
 Speed rules: only NOW items get worked; a new idea goes under section 3, not in front. Add status as one short line per item (under 300 characters); evidence and long notes go in docs/. Full history: `docs/plan-archive-2026-11-26.md`.
 
+### MAP LAYERS WITHOUT A SERVER (added 2026-11-27 from a code read; supersedes "waiting" in items 17 and 19 for these)
+Done = switched on in a real browser on the live map with data showing, not just deployed.
+- [ ] Earthquakes (deploying)
+- [ ] US weather alerts, NASA natural events, GDACS disaster alerts (deploying)
+- [ ] Canada air quality; NASA recent imagery (deploying)
+- [ ] Hurricanes (Atlantic, east and central Pacific); wildfire outlines, US (committed, not deployed)
+- [ ] Satellites; space launches (3-hour copy)
+- [ ] Active fires, NASA FIRMS (3-hour copy; needs the key in CI; measure file size first)
+- [ ] Wind; restricted airspace; shipwrecks (3-hour copy)
+- [ ] Rest of the Data Library (imagery, power plants, tide stations, bridges and others): one licence row per host
+- [ ] Bundled layers (dams, datacenters), USGS topo and night lights: may already work, test them
+- Needs a server, a key or permission: weather radar and clouds, live flights (OpenSky off), live ships, directions, place search inside the map, transit, rail, military flights and sites. Full missing-feature rows: data/gev-parity.json (gap 813 on 2026-11-27), data/argos-maps-matrix.json (gap 17).
+
 ## 0. Header
 - Goal: a free, world-wide directory of live traffic cameras with road conditions, camera health and a free map that never asks for a sign-in. Link-out only until a source allows pictures.
 - End game: beat argosatlas.com page for page, match the traffic they capture, then pass it (measured by Search Console against Ahrefs). Make money inside the rules (ads and affiliate beside data, never a paywall). A penalised site earns $0.
