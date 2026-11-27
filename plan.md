@@ -40,8 +40,8 @@ FULL GEV READ 2026-11-27 (all docs and code, 5 agents): docs/gev-full-read-2026-
 - [x] Live 2026-11-27: map header "World Traffic Cameras"; Street Level (KartaView) 314 near Seattle; licence file and probe files served. [x] Share path /share/<code> now serves the map (200; restore of a real code not yet tried) [x] smaller title clear of the buttons, seen live, 54 library entries, Acartia, installations, traffic sim: browser test pending
 - [x] Wind (GFS default) seen live 2026-11-27 (streaks over the globe, "NOAA GFS")
 - [ ] Photon place search: licence row + privacy line, or decide to keep only bundled names
-- [ ] Sea Marks and Ski Pistes hosts if licence rows allow
-- [ ] Replace GEV logo and first-run author links in the built copy
+- [x] Sea Marks and Ski Pistes opened; Sea Marks switched on live 2026-11-27 (no error; marks only show near coasts when zoomed in); Ski Pistes not yet switched on
+- [x] Our logo and app name in the built copy (live 2026-11-27); [ ] GEV PNG app icons and first-run author links remain
 - [ ] InciWeb link copy; FIRMS once its row and key are in place
 
 - 2026-11-27 owner: "Celestak emailed us it's fine" (CelesTrak reply, satellite data). Row `celestrak` already open (owner approval). Email text not yet saved: paste it into docs/outreach/ as written evidence.
