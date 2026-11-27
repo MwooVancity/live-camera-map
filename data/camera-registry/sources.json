@@ -394,7 +394,7 @@
    "image_caching": "unverified",
    "image_redistribution": "unverified"
   },
-  "attribution": "Source: Maryland Department of Transportation State Highway Administration (CHART), Traffic Cameras list, via the State of Maryland open data portal (opendata.maryland.gov). The list carries no licence or terms; listed link-only on the site owner's approval.",
+  "attribution": "Source: Maryland Department of Transportation State Highway Administration (CHART), Traffic Cameras list, via the State of Maryland open data portal (opendata.maryland.gov).",
   "license": "No licence or terms found on the dataset or the portal pages read (2026-11-25); listed link-only on the owner's recorded approval (data/owner-approvals.json)",
   "licenseUrl": "https://opendata.maryland.gov/d/4z3c-43ce",
   "reviewedAt": "2026-11-25"

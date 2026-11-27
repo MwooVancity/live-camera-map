@@ -74,3 +74,8 @@ test('real registry: rows come from the CSV licence gate and stay under the cap'
   assert.ok(r.cameras > 1000 && r.cameras <= 8000, JSON.stringify(r));
   f.done();
 });
+
+test('real registry: no camera credit shows internal approval wording to visitors', () => {
+  const sources = JSON.parse(readFileSync(new URL('../../data/camera-registry/sources.json', import.meta.url), 'utf8'));
+  for (const s of sources.sources || sources) assert.doesNotMatch(s.attribution || '', /site owner|owner's approval/i, s.id || s.source_id);
+});

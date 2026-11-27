@@ -14,7 +14,7 @@ export const PAGE_URL = 'https://opendata.maryland.gov/d/4z3c-43ce';
 export const ROBOTS_URL = 'https://opendata.maryland.gov/robots.txt'; // read 2026-11-25: Crawl-delay 1; Disallow only /browse?..., /api/odata/, /api/collocate*; /resource/ and /api/views/ are open
 export const META_ID = '4z3c-43ce';
 export const META_DESCRIPTION = 'This dataset provides the locations of Traffic Cameras in Maryland from the Coordinated Highways Action Response Team (CHART).';
-export const ATTRIBUTION = "Source: Maryland Department of Transportation State Highway Administration (CHART), Traffic Cameras list, via the State of Maryland open data portal (opendata.maryland.gov). The list carries no licence or terms; listed link-only on the site owner's approval.";
+export const ATTRIBUTION = "Source: Maryland Department of Transportation State Highway Administration (CHART), Traffic Cameras list, via the State of Maryland open data portal (opendata.maryland.gov).";
 // the link-out target must be a CHART viewer page with a 32-hex feed id
 export const LINK_RE = /^https:\/\/chart\.maryland\.gov\/video\/video\.php\?feed=([0-9a-f]{32})$/;
 export const MD_REGION = { slug: 'maryland', name: 'Maryland' };

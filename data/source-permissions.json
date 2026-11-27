@@ -8791,7 +8791,7 @@
       "commercialStatus": "allowed_per_owner",
       "ownerApprovedAt": "2026-11-25",
       "statusReason": "no licence found either way; owner-approved link-only listing 2026-11-25 (sourceApprovals, this id only); applies to names, positions and links only; needs human review; removed the same day if the agency objects",
-      "attribution": "Source: Maryland Department of Transportation State Highway Administration (CHART), Traffic Cameras list, via the State of Maryland open data portal (opendata.maryland.gov). The list carries no licence or terms; listed link-only on the site owner's approval.",
+      "attribution": "Source: Maryland Department of Transportation State Highway Administration (CHART), Traffic Cameras list, via the State of Maryland open data portal (opendata.maryland.gov).",
       "provenance": "https://opendata.maryland.gov/api/views/4z3c-43ce.json and https://opendata.maryland.gov/resource/4z3c-43ce.json (451 rows: location, county, feedid, url, the_geom), https://opendata.maryland.gov/robots.txt (Crawl-delay 1; disallows /browse?..., /api/odata/, /api/collocate*; /resource/ and /api/views/ open), docs/source-audits/hunt-batch4-us-canada-2026-11-25.md, read 2026-11-25; chart.maryland.gov is behind a Cloudflare challenge and is never requested by our code",
       "imageStatus": "unverified: no statement on pictures; chart.maryland.gov blocks automated requests so nothing was fetched; link-out only, health checker skips the host (status unknown by design)",
       "reviewedAt": "2026-11-25",
