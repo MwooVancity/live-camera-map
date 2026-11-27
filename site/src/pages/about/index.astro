@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SITE_NAME, CONTACT_EMAIL } from '../../config.mjs';
+const mail = `mailto:${CONTACT_EMAIL}`;
+---
+<Base title={`About ${SITE_NAME}: contact and removal requests`} description="What this site is, how to report a wrong or broken camera link, and how an agency can ask for a camera or a whole source to be removed." route="/about/" crumbs={[{ name: 'About', route: '/about/' }]}>
+  <h1>About {SITE_NAME}</h1>
+  <p>A free directory and map of traffic cameras. Each camera is a link to the official source; we show no camera pictures or video. We are not a government agency and are not affiliated with or endorsed by the agencies we link to. Each source and its terms are listed on <a href="/sources/">Sources and licences</a>.</p>
+
+  <h2>Contact</h2>
+  <p><a href={mail}>{CONTACT_EMAIL}</a></p>
+
+  <h2>Report a wrong or broken camera</h2>
+  <p>Send the address of the page on this site, the camera's name, and what is wrong.</p>
+
+  <h2>Removal requests</h2>
+  <p>If you run or own a source listed here and want a camera, or the whole source, removed or corrected, write to the address above. Say who you are, which cameras or source you mean (page addresses help), and what you want changed.</p>
+
+  <h2>Security reports</h2>
+  <p>Report a security problem to the same address. Machine-readable details are in <code>/.well-known/security.txt</code>.</p>
+</Base>

@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { SITE_NAME } from '../../config.mjs';
+import { SITE_NAME, CONTACT_EMAIL } from '../../config.mjs';
 import { MAP_BROWSER_HOSTS } from '../../lib/privacy-facts.mjs';
 const embedded = Boolean((import.meta.env.PUBLIC_GEV_EMBED_URL || '').trim());
 ---
@@ -42,5 +42,5 @@ const embedded = Boolean((import.meta.env.PUBLIC_GEV_EMBED_URL || '').trim());
   <p>If we add advertising or analytics later, they may set cookies or use other identifiers. Before that happens we will show a consent notice and update this page. Until then, the statements above are the whole of what we know.</p>
 
   <h2>Contact</h2>
-  <p>A contact address will be published here. Until it is, there is no way to reach us from this page.</p>
+  <p>Write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. See also <a href="/about/">About and removal requests</a>.</p>
 </Base>

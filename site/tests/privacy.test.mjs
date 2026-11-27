@@ -83,5 +83,11 @@ test('the page is built, linked from the footer of every page, in the sitemap, a
   assert.ok(!/argos/i.test(privacy));
   for (const f of walk(DIST).filter((x) => x.endsWith('.html'))) assert.ok(/<a href="\/privacy\/"[^>]*>Privacy<\/a>/.test(readFileSync(f, 'utf8')), `${f}: no footer link`);
   assert.ok(readFileSync(join(DIST, 'sitemap.xml'), 'utf8').includes(`${SITE_URL}/privacy/`), 'in the sitemap');
-  assert.ok(/A contact address will be published here/.test(privacy) && !/@[a-z0-9-]+\.[a-z]{2,}/i.test(privacy.replace(/<[^>]*>/g, ' ')), 'no invented address');
+  // Only the owner's real forwarding address may appear, here, on /about/ and in security.txt.
+  for (const f of ['privacy/index.html', 'about/index.html', '.well-known/security.txt']) {
+    const found = new Set(readFileSync(join(DIST, f), 'utf8').match(/[a-z0-9._-]+@[a-z0-9-]+\.[a-z]{2,}/gi));
+    assert.deepEqual([...found], ['contact@worldtrafficcameras.com'], f);
+  }
+  const expires = readFileSync(join(DIST, '.well-known/security.txt'), 'utf8').match(/^Expires: (.+)$/m)[1];
+  assert.ok(Date.parse(expires) - Date.now() > 30 * 864e5, 'security.txt expires within 30 days: renew it');
 });
