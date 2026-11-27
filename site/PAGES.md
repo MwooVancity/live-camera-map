@@ -162,6 +162,7 @@ Order on a city page: driving notice, closures / chain controls / signs / weathe
   - Helpful: a visitor can find a camera by name and open the operator's page or picture. Gain: coordinates, credit and status honesty. HCU: one real list, no filler, link-out only.
 - `/cameras/japan/japan-rivers/` Beats Argos by: every MLIT river cameras (Japan) camera we read is named as its own list names it, with its coordinates, a printed credit and an honest "status not checked" line.
   - Helpful: a visitor can find a camera by name and open the operator's page or picture. Gain: coordinates, credit and status honesty. HCU: one real list, no filler, link-out only.
+- `/cameras/estonia/` Beats Argos by: both Estonian camera lists we read (City of Tallinn and Transpordiamet) sit on one country page with each region's own count and a link to it.
 - `/cameras/estonia/tallinn/` Beats Argos by: every City of Tallinn camera we read is named as its own list names it, with its coordinates, a printed credit and an honest "status not checked" line.
   - Helpful: a visitor can find a camera by name and open the operator's page or picture. Gain: coordinates, credit and status honesty. HCU: one real list, no filler, link-out only.
 - `/cameras/estonia/estonia-roads/` Beats Argos by: every Transpordiamet (Tarktee) camera we read is named as its own list names it, with its coordinates, a printed credit and an honest "status not checked" line.
