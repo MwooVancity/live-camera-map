@@ -44,6 +44,8 @@ FULL GEV READ 2026-11-27 (all docs and code, 5 agents): docs/gev-full-read-2026-
 - [ ] Replace GEV logo and first-run author links in the built copy
 - [ ] InciWeb link copy; FIRMS once its row and key are in place
 
+- 2026-11-27 owner: "Celestak emailed us it's fine" (CelesTrak reply, satellite data). Row `celestrak` already open (owner approval). Email text not yet saved: paste it into docs/outreach/ as written evidence.
+
 ## 0. Header
 - Goal: a free, world-wide directory of live traffic cameras with road conditions, camera health and a free map that never asks for a sign-in. Link-out only until a source allows pictures.
 - End game: beat argosatlas.com page for page, match the traffic they capture, then pass it (measured by Search Console against Ahrefs). Make money inside the rules (ads and affiliate beside data, never a paywall). A penalised site earns $0.
