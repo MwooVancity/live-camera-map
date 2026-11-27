@@ -17,8 +17,8 @@ Speed rules: only NOW items get worked; a new idea goes under section 3, not in 
 ### MAP LAYERS WITHOUT A SERVER (added 2026-11-27 from a code read; supersedes "waiting" in items 17 and 19 for these)
 Done = switched on in a real browser on the live map with data showing, not just deployed.
 - [x] Earthquakes (seen live in Chrome 2026-11-27)
-- [ ] US weather alerts, NASA natural events, GDACS disaster alerts (live in the map policy; browser test pending)
-- [ ] Canada air quality; NASA recent imagery (live in the map policy; browser test pending)
+- [x] GDACS 80 alerts, NASA EONET ~1.0K events seen live 2026-11-27. [ ] NWS alerts added without error, own count not seen (few drawn-area alerts today?)
+- [x] Canada air quality loaded live 2026-11-27. [ ] NASA recent imagery: needs a drawn box, not tested
 - [x] Wildfire outlines 39 seen live 2026-11-27. [ ] Hurricanes: no active storms in the feed, untestable today ( a red map-freshness run means they went stale)
 - [x] Satellites 11.8K; space launches 26 (seen live 2026-11-27)
 - [ ] Active fires, NASA FIRMS (3-hour copy; needs the key in CI; measure file size first)
