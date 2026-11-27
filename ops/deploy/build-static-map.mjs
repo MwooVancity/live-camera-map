@@ -113,6 +113,8 @@ export const BRAND = [
   [/Live spatial intelligence in the browser\./g, 'Official traffic cameras and live world data on one map.'],
   [/GEV Stories/g, 'Map Stories'],
   [/Talk to GEV/g, 'Talk to the map'],
+  [/\bask GEV\b/g, 'ask the map'],
+  [/\bAsk GEV\b/g, 'Ask the map'],
 ];
 export function rebrand(text) { return BRAND.reduce((s, [re, to]) => s.replace(re, to), text); }
 
