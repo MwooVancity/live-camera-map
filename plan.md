@@ -16,22 +16,23 @@ Speed rules: only NOW items get worked; a new idea goes under section 3, not in 
 
 ### MAP LAYERS WITHOUT A SERVER (added 2026-11-27 from a code read; supersedes "waiting" in items 17 and 19 for these)
 Done = switched on in a real browser on the live map with data showing, not just deployed.
-- [ ] Earthquakes (deploying)
-- [ ] US weather alerts, NASA natural events, GDACS disaster alerts (deploying)
-- [ ] Canada air quality; NASA recent imagery (deploying)
-- [ ] Hurricanes (Atlantic, east and central Pacific); wildfire outlines, US (committed, not deployed)
-- [ ] Satellites; space launches (3-hour copy)
+- [ ] Earthquakes (live in the map policy; browser test pending)
+- [ ] US weather alerts, NASA natural events, GDACS disaster alerts (live in the map policy; browser test pending)
+- [ ] Canada air quality; NASA recent imagery (live in the map policy; browser test pending)
+- [ ] Hurricanes (Atlantic, east and central Pacific); wildfire outlines, US (live 3-hour copies; browser test pending; a red map-freshness run means they went stale)
+- [ ] Satellites; space launches (live 3-hour copies; browser test pending)
 - [ ] Active fires, NASA FIRMS (3-hour copy; needs the key in CI; measure file size first)
-- [ ] Wind; restricted airspace; shipwrecks (3-hour copy)
-- [ ] Rest of the Data Library (imagery, power plants, tide stations, bridges and others): one licence row per host
+- [ ] Restricted airspace; shipwrecks (live 3-hour copies; browser test pending). Wind: needs a server (client checks the query of each answer)
+- [ ] Data Library shows ~90 entries and most fail (hosts blocked; cannot hide them without editing GEV). Rest of the Data Library (imagery, power plants, tide stations, bridges and others): one licence row per host
 - [ ] Bundled layers (dams, datacenters), USGS topo and night lights: may already work, test them
-- Needs a server, a key or permission: weather radar and clouds, live flights (OpenSky off), live ships, directions, place search inside the map, transit, rail, military flights and sites. Full missing-feature rows: data/gev-parity.json (gap 813 on 2026-11-27), data/argos-maps-matrix.json (gap 17).
+- Needs a server, a key or permission: weather radar and clouds, live flights (OpenSky off), live ships, directions, transit, rail, military flights and sites. Full missing-feature rows: data/gev-parity.json (gap 813 on 2026-11-27), data/argos-maps-matrix.json (gap 17).
 
 From the GEV README read 2026-11-27 (first list came from a code read and missed these):
 - [ ] Test, may work with no server: visual styles 1-6, HUD, detection overlay, Draw, Director mode, share links, North Up/tilt, bundled submarine cables stay OFF (TeleGeography)
-- [ ] Test GEV keyless search: README says coordinates and bundled cities need no geocoder; "Seattle" and "Atlanta" gave "Location not found" in our test, cause unknown; fix the note on /map/ to match what the test shows
+- [x] GEV search cause found (audit): only 9 bundled cities; others need Photon (photon.komoot.io, fair-use limits) or a server; /map/ note corrected. Was: Test GEV keyless search: README says coordinates and bundled cities need no geocoder; "Seattle" and "Atlanta" gave "Location not found" in our test, cause unknown; fix the note on /map/ to match what the test shows
 - [ ] Check licence and whether browser-direct: Street Level (KartaView, Panoramax), Mapped ALPR, Radio, Wildlife, Bikeshare
-- Needs a server or key: Cockpit (needs flights), GNSS integrity, News, Traffic, Directions, OSM Places, Installations, Transit, Rail, voice and chat, MCP
+- [ ] Test: Stories (one ships a non-commercial flood scene and turns on flights); Traffic simulation may work with a static {"hasKey":false} at /api/tomtom/status
+- Needs a server or key: Cockpit (needs flights), GNSS integrity, News, Directions, OSM Places, Installations, Transit, Rail, voice and chat, MCP
 - NYC cameras: GEV ships them opt-in only, needing your own NYC DOT agreement; stays off.
 
 ## 0. Header

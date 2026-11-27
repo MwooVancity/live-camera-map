@@ -1,0 +1,22 @@
+name: map-freshness
+# The map's hurricane and fire-outline files are copies made by the production build. GEV shows them as current whatever their age,
+# so if production stops deploying, this run turns red once a copy is more than 9 hours old (audit 2026-11-27, finding 2).
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - run: |
+          now=$(date +%s)
+          for p in cyclones fire-perimeters; do
+            at=$(curl -sf --max-time 30 "https://worldtrafficcameras-map.pages.dev/api/$p" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>console.log(Math.floor((JSON.parse(s).fetchedAt||0)/1000)))") || at=0
+            age=$(( (now - at) / 3600 ))
+            echo "$p: $age hours old"
+            if [ "$age" -gt 9 ]; then echo "::error::/api/$p is $age hours old: production has stopped refreshing the map"; exit 1; fi
+          done

@@ -21,6 +21,8 @@ export const SNAPSHOTS = [
   ...['stations', 'visual', 'gps-ops', 'glo-ops', 'galileo', 'geo', 'resource', 'weather', 'planet', 'sar', 'science'].map((g) => celestrak('/api/celestrak-satcat', g)),
 ];
 export const contentType = (s) => (s.text ? 'text/plain' : 'application/json');
+// CelesTrak asks for one download per 2 hours: runs other than the 3-hour schedule copy the live file instead.
+const LIVE_MAP = 'https://worldtrafficcameras-map.pages.dev';
 export const MAX_FILE_BYTES = 24 * 1024 * 1024; // Cloudflare Pages refuses files over 25 MB
 
 const permissions = () => JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'data', 'source-permissions.json'), 'utf8')).sources;
@@ -56,7 +58,10 @@ export async function writeSnapshots(gevDir, outDir, { load, rows = permissions(
       for (const id of [s.permId].flat()) if (!isEnabled(rows.find((r) => r.id === id), now)) throw new Error(`licence row ${id} is not enabled`);
       const mod = load ? await load(s) : await import(pathToFileURL(join(gevDir, 'server', 'providers', s.file)).href);
       if (!plugins.has(s.factory)) plugins.set(s.factory, mod[s.factory]());
-      const answer = await callHandler(plugins.get(s.factory), s.mount || s.route, s.path);
+      const reuse = s.text && process.env.GITHUB_EVENT_NAME && process.env.GITHUB_EVENT_NAME !== 'schedule';
+      const answer = reuse
+        ? await fetch(LIVE_MAP + s.route, { signal: AbortSignal.timeout(30000) }).then(async (r) => ({ status: r.status, body: await r.text(), headers: {} }))
+        : await Promise.race([callHandler(plugins.get(s.factory), s.mount || s.route, s.path), new Promise((_, no) => setTimeout(() => no(new Error('no answer in 60 s')), 60000).unref())]);
       const problem = problemWith(answer, s.text);
       if (problem) throw new Error(problem);
       const target = join(outDir, ...s.route.split('/').filter(Boolean));

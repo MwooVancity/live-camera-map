@@ -152,7 +152,12 @@ export function buildStaticMap({ gevDir, outDir, launch = '', rows = registryRow
   mkdirSync(join(out, 'api', 'cctv'), { recursive: true });
   writeFileSync(join(out, 'api', 'cctv', 'sources'), JSON.stringify(catalog));
   writeFileSync(join(out, 'api', 'cctv', 'health'), '{"cameras":[]}'); // GEV polls this every 7 s; empty = status unknown
-  writeFileSync(join(out, '_headers'), headersFile(launch));
+  const headers = headersFile(launch);
+  if (headers.split('\n').some((l) => l.length > 2000)) throw new Error('a _headers line is over Cloudflare Pages\' 2,000-character limit');
+  const perms = JSON.parse(readFileSync(join(ROOT, 'data', 'source-permissions.json'), 'utf8')).sources;
+  const closed = MAP_LAYER_HOSTS.filter((h) => !isEnabled(perms.find((p) => p.id === h.permId), new Date())).map((h) => h.host);
+  if (closed.length) throw new Error(`map layer hosts without an enabled licence row: ${closed.join(', ')}`);
+  writeFileSync(join(out, '_headers'), headers);
   writeFileSync(join(out, 'robots.txt'), launch === 'live' ? 'User-agent: *\nAllow: /\n' : 'User-agent: *\nDisallow: /\n');
   // Without a 404.html Pages answers every unknown path (/api/x included) with index.html and 200.
   writeFileSync(join(out, '404.html'), '<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex"><title>Not found</title><p>Not found.</p>\n');
