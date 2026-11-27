@@ -20,7 +20,7 @@ export const MD_SOURCE = {
   api: { auth: 'none', rateLimit: 'one dataset-record request and one list request per run, 1.1 s apart (portal robots.txt asks Crawl-delay 1); chart.maryland.gov is never requested by us', docsUrl: PAGE_URL },
   permissions: { metadata_commercial: U, image_display: U, image_caching: U, image_redistribution: U },
   attribution: ATTRIBUTION,
-  license: "No licence or terms found on the dataset or the portal pages read (2026-11-25); listed link-only on the owner's recorded approval (data/owner-approvals.json)", licenseUrl: PAGE_URL, reviewedAt: '2026-11-25',
+  license: "No licence or terms found on the dataset or the portal pages read (2026-11-25); names and links only", licenseUrl: PAGE_URL, reviewedAt: '2026-11-25',
 };
 
 // fetchText(url) is injected so tests run offline. Returns { written, reason, report }.

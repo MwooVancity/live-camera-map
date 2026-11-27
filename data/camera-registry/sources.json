@@ -375,7 +375,7 @@
    "image_redistribution": "unverified"
   },
   "attribution": "Georgia Department of Transportation (511GA)",
-  "license": "No licence or terms page found; shown under the owner approval of 2026-11-25 (link-out only)",
+  "license": "No licence or terms page found (checked 2026-11-25); names and links only",
   "licenseUrl": "https://www.arcgis.com/home/item.html?id=12c979ba84b54b83b834fdd2d861677d",
   "reviewedAt": "2026-11-25"
  },
@@ -395,7 +395,7 @@
    "image_redistribution": "unverified"
   },
   "attribution": "Source: Maryland Department of Transportation State Highway Administration (CHART), Traffic Cameras list, via the State of Maryland open data portal (opendata.maryland.gov).",
-  "license": "No licence or terms found on the dataset or the portal pages read (2026-11-25); listed link-only on the owner's recorded approval (data/owner-approvals.json)",
+  "license": "No licence or terms found on the dataset or the portal pages read (2026-11-25); names and links only",
   "licenseUrl": "https://opendata.maryland.gov/d/4z3c-43ce",
   "reviewedAt": "2026-11-25"
  },

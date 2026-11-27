@@ -82,7 +82,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1
   try {
     const { cameras } = await import('../src/lib/data.mjs');
     const { buildEntries, validateEntries, pageRoutes } = await import('../src/lib/search-index.mjs');
-    const entries = buildEntries(cameras);
+    const places = JSON.parse(readFileSync(resolve('../data/places.json'), 'utf8')).places;
+    const entries = buildEntries(cameras, places);
     const problems = validateEntries(entries, pageRoutes(cameras));
     if (problems.length) throw new Error(`search entries invalid (${problems.length}): ${problems.slice(0, 10).join('; ')}`);
     const r = writeIndex(entries, resolve('public/search'));

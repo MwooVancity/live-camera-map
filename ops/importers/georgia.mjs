@@ -21,7 +21,7 @@ export const GEORGIA_SOURCE = {
   api: { auth: 'none', rateLimit: 'a count query and four list pages per run; no limit stated by the host; 511ga.org is never requested by us', docsUrl: ITEM_PAGE_URL },
   permissions: { metadata_commercial: U, image_display: U, image_caching: U, image_redistribution: U },
   attribution: ATTRIBUTION,
-  license: 'No licence or terms page found; shown under the owner approval of 2026-11-25 (link-out only)', licenseUrl: ITEM_PAGE_URL, reviewedAt: '2026-11-25',
+  license: 'No licence or terms page found (checked 2026-11-25); names and links only', licenseUrl: ITEM_PAGE_URL, reviewedAt: '2026-11-25',
 };
 
 // fetchText(url) is injected so tests run offline. Returns { written, reason, report }.

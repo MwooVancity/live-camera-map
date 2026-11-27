@@ -5,6 +5,7 @@
 import { roadSlug, countryOf } from '../../../ops/importers/lib/registry.mjs';
 import { pageList, curatedPlaces, curatedRoads, countryRoute, regionRoute, cityRoute, countryName, slugify } from './pages.mjs';
 import { normalize, roadNorm } from './search-core.mjs';
+import { distKm } from './geo.mjs';
 
 export const MAP_ZOOM = 11;
 export const mapUrl = (lat, lon, z = MAP_ZOOM) => `/map/?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}&z=${z}`;
@@ -18,7 +19,30 @@ export function pageRoutes(cams) {
 }
 
 // Returns entries { id, kind, name, norm, countrySlug, country, region, road, lat, lon, url }. Cameras with no country row (region not in REGION_COUNTRY) are skipped: no page, no address.
-export function buildEntries(cams) {
+// Big places the camera lists never name (many agencies give no city field, so "Seattle" found only street names).
+// A place is offered only with PLACE_MIN cameras within PLACE_KM, all in ONE country (a border city is skipped rather than mislabelled).
+export const PLACE_KM = 25, PLACE_MIN = 5;
+export function placeEntries(places, usable, have) {
+  const grid = new Map(), cell = (lat, lon) => `${Math.floor(lat)}:${Math.floor(lon)}`;
+  for (const c of usable) { const k = cell(c.lat, c.lon); (grid.get(k) || grid.set(k, []).get(k)).push(c); }
+  const out = [], ids = new Set();
+  for (const [name, lat, lon] of places) {
+    const near = [], w = Math.min(10, Math.ceil(PLACE_KM / (111 * Math.max(0.05, Math.cos(lat * Math.PI / 180)))));
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -w; dx <= w; dx++) for (const c of grid.get(cell(lat + dy, lon + dx)) || []) {
+      const km = distKm(lat, lon, c.lat, c.lon);
+      if (km <= PLACE_KM) near.push({ c, km });
+    }
+    if (near.length < PLACE_MIN || new Set(near.map((n) => countryOf(n.c.regionSlug).countrySlug)).size > 1) continue;
+    const c = near.sort((a, b) => a.km - b.km)[0].c, key = `${c.regionSlug}:${slugify(name)}`, id = `place:${key}`;
+    if (!slugify(name) || have.has(`city:${key}`) || have.has(`town:${key}`) || ids.has(id)) continue;
+    ids.add(id);
+    const country = countryOf(c.regionSlug);
+    out.push({ id, kind: 'town', name, countrySlug: country.countrySlug, country: country.countryName, region: c.regionName, lat: r5(lat), lon: r5(lon), url: mapUrl(lat, lon) });
+  }
+  return out;
+}
+
+export function buildEntries(cams, gazetteer = []) {
   const routes = pageRoutes(cams);
   const usable = cams.filter((c) => countryOf(c.regionSlug) && Number.isFinite(c.lat) && Number.isFinite(c.lon));
   const out = [];
@@ -45,6 +69,7 @@ export function buildEntries(cams) {
     if (url && routes.has(url)) add({ id: `city:${rs}:${slugify(city)}`, kind: 'city', ...base, url });
     else add({ id: `town:${rs}:${slugify(city)}`, kind: 'town', ...base, url: mapUrl(at.lat, at.lon) });
   }
+  for (const e of placeEntries(gazetteer, usable, new Set(out.map((x) => x.id)))) add(e);
   // roads with a page (California)
   const ca = usable.filter((c) => c.regionSlug === 'california');
   for (const road of curatedRoads(ca)) {
