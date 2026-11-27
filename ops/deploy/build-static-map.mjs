@@ -108,6 +108,9 @@ export const BRAND = [
   [/God['’]s Eye View/g, 'World Traffic Cameras'],
   [/content="God's Eye"/g, 'content="World Traffic Cameras"'],
   [/NO PLACE LEFT BEHIND/g, 'EVERY OFFICIAL CAMERA, ONE MAP'],
+  [/ENTER GOD MODE/g, 'EXPLORE THE MAP'],
+  [/GEV Stories/g, 'Map Stories'],
+  [/Talk to GEV/g, 'Talk to the map'],
 ];
 export function rebrand(text) { return BRAND.reduce((s, [re, to]) => s.replace(re, to), text); }
 
@@ -129,7 +132,14 @@ export function libraryHosts(gevDir, perms, now = new Date()) {
   return { hosts: [...hosts].filter((h) => !/[{}]/.test(h)).sort(), open, closed };
 }
 // Answers for GEV routes that only report "no server here", so the layer takes its own keyless path instead of failing on a 404 page.
-export const STATIC_ANSWERS = { '/api/military-installations': { unavailable: true, code: 'OVERPASS_NOT_CONFIGURED' } };
+export const STATIC_ANSWERS = {
+  '/api/military-installations': { unavailable: true, code: 'OVERPASS_NOT_CONFIGURED' },
+  '/api/geocode/status': { configured: false },
+  '/api/overpass/status': { configured: false, unavailable: true, code: 'OVERPASS_NOT_CONFIGURED' },
+  '/api/openai/hud-summary/status': { configured: false },
+};
+// Copy-link gives /share/<code>; the page reads the code itself, so every such path serves the map.
+export const REDIRECTS = '/share/* /index.html 200\n';
 
 const walk = (d) => (statSync(d).isDirectory() ? readdirSync(d).flatMap((e) => walk(join(d, e))) : [d]);
 const rel = (base, f) => relative(base, f).split(sep).join('/');
@@ -192,6 +202,7 @@ export function buildStaticMap({ gevDir, outDir, launch = '', rows = registryRow
   const lib = libraryHosts(gevDir, JSON.parse(readFileSync(join(ROOT, 'data', 'source-permissions.json'), 'utf8')).sources);
   const meta = `<meta http-equiv="Content-Security-Policy" content="${cspFor(lib.hosts)}">`;
   for (const f of walk(out).filter((x) => x.endsWith('.html'))) { const s = readFileSync(f, 'utf8'); writeFileSync(f, /<head[^>]*>/i.test(s) ? s.replace(/<head[^>]*>/i, (h) => h + meta) : meta + s); }
+  writeFileSync(join(out, '_redirects'), REDIRECTS);
   for (const [route, body] of Object.entries(STATIC_ANSWERS)) { const p = join(out, ...route.split('/').filter(Boolean)); mkdirSync(dirname(p), { recursive: true }); writeFileSync(p, JSON.stringify(body)); }
   const headers = headersFile(launch);
   if (headers.split('\n').some((l) => l.length > 2000)) throw new Error('a _headers line is over Cloudflare Pages\' 2,000-character limit');

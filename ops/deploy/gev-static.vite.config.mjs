@@ -9,6 +9,8 @@ import { pathToFileURL } from 'node:url';
 export const STUBS = {
   // Two dummy points at 0,0: callers read route[0], route.at(-1) and route[i + 1].
   '/src/data/bhoteKoshiFloodPath.js': 'export const BHOTE_KOSHI_FLOOD_PATH = Object.freeze([Object.freeze([0, 0]), Object.freeze([0, 0.001])]);\n',
+  // The Nepal flood story itself (non-commercial data): GEV's recipes skip a pack that expands to null, so the story is not offered.
+  '/src/scenes/nepalEvidencePack.js': 'export function expandNepalEvidencePack() { return null; }\n',
   '/src/data/bhoteKoshiIncidentPlaces.js': 'export const INCIDENT_OVERVIEW_PLACES = Object.freeze([]);\nexport const INCIDENT_OVERVIEW_HOLD_SEC = 11;\n',
 };
 

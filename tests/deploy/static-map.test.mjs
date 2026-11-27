@@ -136,3 +136,12 @@ test('Data Library: only browser-direct, non-opt-in entries with an enabled row 
   assert.ok(r.hosts.includes('https://ok.example') && !r.hosts.some((h) => /licence|nrow|optin|proxied/.test(h)), r.hosts.join(' '));
   rmSync(base, { recursive: true, force: true });
 });
+
+test('share links resolve, "no server" probes answer, and the Nepal story is stubbed out', async () => {
+  const { REDIRECTS, STATIC_ANSWERS, rebrand } = await import('../../ops/deploy/build-static-map.mjs');
+  const { STUBS } = await import('../../ops/deploy/gev-static.vite.config.mjs');
+  assert.match(REDIRECTS, /^\/share\/\* \/index\.html 200/);
+  assert.equal(STATIC_ANSWERS['/api/geocode/status'].configured, false);
+  assert.match(STUBS['/src/scenes/nepalEvidencePack.js'], /return null/);
+  assert.equal(rebrand('ENTER GOD MODE'), 'EXPLORE THE MAP');
+});
