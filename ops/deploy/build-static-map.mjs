@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { buildRows, PERMISSION_ROW } from '../exports/camera-exports.mjs';
 import { GEV_PACKS } from '../importers/lib/gevpacks.mjs';
 import { isEnabled } from '../../tests/licensing/gate.mjs';
+import { MAP_LAYER_HOSTS } from '../../site/src/lib/privacy-facts.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -25,14 +26,15 @@ export const FRAME_ANCESTORS = 'https://worldtrafficcameras.com https://www.worl
 // Browser-direct hosts the keyless globe may call. Allowlist = every other host (open-meteo, GBIF, OpenSnowMap, Google, news...) is blocked by the browser.
 // Each has an allowed row in data/source-permissions.json (OpenStreetMap, the map=osm share links; Esri, OpenFreeMap, Re:Earth/Mapterhorn, NASA GIBS, USGS).
 const DATA_HOSTS = 'https://tile.openstreetmap.org https://services.arcgisonline.com https://server.arcgisonline.com https://tiles.openfreemap.org https://terrain.reearth.land https://tiles.mapterhorn.com https://gibs.earthdata.nasa.gov https://basemap.nationalmap.gov';
+const LAYER_HOSTS = MAP_LAYER_HOSTS.map((h) => `https://${h.host}`).join(' ');
 export const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob:",
   "worker-src 'self' blob:",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
-  `img-src 'self' data: blob: ${DATA_HOSTS}`,
-  `connect-src 'self' data: blob: ${DATA_HOSTS}`,
+  `img-src 'self' data: blob: ${DATA_HOSTS} ${LAYER_HOSTS}`,
+  `connect-src 'self' data: blob: ${DATA_HOSTS} ${LAYER_HOSTS}`,
   "media-src 'self' blob:",
   "frame-src 'none'",
   "object-src 'none'",

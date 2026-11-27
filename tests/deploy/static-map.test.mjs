@@ -80,3 +80,14 @@ test('real registry: no camera credit shows internal approval wording to visitor
   const sources = JSON.parse(readFileSync(new URL('../../data/camera-registry/sources.json', import.meta.url), 'utf8'));
   for (const s of sources.sources || sources) assert.doesNotMatch(s.attribution || '', /site owner|owner's approval/i, s.id || s.source_id);
 });
+
+test('every layer host in the content policy has an enabled licence row', async () => {
+  const { MAP_LAYER_HOSTS } = await import('../../site/src/lib/privacy-facts.mjs');
+  const { isEnabled } = await import('../licensing/gate.mjs');
+  const { CSP } = await import('../../ops/deploy/build-static-map.mjs');
+  const rows = JSON.parse(readFileSync(new URL('../../data/source-permissions.json', import.meta.url), 'utf8')).sources;
+  for (const h of MAP_LAYER_HOSTS) {
+    assert.ok(isEnabled(rows.find((r) => r.id === h.permId), new Date()), `${h.host}: row ${h.permId} is not enabled`);
+    assert.ok(CSP.includes(`https://${h.host}`), h.host);
+  }
+});

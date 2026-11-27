@@ -1,12 +1,12 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { SITE_NAME, CONTACT_EMAIL } from '../../config.mjs';
-import { MAP_BROWSER_HOSTS } from '../../lib/privacy-facts.mjs';
+import { MAP_BROWSER_HOSTS, MAP_LAYER_HOSTS } from '../../lib/privacy-facts.mjs';
 const embedded = Boolean((import.meta.env.PUBLIC_GEV_EMBED_URL || '').trim());
 ---
-<Base title={`Privacy: what ${SITE_NAME} stores and loads`} description={`What this site sets in your browser, which outside hosts its pages contact, what the saved list and the near-me button do, and what the map page adds. Checked 2026-11-24.`} route="/privacy/" crumbs={[{ name: 'Privacy', route: '/privacy/' }]}>
+<Base title={`Privacy: what ${SITE_NAME} stores and loads`} description={`What this site sets in your browser, which outside hosts its pages contact, what the saved list and the near-me button do, and what the map page adds. Checked 2026-11-27.`} route="/privacy/" crumbs={[{ name: 'Privacy', route: '/privacy/' }]}>
   <h1>Privacy</h1>
-  <p class="meta">Checked against the site's code and built pages on 2026-11-24. A test fails if these facts change without this page being updated.</p>
+  <p class="meta">Checked against the site's code and built pages on 2026-11-27. A test fails if these facts change without this page being updated.</p>
 
   <h2>Our own pages</h2>
   <ul>
@@ -32,6 +32,10 @@ const embedded = Boolean((import.meta.env.PUBLIC_GEV_EMBED_URL || '').trim());
   <p>When the engine is shown, your browser contacts these outside hosts directly, verified in the engine's own files and by a measurement in a real browser:</p>
   <ul>
     {MAP_BROWSER_HOSTS.map((h) => <li><code>{h.host}</code>: {h.what}</li>)}
+  </ul>
+  <p>These are contacted only if you turn the matching layer on:</p>
+  <ul>
+    {MAP_LAYER_HOSTS.map((h) => <li><code>{h.host}</code>: {h.what}</li>)}
   </ul>
   <p>Each of those hosts sees your IP address and your browser's details, as any web server does. Other map layers you switch on inside the engine load tiles or data from that layer's own public provider; we have not audited every such host, so this list is not complete for layers you turn on. We have not verified whether the engine stores its own settings or cookies in your browser; we found no cookie-writing code in its files, which is not a guarantee. The engine's server also asks public data providers for some layers; we have not inspected what those requests carry.</p>
 
