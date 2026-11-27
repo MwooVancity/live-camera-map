@@ -46,6 +46,13 @@ FULL GEV READ 2026-11-27 (all docs and code, 5 agents): docs/gev-full-read-2026-
 
 - 2026-11-27 owner: "Celestak emailed us it's fine" (CelesTrak reply, satellite data). Row `celestrak` already open (owner approval). Email text not yet saved: paste it into docs/outreach/ as written evidence.
 
+PAID AND SIGN-UP ITEMS (owner 2026-11-27: "The last thing left is spend real money on licenses and server"). Prices are from earlier checks, re-check before paying.
+- FREE sign-ups, no money (unlock layers now): NASA FIRMS map key (active fires); AISStream key (live ships, also needs the server); Mapillary token (street photos).
+- Server, about $24/month (DigitalOcean 4 GB, price read 2026-11-26; a 2 GB box is $12): unlocks place search for every city, weather radar/clouds/lightning, ships, transit, rail, directions, military flights, GNSS, news, camera health checks.
+- OpenSky commercial licence, 99 USD/month or 79.20 on a yearly plan (their email, 2026-11-24): live flights; needs the server and a fixed IP.
+- Pay-per-use, optional: OpenAI or Gemini key (voice and chat on the map); Google Maps key (3D cities, Street View; metered).
+- Not buyable cheaply or not worth it now: TomTom live traffic (commercial terms), Cesium ion commercial plan (price not checked).
+
 ## 0. Header
 - Goal: a free, world-wide directory of live traffic cameras with road conditions, camera health and a free map that never asks for a sign-in. Link-out only until a source allows pictures.
 - End game: beat argosatlas.com page for page, match the traffic they capture, then pass it (measured by Search Console against Ahrefs). Make money inside the rules (ads and affiliate beside data, never a paywall). A penalised site earns $0.
