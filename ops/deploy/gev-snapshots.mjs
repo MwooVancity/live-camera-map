@@ -15,6 +15,7 @@ export const SNAPSHOTS = [
   { route: '/api/fire-perimeters', file: 'firePerimeters.js', factory: 'firePerimetersProxy', permId: 'nifc-wfigs-wildland-fire-interagency-geospatial-services-arcgis-feature-service' },
   { route: '/api/drone-airspace', file: 'droneAirspace.js', factory: 'droneAirspaceProxy', permId: 'faa-special-use-airspace-services6-arcgis-com-featureserver-special-use-airspace' },
   { route: '/api/shipwrecks', file: 'shipwrecks.js', factory: 'shipwrecksProxy', permId: ['emodnet-human-activities-ship-wrecks-ows-emodnet-humanactivities-eu-wfs-layer-em', 'wikidata-shipwrecks-query-wikidata-org-sparql'] },
+  { route: '/api/acartia/sightings', mount: '/api/acartia', path: '/sightings', file: 'acartia.js', factory: 'acartiaProxy', permId: 'acartia-acartia-io-api-v1-sightings-current' },
   { route: '/api/launches', file: 'space/launch-library.js', factory: 'rocketLaunchesProxy', permId: 'the-space-devs-launch-library-2-v2-3' },
   // CelesTrak asks for no more than one download every 2 hours; the build runs every 3. Plain text, one file per group GEV asks for.
   ...['stations', 'visual', 'gps-ops', 'glo-ops', 'galileo', 'geo', 'resource', 'weather', 'planet', 'sar', 'science', 'starlink', 'active'].map((g) => celestrak('/api/celestrak', g)),

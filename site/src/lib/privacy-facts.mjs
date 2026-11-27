@@ -16,6 +16,8 @@ export const MAP_LAYER_HOSTS = [
   { host: 'eonet.gsfc.nasa.gov', what: 'the open natural events dataset (NASA EONET)', permId: 'nasa-eonet-open-natural-events-nasa-eonet-events-eonet-gsfc-nasa-gov' },
   { host: 'www.gdacs.org', what: 'the disaster alerts dataset (GDACS)', permId: 'disaster-alerts-gdacs-gdacs-disaster-alerts-www-gdacs-org' },
   { host: 'api.weather.gc.ca', what: 'the Canadian air quality layer (Environment and Climate Change Canada)', permId: 'environment-and-climate-change-canada-msc-geomet-ogc-api' },
+  ...['api.kartaview.org', 'cdn.kartaview.org', '*.openstreetcam.org'].map((host) => ({ host, what: 'KartaView street-level photos (Street Level layer)', permId: 'kartaview-api-kartaview-org-coverage-tiles-and-photo-api-cdn-kartaview-org-image' })),
+  ...['api.panoramax.xyz', 'panoramax.openstreetmap.fr', 'panoramax.ign.fr'].map((host) => ({ host, what: 'Panoramax street-level photos (Street Level layer)', permId: 'panoramax-api-panoramax-xyz-meta-catalogue-vector-tiles-and-stac-search-pictures' })),
   ...['gibs-a', 'gibs-b', 'gibs-c', 'wvs', 'cmr'].map((h) => ({ host: `${h}.earthdata.nasa.gov`, what: 'the Recent Imagery layer (NASA)', permId: 'nasa-gibs-wmts-tiles-worldview-snapshots-and-nasa-cmr-granule-catalog' })),
 ];
 

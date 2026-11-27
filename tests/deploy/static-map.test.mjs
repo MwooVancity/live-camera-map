@@ -25,8 +25,10 @@ test('restricted files and events/ are removed; headers, 404, robots and camera 
   const h = readFileSync(join(f.out, '_headers'), 'utf8');
   assert.match(h, /X-Robots-Tag: noindex/);
   assert.match(h, /frame-ancestors https:\/\/worldtrafficcameras\.com https:\/\/www\.worldtrafficcameras\.com https:\/\/worldtrafficcameras\.pages\.dev/);
-  assert.match(h, /connect-src 'self'/);
-  assert.doesNotMatch(h, /open-meteo|gbif|opensnowmap|google\.com|news\./, 'restricted hosts are not in the CSP allowlist');
+  const page = readFileSync(join(f.out, 'index.html'), 'utf8');
+  assert.match(page, /<meta http-equiv="Content-Security-Policy" content="default-src 'self';[^"]*connect-src 'self'/);
+  assert.doesNotMatch(page + h, /open-meteo|gbif|opensnowmap|google\.com|news\./, 'restricted hosts are not in the CSP allowlist');
+  assert.equal(JSON.parse(readFileSync(join(f.out, 'api/military-installations'), 'utf8')).unavailable, true);
   assert.ok(h.split('\n').every((l) => l.length <= 2000), 'Cloudflare Pages line limit');
   assert.match(h, /\/api\/cctv\/sources\n {2}Content-Type: application\/json/);
   assert.match(readFileSync(join(f.out, 'robots.txt'), 'utf8'), /Disallow: \//);
@@ -120,4 +122,17 @@ test('the built map carries our name; GEV licence ships beside it', async () => 
   assert.equal(rebrand(`[ee("GOD'S EYE "),Z("span",{class:"title-accent"},"VIEW")]`), `[ee("WORLD TRAFFIC "),Z("span",{class:"title-accent"},"CAMERAS")]`);
   assert.equal(rebrand(`[r("GOD'S EYE "),t("b",null,"VIEW")]`), `[r("WORLD TRAFFIC "),t("b",null,"CAMERAS")]`);
   assert.equal(rebrand('<title>God\'s Eye View</title>'), '<title>World Traffic Cameras</title>');
+});
+
+test('Data Library: only browser-direct, non-opt-in entries with an enabled row open their hosts', async () => {
+  const { libraryHosts } = await import('../../ops/deploy/build-static-map.mjs');
+  const base = mkdtempSync(join(tmpdir(), 'lib-'));
+  const e = (id, extra) => put(base, `src/library/entries/${id}.json`, JSON.stringify({ id, kind: 'tiles', source: { url: `https://${id}.example/{z}/{x}/{y}.png`, fetch: 'browser-direct' }, licence: { url: 'https://licence.example/' }, ...extra }));
+  e('ok'); e('nrow'); e('optin', { licence: { operatorOptIn: true } }); e('proxied', { source: { url: 'https://proxied.example/', fetch: 'proxy' } });
+  const rows = ['ok', 'optin', 'proxied'].map((id) => ({ id, name: `X (${id}, host)`, enabled: true, commercialStatus: 'allowed_per_doc', attribution: 'Credit line', provenance: 'p', licence: 'L', reviewedAt: new Date().toISOString() }));
+  const r = libraryHosts(base, rows);
+  assert.deepEqual(r.open, ['ok']);
+  assert.deepEqual(r.closed, ['nrow']);
+  assert.ok(r.hosts.includes('https://ok.example') && !r.hosts.some((h) => /licence|nrow|optin|proxied/.test(h)), r.hosts.join(' '));
+  rmSync(base, { recursive: true, force: true });
 });

@@ -28,6 +28,10 @@ export const FRAME_ANCESTORS = 'https://worldtrafficcameras.com https://www.worl
 // Each has an allowed row in data/source-permissions.json (OpenStreetMap, the map=osm share links; Esri, OpenFreeMap, Re:Earth/Mapterhorn, NASA GIBS, USGS).
 const DATA_HOSTS = 'https://tile.openstreetmap.org https://services.arcgisonline.com https://server.arcgisonline.com https://tiles.openfreemap.org https://terrain.reearth.land https://tiles.mapterhorn.com https://gibs.earthdata.nasa.gov https://basemap.nationalmap.gov';
 const LAYER_HOSTS = MAP_LAYER_HOSTS.map((h) => `https://${h.host}`).join(' ');
+// The full policy goes in a <meta> tag in every page (no length limit), so each Data Library host can be listed.
+// The header keeps only what a meta tag cannot carry (frame-ancestors) plus the hard blocks; two policies only ever narrow each other.
+export const HEADER_CSP = `frame-src 'none'; object-src 'none'; base-uri 'self'; frame-ancestors ${FRAME_ANCESTORS}`;
+export const cspFor = (extra = []) => CSP.replace(/(img-src|connect-src) ([^;]*)/g, (m) => [m, ...extra].join(' ')).replace(/; frame-ancestors [^;]*/, '');
 export const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob:",
@@ -45,7 +49,7 @@ export const CSP = [
 
 export function headersFile(launch) {
   return `/*
-${launch === 'live' ? '' : '  X-Robots-Tag: noindex\n'}  Content-Security-Policy: ${CSP}
+${launch === 'live' ? '' : '  X-Robots-Tag: noindex\n'}  Content-Security-Policy: ${HEADER_CSP}
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
 
@@ -57,7 +61,7 @@ ${s.route}
 `).join('')}
 /api/cctv/health
   Content-Type: application/json; charset=utf-8
-`;
+${Object.keys(STATIC_ANSWERS).map((r) => `\n${r}\n  Content-Type: application/json; charset=utf-8\n`).join('')}`;
 }
 
 // Registry rows that pass the CSV export licence gate, in the shape of GEV's GET /api/cctv/sources (gev/server/providers/cctv.js, '/sources').
@@ -106,6 +110,26 @@ export const BRAND = [
   [/NO PLACE LEFT BEHIND/g, 'EVERY OFFICIAL CAMERA, ONE MAP'],
 ];
 export function rebrand(text) { return BRAND.reduce((s, [re, to]) => s.replace(re, to), text); }
+
+// Data Library entries GEV offers without a server (browser-direct, not operator opt-in, not a pack), each opened only when its
+// own licence row (named "(<entry id>, <host>)" in data/source-permissions.json) is enabled. Returns the hosts to allow.
+export function libraryHosts(gevDir, perms, now = new Date()) {
+  const dir = join(gevDir, 'src', 'library', 'entries');
+  if (!existsSync(dir)) return { hosts: [], open: [], closed: [] };
+  const hosts = new Set(), open = [], closed = [];
+  for (const f of readdirSync(dir).filter((x) => x.endsWith('.json'))) {
+    const e = JSON.parse(readFileSync(join(dir, f), 'utf8'));
+    if (e.source?.fetch !== 'browser-direct' || e.kind === 'pack' || e.licence?.operatorOptIn) continue;
+    const row = perms.find((p) => (p.name || '').includes(`(${e.id},`));
+    if (!isEnabled(row, now)) { closed.push(e.id); continue; }
+    open.push(e.id);
+    const { licence, attribution, links, provenance, ...rest } = e;
+    for (const m of JSON.stringify(rest).matchAll(/https:\/\/([a-z0-9{}.-]+)/gi)) hosts.add('https://' + m[1].replace(/^\{[^}]*\}/, '*').toLowerCase());
+  }
+  return { hosts: [...hosts].filter((h) => !/[{}]/.test(h)).sort(), open, closed };
+}
+// Answers for GEV routes that only report "no server here", so the layer takes its own keyless path instead of failing on a 404 page.
+export const STATIC_ANSWERS = { '/api/military-installations': { unavailable: true, code: 'OVERPASS_NOT_CONFIGURED' } };
 
 const walk = (d) => (statSync(d).isDirectory() ? readdirSync(d).flatMap((e) => walk(join(d, e))) : [d]);
 const rel = (base, f) => relative(base, f).split(sep).join('/');
@@ -165,6 +189,10 @@ export function buildStaticMap({ gevDir, outDir, launch = '', rows = registryRow
   mkdirSync(join(out, 'api', 'cctv'), { recursive: true });
   writeFileSync(join(out, 'api', 'cctv', 'sources'), JSON.stringify(catalog));
   writeFileSync(join(out, 'api', 'cctv', 'health'), '{"cameras":[]}'); // GEV polls this every 7 s; empty = status unknown
+  const lib = libraryHosts(gevDir, JSON.parse(readFileSync(join(ROOT, 'data', 'source-permissions.json'), 'utf8')).sources);
+  const meta = `<meta http-equiv="Content-Security-Policy" content="${cspFor(lib.hosts)}">`;
+  for (const f of walk(out).filter((x) => x.endsWith('.html'))) { const s = readFileSync(f, 'utf8'); writeFileSync(f, /<head[^>]*>/i.test(s) ? s.replace(/<head[^>]*>/i, (h) => h + meta) : meta + s); }
+  for (const [route, body] of Object.entries(STATIC_ANSWERS)) { const p = join(out, ...route.split('/').filter(Boolean)); mkdirSync(dirname(p), { recursive: true }); writeFileSync(p, JSON.stringify(body)); }
   const headers = headersFile(launch);
   if (headers.split('\n').some((l) => l.length > 2000)) throw new Error('a _headers line is over Cloudflare Pages\' 2,000-character limit');
   const perms = JSON.parse(readFileSync(join(ROOT, 'data', 'source-permissions.json'), 'utf8')).sources;
