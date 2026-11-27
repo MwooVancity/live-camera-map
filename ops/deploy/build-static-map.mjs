@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { buildRows, PERMISSION_ROW } from '../exports/camera-exports.mjs';
 import { GEV_PACKS } from '../importers/lib/gevpacks.mjs';
 import { isEnabled } from '../../tests/licensing/gate.mjs';
+import { SNAPSHOTS, writeSnapshots } from './gev-snapshots.mjs';
 import { MAP_LAYER_HOSTS } from '../../site/src/lib/privacy-facts.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -50,7 +51,10 @@ ${launch === 'live' ? '' : '  X-Robots-Tag: noindex\n'}  Content-Security-Policy
 
 /api/cctv/sources
   Content-Type: application/json; charset=utf-8
-
+${SNAPSHOTS.map((s) => `
+${s.route}
+  Content-Type: application/json; charset=utf-8
+`).join('')}
 /api/cctv/health
   Content-Type: application/json; charset=utf-8
 `;
@@ -161,5 +165,6 @@ export function buildStaticMap({ gevDir, outDir, launch = '', rows = registryRow
 if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
   const [gevDir, outDir] = process.argv.slice(2);
   if (!gevDir || !outDir) { console.error('usage: node ops/deploy/build-static-map.mjs <gevDir> <outDir>'); process.exit(2); }
-  console.log(JSON.stringify(buildStaticMap({ gevDir: resolve(gevDir), outDir, launch: process.env.LAUNCH || '' })));
+  const built = buildStaticMap({ gevDir: resolve(gevDir), outDir, launch: process.env.LAUNCH || '' });
+  console.log(JSON.stringify({ ...built, snapshots: await writeSnapshots(resolve(gevDir), resolve(outDir)) }));
 }

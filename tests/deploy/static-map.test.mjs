@@ -91,3 +91,19 @@ test('every layer host in the content policy has an enabled licence row', async 
     assert.ok(CSP.includes(`https://${h.host}`), h.host);
   }
 });
+
+test('layer snapshots: only a good, fresh answer is written; a bad one never stops the others', async () => {
+  const { writeSnapshots, SNAPSHOTS } = await import('../../ops/deploy/gev-snapshots.mjs');
+  const dir = mkdtempSync(join(tmpdir(), 'snap-'));
+  const plugin = (route, body, status = 200) => () => ({ configurePreviewServer: ({ middlewares }) => middlewares.use(route, async (req, res) => { res.writeHead(status); res.end(JSON.stringify(body)); }) });
+  const bodies = { '/api/cyclones': { storms: [], unavailable: true }, '/api/fire-perimeters': { fetchedAt: 1, rows: [] } };
+  const load = async (s) => ({ [s.factory]: plugin(s.route, bodies[s.route]) });
+  const r = await writeSnapshots('unused', dir, { load });
+  assert.deepEqual(r.written, ['/api/fire-perimeters']);
+  assert.equal(r.skipped.length, 1);
+  assert.ok(!existsSync(join(dir, 'api', 'cyclones')));
+  const closed = await writeSnapshots('unused', dir, { load, rows: [] });
+  assert.equal(closed.written.length, 0, 'no licence row, no file');
+  assert.equal(closed.skipped.length, SNAPSHOTS.length);
+  rmSync(dir, { recursive: true, force: true });
+});
