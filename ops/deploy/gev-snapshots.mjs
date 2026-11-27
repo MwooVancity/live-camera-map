@@ -16,6 +16,9 @@ export const SNAPSHOTS = [
   { route: '/api/drone-airspace', file: 'droneAirspace.js', factory: 'droneAirspaceProxy', permId: 'faa-special-use-airspace-services6-arcgis-com-featureserver-special-use-airspace' },
   { route: '/api/shipwrecks', file: 'shipwrecks.js', factory: 'shipwrecksProxy', permId: ['emodnet-human-activities-ship-wrecks-ows-emodnet-humanactivities-eu-wfs-layer-em', 'wikidata-shipwrecks-query-wikidata-org-sparql'] },
   { route: '/api/acartia/sightings', mount: '/api/acartia', path: '/sightings', file: 'acartia.js', factory: 'acartiaProxy', permId: 'acartia-acartia-io-api-v1-sightings-current' },
+  // Wind: the default view only (GFS, no overlay). GEV's client checks that the answer echoes its query, so other models and
+  // overlays cannot be served as files and keep saying unavailable. The grid file named in the manifest is written beside it.
+  { route: '/api/wind/manifest', mount: '/api/wind', path: '/manifest?model=gfs', follow: 'gridUrl', file: 'wind.js', factory: 'windProxy', permId: 'noaa-gfs-wind-noaa-gfs-bdp-pds-s3-amazonaws-com' },
   { route: '/api/launches', file: 'space/launch-library.js', factory: 'rocketLaunchesProxy', permId: 'the-space-devs-launch-library-2-v2-3' },
   // CelesTrak asks for no more than one download every 2 hours; the build runs every 3. Plain text, one file per group GEV asks for.
   ...['stations', 'visual', 'gps-ops', 'glo-ops', 'galileo', 'geo', 'resource', 'weather', 'planet', 'sar', 'science', 'starlink', 'active'].map((g) => celestrak('/api/celestrak', g)),
@@ -35,7 +38,7 @@ export async function callHandler(plugin, route, path = '/') {
   if (!handler) throw new Error(`no handler for ${route}`);
   return new Promise((resolve, reject) => {
     let status = 0, headers = {};
-    const res = { destroyed: false, headersSent: false, once() {}, removeListener() {}, setHeader() {}, writeHead(s, h = {}) { status = s; headers = h; }, end(body) { resolve({ status, headers, body: String(body) }); } };
+    const res = { destroyed: false, headersSent: false, once() {}, removeListener() {}, setHeader() {}, writeHead(s, h = {}) { status = s; headers = h; }, end(body) { resolve({ status, headers, body: Buffer.isBuffer(body) ? body : String(body) }); } };
     Promise.resolve(handler({ method: 'GET', url: path, headers: {}, socket: { remoteAddress: '127.0.0.1' } }, res)).catch(reject);
   });
 }
@@ -45,6 +48,7 @@ export function problemWith({ status, body, headers = {} }, text = false) {
   if (Object.values(headers).includes('STALE-ERROR')) return 'an old cached copy';
   if (!body) return 'empty';
   if (Buffer.byteLength(body) > MAX_FILE_BYTES) return 'too large for the host';
+  if (Buffer.isBuffer(body)) return '';
   if (text) return '';
   let j; try { j = JSON.parse(body); } catch { return 'not JSON'; }
   if (j.stale === true || j.unavailable === true || j.error) return 'stale, unavailable or an error';
@@ -67,6 +71,15 @@ export async function writeSnapshots(gevDir, outDir, { load, rows = permissions(
       if (problem) throw new Error(problem);
       const target = join(outDir, ...s.route.split('/').filter(Boolean));
       mkdirSync(dirname(target), { recursive: true });
+      if (s.follow) {
+        const next = JSON.parse(answer.body)[s.follow];
+        if (typeof next !== 'string' || !next.startsWith(s.mount + '/')) throw new Error(`no ${s.follow} in the answer`);
+        const extra = await callHandler(plugins.get(s.factory), s.mount, next.slice(s.mount.length));
+        if (extra.status !== 200 || !extra.body.length) throw new Error(`${s.follow}: status ${extra.status}`);
+        const file = join(outDir, ...next.split('?')[0].split('/').filter(Boolean));
+        mkdirSync(dirname(file), { recursive: true });
+        writeFileSync(file, extra.body);
+      }
       writeFileSync(target, answer.body);
       written.push(s.route);
     } catch (e) { skipped.push(`${s.route}: ${e.message}`); }
