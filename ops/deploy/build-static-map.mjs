@@ -139,7 +139,7 @@ export const STATIC_ANSWERS = {
   '/api/openai/hud-summary/status': { configured: false },
 };
 // Copy-link gives /share/<code>; the page reads the code itself, so every such path serves the map.
-export const REDIRECTS = '/share/* /index.html 200\n';
+export const REDIRECTS = '/share/* / 200\n';
 
 const walk = (d) => (statSync(d).isDirectory() ? readdirSync(d).flatMap((e) => walk(join(d, e))) : [d]);
 const rel = (base, f) => relative(base, f).split(sep).join('/');
