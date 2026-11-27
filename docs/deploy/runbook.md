@@ -5,6 +5,9 @@ Everything here is written but not yet run on a real host. Proof so far: the off
 Stack: `ops/deploy/docker-compose.yml` = `gev` (pinned upstream, built from `./gev`, no published port) + `proxy` (nginx allowlist, only `127.0.0.1:8080`). A tunnel or host proxy connects to `127.0.0.1:8080`; nothing else ever connects to gev.
 
 ## Deploy
+One command on a fresh Ubuntu server, from a clone of this repo (does steps 1 to 3; CI workflow `session5-compose` runs the same script):
+`sudo bash ops/deploy/server-setup.sh <map hostname> https://worldtrafficcameras.com`
+Then steps 4 and 5. By hand:
 1. On the host: clone the repo, then clone upstream into `gev/` and check out the hash in `ops/upstream-base.txt` (`git clone https://github.com/bilawalsidhu/gods-eye-view gev && git -C gev checkout <hash>`). Never edit `gev/`.
 2. `cp ops/deploy/.env.example ops/deploy/.env`, set `GEV_ALLOWED_HOSTS` (public hostname) and `GEV_EMBED_FRAME_ANCESTORS` (the Astro site origin). No keys or passwords in that file.
 3. `docker compose -f ops/deploy/docker-compose.yml up -d --build --wait`

@@ -15,14 +15,11 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '24'
-      - run: git clone https://github.com/bilawalsidhu/gods-eye-view gev
-      - run: git -C gev checkout "$(cut -d' ' -f1 ops/upstream-base.txt)"
-      - run: node tests/immutability/check.mjs
       - run: node --test tests/deploy/compose-lint.test.mjs
+      - name: Server setup script (the same one a new server runs)
+        run: bash ops/deploy/server-setup.sh "$HOSTNAME_UNDER_TEST" https://www.example.test
+      - run: node tests/immutability/check.mjs
       - run: node ops/audit/route-inventory.mjs
-      - run: cp ops/deploy/.env.example ops/deploy/.env
-      - name: Compose up (build pinned image, wait for healthy)
-        run: $COMPOSE up -d --build --wait --wait-timeout 300
       - name: Proof gev publishes no port
         run: |
           cid=$($COMPOSE ps -q gev)
