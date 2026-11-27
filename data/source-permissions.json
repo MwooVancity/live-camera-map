@@ -4657,17 +4657,17 @@
       "folder": "",
       "licence": "Tiles CC BY-SA; data ODbL 1.0 via OpenStreetMap; bulk tile download forbidden without prior agreement",
       "commercialStatus": "allowed_per_doc",
-      "statusReason": "doc names a permissive licence",
+      "statusReason": "doc names a permissive licence (CC BY-SA tiles, ODbL data); the bulk-download clause covers mass tile copying, not visitors viewing tiles; opened under the owner rule of 2026-11-27 (no permission emails)",
       "attribution": "\"Ski pistes © www.opensnowmap.org (CC BY-SA) · Data © OpenStreetMap contributors (ODbL)\"",
       "provenance": "gev/DATA_SOURCES.md:185",
-      "reviewedAt": "2026-11-22",
+      "reviewedAt": "2026-11-27",
       "reviewedBy": "claude-doc-parse",
       "needsHumanReview": true,
       "mustNotShip": false,
-      "enabled": false,
+      "enabled": true,
       "metadataPermission": {
-        "status": "unverified",
-        "quote": "",
+        "status": "allowed",
+        "quote": "Tiles CC BY-SA; data ODbL 1.0 via OpenStreetMap",
         "url": "gev/DATA_SOURCES.md:185"
       },
       "imagePermission": {

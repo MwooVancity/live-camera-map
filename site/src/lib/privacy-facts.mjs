@@ -18,6 +18,8 @@ export const MAP_LAYER_HOSTS = [
   { host: 'api.weather.gc.ca', what: 'the Canadian air quality layer (Environment and Climate Change Canada)', permId: 'environment-and-climate-change-canada-msc-geomet-ogc-api' },
   ...['api.kartaview.org', 'cdn.kartaview.org', '*.openstreetcam.org'].map((host) => ({ host, what: 'KartaView street-level photos (Street Level layer)', permId: 'kartaview-api-kartaview-org-coverage-tiles-and-photo-api-cdn-kartaview-org-image' })),
   ...['api.panoramax.xyz', 'panoramax.openstreetmap.fr', 'panoramax.ign.fr'].map((host) => ({ host, what: 'Panoramax street-level photos (Street Level layer)', permId: 'panoramax-api-panoramax-xyz-meta-catalogue-vector-tiles-and-stac-search-pictures' })),
+  { host: 'tiles.openseamap.org', what: 'the Sea Marks layer (OpenSeaMap)', permId: 'openseamap-tiles-openseamap-org' },
+  { host: 'www.opensnowmap.org', what: 'the Ski Pistes layer (OpenSnowMap)', permId: 'opensnowmap-www-opensnowmap-org' },
   ...['gibs-a', 'gibs-b', 'gibs-c', 'wvs', 'cmr'].map((h) => ({ host: `${h}.earthdata.nasa.gov`, what: 'the Recent Imagery layer (NASA)', permId: 'nasa-gibs-wmts-tiles-worldview-snapshots-and-nasa-cmr-granule-catalog' })),
 ];
 

@@ -27,7 +27,7 @@ test('restricted files and events/ are removed; headers, 404, robots and camera 
   assert.match(h, /frame-ancestors https:\/\/worldtrafficcameras\.com https:\/\/www\.worldtrafficcameras\.com https:\/\/worldtrafficcameras\.pages\.dev/);
   const page = readFileSync(join(f.out, 'index.html'), 'utf8');
   assert.match(page, /<meta http-equiv="Content-Security-Policy" content="default-src 'self';[^"]*connect-src 'self'/);
-  assert.doesNotMatch(page + h, /open-meteo|gbif|opensnowmap|google\.com|news\./, 'restricted hosts are not in the CSP allowlist');
+  assert.doesNotMatch(page + h, /open-meteo|gbif|google\.com|news\./, 'restricted hosts are not in the CSP allowlist');
   assert.equal(JSON.parse(readFileSync(join(f.out, 'api/military-installations'), 'utf8')).unavailable, true);
   assert.ok(h.split('\n').every((l) => l.length <= 2000), 'Cloudflare Pages line limit');
   assert.match(h, /\/api\/cctv\/sources\n {2}Content-Type: application\/json/);
