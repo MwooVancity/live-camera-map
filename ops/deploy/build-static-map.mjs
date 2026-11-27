@@ -200,7 +200,8 @@ export function buildStaticMap({ gevDir, outDir, launch = '', rows = registryRow
   writeFileSync(join(out, 'api', 'cctv', 'sources'), JSON.stringify(catalog));
   writeFileSync(join(out, 'api', 'cctv', 'health'), '{"cameras":[]}'); // GEV polls this every 7 s; empty = status unknown
   const lib = libraryHosts(gevDir, JSON.parse(readFileSync(join(ROOT, 'data', 'source-permissions.json'), 'utf8')).sources);
-  const meta = `<meta http-equiv="Content-Security-Policy" content="${cspFor(lib.hosts)}">`;
+  // Our name is 21 letters against GEV's 14: a smaller title keeps it clear of the top-centre buttons (owner 2026-11-27).
+  const meta = `<meta http-equiv="Content-Security-Policy" content="${cspFor(lib.hosts)}"><style>#title-bar h1{font-size:17px;letter-spacing:4px}</style>`;
   for (const f of walk(out).filter((x) => x.endsWith('.html'))) { const s = readFileSync(f, 'utf8'); writeFileSync(f, /<head[^>]*>/i.test(s) ? s.replace(/<head[^>]*>/i, (h) => h + meta) : meta + s); }
   writeFileSync(join(out, '_redirects'), REDIRECTS);
   for (const [route, body] of Object.entries(STATIC_ANSWERS)) { const p = join(out, ...route.split('/').filter(Boolean)); mkdirSync(dirname(p), { recursive: true }); writeFileSync(p, JSON.stringify(body)); }
