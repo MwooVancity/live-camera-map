@@ -1,4 +1,5 @@
 ---
+import CameraListTools from '../../../../components/CameraListTools.astro';
 import Base from '../../../../layouts/Base.astro';
 import { SITE_NAME } from '../../../../config.mjs';
 import { cameras, countsBy, registryDateOf, sourceOf, loadedDistricts } from '../../../../lib/data.mjs';
@@ -102,14 +103,7 @@ const guides = isCA
   <section data-block="cameras" data-basis="registry" data-count={n} data-source={source.name} data-asof={regionDate}>
     <h2>All {n} cameras</h2>
     {hb && <p class="meta">Status words. {statusWords()}</p>}
-    {n > 8 && (
-      <form class="filters" data-filters aria-label="Filter the camera list" hidden>
-        <label>Road <select name="road"><option value="">All roads</option>{roads.map(([r]) => <option value={r}>{r}</option>)}</select></label>
-        <label>Feed <select name="feed"><option value="">Any</option><option value="still">Still image</option><option value="video">Video</option></select></label>
-        {hb && <label>Status <select name="status"><option value="">Any</option><option value="reachable">Reachable</option><option value="stale">Stale</option><option value="unavailable">Unavailable</option><option value="unknown">Unknown</option></select></label>}
-        <span class="meta" data-filter-count role="status" aria-live="polite"></span>
-      </form>
-    )}
+    <CameraListTools n={n} roads={roads} hb={hb} />
     <ul data-camera-list>
       {sorted.map((c) => (
         <li><a href={c.officialUrl} rel="noopener" title={c.name}>{cleanLabel(c)}</a> <span class="meta">{[c.road, c.direction, c.feedType === 'still' ? 'still image' : 'video'].filter(Boolean).join(', ')}.</span>{c.locationText && <span class="meta"> {c.locationText}</span>}{hb && <> <span class="meta" data-status={hb.statusOf(c.id)} title={`${MEANING[hb.statusOf(c.id)]}${hb.record(c.id)?.lastChecked ? '; last checked ' + when(hb.record(c.id).lastChecked) : ''}`}>Status: {hb.statusOf(c.id)}.</span>{hb.checkedText(c.id) && <span class="meta"> {hb.checkedText(c.id)}.</span>}</>}</li>
@@ -123,44 +117,4 @@ const guides = isCA
   <ul>{roadsHere.map(([r, k]) => <li><a href={`/roads/${roadSlug(r)}/`}>{r} traffic cameras</a>: {k} in {city}, {wholeRoad[r]} on the whole road</li>)}</ul></>}
   <h2>Guides</h2>
   <ul>{guides.map(([slug, title]) => <li><a href={`/guides/${slug}/`}>{title}</a></li>)}</ul>
-  <script>
-    import { isSaved, toggleSaved, storageWorks } from '../../../../scripts/saved';
-    // Save buttons: only when this browser lets us keep a list.
-    if (storageWorks()) {
-      const place = document.querySelector('h1')?.textContent?.replace(' traffic cameras', '') || '';
-      for (const li of document.querySelectorAll<HTMLElement>('[data-camera-list] > li')) {
-        const a = li.querySelector('a'); if (!a) continue;
-        const b = document.createElement('button'); b.type = 'button';
-        const paint = () => { const on = isSaved(a.href); b.textContent = on ? 'Saved' : 'Save'; b.setAttribute('aria-pressed', String(on)); };
-        b.addEventListener('click', () => { toggleSaved({ url: a.href, label: a.textContent || '', place }); paint(); });
-        paint(); li.append(' ', b);
-      }
-    }
-    // Filters live in the URL (?road=&feed=&status=) so a filtered list can be shared. Without JavaScript the form stays hidden and the whole list shows.
-    const form = document.querySelector<HTMLFormElement>('[data-filters]');
-    const items = [...document.querySelectorAll<HTMLElement>('[data-camera-list] > li')];
-    if (form && items.length) {
-      form.hidden = false;
-      const keys = ['road', 'feed', 'status'] as const;
-      const params = new URLSearchParams(location.search);
-      for (const k of keys) { const el = form.elements.namedItem(k) as HTMLSelectElement | null; if (el) { const v = params.get(k) || ''; el.value = [...el.options].some((o) => o.value === v) ? v : ''; } }
-      const apply = () => {
-        const want: Record<string, string> = {};
-        for (const k of keys) { const el = form.elements.namedItem(k) as HTMLSelectElement | null; want[k] = el ? el.value : ''; }
-        let shown = 0;
-        for (const li of items) {
-          const meta = (li.querySelector('.meta')?.textContent || '').trim();
-          const feed = / video\.?$/.test(meta) ? 'video' : 'still';
-          const status = li.querySelector('[data-status]')?.getAttribute('data-status') || '';
-          const ok = (!want.road || meta.startsWith(want.road + ',') || meta.startsWith(want.road + '.')) && (!want.feed || feed === want.feed) && (!want.status || status === want.status);
-          li.hidden = !ok; if (ok) shown++;
-        }
-        const q = new URLSearchParams(); for (const k of keys) if (want[k]) q.set(k, want[k]);
-        history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : ''));
-        const out = form.querySelector('[data-filter-count]'); if (out) out.textContent = `Showing ${shown} of ${items.length} cameras.`;
-      };
-      form.addEventListener('change', apply); form.addEventListener('submit', (e) => e.preventDefault());
-      apply();
-    }
-  </script>
 </Base>

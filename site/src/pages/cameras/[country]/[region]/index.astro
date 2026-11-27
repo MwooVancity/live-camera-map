@@ -1,4 +1,5 @@
 ---
+import CameraListTools from '../../../../components/CameraListTools.astro';
 import Base from '../../../../layouts/Base.astro';
 import { SITE_NAME } from '../../../../config.mjs';
 import { countryOf } from '../../../../../../ops/importers/lib/registry.mjs';
@@ -50,7 +51,8 @@ const guides = isCA ? GUIDES.slice(0, 3) : [GUIDES.find((g) => g.slug === info.g
     <h2>All {total} cameras</h2>
     <p class="meta">Source: {source.name}. Registry date {regionDate}. {linkCheckText(hres)}</p>
     {hb && <p class="meta">Status words. {statusWords()}</p>}
-    <ul>{sorted.map((c) => (
+    <CameraListTools n={sorted.length} roads={Object.entries(countsBy(sorted, 'road')).filter(([r]) => r).sort((a, b) => a[0].localeCompare(b[0]))} hb={hb} />
+    <ul data-camera-list>{sorted.map((c) => (
       <li><a href={c.officialUrl} rel="noopener" title={c.name}>{cleanLabel(c)}</a> <span class="meta">{[c.road, c.direction, c.feedType === 'still' ? 'still image' : 'video'].filter(Boolean).join(', ')}.</span>{c.locationText && <span class="meta"> {c.locationText}</span>}{hb && <> <span class="meta" data-status={hb.statusOf(c.id)} title={`${MEANING[hb.statusOf(c.id)]}${hb.record(c.id)?.lastChecked ? '; last checked ' + when(hb.record(c.id).lastChecked) : ''}`}>Status: {hb.statusOf(c.id)}.</span>{hb.checkedText(c.id) && <span class="meta"> {hb.checkedText(c.id)}.</span>}</>}</li>
     ))}</ul>
   </section>}

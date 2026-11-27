@@ -1,0 +1,57 @@
+---
+// Filter form and Save buttons for a <ul data-camera-list>, shared by city pages and the long region lists.
+// Beats Argos by: a visitor can narrow thousands of cameras by name, road, feed or our link status, share that address and save cameras without an account.
+interface Props { n: number; roads: [string, number][]; hb: unknown }
+const { n, roads, hb } = Astro.props;
+---
+{n > 8 && (
+  <form class="filters" data-filters aria-label="Filter the camera list" hidden>
+    <label>Name <input type="search" name="text" autocomplete="off" /></label>
+    <label>Road <select name="road"><option value="">All roads</option>{roads.map(([r]) => <option value={r}>{r}</option>)}</select></label>
+    <label>Feed <select name="feed"><option value="">Any</option><option value="still">Still image</option><option value="video">Video</option></select></label>
+    {hb && <label>Status <select name="status"><option value="">Any</option><option value="reachable">Reachable</option><option value="stale">Stale</option><option value="unavailable">Unavailable</option><option value="unknown">Unknown</option></select></label>}
+    <span class="meta" data-filter-count role="status" aria-live="polite"></span>
+  </form>
+)}
+
+<script>
+  import { isSaved, toggleSaved, storageWorks } from '../scripts/saved';
+  // Save buttons: only when this browser lets us keep a list.
+  if (storageWorks()) {
+    const place = document.querySelector('h1')?.textContent?.replace(' traffic cameras', '') || '';
+    for (const li of document.querySelectorAll<HTMLElement>('[data-camera-list] > li')) {
+      const a = li.querySelector('a'); if (!a) continue;
+      const b = document.createElement('button'); b.type = 'button';
+      const paint = () => { const on = isSaved(a.href); b.textContent = on ? 'Saved' : 'Save'; b.setAttribute('aria-pressed', String(on)); };
+      b.addEventListener('click', () => { toggleSaved({ url: a.href, label: a.textContent || '', place }); paint(); });
+      paint(); li.append(' ', b);
+    }
+  }
+  // Filters live in the URL (?road=&feed=&status=) so a filtered list can be shared. Without JavaScript the form stays hidden and the whole list shows.
+  const form = document.querySelector<HTMLFormElement>('[data-filters]');
+  const items = [...document.querySelectorAll<HTMLElement>('[data-camera-list] > li')];
+  if (form && items.length) {
+    form.hidden = false;
+    const keys = ['text', 'road', 'feed', 'status'] as const;
+    const params = new URLSearchParams(location.search);
+    for (const k of keys) { const el = form.elements.namedItem(k) as HTMLSelectElement | HTMLInputElement | null; if (el) { const v = params.get(k) || ''; el.value = !('options' in el) || [...el.options].some((o) => o.value === v) ? v : ''; } }
+    const apply = () => {
+      const want: Record<string, string> = {};
+      for (const k of keys) { const el = form.elements.namedItem(k) as HTMLSelectElement | null; want[k] = el ? el.value : ''; }
+      let shown = 0;
+      for (const li of items) {
+        const meta = (li.querySelector('.meta')?.textContent || '').trim();
+        const feed = / video\.?$/.test(meta) ? 'video' : 'still';
+        const status = li.querySelector('[data-status]')?.getAttribute('data-status') || '';
+        const name = (li.querySelector('a')?.getAttribute('title') || '').toLowerCase();
+        const ok = (!want.text || name.includes(want.text.trim().toLowerCase())) && (!want.road || meta.startsWith(want.road + ',') || meta.startsWith(want.road + '.')) && (!want.feed || feed === want.feed) && (!want.status || status === want.status);
+        li.hidden = !ok; if (ok) shown++;
+      }
+      const q = new URLSearchParams(); for (const k of keys) if (want[k]) q.set(k, want[k]);
+      history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : ''));
+      const out = form.querySelector('[data-filter-count]'); if (out) out.textContent = `Showing ${shown} of ${items.length} cameras.`;
+    };
+    form.addEventListener('change', apply); form.addEventListener('input', apply); form.addEventListener('submit', (e) => e.preventDefault());
+    apply();
+  }
+</script>
