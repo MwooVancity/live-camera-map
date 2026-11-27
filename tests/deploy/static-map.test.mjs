@@ -114,3 +114,10 @@ test('layer snapshots: an old cached copy or an empty answer is refused', async 
   assert.ok(problemWith({ status: 200, body: '' }, true));
   assert.equal(problemWith({ status: 200, body: '1 x' }, true), '');
 });
+
+test('the built map carries our name; GEV licence ships beside it', async () => {
+  const { rebrand } = await import('../../ops/deploy/build-static-map.mjs');
+  assert.equal(rebrand(`[ee("GOD'S EYE "),Z("span",{class:"title-accent"},"VIEW")]`), `[ee("WORLD TRAFFIC "),Z("span",{class:"title-accent"},"CAMERAS")]`);
+  assert.equal(rebrand(`[r("GOD'S EYE "),t("b",null,"VIEW")]`), `[r("WORLD TRAFFIC "),t("b",null,"CAMERAS")]`);
+  assert.equal(rebrand('<title>God\'s Eye View</title>'), '<title>World Traffic Cameras</title>');
+});

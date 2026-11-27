@@ -96,6 +96,17 @@ function registryRows(root = ROOT) {
   return buildRows(c.cameras || c, s.sources || s, {}, perms, new Date(), NaN, mapOnlySources(perms)).rows;
 }
 
+// Our name on the map (owner 2026-11-27). GEV is MIT: the upstream files stay untouched, the built copy is renamed, and
+// GEV's licence and copyright notice ship as /LICENSE-gods-eye-view.txt.
+export const BRAND = [
+  [/"GOD'S EYE "(\),[^)]{0,60}?)"VIEW"/g, '"WORLD TRAFFIC "$1"CAMERAS"'],
+  [/GOD'S EYE (<span class="title-accent">)VIEW/g, 'WORLD TRAFFIC $1CAMERAS'],
+  [/God['’]s Eye View/g, 'World Traffic Cameras'],
+  [/content="God's Eye"/g, 'content="World Traffic Cameras"'],
+  [/NO PLACE LEFT BEHIND/g, 'EVERY OFFICIAL CAMERA, ONE MAP'],
+];
+export function rebrand(text) { return BRAND.reduce((s, [re, to]) => s.replace(re, to), text); }
+
 const walk = (d) => (statSync(d).isDirectory() ? readdirSync(d).flatMap((e) => walk(join(d, e))) : [d]);
 const rel = (base, f) => relative(base, f).split(sep).join('/');
 const sha = (b) => createHash('sha256').update(b).digest('hex');
@@ -144,6 +155,8 @@ export function buildStaticMap({ gevDir, outDir, launch = '', rows = registryRow
   rmSync(out, { recursive: true, force: true });
   cpSync(dist, out, { recursive: true });
   rmSync(join(out, 'events'), { recursive: true, force: true });
+  for (const f of walk(out)) if (/\.(html|js|json|css|webmanifest)$/.test(f) && !rel(out, f).startsWith('cesium/')) { const s = readFileSync(f, 'utf8'), r = rebrand(s); if (r !== s) writeFileSync(f, r); }
+  if (existsSync(join(gevDir, 'LICENSE'))) cpSync(join(gevDir, 'LICENSE'), join(out, 'LICENSE-gods-eye-view.txt'));
   for (const f of walk(out)) if (RESTRICTED_NAME.test(rel(out, f))) rmSync(f);
   const problems = restrictedProblems(out, gevDir);
   if (problems.length) throw new Error(`restricted data in the static map:\n${problems.join('\n')}`);
