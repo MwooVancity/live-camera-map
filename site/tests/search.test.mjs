@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { buildEntries, validateEntries, pageRoutes } from '../src/lib/search-index.mjs';
 import { packIndex, sizeGate, writeIndex, verifyIndex, BUDGET_BYTES } from '../scripts/build-search.mjs';
-import { createLoader, MAX_FALLBACK_SHARDS } from '../src/lib/search-core.mjs';
+import { createLoader } from '../src/lib/search-core.mjs';
 import { parseMapParams, gevHash, nearest, altFromZoom } from '../src/lib/map-params.mjs';
 import { nextIndex } from '../src/lib/search-ui.mjs';
 
@@ -117,10 +117,11 @@ test('a country shard is fetched only when a query needs it, and only once', asy
   assert.equal(shards().length, 1); assert.match(shards()[0], /shard-united-states-/);
   await l.query('i-405'); await l.query('santa'); assert.equal(shards().length, 1);
 });
-test('a query with no country hint reads at most MAX_FALLBACK_SHARDS shards, and finds a town that has no page', async () => {
-  const { f, calls } = stubFetch(), l = createLoader(f); await l.focus();
-  const r = await l.query('britannia'); assert.equal(r[0].kind, 'town');
-  assert.ok(calls.filter((c) => c.includes('shard-')).length <= MAX_FALLBACK_SHARDS);
+test('a town with no page is found from the place index; a query only camera names could answer reads every shard before giving up', async () => {
+  const { f } = stubFetch(), l = createLoader(f); await l.focus();
+  assert.equal((await l.query('britannia'))[0].kind, 'town');
+  const miss = createLoader(stubFetch().f);
+  assert.deepEqual(await miss.query('zzzzqqq'), []);
 });
 test('loader results always carry country and region (global rows and shard rows)', async () => {
   const { f } = stubFetch(), l = createLoader(f); await l.focus();

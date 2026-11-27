@@ -24,14 +24,14 @@ export const GATE_FALLBACK = { caltrans: 'caltrans-cwwp2-dot-ca-gov' };
 export const PERMISSION_ROW = { caltrans: 'caltrans-cwwp2-dot-ca-gov', digitraffic: 'digitraffic-weathercam', 'quebec-mtmd': 'quebec-cameras', 'toronto-traffic': 'toronto-traffic-cameras', 'calgary-traffic': 'calgary-traffic-cameras', 'hongkong-traffic': 'hongkong-traffic-cameras', 'iceland-vegagerdin': 'iceland-road-cameras', 'austin-traffic': 'austin-traffic-cameras', drivebc: 'drivebc-cameras', 'tfl-jamcams': 'tfl-jamcam-cameras', 'nsw-live-traffic': 'nsw-live-traffic-cameras', 'taiwan-thb': 'taiwan-thb-cameras', 'iowa-dot': 'iowa-dot-cameras', 'a22-brennero': 'a22-brennero-cameras', 'brla-dotd': 'brla-dotd-cameras', 'madrid-camaras': 'madrid-camaras-cameras' };
 
 // now = the clock for the 180-day licence expiry and the 48 h health rule; asofMs = the health file's generatedAt (fallback for a record without lastChecked).
-export function buildRows(cams, sources, health = {}, perms = [], now = new Date(), asofMs = NaN) {
+export function buildRows(cams, sources, health = {}, perms = [], now = new Date(), asofMs = NaN, alsoOpen = new Set()) {
   const src = new Map(sources.map((s) => [s.id, s]));
   for (const [sid, pid] of Object.entries(GATE_FALLBACK)) {
     const s = src.get(sid), p = perms.find((x) => x.id === pid);
     if (s && (!s.license || s.license === 'unverified') && p && p.enabled === true && p.licence && p.attribution) src.set(sid, { ...s, license: `${p.licence} (licence gate row ${pid}: ${p.commercialStatus})`, attribution: p.attribution });
   }
   const rows = [], skipped = { notEligible: 0, noLicence: 0, noMetadata: 0 };
-  const metaClosed = new Set([...src.keys()].filter((sid) => { const p = perms.find((x) => x.id === (PERMISSION_ROW[sid] || sid)); return !isEnabled(p, now); })); // no row, expired, restricted, mustNotShip or no metadata permission = closed (A5)
+  const metaClosed = new Set([...src.keys()].filter((sid) => { const p = perms.find((x) => x.id === (PERMISSION_ROW[sid] || sid)); return !alsoOpen.has(sid) && !isEnabled(p, now); })); // no row, expired, restricted, mustNotShip or no metadata permission = closed (A5)
   for (const c of cams) {
     const e = eligibility(c); if (!e.directory_eligible) { skipped.notEligible++; continue; }
     if (metaClosed.has(c.sourceId)) { skipped.noMetadata++; continue; }

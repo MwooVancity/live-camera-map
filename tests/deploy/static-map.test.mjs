@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
-import { buildStaticMap, cctvSources, RESTRICTED_SOURCES } from '../../ops/deploy/build-static-map.mjs';
+import { buildStaticMap, CAMERA_CAP, cctvSources, RESTRICTED_SOURCES } from '../../ops/deploy/build-static-map.mjs';
 
 const SECRET = Array.from({ length: 40 }, (_, i) => [85.123456 + i, 28.654321 + i]);
 const put = (root, p, text) => { mkdirSync(dirname(join(root, p)), { recursive: true }); writeFileSync(join(root, p), text); };
@@ -71,7 +71,8 @@ test('camera file: metadata and an https link only, nothing the map would fetch 
 
 test('real registry: rows come from the CSV licence gate and stay under the cap', () => {
   const f = fake(); const r = buildStaticMap({ gevDir: f.up, outDir: f.out });
-  assert.ok(r.cameras > 1000 && r.cameras <= 8000, JSON.stringify(r));
+  assert.ok(r.cameras > 8000, JSON.stringify(r));
+  assert.ok(r.cameras >= r.eligible * 0.95 && r.eligible < CAMERA_CAP, `the map drops cameras: ${JSON.stringify(r)}`);
   f.done();
 });
 

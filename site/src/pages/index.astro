@@ -2,11 +2,15 @@
 import Base from '../layouts/Base.astro';
 import { SITE_NAME } from '../config.mjs';
 import { cameras, countsBy, registryDate, loadedDistricts } from '../lib/data.mjs';
-import { buildEntries } from '../lib/search-index.mjs';
+import { mapUrl } from '../lib/search-index.mjs';
+import { centreOf } from '../lib/area.mjs';
 import { curatedPlaces, regionsWithPages, regionInfo, cityRoute, countriesWithPages, countryName, countryRoute, GUIDES } from '../lib/pages.mjs';
 const total = cameras.length;
 // City and road pages with a position, for the optional "cameras near me" button: [name, url, lat, lon, kind].
-const near = buildEntries(cameras).filter((e) => e.kind === 'city' || e.kind === 'road').map((e) => [e.name, e.url, e.lat, e.lon, e.kind]);
+// One point per half-degree square that holds a camera, so every covered area answers "near me" (city pages alone left out Seattle and Atlanta).
+const cells = new Map();
+for (const c of cameras) { const k = `${Math.round(c.lat * 2)},${Math.round(c.lon * 2)},${c.regionSlug}`; (cells.get(k) || cells.set(k, []).get(k)).push(c); }
+const near = [...cells.values()].map((l) => { const at = centreOf(l); return [`${l.length} cameras in ${l[0].regionName}`, mapUrl(at.lat, at.lon), +at.lat.toFixed(3), +at.lon.toFixed(3)]; });
 const places = curatedPlaces(cameras);
 const regions = regionsWithPages(cameras);
 const byRegion = countsBy(cameras, 'region');
@@ -61,15 +65,15 @@ const sourcesN = new Set(cameras.map((c) => c.sourceId)).size;
       const box = document.getElementById('near'), msg = document.getElementById('near-msg'), ul = document.getElementById('near-list');
       const items = JSON.parse(document.getElementById('near-data').textContent);
       btn.addEventListener('click', () => {
-        box.hidden = false; ul.textContent = ''; msg.textContent = 'Finding the nearest camera pages. Your position stays in this browser.';
+        box.hidden = false; ul.textContent = ''; msg.textContent = 'Finding the nearest cameras. Your position stays in this browser.';
         navigator.geolocation.getCurrentPosition((pos) => {
           const p = { lat: pos.coords.latitude, lon: pos.coords.longitude };
           const best = nearest(items, p, 3).filter((x) => x.km <= 300);
-          if (!best.length) { msg.textContent = 'No camera pages within 300 km of you yet. Browse all countries below.'; return; }
-          msg.textContent = 'Nearest camera pages (your position stays in this browser):';
+          if (!best.length) { msg.textContent = 'No cameras within 300 km of you yet. Browse all countries below.'; return; }
+          msg.textContent = 'Nearest cameras (your position stays in this browser):';
           for (const { i, km } of best) {
             const li = document.createElement('li'), a = document.createElement('a');
-            a.href = i[1]; a.textContent = i[0] + ' (' + i[4] + ')';
+            a.href = i[1]; a.textContent = i[0] + ' (open on the map)';
             li.append(a, ' ' + Math.round(km) + ' km away'); ul.append(li);
           }
         }, () => { msg.textContent = 'Location was not shared. Use the search box or browse below.'; }, { timeout: 10000, maximumAge: 600000 });

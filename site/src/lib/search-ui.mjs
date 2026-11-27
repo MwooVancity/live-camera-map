@@ -30,7 +30,8 @@ export function initSearchUi(root, fetchFn = (...a) => fetch(...a), wait = setTi
       b.textContent = e.name; s.textContent = ` ${KIND_LABEL[e.kind] || e.kind} · ${e.region}, ${e.country}`;
       a.append(b, s); li.append(a); list.append(li);
     });
-    list.hidden = !res.length; box.setAttribute('aria-expanded', String(!!res.length)); mark(-1);
+    if (!res.length) { const li = document.createElement('li'); li.textContent = 'No results. Try a city, road or region name, and check the spelling.'; li.className = 'none'; list.append(li); } // sighted visitors must see a failed search too
+    list.hidden = false; box.setAttribute('aria-expanded', 'true'); mark(-1);
     say(res.length ? `${res.length} results` : 'No results. Try a city, road or region name.');
   };
   const run = () => {

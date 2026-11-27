@@ -6,7 +6,9 @@ import { readFileSync, writeFileSync, readdirSync, rmSync, cpSync, mkdirSync, ex
 import { join, resolve, relative, sep, dirname } from 'node:path';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { buildRows } from '../exports/camera-exports.mjs';
+import { buildRows, PERMISSION_ROW } from '../exports/camera-exports.mjs';
+import { GEV_PACKS } from '../importers/lib/gevpacks.mjs';
+import { isEnabled } from '../../tests/licensing/gate.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -15,8 +17,9 @@ const RESTRICTED_NAME = /(^|\/)(cable-geo|landing-point-geo|ucs_satellites|imagi
 // Source files (inside the GEV checkout) whose CONTENT must not be anywhere in the output, under any name.
 export const RESTRICTED_SOURCES = ['src/data/local_data/telegeography_submarine_cables', 'src/data/local_data/ucs_satellites', 'src/data/local_data/imaging_sensors', 'src/data/local_data/cctv_ground_heights', 'public/events'];
 
-// The most cameras GEV's own server ever sends its client: CCTV_MAX_SOURCES_CEILING (gev/server/providers/cctv/constants.js). The client has no cap of its own.
-export const CAMERA_CAP = 8000;
+// A safety ceiling only. GEV's own server stops at 8,000 (CCTV_MAX_SOURCES_CEILING) but its client has no cap, and 8,000
+// left whole cities (Seattle, Atlanta) off the static map (docs/human-testing-2026-11-26.md). The tests fail if any camera is dropped.
+export const CAMERA_CAP = 40000;
 
 export const FRAME_ANCESTORS = 'https://worldtrafficcameras.com https://www.worldtrafficcameras.com https://worldtrafficcameras.pages.dev';
 // Browser-direct hosts the keyless globe may call. Allowlist = every other host (open-meteo, GBIF, OpenSnowMap, Google, news...) is blocked by the browser.
@@ -70,10 +73,21 @@ export function cctvSources(rows, cap = CAMERA_CAP) {
   };
 }
 
+// The map shows what the directory already lists as links. The downloadable-list gate (buildRows) is stricter, so two groups
+// are opened for the map only, and the downloads stay as they are: GEV's usable packs that have no permission row (owner rule
+// 2026-11-26 "GEV SAYS USABLE = USE IT") and Georgia 511 while its owner-approval row (2026-11-25, link-only) stays enabled.
+export function mapOnlySources(perms, now = new Date()) {
+  const rowed = new Set(perms.map((p) => p.id));
+  const open = new Set(GEV_PACKS.map((p) => p.sourceId).filter((id) => !rowed.has(PERMISSION_ROW[id] || id)));
+  if (isEnabled(perms.find((p) => p.id === 'georgia-511-cameras'), now)) open.add('georgia-511');
+  return open;
+}
+
 function registryRows(root = ROOT) {
   const j = (p) => JSON.parse(readFileSync(join(root, p), 'utf8'));
   const c = j('data/camera-registry/cameras.json'), s = j('data/camera-registry/sources.json');
-  return buildRows(c.cameras || c, s.sources || s, {}, j('data/source-permissions.json').sources).rows;
+  const perms = j('data/source-permissions.json').sources;
+  return buildRows(c.cameras || c, s.sources || s, {}, perms, new Date(), NaN, mapOnlySources(perms)).rows;
 }
 
 const walk = (d) => (statSync(d).isDirectory() ? readdirSync(d).flatMap((e) => walk(join(d, e))) : [d]);

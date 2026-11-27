@@ -4,7 +4,6 @@
 // from a prebuilt static index loaded on first focus, and every result names its kind, region AND country, so two towns with one name are never confused.
 // NOT supported (stated, tested): typo tolerance ("Sacremento" finds nothing). Accents are stripped; letters like the German sharp s or the Danish o-slash do not decompose and are kept as is.
 export const MAX_RESULTS = 10;
-export const MAX_FALLBACK_SHARDS = 3; // ponytail: a query with no country hint reads at most this many shards (smallest first); per-region shards if one country ever outgrows the budget
 export const KIND_RANK = { city: 1, town: 2, road: 3, region: 4, country: 5, camera: 6 }; // exact name always first, then this order
 export const KIND_LABEL = { city: 'City', town: 'Place', road: 'Road', region: 'Region', country: 'Country', camera: 'Camera' };
 // Row layout (compact arrays, one per entry). A shard has its country in its header; a global-lookup row carries it at index 9.
@@ -70,7 +69,8 @@ export function createLoader(fetchFn, base = '/search/') {
     if (res.length >= MAX_RESULTS) return res;
     // a result names its country and region: fetch that region's shard (a country-level result has no single region: it fetches nothing extra)
     let need = manifest.shards.filter((s) => !shards.has(skey(s)) && res.some((x) => x.country === s.country && x.region === s.region));
-    if (!res.length) need = manifest.shards.filter((s) => !shards.has(skey(s))).sort((a, b) => a.gzip - b.gzip).slice(0, MAX_FALLBACK_SHARDS);
+    // ponytail: a query the place index cannot answer reads every camera-name shard once (about 0.9 MB gzip); a name-word index if that grows
+    if (!res.length) need = manifest.shards.filter((s) => !shards.has(skey(s)));
     if (!need.length) return res;
     await Promise.all(need.map(shard));
     res = search(sets(), q);
