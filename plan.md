@@ -21,7 +21,7 @@ Done = switched on in a real browser on the live map with data showing, not just
 - [x] Canada air quality loaded live 2026-11-27. [ ] NASA recent imagery: needs a drawn box, not tested
 - [x] Wildfire outlines 39 seen live 2026-11-27. [ ] Hurricanes: no active storms in the feed, untestable today ( a red map-freshness run means they went stale)
 - [x] Satellites 11.8K; space launches 26 (seen live 2026-11-27)
-- [ ] Mapillary street photos: token stored as repo secret 2026-11-27. Blocker found: GEV fetches coverage tiles through its own server proxy (/api/mapillary/tiles, trims 12 MB z14 tiles to ~80 KB) and Vite does not expose MAPILLARY_CLIENT_TOKEN to the browser by default. Path: define the token in ops/deploy/gev-static.vite.config.mjs, answer /api/mapillary/status, and test a free Pages Function or z<=13 redirect for tiles; else wait for the server.
+- [~] Mapillary: coverage lines live 2026-11-27 (Seattle: 4,879 sequences, credit line shown). Photos NOT reachable: lines vanish at close zoom (z14 answered empty, tiles 12 MB untrimmed) and clicking a line at z13 opens only the sequence id. Full photos need the server (trim proxy); Workers free CPU too small.
 - [ ] AISStream key: new key stored as repo secret 2026-11-27 23:14 UTC. Ships need the server (GEV SECURITY.md:27 "Server only").
 - [ ] Active fires, NASA FIRMS (3-hour copy; needs the key in CI; measure file size first)
 - [x] Restricted airspace 569; shipwrecks 8.0K (seen live 2026-11-27). Wind: needs a server (client checks the query of each answer)
