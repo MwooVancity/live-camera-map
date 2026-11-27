@@ -27,6 +27,13 @@ Done = switched on in a real browser on the live map with data showing, not just
 - [ ] Bundled layers (dams, datacenters), USGS topo and night lights: may already work, test them
 - Needs a server, a key or permission: weather radar and clouds, live flights (OpenSky off), live ships, directions, place search inside the map, transit, rail, military flights and sites. Full missing-feature rows: data/gev-parity.json (gap 813 on 2026-11-27), data/argos-maps-matrix.json (gap 17).
 
+From the GEV README read 2026-11-27 (first list came from a code read and missed these):
+- [ ] Test, may work with no server: visual styles 1-6, HUD, detection overlay, Draw, Director mode, share links, North Up/tilt, bundled submarine cables stay OFF (TeleGeography)
+- [ ] Test GEV keyless search: README says coordinates and bundled cities need no geocoder; "Seattle" and "Atlanta" gave "Location not found" in our test, cause unknown; fix the note on /map/ to match what the test shows
+- [ ] Check licence and whether browser-direct: Street Level (KartaView, Panoramax), Mapped ALPR, Radio, Wildlife, Bikeshare
+- Needs a server or key: Cockpit (needs flights), GNSS integrity, News, Traffic, Directions, OSM Places, Installations, Transit, Rail, voice and chat, MCP
+- NYC cameras: GEV ships them opt-in only, needing your own NYC DOT agreement; stays off.
+
 ## 0. Header
 - Goal: a free, world-wide directory of live traffic cameras with road conditions, camera health and a free map that never asks for a sign-in. Link-out only until a source allows pictures.
 - End game: beat argosatlas.com page for page, match the traffic they capture, then pass it (measured by Search Console against Ahrefs). Make money inside the rules (ads and affiliate beside data, never a paywall). A penalised site earns $0.
