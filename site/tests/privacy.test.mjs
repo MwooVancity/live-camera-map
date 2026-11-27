@@ -88,6 +88,10 @@ test('the page is built, linked from the footer of every page, in the sitemap, a
     const found = new Set(readFileSync(join(DIST, f), 'utf8').match(/[a-z0-9._-]+@[a-z0-9-]+\.[a-z]{2,}/gi));
     assert.deepEqual([...found], ['contact@worldtrafficcameras.com'], f);
   }
+  for (const f of ['privacy/index.html', 'about/index.html']) {
+    const html = readFileSync(join(DIST, f), 'utf8');
+    assert.equal(html.split('<!--email_off--><a href="mailto:').length - 1, html.split('href="mailto:').length - 1, `${f}: an address Cloudflare would hide behind its script`);
+  }
   const expires = readFileSync(join(DIST, '.well-known/security.txt'), 'utf8').match(/^Expires: (.+)$/m)[1];
   assert.ok(Date.parse(expires) - Date.now() > 30 * 864e5, 'security.txt expires within 30 days: renew it');
 });
