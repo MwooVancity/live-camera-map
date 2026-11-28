@@ -21,6 +21,8 @@ Done = switched on in a real browser on the live map with data showing, not just
 - [x] Canada air quality loaded live 2026-11-27. [ ] NASA recent imagery: needs a drawn box, not tested
 - [x] Wildfire outlines 39 seen live 2026-11-27. [ ] Hurricanes: no active storms in the feed, untestable today ( a red map-freshness run means they went stale)
 - [x] Satellites 11.8K; space launches 26 (seen live 2026-11-27)
+- [x] Server ready to switch on 2026-11-28: workflow server-deploy (SSH + Cloudflare Tunnel via API, keys from secrets, disk gate, firewall, swap, log caps, noindex header, required public healthcheck); reviewed by ChatGPT + Gemini; Linux Docker run green (session5-compose 46091442666). Proxy now opens news (GDELT only), transit, rail, directions, ships. OWNER: buy Hetzner CX23, then one Run line for SERVER_HOST + SSH key. UNKNOWN until first deploy: Cloudflare token Tunnel/DNS scope, GEV RAM.
+- [ ] /gods-eye-view/ page (keyword research docs/research/2026-11-28-gods-eye-view-keywords.md: target 'online / web app / live camera' terms, trademark credit, not affiliated).
 - [x] NASA FIRMS active fires live 2026-11-27: 86,536 fires (3 satellites), snapshot every 3 h with build-time key; seen ON in browser, "updated 12m ago".
 - [~] Mapillary: coverage lines live 2026-11-27 (Seattle: 4,879 sequences, credit line shown). Photos NOT reachable: lines vanish at close zoom (z14 answered empty, tiles 12 MB untrimmed) and clicking a line at z13 opens only the sequence id. Full photos need the server (trim proxy); Workers free CPU too small.
 - [ ] AISStream key: new key stored as repo secret 2026-11-27 23:14 UTC. Ships need the server (GEV SECURITY.md:27 "Server only").
