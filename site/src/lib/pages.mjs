@@ -21,6 +21,7 @@ import { LU_REGION } from '../../../ops/importers/lib/citalu.mjs';
 import { MEDELLIN_REGION } from '../../../ops/importers/lib/medellin.mjs';
 import { TWRA_REGION } from '../../../ops/importers/lib/taiwanwra.mjs';
 import { GEV_REGIONS } from '../../../ops/importers/lib/gevpacks.mjs';
+import { CITY_FROM_PLACES, ASSIGN_KM } from './places-assign.mjs';
 
 // NFKD splits an accented letter into the letter plus a combining mark; the marks are removed first, otherwise "Hämeenlinna" became "ha-meenlinna".
 export const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -193,6 +194,19 @@ export const REGIONS = {
   },
   ...GEV_REGIONS, // the GEV camera packs: names and wording come from their table in ops/importers/lib/gevpacks.mjs
 };
+REGIONS[TX_REGION.slug].heading = 'City of Austin, Texas'; // the Austin list is not all of Texas: title and h1 say so (TxDOT highways are their own region)
+// Lists with no city field: each camera is filed under the nearest Natural Earth place (lib/places-assign.mjs), so these regions get city pages.
+// ponytail: the source sentence's "no city pages" clause is cut by pattern rather than rewriting six source texts.
+for (const slug of CITY_FROM_PLACES) {
+  const r = REGIONS[slug];
+  if (!r) continue;
+  const base = r.placeText;
+  Object.assign(r, {
+    cityLimit: 20, cityMin: 10, // 3-4 camera town pages of a list with no direction or live data were near-duplicates (page gate)
+    placeText: (x) => sentence(`${base(x).replace(/,? (?:so|and) there are no city pages(?: here)?/, '')} For the city pages, each camera is filed under the nearest place in the same state in the Natural Earth populated places list (public domain) within ${ASSIGN_KM} km: ${x.named} cameras have such a place (${x.places} places) and ${x.unnamed} have none that close.`),
+    cityText: (city) => sentence(`The ${r.agency} list names no city: ${city} is the nearest place in the same state in the Natural Earth populated places list (public domain) to each of these cameras, within ${ASSIGN_KM} km in a straight line, not a municipal boundary.`),
+  });
+}
 // The credit sentence for a source that asks for one (its attribution line from sources.json, without a leading "Source:").
 export const creditLine = (source) => `Credit: ${String(source.attribution).replace(/^Source:\s*/i, '').replace(/\.$/, '')}.`; // one full stop whether or not the licence's own statement ends with one
 export const regionInfo = (slug) => REGIONS[slug] || { sourceId: null, agency: 'the official source', cityLimit: 5, guide: null, list: 'camera list', placeText: () => '', cityText: () => '', caveats: [] };
@@ -203,7 +217,7 @@ export function curatedPlaces(cams, limit) {
   const regions = Object.entries(countsBy(cams, 'region')).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([r]) => r).filter((r) => countryOf(r));
   const out = [];
   for (const region of regions) {
-    Object.entries(countsBy(cams.filter((c) => c.regionSlug === region), 'city')).filter(([, n]) => n >= MIN_CAMERAS)
+    Object.entries(countsBy(cams.filter((c) => c.regionSlug === region), 'city')).filter(([, n]) => n >= (regionInfo(region).cityMin ?? MIN_CAMERAS))
       .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, limit ?? regionInfo(region).cityLimit)
       .forEach(([city, n]) => out.push({ region, city, n }));
   }
@@ -212,21 +226,32 @@ export function curatedPlaces(cams, limit) {
 // Names only (callers that already know the region). Two regions with one name appear twice: use curatedPlaces when that matters.
 export const curatedCities = (cams, limit) => curatedPlaces(cams, limit).map((p) => p.city);
 
-// Curated roads: the ten with the most cameras, each with at least MIN_CAMERAS. Provisional, like the cities.
-// Counted by roadSlug so two spellings of one road would count once; returns the display spelling (most common).
-export function curatedRoads(cams, limit = 10) {
+// Road pages: the ten California roads with the most cameras (each with at least MIN_CAMERAS), plus I-5 and every Washington route with
+// at least MIN_CAMERAS. A road page holds that road's cameras in every ROAD_REGIONS region (so I-5 runs California, Oregon, Washington).
+// Counted by roadSlug so two spellings of one road count once; returns the display spelling (most common). Iowa's I-80 etc. stay corridor pages.
+export const ROAD_REGIONS = ['california', 'oregon', 'washington-state'];
+export const roadCams = (cams) => cams.filter((c) => ROAD_REGIONS.includes(c.regionSlug));
+// WA routes need WA_ROAD_MIN cameras: a 3-camera route page (no direction, no live data in WSDOT's list) is mostly template text and fails the near-duplicate gate.
+export const WA_ROAD_MIN = 20;
+function topRoads(cams, region, limit, min = MIN_CAMERAS) {
   const by = new Map();
   for (const c of cams) {
-    if (c.regionSlug !== 'california') continue; // road pages are California-only: another region's route (Iowa I-80, I-35) must never become a California road page, a sitemap row or take a place in the ten
+    if (c.regionSlug !== region) continue;
     const k = roadSlug(c.road);
     if (!k) continue;
     const e = by.get(k) || { n: 0, spell: {} };
     e.n++; e.spell[c.road] = (e.spell[c.road] || 0) + 1;
     by.set(k, e);
   }
-  return [...by.values()].filter((e) => e.n >= MIN_CAMERAS)
+  return [...by.values()].filter((e) => e.n >= min)
     .map((e) => ({ n: e.n, road: Object.entries(e.spell).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0][0] }))
     .sort((a, b) => b.n - a.n || a.road.localeCompare(b.road)).slice(0, limit).map((e) => e.road);
+}
+export function curatedRoads(cams, limit = 10) {
+  const all = roadCams(cams), out = new Map();
+  const i5 = all.filter((c) => roadSlug(c.road) === 'i-5').length >= MIN_CAMERAS ? ['I-5'] : [];
+  for (const r of [...topRoads(all, 'california', limit), ...i5, ...topRoads(all, 'washington-state', Infinity, WA_ROAD_MIN)]) if (!out.has(roadSlug(r))) out.set(roadSlug(r), r);
+  return [...out.values()];
 }
 
 // Regions that get a hub: only with enough cameras (an empty hub is never generated).
@@ -281,8 +306,8 @@ export function pageList(cams, cities, registryDate, roads = [], dates = {}, cor
     const n = countsBy(sub, 'city')[p.city] || 0;
     out.push({ route: cityRoute(rs[0], p.city), kind: 'city', count: n, indexable: isIndexable(n), lastmod: dateOf(rs[0]) });
   }
-  if (roads.length) out.push({ route: '/roads/', kind: 'roads-hub', count: roads.length, indexable: true, lastmod: dateOf('california') }); // road pages are California-only
-  const byRoad = countsBy(cams, 'road');
+  if (roads.length) out.push({ route: '/roads/', kind: 'roads-hub', count: roads.length, indexable: true, lastmod: dateOf('california') });
+  const byRoad = countsBy(roadCams(cams), 'road');
   for (const r of roads) out.push({ route: `/roads/${roadSlug(r)}/`, kind: 'road', count: byRoad[r] || 0, indexable: isIndexable(byRoad[r] || 0), lastmod: dateOf('california') });
   for (const c of corridors) out.push({ route: `/corridors/${c.slug}/`, kind: 'corridor', count: c.n, indexable: isIndexable(c.n), lastmod: dateOf(c.region) }); // plan item 36 P2-12: five corridor pages outside California
   for (const g of GUIDES) out.push({ route: `/guides/${g.slug}/`, kind: 'guide', count: null, indexable: true, lastmod: g.date });

@@ -19,7 +19,7 @@ const rows = regions.map((r) => {
   const byCity = countsBy(cams, 'city');
   const info = regionInfo(r);
   const src = sourceOf(info.sourceId) || {};
-  return { r, regionName: cams[0].regionName, n: byRegion[r], roads: Object.keys(countsBy(cams, 'road')).length, named: Object.values(byCity).reduce((s, k) => s + k, 0), namedPlaces: Object.keys(byCity).length, top: places.filter((p) => p.region === r), info, src, date: registryDateOf(r) };
+  return { r, regionName: info.heading || cams[0].regionName, n: byRegion[r], roads: Object.keys(countsBy(cams, 'road')).length, named: Object.values(byCity).reduce((s, k) => s + k, 0), namedPlaces: Object.keys(byCity).length, top: places.filter((p) => p.region === r), info, src, date: registryDateOf(r) };
 });
 const dates = rows.map((x) => x.date).filter(Boolean).sort();
 const sourceNames = rows.map((x) => x.src.name).filter(Boolean).join('; ');

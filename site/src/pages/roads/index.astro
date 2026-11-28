@@ -2,18 +2,18 @@
 import Base from '../../layouts/Base.astro';
 import { SITE_NAME } from '../../config.mjs';
 import { cameras as allCameras, countsBy, registryDateOf, sources } from '../../lib/data.mjs';
-import { curatedRoads } from '../../lib/pages.mjs';
+import { curatedRoads, roadCams } from '../../lib/pages.mjs';
 import { roadSlug } from '../../../../ops/importers/lib/registry.mjs';
 
-const cameras = allCameras.filter((c) => c.regionSlug === 'california'); // road pages are California-only
+const cameras = roadCams(allCameras); // California, Oregon, Washington
 const registryDate = registryDateOf('california');
 const roads = curatedRoads(cameras);
 const byRoad = countsBy(cameras, 'road');
 const source = sources.find((s) => s.id === 'caltrans');
 ---
-<Base title={`Traffic cameras by road: ${roads.length} California, United States roads | ${SITE_NAME}`} description={`The ${roads.length} California roads with the most traffic cameras, each with its cameras in driving order and the closures, signs and chain controls between them.`} route="/roads/" crumbs={[{ name: 'Roads', route: '/roads/' }]}>
+<Base title={`Traffic cameras by road: ${roads.length} California, Oregon and Washington roads | ${SITE_NAME}`} description={`The ${roads.length} California, Oregon and Washington roads with the most traffic cameras, each with its cameras in driving order and the closures, signs and chain controls between them.`} route="/roads/" crumbs={[{ name: 'Roads', route: '/roads/' }]}>
   <h1>Traffic cameras by road</h1>
-  <p>Road pages exist for California, United States only (Caltrans data; British Columbia roads are not I-, SR- or US- roads). Each road below has its own page: every Caltrans camera on that road in driving order for each direction, then the lane closures, chain controls and message signs on the road, each with the cameras closest to it. The roads are the {roads.length} with the most cameras in our list ({cameras.length} cameras in all), each with at least 3. Not sure how to read one? See <a href="/guides/how-to-read-a-road-page/">how to read a road page</a>.</p>
+  <p>Road pages exist for California, Oregon and Washington, United States (Caltrans, ODOT and WSDOT data; British Columbia roads are not I-, SR- or US- roads): the ten California roads with the most cameras, I-5 from Mexico to Canada, and every Washington route with at least 3 cameras. Each road below has its own page: every camera on that road in driving order for each direction, then the lane closures, chain controls and message signs on the road, each with the cameras closest to it. There are {roads.length} roads ({cameras.length} cameras in the three states in all), each with at least 3 cameras. Live closures, chain controls and signs come from Caltrans, so they appear on the California part of a road only. Not sure how to read one? See <a href="/guides/how-to-read-a-road-page/">how to read a road page</a>.</p>
   <section data-block="roads" data-basis="registry" data-source={source.name} data-asof={registryDate}>
     <h2>Roads with the most cameras</h2>
     <ul class="cols">{roads.map((r) => <li><a href={`/roads/${roadSlug(r)}/`}>{r} traffic cameras</a> ({byRoad[r]})</li>)}</ul>

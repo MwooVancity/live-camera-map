@@ -102,6 +102,6 @@ test('built pages: five corridor pages, no picture elements, no competitor name,
 });
 test('built pages: a California road page is still the California-only road page and does not link corridors', { skip: !built }, () => {
   const html = readPages().get('/roads/i-5/');
-  assert.ok(html && html.includes('California, United States'));
+  assert.ok(html && html.includes('California, Oregon, Washington, United States')); // I-5 is one road across three states (2026-11-27)
   assert.ok(!html.includes('/corridors/'));
 });

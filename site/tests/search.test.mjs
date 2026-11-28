@@ -1,5 +1,6 @@
 // Search build and loader tests. Run from site/: node --test tests/search.test.mjs
 // Rules: search-size-budget, search-manifest, search-lazy, search-country-region, search-no-camera-pages.
+import { cameras as REGISTRY_CAMERAS } from '../src/lib/data.mjs'; // enriched like the pages (lib/places-assign.mjs)
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, mkdtempSync, writeFileSync, existsSync, readdirSync, rmSync } from 'node:fs';
@@ -11,7 +12,7 @@ import { createLoader } from '../src/lib/search-core.mjs';
 import { parseMapParams, gevHash, nearest, altFromZoom } from '../src/lib/map-params.mjs';
 import { nextIndex } from '../src/lib/search-ui.mjs';
 
-const cams = JSON.parse(readFileSync('../data/camera-registry/cameras.json', 'utf8'));
+const cams = REGISTRY_CAMERAS;
 const entries = buildEntries(cams);
 const tmp = () => mkdtempSync(join(tmpdir(), 'srch-'));
 
@@ -112,10 +113,10 @@ test('failing fixture of the guard: query() without focus first would fetch, so 
 });
 test('a country shard is fetched only when a query needs it, and only once', async () => {
   const { f, calls } = stubFetch(), l = createLoader(f); await l.focus();
-  const r = await l.query('i-405'); assert.equal(r[0].url, '/roads/i-405/');
+  const r = await l.query('i-210'); assert.equal(r[0].url, '/roads/i-210/'); // i-405 now also finds Washington's I-405 (a second region shard)
   const shards = () => calls.filter((c) => c.includes('shard-'));
   assert.equal(shards().length, 1); assert.match(shards()[0], /shard-united-states-/);
-  await l.query('i-405'); await l.query('santa'); assert.equal(shards().length, 1);
+  await l.query('i-210'); await l.query('santa'); assert.equal(shards().length, 1);
 });
 test('a town with no page is found from the place index; a query only camera names could answer reads every shard before giving up', async () => {
   const { f } = stubFetch(), l = createLoader(f); await l.focus();

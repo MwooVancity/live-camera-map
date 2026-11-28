@@ -1,4 +1,5 @@
 // Tests over the built site. Run `npm run build` first.
+import { cameras as REGISTRY_CAMERAS } from '../src/lib/data.mjs'; // enriched like the pages (lib/places-assign.mjs)
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync, mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -10,12 +11,12 @@ import { countsBy, countryOf } from '../../ops/importers/lib/registry.mjs';
 import { curatedPlaces, regionInfo } from '../src/lib/pages.mjs';
 
 const pages = readPages();
-const cameras = JSON.parse(readFileSync('../data/camera-registry/cameras.json', 'utf8'));
+const cameras = REGISTRY_CAMERAS;
 const cityRoutes = [...pages.keys()].filter((r) => r.split('/').filter(Boolean).length === 4 && r.startsWith('/cameras/'));
 
 test('page count is 16-120 (California 20 + roads hub + 10 roads + guides; British Columbia hub + 5 cities; Finland hub + region + 8 cities; Quebec 13 region hubs)', () => {
   const n = [...pages.keys()].filter((r) => r !== '/404/').length;
-  assert.ok(n >= 16 && n <= 120, `built ${n} pages`);
+  assert.ok(n >= 16 && n <= 300, `built ${n} pages`); // 2026-11-27: city pages for seven no-city-field regions and Washington road pages
 });
 
 test('every page: one h1, unique title, canonical, breadcrumb JSON-LD', () => {
@@ -202,7 +203,7 @@ test('BC city pages: "facing" is the camera view (never northbound/southbound), 
 });
 
 test('BC: no road page and no roads link for BC (road pages are California-only); the BC guide links a BC city', () => {
-  for (const r of pages.keys()) if (r.startsWith('/roads/') && r !== '/roads/') assert.match(r, /^\/roads\/(i|sr|us)-\d+[a-z]?\/$/, `${r} is not an I-, SR- or US- road`);
+  for (const r of pages.keys()) if (r.startsWith('/roads/') && r !== '/roads/') assert.match(r, /^\/roads\/((wa|or)-)?(i|sr|us)-\d+[a-z]?\/$/, `${r} is not an I-, SR- or US- road`);
   for (const r of bcRoutes) assert.ok(!/href="\/roads\/[^"]+"/.test(pages.get(r)), `${r} links a road page`);
   const g = pages.get('/guides/how-drivebc-cameras-work/');
   assert.ok(g && bcRoutes.some((r) => g.includes(`href="${r}"`)));
@@ -262,9 +263,9 @@ test('country hubs: in the sitemap, canonical, and each region hub says which co
   assert.ok(pages.get('/cameras/canada/british-columbia/').includes('href="/cameras/canada/"'));
   assert.ok(pages.get('/cameras/canada/british-columbia/mission/').includes('Canada.'), 'city page names its country');
 });
-test('road pages stay at /roads/<slug>/ and say California, United States in their title', () => {
-  for (const r of pages.keys()) if (/^\/roads\/(i|sr|us)-\d+[a-z]?\/$/.test(r)) assert.ok(titleOf(pages.get(r)).includes('California, United States'), r);
-  assert.ok(titleOf(pages.get('/roads/')).includes('California, United States'));
+test('road pages stay at /roads/<slug>/ and name their states and United States in their title', () => {
+  for (const r of pages.keys()) if (/^\/roads\/((wa|or)-)?(i|sr|us)-\d+[a-z]?\/$/.test(r)) assert.ok(/(California|Oregon|Washington)[^|]*, United States/.test(titleOf(pages.get(r))), r);
+  assert.ok(titleOf(pages.get('/roads/')).includes('California, Oregon and Washington'));
 });
 test('country hubs hold their own data, not swapped names: the sources and counts of the other country are absent', () => {
   const us = pages.get('/cameras/united-states/').replace(/<footer[\s\S]*<\/footer>/, '');

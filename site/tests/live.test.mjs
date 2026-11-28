@@ -1,5 +1,6 @@
 // Live-conditions blocks: source + as-of on every block, omitted when stale, omitted when the licence row is closed,
 // no camera images. Fixtures are written fresh each run (timestamps relative to now), so no real feed is needed.
+import { cameras as REGISTRY_CAMERAS } from '../src/lib/data.mjs'; // enriched like the pages (lib/places-assign.mjs)
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -9,7 +10,7 @@ import { execFileSync } from 'node:child_process';
 import { cityBlocks, loadLive } from '../src/lib/live.mjs';
 import { readPages, buildOutDir, CAMERA_HOSTS } from './helpers.mjs';
 
-const cameras = JSON.parse(readFileSync('../data/camera-registry/cameras.json', 'utf8'));
+const cameras = REGISTRY_CAMERAS;
 const sd = cameras.filter((c) => c.city === 'San Diego');
 const C = { lat: sd.reduce((s, c) => s + c.lat, 0) / sd.length, lon: sd.reduce((s, c) => s + c.lon, 0) / sd.length, slug: 'san-diego' };
 const realPerms = JSON.parse(readFileSync('../data/source-permissions.json', 'utf8'));

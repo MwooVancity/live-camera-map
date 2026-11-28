@@ -1,6 +1,7 @@
 // Search relevance: 40+ hand-written queries with hand-written expected URLs (rule 'search-relevance'). Run from site/: node --test tests/search.relevance.test.mjs
 // Real registry for the real pages; a small fixture registry for the cases the real one lacks (same town name in two regions, accents, a road page for SR-91).
 // NOT supported, and tested as such: typos ("Sacremento" finds nothing). Expected URLs are written by hand from the page address scheme, never copied from the output.
+import { cameras as REGISTRY_CAMERAS } from '../src/lib/data.mjs'; // enriched like the pages (lib/places-assign.mjs)
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -8,7 +9,7 @@ import { buildEntries } from '../src/lib/search-index.mjs';
 import { search, normalize, roadKeys } from '../src/lib/search-core.mjs';
 
 const toSets = (entries) => [{ rows: entries.map((e) => [e.id, e.kind, e.name, e.norm, e.region, e.road, e.lat, e.lon, e.url, e.country]) }];
-const real = toSets(buildEntries(JSON.parse(readFileSync('../data/camera-registry/cameras.json', 'utf8'))));
+const real = toSets(buildEntries(REGISTRY_CAMERAS));
 const US = '/cameras/united-states/california/', BC = '/cameras/canada/british-columbia/';
 
 // [query, expected top-1 url]

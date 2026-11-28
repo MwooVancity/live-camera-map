@@ -1,6 +1,7 @@
 // Road (corridor) pages: driving order, nearest cameras, one number per count, health markers, escaped feed text.
 // Unit tests use hand-computed fixtures; built-page tests write fresh feed and health fixtures (timestamps relative to now).
 // Run from site/: node --test tests/roads.test.mjs
+import { cameras as REGISTRY_CAMERAS } from '../src/lib/data.mjs'; // enriched like the pages (lib/places-assign.mjs)
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, mkdtempSync, writeFileSync } from 'node:fs';
@@ -15,7 +16,7 @@ import { cityHealth, STATUSES } from '../src/lib/health.mjs';
 import { readPages, buildOutDir, isNoindex } from './helpers.mjs';
 import { gate } from '../../ops/harness/page-gate.mjs';
 
-const cameras = JSON.parse(readFileSync('../data/camera-registry/cameras.json', 'utf8'));
+const cameras = REGISTRY_CAMERAS;
 const cam = (id, lat, lon, direction = 'North', road = 'I-5') => ({ id, name: id, lat, lon, direction, road, city: 'X', regionSlug: 'california', feedType: 'still', officialUrl: `https://example.test/${id}` });
 const ids = (g) => g.cams.map((x) => x.camera.id);
 
@@ -86,10 +87,11 @@ test('curatedRoads: at least 3 cameras, biggest first, two spellings of one road
   const many = (road, n) => Array.from({ length: n }, (_, i) => cam(`${road}-${i}`, 34, -118, 'North', road));
   assert.deepEqual(curatedRoads([...many('I-5', 5), ...many('SR-1', 3), ...many('SR-2', 2), ...many('i 405', 1), ...many('I-405', 3), ...many('Main St', 9)]), ['I-5', 'I-405', 'SR-1']);
 });
-test('curatedRoads on the real registry: 10 roads, each with 3+ cameras and one slug', () => {
+test('curatedRoads on the real registry: 10 California roads, then I-5 and Washington routes, each with 3+ cameras and one slug', () => {
   const r = curatedRoads(cameras);
-  assert.equal(r.length, 10);
-  assert.equal(new Set(r.map(roadSlug)).size, 10);
+  assert.ok(r.length > 10);
+  assert.equal(new Set(r.map(roadSlug)).size, r.length);
+  assert.ok(r.slice(0, 10).every((x) => cameras.some((c) => c.regionSlug === 'california' && c.road === x)));
   for (const x of r) assert.ok(countsBy(cameras, 'road')[x] >= 3);
 });
 test('relatedRoads: shared cities first, then the closest road; nearestCities by km', () => {
@@ -179,7 +181,7 @@ test('built road pages: one per curated road plus the hub, counts equal countsBy
   const hf = healthFile();
   const { out, pages } = build({ ...env, HEALTH_FILE: hf });
   const roads = curatedRoads(cameras);
-  const byRoad = countsBy(cameras.filter((c) => c.regionSlug === 'california'), 'road'); // road pages are California-only; Iowa also has an I-80 and an I-35
+  const byRoad = countsBy(cameras.filter((c) => ['california', 'oregon', 'washington-state'].includes(c.regionSlug)), 'road'); // road pages: California, Oregon, Washington; Iowa's I-80 and I-35 stay corridor pages
   assert.ok(pages.has('/roads/'));
   const hub = pages.get('/roads/');
   for (const road of roads) {
@@ -189,8 +191,8 @@ test('built road pages: one per curated road plus the hub, counts equal countsBy
     assert.ok(hub.includes(`href="${route}"`), `hub does not link ${route}`);
     assert.ok(!isNoindex(html), `${route} should be indexable`);
     const n = byRoad[road];
-    assert.ok(html.includes(`${road} traffic cameras in driving order, California, United States: ${n} official links`), `${route}: title count`);
-    assert.ok(html.includes(`<p>${n} Caltrans cameras are listed on ${road} in California, United States:`), `${route}: intro count`);
+    assert.ok(new RegExp(`${road} traffic cameras in driving order, [A-Za-z, ]+, United States: ${n} official links`).test(html), `${route}: title count`);
+    assert.ok(new RegExp(`<p>${n} [^<]*cameras are listed on ${road} in [A-Za-z, ]+, United States:`).test(html), `${route}: intro count`);
     const cams = section(html, 'cameras');
     assert.ok(cams.includes(`data-count="${n}"`), `${route}: data-count`);
     assert.equal((cams.match(/<li data-camera=/g) || []).length, n, `${route}: list length`);

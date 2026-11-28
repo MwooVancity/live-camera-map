@@ -1,4 +1,5 @@
 // Code review 2026-11-25 batch C: site findings C1, C2, C3, C7, C8. Built-page tests need `npm run build` first.
+import { cameras as REGISTRY_CAMERAS } from '../src/lib/data.mjs'; // enriched like the pages (lib/places-assign.mjs)
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -7,11 +8,11 @@ import { REGION_COUNTRY, countsBy } from '../../ops/importers/lib/registry.mjs';
 import { REGIONS, regionInfo } from '../src/lib/pages.mjs';
 import { neverChecked } from '../src/lib/health.mjs';
 
-const cameras = JSON.parse(readFileSync('../data/camera-registry/cameras.json', 'utf8'));
+const cameras = REGISTRY_CAMERAS;
 const pages = readPages();
 
-test('C1: every "on the whole road" count on a built city page equals the California count the road page uses', () => {
-  const ca = countsBy(cameras.filter((c) => c.regionSlug === 'california'), 'road');
+test('C1: every "on the whole road" count on a built city page equals the count the road page uses (California, Oregon, Washington)', () => {
+  const ca = countsBy(cameras.filter((c) => ['california', 'oregon', 'washington-state'].includes(c.regionSlug)), 'road');
   let checked = 0;
   for (const [route, html] of pages) {
     if (!route.startsWith('/cameras/united-states/california/')) continue;

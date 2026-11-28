@@ -1,5 +1,6 @@
 // Camera health block: counts come from one function, markers match the health file, a missing / invalid / stale file
 // shows no counts and no markers. Fixtures are written fresh each run. Run from site/: node --test tests/health.test.mjs
+import { cameras as REGISTRY_CAMERAS } from '../src/lib/data.mjs'; // enriched like the pages (lib/places-assign.mjs)
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, mkdtempSync, writeFileSync } from 'node:fs';
@@ -10,7 +11,7 @@ import { cityHealth, tally, STATUSES } from '../src/lib/health.mjs';
 import { readPages, buildOutDir } from './helpers.mjs';
 import { gate } from '../../ops/harness/page-gate.mjs';
 
-const cameras = JSON.parse(readFileSync('../data/camera-registry/cameras.json', 'utf8'));
+const cameras = REGISTRY_CAMERAS;
 const sd = cameras.filter((c) => c.city === 'San Diego');
 const ago = (h) => new Date(Date.now() - h * 3600000).toISOString();
 const route = '/cameras/united-states/california/san-diego/';

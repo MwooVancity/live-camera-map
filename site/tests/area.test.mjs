@@ -1,5 +1,6 @@
 // Greater <city> coverage (one function, one radius), clean camera labels (32 real Caltrans names), and the built pages that use them.
 // Run from site/: node --test tests/area.test.mjs (the built-page tests read dist/, so run `npm run build` first).
+import { cameras as REGISTRY_CAMERAS } from '../src/lib/data.mjs'; // enriched like the pages (lib/places-assign.mjs)
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -7,9 +8,9 @@ import { greaterArea, GREATER_KM } from '../src/lib/area.mjs';
 import { cleanLabel } from '../src/lib/labels.mjs';
 import { distKm } from '../src/lib/live.mjs';
 import { readPages } from './helpers.mjs';
-import { curatedPlaces } from '../src/lib/pages.mjs';
+import { curatedPlaces, curatedRoads } from '../src/lib/pages.mjs';
 
-const cameras = JSON.parse(readFileSync('../data/camera-registry/cameras.json', 'utf8'));
+const cameras = REGISTRY_CAMERAS;
 const ca = cameras.filter((c) => c.regionSlug === 'california');
 
 // ---- labels: 32 real names (taken from data/camera-registry/cameras.json): name, town, expected label ----
@@ -145,7 +146,7 @@ test('one region per page: California greater-area blocks never name DriveBC and
 });
 test('city and road pages: driving notice, conditions above the camera list, clean labels with the source name as title', () => {
   const roadRoutes = [...pages.keys()].filter((r) => /^\/roads\/[a-z0-9-]+\/$/.test(r));
-  assert.equal(roadRoutes.length, 10);
+  assert.equal(roadRoutes.length, curatedRoads(cameras).length); // 10 California roads + I-5 + Washington routes (2026-11-27)
   for (const route of [...cityRoutes, ...roadRoutes]) {
     const html = pages.get(route);
     assert.ok(html.includes('Do not use this page while driving.'), `${route}: notice`);
@@ -157,7 +158,7 @@ test('city and road pages: driving notice, conditions above the camera list, cle
     const links = [...section(html, 'cameras').matchAll(/<a href="(https:[^"]+)" rel="noopener" title="([^"]+)">([^<]+)<\/a>/g)];
     assert.ok(links.length > 0, `${route}: camera links`);
     for (const m of links) {
-      const c = cameras.find((x) => x.officialUrl === m[1]);
+      const c = cameras.find((x) => x.officialUrl === m[1] && x.name === unesc(m[2])) || cameras.find((x) => x.officialUrl === m[1]); // some packs (DelDOT, TxDOT) share one operator page for every camera
       assert.ok(c, `${route}: link is a registry camera`);
       assert.equal(unesc(m[3]), cleanLabel(c), `${route}: label`);
       assert.equal(unesc(m[2]), c.name, `${route}: the source name is the title`);

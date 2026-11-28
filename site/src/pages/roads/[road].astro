@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import RoadBlock from '../../components/RoadBlock.astro';
 import { SITE_NAME } from '../../config.mjs';
 import { cameras as allCameras, countsBy, registryDateOf, sources, loadedDistricts } from '../../lib/data.mjs';
-import { curatedRoads, curatedCities, slugify, cityRoute as cityRouteOf, isIndexable } from '../../lib/pages.mjs';
+import { curatedRoads, curatedCities, curatedPlaces, slugify, cityRoute as cityRouteOf, isIndexable, roadCams } from '../../lib/pages.mjs';
 import { roadSlug } from '../../../../ops/importers/lib/registry.mjs';
 import { orderAlongRoad, relatedRoads, nearestCities } from '../../lib/roads.mjs';
 import { roadBlocks, loadLive, NEAR_KM } from '../../lib/live.mjs';
@@ -15,23 +15,31 @@ export function getStaticPaths() {
 }
 const { road: slug } = Astro.params;
 const { road } = Astro.props;
-const cameras = allCameras.filter((c) => c.regionSlug === 'california'); // road pages are California-only (BC highways are not I-, SR- or US- roads)
-const registryDate = registryDateOf('california');
+const cameras = roadCams(allCameras); // California, Oregon, Washington (BC highways are not I-, SR- or US- roads)
 const roads = curatedRoads(cameras);
 const here = cameras.filter((c) => roadSlug(c.road) === slug);
 const n = countsBy(cameras, 'road')[road];
 if (here.length !== n) throw new Error(`${road}: ${here.length} cameras by slug but countsBy says ${n}`); // one number, one source
-const source = sources.find((s) => s.id === 'caltrans');
+// a road can run through several states: states in south-to-north order of their cameras, each source named, the newest registry date of the states it touches
+const states = [...new Map([...here].sort((a, b) => a.lat - b.lat).map((c) => [c.regionSlug, c.regionName])).entries()];
+const stateText = states.map(([, n]) => n.replace(/ State$/, '')).join(', ');
+const srcs = [...new Set(here.map((c) => c.sourceId))].map((id) => sources.find((s) => s.id === id));
+const source = { name: srcs.map((s) => s.name).join('; ') };
+const agencyText = srcs.map((s) => s.id === 'caltrans' ? 'Caltrans' : s.name).join(', ');
+const registryDate = states.map(([r]) => registryDateOf(r)).sort().at(-1);
 
 const cities = curatedCities(cameras);
-const regionOf = (city) => cameras.find((c) => c.city === city).regionSlug;
+// one town name can be in two states (Albany CA and OR): a camera counts for a city page only in the region that page belongs to
+const placeOf = new Map(curatedPlaces(cameras).filter((p) => roadCams([{ regionSlug: p.region }]).length).map((p) => [p.city, p.region]));
+const paged = (c) => placeOf.get(c.city) === c.regionSlug;
+const regionOf = (city) => placeOf.get(city);
 const cityRoute = (city) => cityRouteOf(regionOf(city), city);
 const byRoad = new Map(roads.map((r) => [r, cameras.filter((c) => c.road === r)]));
-const cityOf = new Map(roads.map((r) => [r, new Set(byRoad.get(r).map((c) => c.city).filter((c) => cities.includes(c)))]));
-const along = Object.entries(countsBy(here, 'city')).filter(([c]) => cities.includes(c)).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+const cityOf = new Map(roads.map((r) => [r, new Set(byRoad.get(r).filter(paged).map((c) => c.city))]));
+const along = Object.entries(countsBy(here.filter(paged), 'city')).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 const otherPlaces = Object.keys(countsBy(here, 'city')).length - along.length;
 const centre = (list) => ({ lat: list.reduce((s, c) => s + c.lat, 0) / list.length, lon: list.reduce((s, c) => s + c.lon, 0) / list.length });
-const centres = cities.map((city) => ({ city, ...centre(cameras.filter((c) => c.city === city)) }));
+const centres = cities.map((city) => ({ city, ...centre(cameras.filter((c) => c.city === city && paged(c))) }));
 const near = along.length >= 2 ? [] : nearestCities(here, centres.filter((c) => !along.some(([x]) => x === c.city)), 2 - along.length);
 const related = relatedRoads(road, roads, byRoad, cityOf);
 
@@ -46,9 +54,9 @@ const when = (iso) => iso.slice(0, 16).replace('T', ' ') + ' UTC';
 const km = (x) => x.toFixed(1);
 const axisText = ord.northish ? 'south to north' : 'west to east';
 ---
-<Base title={`${road} traffic cameras in driving order, California, United States: ${n} official links | ${SITE_NAME}`} description={`${n} Caltrans traffic cameras on ${road} in driving order for each direction, with the closures, chain controls and message signs on the road linked to their nearest cameras.`} route={`/roads/${slug}/`} crumbs={[{ name: 'Roads', route: '/roads/' }, { name: road, route: `/roads/${slug}/` }]} noindex={!isIndexable(n)}>
+<Base title={`${road} traffic cameras in driving order, ${stateText}, United States: ${n} official links | ${SITE_NAME}`} description={`${n} ${agencyText} traffic cameras on ${road} in driving order for each direction, with the closures, chain controls and message signs on the road linked to their nearest cameras.`} route={`/roads/${slug}/`} crumbs={[{ name: 'Roads', route: '/roads/' }, { name: road, route: `/roads/${slug}/` }]} noindex={!isIndexable(n)}>
   <h1>{road} traffic cameras</h1>
-  <p>{n} Caltrans cameras are listed on {road} in California, United States: {ord.groups.map((g, i) => <>{i > 0 && ', '}<a href={`#${dirId(g)}`}>{g.cams.length} {g.label === 'Direction not recorded' ? 'with no direction recorded' : g.label.toLowerCase()}</a></>)}. Each name below is a link to the official Caltrans source, not a picture. Part of <a href="/roads/">traffic cameras by road</a>; <a href="/guides/how-to-read-a-road-page/">how to read this page</a>.</p>
+  <p>{n} {agencyText} cameras are listed on {road} in {stateText}, United States: {ord.groups.map((g, i) => <>{i > 0 && ', '}<a href={`#${dirId(g)}`}>{g.cams.length} {g.label === 'Direction not recorded' ? 'with no direction recorded' : g.label.toLowerCase()}</a></>)}. Each name below is a link to the official source, not a picture. Part of <a href="/roads/">traffic cameras by road</a>; <a href="/guides/how-to-read-a-road-page/">how to read this page</a>.</p>
   <p><strong>Do not use this page while driving.</strong></p>
   <p><a class="cta" href="/map/">Open the map</a></p>
 
@@ -91,7 +99,7 @@ const axisText = ord.northish ? 'south to north' : 'west to east';
   <section data-block="coverage" data-basis="registry" data-source={source.name} data-asof={registryDate}>
     <h2>Coverage gaps on {road}</h2>
     <ul>{ord.groups.map((g) => <li>{g.label}: {g.gap ? `the largest gap is ${km(g.gap.km)} km, between ${g.gap.from.name} and ${g.gap.to.name}.` : `${g.cams.length} camera, so there is no gap to measure.`}</li>)}</ul>
-    <p class="meta">A gap is the straight-line distance between two neighbouring cameras in the order above, for a road that runs {axisText} overall. Source: {source.name}, districts {loadedDistricts.join(', ')}. Registry date {registryDate}. {linkCheckText(hres)} Closures, chain controls and signs are listed only when one of these cameras is within {NEAR_KM} km.</p>
+    <p class="meta">A gap is the straight-line distance between two neighbouring cameras in the order above, for a road that runs {axisText} overall. Source: {source.name}{here.some((c) => c.regionSlug === 'california') ? `, Caltrans districts ${loadedDistricts.join(', ')}` : ''}. Registry date {registryDate}. {linkCheckText(hres)} Closures, chain controls and signs are listed only when one of these cameras is within {NEAR_KM} km.</p>
   </section>
 
   <h2>Related roads</h2>

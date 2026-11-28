@@ -3,7 +3,7 @@
 // Beats Argos by: the index is made from the same registry and page list as the pages, so a result can never point at a page that is not built
 // and a town with no page still gets a result (its map position) instead of nothing.
 import { roadSlug, countryOf } from '../../../ops/importers/lib/registry.mjs';
-import { pageList, curatedPlaces, curatedRoads, countryRoute, regionRoute, cityRoute, countryName, slugify } from './pages.mjs';
+import { pageList, curatedPlaces, curatedRoads, roadCams, ROAD_REGIONS, countryRoute, regionRoute, cityRoute, countryName, slugify } from './pages.mjs';
 import { normalize, roadNorm } from './search-core.mjs';
 import { distKm } from './geo.mjs';
 
@@ -14,8 +14,7 @@ const centre = (list) => ({ lat: r5(list.reduce((s, c) => s + c.lat, 0) / list.l
 
 // Which routes exist: the same list the sitemap and the pages are built from.
 export function pageRoutes(cams) {
-  const ca = cams.filter((c) => c.regionSlug === 'california'); // road pages are California-only
-  return new Set(pageList(cams, curatedPlaces(cams), null, curatedRoads(ca)).map((p) => p.route));
+  return new Set(pageList(cams, curatedPlaces(cams), null, curatedRoads(cams)).map((p) => p.route));
 }
 
 // Returns entries { id, kind, name, norm, countrySlug, country, region, road, lat, lon, url }. Cameras with no country row (region not in REGION_COUNTRY) are skipped: no page, no address.
@@ -70,17 +69,18 @@ export function buildEntries(cams, gazetteer = []) {
     else add({ id: `town:${rs}:${slugify(city)}`, kind: 'town', ...base, url: mapUrl(at.lat, at.lon) });
   }
   for (const e of placeEntries(gazetteer, usable, new Set(out.map((x) => x.id)))) add(e);
-  // roads with a page (California)
-  const ca = usable.filter((c) => c.regionSlug === 'california');
-  for (const road of curatedRoads(ca)) {
+  // roads with a page (California, Oregon, Washington): region names every state the road's cameras are in
+  const rc = roadCams(usable);
+  for (const road of curatedRoads(rc)) {
     const slug = roadSlug(road), url = `/roads/${slug}/`;
     if (!routes.has(url)) continue;
-    add({ id: `road:${slug}`, kind: 'road', name: road, norm: roadNorm(road), ...where('california'), region: ca[0].regionName, road, ...centre(ca.filter((c) => roadSlug(c.road) === slug)), url });
+    const on = rc.filter((c) => roadSlug(c.road) === slug);
+    add({ id: `road:${slug}`, kind: 'road', name: road, norm: roadNorm(road), ...where('california'), region: [...new Set(on.map((c) => c.regionName))].sort().join(', '), road, ...centre(on), url });
   }
   // camera names: the link goes to the camera's city page, else its road page, else the official source. Neither city nor road pages have per-camera anchors, so no anchor is added.
   for (const c of usable) {
     const cityUrl = c.city ? cityRoute(c.regionSlug, c.city) : null;
-    const roadUrl = c.regionSlug === 'california' && roadSlug(c.road) ? `/roads/${roadSlug(c.road)}/` : null;
+    const roadUrl = ROAD_REGIONS.includes(c.regionSlug) && roadSlug(c.road) ? `/roads/${roadSlug(c.road)}/` : null;
     const url = cityUrl && routes.has(cityUrl) ? cityUrl : roadUrl && routes.has(roadUrl) ? roadUrl : c.officialUrl;
     add({ id: c.id, kind: 'camera', name: c.name, ...where(c.regionSlug), region: c.regionName, road: c.road || '', lat: r5(c.lat), lon: r5(c.lon), url });
   }
