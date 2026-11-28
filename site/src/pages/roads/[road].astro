@@ -58,7 +58,7 @@ const axisText = ord.northish ? 'south to north' : 'west to east';
 ---
 <Base title={`${road} traffic cameras in driving order, ${stateText}, United States: ${n} official links | ${SITE_NAME}`} description={`${n} ${agencyText} traffic cameras on ${road} in driving order for each direction, with the closures, chain controls and message signs on the road linked to their nearest cameras.`} route={`/roads/${slug}/`} crumbs={[{ name: 'Roads', route: '/roads/' }, { name: road, route: `/roads/${slug}/` }]} noindex={!isIndexable(n)}>
   <h1>{road} traffic cameras</h1>
-  <p>{n} {agencyText} cameras are listed on {road} in {stateText}, United States: {ord.groups.map((g, i) => <>{i > 0 && ', '}<a href={`#${dirId(g)}`}>{g.cams.length} {g.label === 'Direction not recorded' ? 'with no direction recorded' : g.label.toLowerCase()}</a></>)}. Each name below is a link to the official source, not a picture. Part of <a href="/roads/">traffic cameras by road</a>; <a href="/guides/how-to-read-a-road-page/">how to read this page</a>.</p>
+  <p>{n} {agencyText.replace(/ cameras$/i, "")} cameras are listed on {road} in {stateText}, United States: {ord.groups.map((g, i) => <>{i > 0 && ', '}<a href={`#${dirId(g)}`}>{g.cams.length} {g.label === 'Direction not recorded' ? 'with no direction recorded' : g.label.toLowerCase()}</a></>)}. Each name below is a link to the official source, not a picture. Part of <a href="/roads/">traffic cameras by road</a>; <a href="/guides/how-to-read-a-road-page/">how to read this page</a>.</p>
   <p><strong>Do not use this page while driving.</strong></p>
   <p><a class="cta" href="/map/">Open the map</a></p>
 
@@ -66,7 +66,7 @@ const axisText = ord.northish ? 'south to north' : 'west to east';
 
   <section data-block="cameras" data-basis="registry" data-count={n} data-source={source.name} data-asof={registryDate}>
     <h2>All {n} cameras on {road}, in estimated driving order</h2>
-    <p class="meta">Driving order is estimated from camera positions along the road: each direction is ordered by position along the road's main line (we draw the line of best fit through its cameras), because the postmile in the Caltrans data restarts at every county line and the milepost does not run on one scale across districts. On a winding stretch the order can be off.</p>
+    <p class="meta">Driving order is estimated from camera positions along the road: each direction is ordered by position along the road's main line (we draw the line of best fit through its cameras), because agency mileposts do not run on one scale (Caltrans postmiles restart at every county line). On a winding stretch the order can be off.</p>
     {hb && <p class="meta">Status words. {statusWords()}</p>}
     {ord.groups.map((g) => (<>
       <h3 id={dirId(g)}>{g.label} ({g.cams.length})</h3>
