@@ -17,6 +17,8 @@ fi
 
 # Nothing piles up on a 40 GB disk: container logs capped at 3 x 10 MB each, unused images pruned weekly,
 # and 2 GB of swap so a memory spike slows the box instead of killing it (4 GB RAM, no measured GEV figure yet).
+# Host tuning only on a real server run as root (the CI runner is neither).
+if [ "$(id -u)" = 0 ] && [ -z "${CI:-}" ]; then
 if [ ! -f /etc/docker/daemon.json ] && [ -d /etc/docker ]; then
   printf '{"log-driver":"json-file","log-opts":{"max-size":"10m","max-file":"3"}}\n' > /etc/docker/daemon.json
   systemctl restart docker || true
@@ -31,6 +33,7 @@ if command -v ufw >/dev/null && [ -z "${CI:-}" ]; then
 fi
 if [ ! -f /swapfile ] && [ -z "${CI:-}" ]; then
   fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile && echo '/swapfile none swap sw 0 0' >> /etc/fstab
+fi
 fi
 
 base="$(cut -d' ' -f1 ops/upstream-base.txt)"
