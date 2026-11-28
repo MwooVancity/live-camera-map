@@ -1,0 +1,88 @@
+# Deploy the map engine (GEV, unchanged) to the rented server, hands-off.
+# Needs repo secrets: SERVER_HOST (IP), SERVER_SSH_KEY (private key whose public half is on the server for root),
+# plus the existing CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID and the free keys AISSTREAM_API_KEY, FIRMS_MAP_KEY,
+# MAPILLARY_CLIENT_TOKEN. With no SERVER_HOST it says so and stops green: nothing is bought yet.
+# Public hostname: repo variable MAP_HOST, default live.worldtrafficcameras.com. noindex is untouched by this workflow.
+name: server-deploy
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: server-deploy
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      HOST_IP: ${{ secrets.SERVER_HOST }}
+      MAP_HOST: ${{ vars.MAP_HOST || 'live.worldtrafficcameras.com' }}
+      SITE_ORIGIN: https://worldtrafficcameras.com
+      CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: No server yet?
+        id: gate
+        run: |
+          if [ -z "$HOST_IP" ]; then echo "No SERVER_HOST secret: nothing to deploy yet."; echo "go=0" >> "$GITHUB_OUTPUT"; else echo "go=1" >> "$GITHUB_OUTPUT"; fi
+
+      # Cloudflare Tunnel: find or create "wtc-map", route MAP_HOST to the proxy container, add the DNS record.
+      # If the API token lacks Tunnel or DNS permission this step warns and the server still deploys (reachable only by IP:none).
+      - name: Tunnel (Cloudflare API)
+        id: tunnel
+        if: steps.gate.outputs.go == '1'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          api() { curl -fsS -H "Authorization: Bearer $CF_TOKEN" -H "Content-Type: application/json" "$@"; }
+          base="https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT/cfd_tunnel"
+          id=$(api "$base?name=wtc-map&is_deleted=false" | jq -r '.result[0].id // empty')
+          if [ -z "$id" ]; then
+            id=$(api -X POST "$base" -d '{"name":"wtc-map","config_src":"cloudflare"}' | jq -r '.result.id')
+          fi
+          api -X PUT "$base/$id/configurations" -d "{\"config\":{\"ingress\":[{\"hostname\":\"$MAP_HOST\",\"service\":\"http://proxy:8080\"},{\"service\":\"http_status:404\"}]}}" >/dev/null
+          token=$(api "$base/$id/token" | jq -r '.result')
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+          zone=$(api "https://api.cloudflare.com/client/v4/zones?name=worldtrafficcameras.com" | jq -r '.result[0].id')
+          rec=$(api "https://api.cloudflare.com/client/v4/zones/$zone/dns_records?name=$MAP_HOST" | jq -r '.result[0].id // empty')
+          body="{\"type\":\"CNAME\",\"name\":\"$MAP_HOST\",\"content\":\"$id.cfargotunnel.com\",\"proxied\":true}"
+          if [ -z "$rec" ]; then api -X POST "https://api.cloudflare.com/client/v4/zones/$zone/dns_records" -d "$body" >/dev/null
+          else api -X PUT "https://api.cloudflare.com/client/v4/zones/$zone/dns_records/$rec" -d "$body" >/dev/null; fi
+          echo "Tunnel $id routes $MAP_HOST to the proxy."
+
+      - name: Deploy over SSH
+        if: steps.gate.outputs.go == '1'
+        env:
+          SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          TUNNEL_TOKEN: ${{ steps.tunnel.outputs.token }}
+          AISSTREAM_API_KEY: ${{ secrets.AISSTREAM_API_KEY }}
+          FIRMS_MAP_KEY: ${{ secrets.FIRMS_MAP_KEY }}
+          MAPILLARY_CLIENT_TOKEN: ${{ secrets.MAPILLARY_CLIENT_TOKEN }}
+        run: |
+          set -euo pipefail
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id && chmod 600 ~/.ssh/id
+          ssh-keyscan -T 20 "$HOST_IP" >> ~/.ssh/known_hosts 2>/dev/null
+          # Values travel on stdin (not the command line), so they never show in the server's process list.
+          {
+            printf 'export AISSTREAM_API_KEY=%q FIRMS_MAP_KEY=%q MAPILLARY_CLIENT_TOKEN=%q TUNNEL_TOKEN=%q\n' \
+              "$AISSTREAM_API_KEY" "$FIRMS_MAP_KEY" "$MAPILLARY_CLIENT_TOKEN" "$TUNNEL_TOKEN"
+            cat <<EOF
+          set -euo pipefail
+          command -v git >/dev/null || { apt-get update; DEBIAN_FRONTEND=noninteractive apt-get install -y git; }
+          [ -d /opt/live-camera-map/.git ] || git clone https://github.com/${GITHUB_REPOSITORY}.git /opt/live-camera-map
+          cd /opt/live-camera-map && git fetch --quiet origin && git reset --quiet --hard origin/main
+          bash ops/deploy/server-setup.sh "$MAP_HOST" "$SITE_ORIGIN"
+          node --version >/dev/null 2>&1 && node ops/monitoring/healthcheck.mjs http://127.0.0.1:8080 "$MAP_HOST" || true
+          EOF
+          } | ssh -i ~/.ssh/id -o BatchMode=yes "root@$HOST_IP" bash -s
+
+      - name: Public check
+        if: steps.gate.outputs.go == '1' && steps.tunnel.outcome == 'success'
+        run: |
+          sleep 20
+          code=$(curl -s -o /dev/null -w '%{http_code}' "https://$MAP_HOST/")
+          echo "https://$MAP_HOST/ answered $code"
+          [ "$code" = 200 ]

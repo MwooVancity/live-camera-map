@@ -73,7 +73,9 @@ export function lint(compose, extraEnvTexts = []) {
     if (gev.environment?.GEV_KEY_SETUP_TRUSTED_PEERS !== 'none') bad.push(`GEV_KEY_SETUP_TRUSTED_PEERS must be none, got ${gev.environment?.GEV_KEY_SETUP_TRUSTED_PEERS}`);
   }
   for (const [name, s] of Object.entries(svc)) {
-    if (name !== 'proxy' && name !== 'gev') bad.push(`unexpected service ${name}`);
+    if (name !== 'proxy' && name !== 'gev' && name !== 'tunnel') bad.push(`unexpected service ${name}`);
+    // The tunnel dials out to Cloudflare; it must never open a port on the server.
+    if (name === 'tunnel' && s.ports) bad.push('tunnel publishes ports');
     if (s.privileged) bad.push(`${name} is privileged`);
     const env = s.environment || {};
     for (const [k, v] of Object.entries(env)) {

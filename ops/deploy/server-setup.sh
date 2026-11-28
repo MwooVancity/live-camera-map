@@ -15,6 +15,20 @@ if ! docker compose version >/dev/null 2>&1; then
   DEBIAN_FRONTEND=noninteractive apt-get install -y docker.io docker-compose-v2 git
 fi
 
+# Nothing piles up on a 40 GB disk: container logs capped at 3 x 10 MB each, unused images pruned weekly,
+# and 2 GB of swap so a memory spike slows the box instead of killing it (4 GB RAM, no measured GEV figure yet).
+if [ ! -f /etc/docker/daemon.json ] && [ -d /etc/docker ]; then
+  printf '{"log-driver":"json-file","log-opts":{"max-size":"10m","max-file":"3"}}\n' > /etc/docker/daemon.json
+  systemctl restart docker || true
+fi
+if [ -d /etc/cron.weekly ] && [ ! -f /etc/cron.weekly/wtc-docker-prune ]; then
+  printf '#!/bin/sh\ndocker image prune -af --filter until=168h >/dev/null 2>&1\ndocker builder prune -af --filter until=168h >/dev/null 2>&1\n' > /etc/cron.weekly/wtc-docker-prune
+  chmod +x /etc/cron.weekly/wtc-docker-prune
+fi
+if [ ! -f /swapfile ] && [ -z "${CI:-}" ]; then
+  fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile && echo '/swapfile none swap sw 0 0' >> /etc/fstab
+fi
+
 base="$(cut -d' ' -f1 ops/upstream-base.txt)"
 [ -d gev/.git ] || git clone https://github.com/bilawalsidhu/gods-eye-view gev
 git -C gev cat-file -e "$base^{commit}" 2>/dev/null || git -C gev fetch origin
@@ -25,5 +39,10 @@ printf 'GEV_ALLOWED_HOSTS=%s\nGEV_EMBED_FRAME_ANCESTORS=%s\nGEV_IMAGE_TAG=curren
 
 # Keep the running image for rollback (runbook "Rollback").
 docker image inspect gev-pinned:current >/dev/null 2>&1 && docker tag gev-pinned:current gev-pinned:previous
-docker compose -f ops/deploy/docker-compose.yml up -d --build --wait --wait-timeout 600
+# Free keys (AISSTREAM_API_KEY, FIRMS_MAP_KEY, MAPILLARY_CLIENT_TOKEN) and TUNNEL_TOKEN arrive as environment variables
+# from the deploy workflow (`sudo -E`); compose reads them from the environment, so they are never written to disk here.
+profile=""; [ -n "${TUNNEL_TOKEN:-}" ] && profile="--profile tunnel"
+docker compose -f ops/deploy/docker-compose.yml $profile up -d --build --wait --wait-timeout 600
 echo "UP: http://127.0.0.1:8080 serves $host"
+docker stats --no-stream --format '{{.Name}} {{.MemUsage}} {{.CPUPerc}}' || true
+df -h / | tail -1

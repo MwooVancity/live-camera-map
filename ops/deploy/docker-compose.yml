@@ -16,6 +16,11 @@ services:
       GEV_KEY_SETUP_TRUSTED_PEERS: none
       GEV_ALLOWED_HOSTS: ${GEV_ALLOWED_HOSTS:?set GEV_ALLOWED_HOSTS in ops/deploy/.env}
       GEV_EMBED_FRAME_ANCESTORS: ${GEV_EMBED_FRAME_ANCESTORS:?set GEV_EMBED_FRAME_ANCESTORS in ops/deploy/.env}
+      # Free keys, passed through from the server's environment by .github/workflows/server-deploy.yml (GitHub secrets).
+      # Empty = that layer stays off. They are never written into git.
+      AISSTREAM_API_KEY: ${AISSTREAM_API_KEY:-}
+      FIRMS_MAP_KEY: ${FIRMS_MAP_KEY:-}
+      MAPILLARY_CLIENT_TOKEN: ${MAPILLARY_CLIENT_TOKEN:-}
     # NO ports: only the proxy container can reach gev:4173 over the private network.
     expose:
       - "4173"
@@ -56,6 +61,21 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - private
+
+  # Cloudflare Tunnel (outbound only, no open port on the server). Started only with `--profile tunnel`;
+  # its public hostname points at http://proxy:8080. The token comes from the deploy workflow, never from git.
+  tunnel:
+    image: cloudflare/cloudflared:2025.11.1
+    profiles:
+      - tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:-}
+    depends_on:
+      - proxy
     networks:
       - private
 
