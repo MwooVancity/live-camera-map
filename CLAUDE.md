@@ -23,6 +23,8 @@ NO PERMISSION EMAILS (HARD, owner 2026-11-27: "We need to stop asking people if 
 
 RUN-LINE FOR OWNER STEPS (HARD, owner 2026-11-27: "do that run line thingy instead of making me go on github"): when the owner must enter a secret or do a step only they may do, give ONE single-line powershell block with a Run button (e.g. `gh secret set NAME --repo MwooVancity/live-camera-map`), never a website walk-through. Claude still never types the secret itself.
 
+GEMINI SMARTEST MODE (owner 2026-11-28: "Make sure Gemini mode is the smartest mode"): before every Gemini prompt open the mode picker and choose "Deeper analysis" (or Deep research when the question is research). If it is locked, say so in one line in the report and do not call the answer a deep one.
+
 INFO-GAIN DEBATE UNTIL DRY (HARD, owner 2026-11-28: "I need you guys to eventually both agree that there is no more information gain we could add that's helpful to the user. Only when that is done can we agree that the page deserves number one"): every page type (home, city, road, guide, /gods-eye-view/) goes through rounds with ChatGPT and Gemini, each given the live page (screenshots or URL) and the top-ranking pages for its query. Each round they list missing information a real visitor would want. Claude builds every item that is helpful, true and sourced from data we can get, and logs rejected items with the reason. The page is DONE only after one round where ChatGPT, Gemini and Claude all name nothing new that passes those tests. Log every round in plan.md section 9.
 
 ## Use it like a human, with screenshots (HARD, owner 2026-11-27)
