@@ -22,6 +22,15 @@ Done = switched on in a real browser on the live map with data showing, not just
 - [x] Wildfire outlines 39 seen live 2026-11-27. [ ] Hurricanes: no active storms in the feed, untestable today ( a red map-freshness run means they went stale)
 - [x] Satellites 11.8K; space launches 26 (seen live 2026-11-27)
 - [x] Server ready to switch on 2026-11-28: workflow server-deploy (SSH + Cloudflare Tunnel via API, keys from secrets, disk gate, firewall, swap, log caps, noindex header, required public healthcheck); reviewed by ChatGPT + Gemini; Linux Docker run green (session5-compose 46091442666). Proxy now opens news (GDELT only), transit, rail, directions, ships. OWNER: buy Hetzner CX23, then one Run line for SERVER_HOST + SSH key. UNKNOWN until first deploy: Cloudflare token Tunnel/DNS scope, GEV RAM.
+- [ ] FREE FIXES FROM COMPETITOR TEARDOWN 2026-11-28 (docs/research/2026-11-28-competitor-teardown.md; verdict mixed-to-worse; no fix needs money):
+  - [ ] City pages for WA, OR, GA, IA, MD, DE, TX-highways (coordinates to place names), Seattle first
+  - [ ] Road pages for every state; I-5 one road across WA/OR/CA
+  - [ ] Search finds roads (I-5, I5, Interstate 5); city results go to the city page, not the map
+  - [ ] Road weather units (154 / 480208 unscaled)
+  - [ ] Texas page title honest (Austin only)
+  - [ ] Homepage leads with "find your camera", check counts below
+  - [ ] Sitemap empty: fill it (still noindex until go live)
+  - [ ] OWNER: go live? approve pictures for openly licensed sources?
 - [ ] /gods-eye-view/ page (keyword research docs/research/2026-11-28-gods-eye-view-keywords.md: target 'online / web app / live camera' terms, trademark credit, not affiliated).
 - [x] NASA FIRMS active fires live 2026-11-27: 86,536 fires (3 satellites), snapshot every 3 h with build-time key; seen ON in browser, "updated 12m ago".
 - [~] Mapillary: coverage lines live 2026-11-27 (Seattle: 4,879 sequences, credit line shown). Photos NOT reachable: lines vanish at close zoom (z14 answered empty, tiles 12 MB untrimmed) and clicking a line at z13 opens only the sequence id. Full photos need the server (trim proxy); Workers free CPU too small.
