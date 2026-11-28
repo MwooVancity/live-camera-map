@@ -1,0 +1,9 @@
+---
+// Item 4 (round 2): a camera our check finds unavailable lists up to 3 nearest reachable cameras on the same road (and direction).
+// Beats Argos by: a dead link comes with the working cameras next to it, not a dead end.
+import { alternatives } from '../lib/health.mjs';
+import { cleanLabel } from '../lib/labels.mjs';
+const { c, pool, hb } = Astro.props;
+const alts = hb && hb.statusOf(c.id) === 'unavailable' ? alternatives(c, pool, hb.statusOf) : [];
+---
+{alts.length > 0 && <span class="meta" data-alternatives={alts.length}> Reachable nearby on {c.road}{c.direction ? ` ${c.direction}` : ''}: {alts.map((a, i) => <>{i > 0 && ', '}<a rel="noopener" data-alt href={a.camera.officialUrl}>{cleanLabel(a.camera)}</a> ({a.km.toFixed(1)} km)</>)}.</span>}

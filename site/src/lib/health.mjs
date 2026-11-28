@@ -7,6 +7,7 @@ import { resolve } from 'node:path';
 import { countsBy } from '../../../ops/importers/lib/registry.mjs';
 import { CONFIG } from '../../../ops/health/check.mjs';
 import { effectiveStatus, checkedAgoText, MAX_CHECK_AGE_H } from '../../../ops/health/lib/age.mjs';
+import { distKm } from './geo.mjs';
 
 export const HEALTH_MAX_AGE_H = 24; // the whole file: the last run is older than this at build = no statuses at all
 export { MAX_CHECK_AGE_H }; // one camera: its OWN last check older than this = shown as unknown (the checker may carry a camera forward from an earlier run)
@@ -14,11 +15,23 @@ export const STATUSES = ['reachable', 'stale', 'unavailable', 'unknown'];
 export const MEANING = {
   reachable: 'the official link answers with a picture (this does not say the picture is recent)',
   stale: 'the server says the file is old: its own last-modified time is more than 6 hours ago',
-  unavailable: 'the official link does not answer, or answers with a web page or error instead of a picture',
+  unavailable: 'the official link does not answer, answers with a web page or error instead of a picture, or sends the source\'s fixed "no picture" placeholder',
   unknown: `we have not checked it, our last check of it is more than ${MAX_CHECK_AGE_H} hours old, or the check could not finish`,
 };
+// What no status can tell (the checker reads response headers only, it never looks at the picture).
+export const CANNOT_SEE = 'Our checker reads only what the server answers, never the picture itself, so it cannot tell you the camera shows a wrong view (turned away, zoomed, a lens covered), a frozen scene that the server keeps re-sending with a new time, or weather and darkness that hide the road.';
 // The status words, defined once per page (near the top of the camera list) from MEANING. Never says a picture is fresh.
-export const statusWords = () => STATUSES.map((s) => `${s[0].toUpperCase()}${s.slice(1)} means ${MEANING[s]}.`).join(' ');
+export const statusWords = () => `${STATUSES.map((s) => `${s[0].toUpperCase()}${s.slice(1)} means ${MEANING[s]}.`).join(' ')} ${CANNOT_SEE}`;
+
+// Up to n nearest cameras that our check found reachable, on the same road and, when this camera records a direction,
+// the same direction: [{ camera, km }], nearest first. No road recorded = none (we cannot say it is the same road).
+// ponytail: linear scan per down camera; fine while only unavailable cameras ask.
+export function alternatives(c, pool, statusOf, n = 3) {
+  if (!c.road) return [];
+  return pool.filter((o) => o.id !== c.id && o.road === c.road && (!c.direction || o.direction === c.direction) && statusOf(o.id) === 'reachable')
+    .map((camera) => ({ camera, km: distKm(c.lat, c.lon, camera.lat, camera.lon) }))
+    .sort((a, b) => a.km - b.km || a.camera.id.localeCompare(b.camera.id)).slice(0, n);
+}
 // The one sentence about our link check, derived from cityHealth's result so it can never say "never run" beside real markers.
 export const linkCheckText = ({ block, reason }) => (block ? `Link check by us: last run ${block.asof.slice(0, 16).replace('T', ' ')} UTC.`
   : reason === 'stale' ? 'Link check by us: the last run is more than 24 hours old, so no status is shown.' : 'Link check by us: not run yet.');

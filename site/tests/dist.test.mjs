@@ -1,5 +1,5 @@
 // Tests over the built site. Run `npm run build` first.
-import { cameras as REGISTRY_CAMERAS } from '../src/lib/data.mjs'; // enriched like the pages (lib/places-assign.mjs)
+import { cameras as REGISTRY_CAMERAS, isRiver } from '../src/lib/data.mjs'; // enriched like the pages (lib/places-assign.mjs)
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync, mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -232,12 +232,13 @@ test('levels built: 1 world hub, one country hub per country, one region hub per
   for (const [country, n] of Object.entries(byCountry)) {
     const html = pages.get(`/cameras/${country}/`);
     assert.ok(html, country);
-    assert.ok(titleOf(html).includes(`${n} official links`), `${country}: title count`);
+    const river = cameras.filter((x) => isRiver(x) && cb([x], 'country')[country]).length; // river cameras counted apart (round 2 item 1)
+    assert.ok(titleOf(html).includes(`${n - river || river} official links`), `${country}: title count`);
     assert.equal(isNoindex(html), ONE_REGION_HUBS.has(country), `${country}: noindex only for one-region hubs`);
     for (const [region, c] of Object.entries(REGION_COUNTRY)) {
       if (c.countrySlug !== country || !hubRegions.includes(region)) continue;
       assert.ok(html.includes(`href="/cameras/${country}/${region}/"`), `${country} does not link ${region}`);
-      assert.ok(html.includes(`${cb(cameras.filter((x) => x.regionSlug === region), 'region')[region]} cameras on `), `${country}: ${region} count in text`);
+      assert.ok(new RegExp(`${cb(cameras.filter((x) => x.regionSlug === region), 'region')[region]} (river cameras \\(they watch rivers, not roads\\)|cameras) on `).test(html), `${country}: ${region} count in text`);
     }
   }
   const world = pages.get('/cameras/');

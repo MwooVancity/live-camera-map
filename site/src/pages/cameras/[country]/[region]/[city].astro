@@ -1,4 +1,5 @@
 ---
+import AltCams from '../../../../components/AltCams.astro';
 import CameraListTools from '../../../../components/CameraListTools.astro';
 import Base from '../../../../layouts/Base.astro';
 import { SITE_NAME } from '../../../../config.mjs';
@@ -106,7 +107,7 @@ const guides = isCA
     <CameraListTools n={n} roads={roads} hb={hb} />
     <ul data-camera-list>
       {sorted.map((c) => (
-        <li><a href={c.officialUrl} rel="noopener" title={c.name}>{cleanLabel(c)}</a> <span class="meta">{[c.road, c.direction, c.feedType === 'still' ? 'still image' : 'video'].filter(Boolean).join(', ')}.</span>{c.locationText && <span class="meta"> {c.locationText}</span>}{hb && <> <span class="meta" data-status={hb.statusOf(c.id)} title={`${MEANING[hb.statusOf(c.id)]}${hb.record(c.id)?.lastChecked ? '; last checked ' + when(hb.record(c.id).lastChecked) : ''}`}>Status: {hb.statusOf(c.id)}.</span>{hb.checkedText(c.id) && <span class="meta"> {hb.checkedText(c.id)}.</span>}</>}</li>
+        <li><a href={c.officialUrl} rel="noopener" title={c.name}>{cleanLabel(c)}</a> <span class="meta">{[c.road, c.direction, c.feedType === 'still' ? 'still image' : 'video'].filter(Boolean).join(', ')}.</span>{c.locationText && <span class="meta"> {c.locationText}</span>}{hb && <> <span class="meta" data-status={hb.statusOf(c.id)} title={`${MEANING[hb.statusOf(c.id)]}${hb.record(c.id)?.lastChecked ? '; last checked ' + when(hb.record(c.id).lastChecked) : ''}`}>Status: {hb.statusOf(c.id)}.</span>{hb.checkedText(c.id) && <span class="meta"> {hb.checkedText(c.id)}.</span>}<AltCams c={c} pool={regionCams} hb={hb} /></>}</li>
       ))}
     </ul>
   </section>

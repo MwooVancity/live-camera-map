@@ -1,11 +1,12 @@
 ---
+import AltCams from '../../components/AltCams.astro';
 import Base from '../../layouts/Base.astro';
 import RoadBlock from '../../components/RoadBlock.astro';
 import { SITE_NAME } from '../../config.mjs';
 import { cameras as allCameras, countsBy, registryDateOf, sources, loadedDistricts } from '../../lib/data.mjs';
 import { curatedRoads, curatedCities, curatedPlaces, slugify, cityRoute as cityRouteOf, isIndexable, roadCams } from '../../lib/pages.mjs';
 import { roadSlug } from '../../../../ops/importers/lib/registry.mjs';
-import { orderAlongRoad, relatedRoads, nearestCities } from '../../lib/roads.mjs';
+import { orderAlongRoad, relatedRoads, nearestCities, roadCoverage } from '../../lib/roads.mjs';
 import { roadBlocks, loadLive, NEAR_KM } from '../../lib/live.mjs';
 import { loadHealth, cityHealth, linkCheckText, statusWords, MEANING } from '../../lib/health.mjs';
 import { cleanLabel } from '../../lib/labels.mjs';
@@ -44,6 +45,7 @@ const near = along.length >= 2 ? [] : nearestCities(here, centres.filter((c) => 
 const related = relatedRoads(road, roads, byRoad, cityOf);
 
 const ord = orderAlongRoad(here);
+const cov = roadCoverage(here); // item 5: count, km covered, longest stretch, all directions together
 const total = ord.groups.reduce((s, g) => s + g.cams.length, 0);
 if (total !== n) throw new Error(`${road}: ${total} cameras in the order lists but countsBy says ${n}`);
 const live = roadBlocks(slug, here, along.map(([c]) => ({ city: c, slug: slugify(c) })), loadLive(), new Date(), { road, along: ord.along });
@@ -69,7 +71,7 @@ const axisText = ord.northish ? 'south to north' : 'west to east';
     {ord.groups.map((g) => (<>
       <h3 id={dirId(g)}>{g.label} ({g.cams.length})</h3>
       <ol>{g.cams.map(({ camera: c }) => (
-        <li data-camera={c.id}><a href={c.officialUrl} rel="noopener" title={c.name}>{cleanLabel(c)}</a> <span class="meta">{[c.feedType === 'still' ? 'still image' : 'video'].filter(Boolean).join(', ')}.</span>{hb && <> <span class="meta" data-status={hb.statusOf(c.id)} title={`${MEANING[hb.statusOf(c.id)]}${hb.record(c.id)?.lastChecked ? '; last checked ' + when(hb.record(c.id).lastChecked) : ''}`}>Status: {hb.statusOf(c.id)}.</span>{hb.checkedText(c.id) && <span class="meta"> {hb.checkedText(c.id)}.</span>}</>}</li>
+        <li data-camera={c.id}><a href={c.officialUrl} rel="noopener" title={c.name}>{cleanLabel(c)}</a> <span class="meta">{[c.feedType === 'still' ? 'still image' : 'video'].filter(Boolean).join(', ')}.</span>{hb && <> <span class="meta" data-status={hb.statusOf(c.id)} title={`${MEANING[hb.statusOf(c.id)]}${hb.record(c.id)?.lastChecked ? '; last checked ' + when(hb.record(c.id).lastChecked) : ''}`}>Status: {hb.statusOf(c.id)}.</span>{hb.checkedText(c.id) && <span class="meta"> {hb.checkedText(c.id)}.</span>}<AltCams c={c} pool={here} hb={hb} /></>}</li>
       ))}</ol>
     </>))}
   </section>
@@ -98,6 +100,7 @@ const axisText = ord.northish ? 'south to north' : 'west to east';
 
   <section data-block="coverage" data-basis="registry" data-source={source.name} data-asof={registryDate}>
     <h2>Coverage gaps on {road}</h2>
+    <p>{cov.n} cameras cover about {km(cov.lengthKm)} km of road, from the first camera to the last.{cov.longest ? ` The longest stretch with no camera is ${km(cov.longest.km)} km, between ${cleanLabel(cov.longest.from)} and ${cleanLabel(cov.longest.to)}.` : ''}</p>
     <ul>{ord.groups.map((g) => <li>{g.label}: {g.gap ? `the largest gap is ${km(g.gap.km)} km, between ${g.gap.from.name} and ${g.gap.to.name}.` : `${g.cams.length} camera, so there is no gap to measure.`}</li>)}</ul>
     <p class="meta">A gap is the straight-line distance between two neighbouring cameras in the order above, for a road that runs {axisText} overall. Source: {source.name}{here.some((c) => c.regionSlug === 'california') ? `, Caltrans districts ${loadedDistricts.join(', ')}` : ''}. Registry date {registryDate}. {linkCheckText(hres)} Closures, chain controls and signs are listed only when one of these cameras is within {NEAR_KM} km.</p>
   </section>

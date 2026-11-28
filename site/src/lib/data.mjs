@@ -24,3 +24,10 @@ export const registryDate = cameras.map((c) => c.lastSeen).filter(Boolean).sort(
 export const sourceOf = (id) => sources.find((s) => s.id === id);
 export const loadedDistricts = Object.entries(report.perDistrict).filter(([, v]) => v.ok).map(([d]) => d);
 export const failedDistricts = Object.entries(report.perDistrict).filter(([, v]) => !v.ok).map(([d]) => d);
+
+// River cameras (sources.json names them "river cameras": MLIT Japan, Taiwan WRA) watch rivers, not roads, so every headline counts them apart.
+const RIVER = new Set(sources.filter((s) => /river cameras/i.test(s.name)).map((s) => s.id));
+export const isRiver = (c) => RIVER.has(c.sourceId);
+export const splitCount = (list) => { const river = list.filter(isRiver).length; return { traffic: list.length - river, river }; };
+// " and 1054 river cameras" or '': the one tail every headline appends after its traffic count.
+export const riverTail = (list) => { const r = splitCount(list).river; return r ? ` and ${r} river camera${r === 1 ? '' : 's'}` : ''; };

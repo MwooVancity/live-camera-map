@@ -1,11 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
 import { SITE_NAME } from '../config.mjs';
-import { cameras, countsBy, registryDate, loadedDistricts } from '../lib/data.mjs';
+import { cameras, countsBy, registryDate, loadedDistricts, splitCount, riverTail } from '../lib/data.mjs';
 import { mapUrl } from '../lib/search-index.mjs';
 import { centreOf } from '../lib/area.mjs';
 import { curatedPlaces, regionsWithPages, regionInfo, cityRoute, countriesWithPages, countryName, countryRoute, GUIDES } from '../lib/pages.mjs';
 const total = cameras.length;
+const { traffic } = splitCount(cameras); // river cameras (MLIT, Taiwan WRA) counted apart in every headline
+const rivers = riverTail(cameras);
 // City and road pages with a position, for the optional "cameras near me" button: [name, url, lat, lon, kind].
 // One point per half-degree square that holds a camera, so every covered area answers "near me" (city pages alone left out Seattle and Atlanta).
 const cells = new Map();
@@ -29,10 +31,10 @@ const unchecked = neverChecked(cameras);
 const healthOk = loadHealth() !== null;
 const sourcesN = new Set(cameras.map((c) => c.sourceId)).size;
 ---
-<Base title={`Free live traffic cameras: ${total} official links, no sign-in | ${SITE_NAME}`} description={`Free traffic camera directory: ${total} official camera links in ${nCountries} countries. No account, no quota, no ad before a camera. Each links to its official source.`} route="/">
+<Base title={`Free live traffic cameras: ${traffic} official links, no sign-in | ${SITE_NAME}`} description={`Free traffic camera directory: ${traffic} official traffic camera links${rivers} in ${nCountries} countries. No account, no quota, no ad before a camera. Each links to its official source.`} route="/">
   <section class="hero">
     <h1>Free live traffic cameras</h1>
-    <p class="lead"><strong>{total}</strong> official camera links in <strong>{nCountries}</strong> countries{unchecked > 0 ? <>; our link check covers {total - unchecked} of them, and {unchecked} cannot be checked (<a href="/status/">see status</a>)</> : <>, each one checked by us</>}. No account, no pictures copied: every name goes to the official source.</p>
+    <p class="lead"><strong>{traffic}</strong> official traffic camera links{rivers} in <strong>{nCountries}</strong> countries{unchecked > 0 ? <>; our link check covers {total - unchecked} of them, and {unchecked} cannot be checked (<a href="/status/">see status</a>)</> : <>, each one checked by us</>}. No account, no pictures copied: every name goes to the official source.</p>
     <p class="stats"><span>List updated {registryDate}</span><span>{sourcesN} official sources</span>{healthOk && <span>Health checked every few hours</span>}</p>
     <p class="actions"><a class="cta" href="/map/">Open the map</a> <a class="cta2" href="/cameras/">Browse all cameras</a> <button type="button" id="near-btn" class="cta2" hidden>Cameras near me</button></p>
     <div id="near" aria-live="polite" hidden><p id="near-msg" class="meta"></p><ul id="near-list"></ul></div>
@@ -40,7 +42,7 @@ const sourcesN = new Set(cameras.map((c) => c.sourceId)).size;
   </section>
   <details class="where">
     <summary>Where the counts come from</summary>
-    <p>{SITE_NAME} lists {total} traffic cameras in {list}, each one a link to the official source ({regions.map((r) => `${regionName(r)}: ${byRegion[r]}${r === 'california' ? ` from Caltrans districts ${loadedDistricts.join(', ')}` : ` from ${regionInfo(r).agency}`}`).join('; ')}). We show where the cameras are, which roads they cover and when our list was last updated{registryDate ? ` (${registryDate})` : ''}. We do not copy camera pictures.</p>
+    <p>{SITE_NAME} lists {traffic} traffic cameras{rivers} in {list}, each one a link to the official source ({regions.map((r) => `${regionName(r)}: ${byRegion[r]}${r === 'california' ? ` from Caltrans districts ${loadedDistricts.join(', ')}` : ` from ${regionInfo(r).agency}`}`).join('; ')}). We show where the cameras are, which roads they cover and when our list was last updated{registryDate ? ` (${registryDate})` : ''}. We do not copy camera pictures.</p>
   </details>
   <h2>Traffic cameras by country</h2>
   <ul class="chips">{countryList.map((c) => <li><a href={countryRoute(c)}>{countryName(c)}</a> <span class="n">{byCountry[c]}</span></li>)}</ul>

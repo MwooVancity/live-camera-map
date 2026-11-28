@@ -26,6 +26,22 @@ export function roadAxis(cams) {
   return { ax, ay, along: (item) => { const [x, y] = xy(item.lat, item.lon); return x * ax + y * ay; }, northish: Math.abs(ay) >= Math.abs(ax) };
 }
 
+// Coverage of ONE road, all directions together, in order along its axis: camera count, km of road between the first and
+// last camera (sum of neighbour gaps, so a bend counts), and the longest stretch between two neighbouring cameras.
+// ponytail: straight lines between cameras, not road geometry; a winding road reads a little short.
+export function roadCoverage(cams) {
+  if (!cams.length) return { n: 0, lengthKm: 0, longest: null };
+  const axis = roadAxis(cams);
+  const list = [...cams].sort((a, b) => axis.along(a) - axis.along(b) || a.id.localeCompare(b.id));
+  let lengthKm = 0, longest = null;
+  for (let i = 1; i < list.length; i++) {
+    const km = distKm(list[i - 1].lat, list[i - 1].lon, list[i].lat, list[i].lon);
+    lengthKm += km;
+    if (!longest || km > longest.km) longest = { km, from: list[i - 1], to: list[i] };
+  }
+  return { n: cams.length, lengthKm, longest };
+}
+
 // Cameras of ONE road in driving order per recorded direction. Returns
 // { northish, groups: [{ direction, label, cams: [{ camera, along }], gap: { km, from, to } | null }] }.
 // A North/East group runs along the axis, South/West against it; a direction that does not line up with the axis, and
