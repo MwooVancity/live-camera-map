@@ -83,7 +83,8 @@ test('search: I-5, I5 and Interstate 5 find the road page; Seattle goes to its c
 test('road weather: a raw reading never shows as a bare number', () => {
   assert.equal(rwisVal(154, 'air temperature'), 'air temperature 154 (unit not stated by Caltrans)');
   assert.equal(rwisVal(null, 'wind'), null);
-  for (const [route, html] of pages) assert.ok(!/(air temperature|visibility|wind|gust) \d+[,.]/.test(html.replace(/<[^>]+>/g, '')), `${route}: bare weather number`);
+  // ponytail: word boundary so agency text like "Sherwind 3," is not a weather number
+  for (const [route, html] of pages) { const m = html.replace(/<[^>]+>/g, '').match(/.{0,60}\b(air temperature|visibility|wind|gust) \d+[,.].{0,20}/); assert.ok(!m, `${route}: bare weather number: ${m && m[0]}`); }
 });
 
 test('Texas (Austin) page says City of Austin cameras only in its title and heading', () => {
