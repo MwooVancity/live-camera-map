@@ -25,6 +25,10 @@ if [ -d /etc/cron.weekly ] && [ ! -f /etc/cron.weekly/wtc-docker-prune ]; then
   printf '#!/bin/sh\ndocker image prune -af --filter until=168h >/dev/null 2>&1\ndocker builder prune -af --filter until=168h >/dev/null 2>&1\n' > /etc/cron.weekly/wtc-docker-prune
   chmod +x /etc/cron.weekly/wtc-docker-prune
 fi
+# Firewall: only SSH comes in (the tunnel dials out; 8080 is loopback-only). Docker's loopback publish is not affected.
+if command -v ufw >/dev/null && [ -z "${CI:-}" ]; then
+  ufw default deny incoming >/dev/null && ufw default allow outgoing >/dev/null && ufw allow OpenSSH >/dev/null && ufw --force enable >/dev/null
+fi
 if [ ! -f /swapfile ] && [ -z "${CI:-}" ]; then
   fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile && echo '/swapfile none swap sw 0 0' >> /etc/fstab
 fi

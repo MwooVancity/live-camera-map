@@ -3,6 +3,10 @@
 # plus the existing CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID and the free keys AISSTREAM_API_KEY, FIRMS_MAP_KEY,
 # MAPILLARY_CLIENT_TOKEN. With no SERVER_HOST it says so and stops green: nothing is bought yet.
 # Public hostname: repo variable MAP_HOST, default live.worldtrafficcameras.com. noindex is untouched by this workflow.
+# Reviewed by ChatGPT and Gemini 2026-11-28 (docs/chatgpt-prompts/2026-11-28-server-infra-review.md): tunnel failure is
+# fatal, every Cloudflare reply is checked for success, JSON is built with jq, disk is checked first, health check is required.
+# Accepted risks (owner hands-off): root SSH with a key (a docker-group user is root-equivalent anyway, as ChatGPT noted);
+# first-use host key (ssh-keyscan) instead of a fingerprint read from the Hetzner console.
 name: server-deploy
 on:
   workflow_dispatch:
@@ -22,32 +26,43 @@ jobs:
       CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
-      - name: No server yet?
+      - name: No server yet? Wrong branch or hostname?
         id: gate
         run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/main" || { echo "Deploys run only from main."; exit 1; }
+          [[ "$MAP_HOST" =~ ^[a-z0-9-]+\.worldtrafficcameras\.com$ ]] || { echo "MAP_HOST must be a worldtrafficcameras.com subdomain: $MAP_HOST"; exit 1; }
           if [ -z "$HOST_IP" ]; then echo "No SERVER_HOST secret: nothing to deploy yet."; echo "go=0" >> "$GITHUB_OUTPUT"; else echo "go=1" >> "$GITHUB_OUTPUT"; fi
 
-      # Cloudflare Tunnel: find or create "wtc-map", route MAP_HOST to the proxy container, add the DNS record.
-      # If the API token lacks Tunnel or DNS permission this step warns and the server still deploys (reachable only by IP:none).
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        if: steps.gate.outputs.go == '1'
+
+      # Cloudflare Tunnel: find or create "wtc-map", route MAP_HOST to the proxy container, add the DNS record. Any failure stops the deploy.
       - name: Tunnel (Cloudflare API)
         id: tunnel
         if: steps.gate.outputs.go == '1'
-        continue-on-error: true
         run: |
           set -euo pipefail
-          api() { curl -fsS -H "Authorization: Bearer $CF_TOKEN" -H "Content-Type: application/json" "$@"; }
+          api() {
+            local r; r=$(curl -fsS -H "Authorization: Bearer $CF_TOKEN" -H "Content-Type: application/json" "$@")
+            jq -e '.success == true' >/dev/null <<<"$r" || { echo "Cloudflare API refused:" >&2; jq -c '.errors' <<<"$r" >&2; return 1; }
+            printf '%s\n' "$r"
+          }
+          need() { [ -n "$2" ] && [ "$2" != null ] || { echo "Cloudflare gave no $1" >&2; exit 1; }; }
           base="https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT/cfd_tunnel"
           id=$(api "$base?name=wtc-map&is_deleted=false" | jq -r '.result[0].id // empty')
-          if [ -z "$id" ]; then
-            id=$(api -X POST "$base" -d '{"name":"wtc-map","config_src":"cloudflare"}' | jq -r '.result.id')
-          fi
-          api -X PUT "$base/$id/configurations" -d "{\"config\":{\"ingress\":[{\"hostname\":\"$MAP_HOST\",\"service\":\"http://proxy:8080\"},{\"service\":\"http_status:404\"}]}}" >/dev/null
-          token=$(api "$base/$id/token" | jq -r '.result')
+          [ -n "$id" ] || id=$(api -X POST "$base" -d '{"name":"wtc-map","config_src":"cloudflare"}' | jq -r '.result.id // empty')
+          need "tunnel id" "$id"
+          cfg=$(jq -n --arg h "$MAP_HOST" '{config:{ingress:[{hostname:$h,service:"http://proxy:8080"},{service:"http_status:404"}]}}')
+          api -X PUT "$base/$id/configurations" -d "$cfg" >/dev/null
+          token=$(api "$base/$id/token" | jq -r '.result // empty')
+          need "tunnel token" "$token"
           echo "::add-mask::$token"
           echo "token=$token" >> "$GITHUB_OUTPUT"
-          zone=$(api "https://api.cloudflare.com/client/v4/zones?name=worldtrafficcameras.com" | jq -r '.result[0].id')
+          zone=$(api "https://api.cloudflare.com/client/v4/zones?name=worldtrafficcameras.com" | jq -r '.result[0].id // empty')
+          need "zone id" "$zone"
           rec=$(api "https://api.cloudflare.com/client/v4/zones/$zone/dns_records?name=$MAP_HOST" | jq -r '.result[0].id // empty')
-          body="{\"type\":\"CNAME\",\"name\":\"$MAP_HOST\",\"content\":\"$id.cfargotunnel.com\",\"proxied\":true}"
+          body=$(jq -n --arg h "$MAP_HOST" --arg c "$id.cfargotunnel.com" '{type:"CNAME",name:$h,content:$c,proxied:true}')
           if [ -z "$rec" ]; then api -X POST "https://api.cloudflare.com/client/v4/zones/$zone/dns_records" -d "$body" >/dev/null
           else api -X PUT "https://api.cloudflare.com/client/v4/zones/$zone/dns_records/$rec" -d "$body" >/dev/null; fi
           echo "Tunnel $id routes $MAP_HOST to the proxy."
@@ -71,18 +86,18 @@ jobs:
               "$AISSTREAM_API_KEY" "$FIRMS_MAP_KEY" "$MAPILLARY_CLIENT_TOKEN" "$TUNNEL_TOKEN"
             cat <<EOF
           set -euo pipefail
+          free_kb=\$(df -Pk / | awk 'NR==2 {print \$4}')
+          [ "\$free_kb" -ge 5242880 ] || { echo "Under 5 GB free on the server: refusing to build." >&2; df -h /; exit 1; }
           command -v git >/dev/null || { apt-get update; DEBIAN_FRONTEND=noninteractive apt-get install -y git; }
           [ -d /opt/live-camera-map/.git ] || git clone https://github.com/${GITHUB_REPOSITORY}.git /opt/live-camera-map
-          cd /opt/live-camera-map && git fetch --quiet origin && git reset --quiet --hard origin/main
+          cd /opt/live-camera-map && git fetch --quiet origin && git reset --quiet --hard ${GITHUB_SHA}
           bash ops/deploy/server-setup.sh "$MAP_HOST" "$SITE_ORIGIN"
-          node --version >/dev/null 2>&1 && node ops/monitoring/healthcheck.mjs http://127.0.0.1:8080 "$MAP_HOST" || true
           EOF
-          } | ssh -i ~/.ssh/id -o BatchMode=yes "root@$HOST_IP" bash -s
+          } | ssh -i ~/.ssh/id -o BatchMode=yes -o StrictHostKeyChecking=yes "root@$HOST_IP" bash -s
 
-      - name: Public check
-        if: steps.gate.outputs.go == '1' && steps.tunnel.outcome == 'success'
+      # The deploy is green only when the public hostname passes the same health check the runbook uses.
+      - name: Public health check
+        if: steps.gate.outputs.go == '1'
         run: |
-          sleep 20
-          code=$(curl -s -o /dev/null -w '%{http_code}' "https://$MAP_HOST/")
-          echo "https://$MAP_HOST/ answered $code"
-          [ "$code" = 200 ]
+          for i in 1 2 3 4 5 6; do node ops/monitoring/healthcheck.mjs "https://$MAP_HOST" && exit 0; sleep 20; done
+          exit 1

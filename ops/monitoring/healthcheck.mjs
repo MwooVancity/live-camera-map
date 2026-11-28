@@ -26,6 +26,7 @@ const checks = [
   ['home-200', '/', (r) => r.status === 200 || `expected 200, got ${r.status} ${r.err || ''}`],
   ['embed-frame-ancestors', '/?embed=1', (r) => (r.status === 200 && /frame-ancestors/i.test(r.headers['content-security-policy'] || '')) || `status ${r.status}, no frame-ancestors in CSP`],
   ['setup-status-403', '/api/setup/status', (r) => r.status === 403 || `expected 403, got ${r.status} (credential setup may be exposed)`],
+  ...(process.env.LAUNCH === 'live' ? [] : [['noindex-header', '/', (r) => /noindex/i.test(r.headers['x-robots-tag'] || '') || 'no X-Robots-Tag noindex: the map host is open to search before "go live"']]),
   ['restricted-route-blocked', '/api/ghostmaps/catalog', (r) => r.status === 403 || `expected 403, got ${r.status} (restricted source may be live)`],
 ];
 
