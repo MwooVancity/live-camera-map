@@ -31,6 +31,7 @@ Done = switched on in a real browser on the live map with data showing, not just
   - [ ] Homepage leads with "find your camera", check counts below
   - [ ] Sitemap empty: fill it (still noindex until go live)
   - [ ] OWNER: go live? approve pictures for openly licensed sources?
+- [ ] Queensland importer: 132 webcams at api.qldtraffic.qld.gov.au/v1/webcams with the public key printed in TMR's own API spec v1.10 (qldtraffic.qld.gov.au/more/Developers-and-Data); dataset CC BY 4.0 on data.qld.gov.au (package f47d773b); link-out to image_url. Build after the city/road merge. Sign-up triage: docs/research/2026-11-28-signup-triage.md (Korea blocked: Korean ID check; 511 states need one password account each; Norway needs org number + fixed IP).
 - [ ] GUIDES (docs/decisions/2026-11-28-guides-plan.md): 1 black/frozen/old picture, 2 find cameras near you/along route, 3 is the road really closed, 4 map layers live vs simulated, 5 how we check links, 6 refresh by agency, 7 WSDOT/ODOT/TxDOT, 8 winter merge, 9 GEV explained, 10 comparison. Each passes the info-gain debate before Spanish.
 - [ ] /gods-eye-view/ page (keyword research docs/research/2026-11-28-gods-eye-view-keywords.md: target 'online / web app / live camera' terms, trademark credit, not affiliated).
 - [x] NASA FIRMS active fires live 2026-11-27: 86,536 fires (3 satellites), snapshot every 3 h with build-time key; seen ON in browser, "updated 12m ago".
