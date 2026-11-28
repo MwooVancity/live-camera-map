@@ -49,7 +49,7 @@ function record(kind, method, path, r, ok, why) {
 
 // 1) every inventory route + fixed list, every method: prediction from the JSON, behaviour from the proxy.
 const fixed = ['/api/setup/status', '/api/setup/keys', '/api/setup/anything', '/mcp', '/mcp.json', '/mcp/x', '/api/openai/chat', '/api/gemini/chat', '/api/realtime/token',
-  '/api/ghostmaps/catalog', '/api/inaturalist/grid', '/api/news/feed', '/@fs/etc/passwd', '/@fs/app/.env', '/.env', '/.git/config', '/vite.config.js', '/package.json',
+  '/api/ghostmaps/catalog', '/api/inaturalist/grid', '/api/regional-brief', '/@fs/etc/passwd', '/@fs/app/.env', '/.env', '/.git/config', '/vite.config.js', '/package.json',
   '/api/flights', '/api/vessels', '/api/celestrak/active', '/api/adsbdb', '/api/tomtom/status', '/api/geocode', '/api/does-not-exist', '/api',
   // session 4: restricted assets and routes that must stay blocked (see data/exclusion-map.json)
   ...(allow.deny || []).map((d) => d.probe), '/events/bhote-koshi-2026/event.json', '/events/x', '/api/library/data/gvp-holocene-volcanoes',
@@ -64,7 +64,7 @@ for (const p of paths) {
 }
 
 // 2) bypass variants of denied AND allowed paths: all must be blocked by the proxy (GET and POST).
-const targets = ['/api/setup/keys', '/mcp', '/api/ghostmaps/catalog', '/@fs/etc/passwd', '/api/news/feed'];
+const targets = ['/api/setup/keys', '/mcp', '/api/ghostmaps/catalog', '/@fs/etc/passwd', '/api/regional-brief'];
 const smuggle = [];
 for (const t of targets) {
   smuggle.push(t.replace(/\/([^/]+)/, (m, s) => '/%' + s.charCodeAt(0).toString(16) + s.slice(1)), // %xx first letter

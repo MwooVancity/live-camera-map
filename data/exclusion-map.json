@@ -97,24 +97,18 @@
       "mechanism": "server-proxied",
       "routes": [
         {
-          "route": "/api/news/*",
-          "evidence": "gev/server/providers/news.js:185"
-        },
-        {
           "route": "/api/regional-brief",
           "evidence": "gev/server/providers/regional/news.js:95 (news.google.com/rss)"
         }
       ],
       "probePaths": [
-        "/api/news",
-        "/api/news/feed",
-        "/api/news/hotspots",
         "/api/regional-brief"
       ],
       "proxyEnforced": true,
       "permissionIds": [
         "google-news-rss"
-      ]
+      ],
+      "note": "2026-11-28: /api/news is GDELT (plus two keyed sources forced empty in gev-exclusion.env); no Google News call in gev/server/providers/news.js. Google News RSS is only in /api/regional-brief."
     },
     {
       "id": "open-meteo",
@@ -405,27 +399,19 @@
     },
     {
       "id": "transit-bike-rail",
-      "title": "Transit, rail and bike-share feeds (all unknown or restricted: BiciMAD, Hamilton HSR, ~90 more)",
+      "title": "Bike-share feeds via /api/gbfs (route needs a % in its path, which the proxy rejects; security review first)",
       "mechanism": "server-proxied",
       "routes": [
         {
-          "route": "/api/transit/*, /api/rail/*, /api/gbfs",
-          "evidence": "gev/server/providers/transit.js, rail.js, gbfs.js"
+          "route": "/api/gbfs",
+          "evidence": "gev/server/providers/gbfs.js; client sends an encoded URL in the path"
         }
       ],
       "probePaths": [
-        "/api/gbfs",
-        "/api/transit",
-        "/api/transit/vehicles",
-        "/api/transit/feeds",
-        "/api/rail",
-        "/api/rail/trains"
+        "/api/gbfs"
       ],
       "proxyEnforced": true,
-      "permissionIds": [
-        "bicimad-madrid-publicbikesystem-net",
-        "hamilton-hsr-opendata-hamilton-ca"
-      ]
+      "permissionIds": []
     },
     {
       "id": "live-misc",
@@ -433,7 +419,7 @@
       "mechanism": "mixed: server-proxied (blocked at proxy) and browser-direct (Esri, ECCC AQHI, Street View; not stoppable at proxy)",
       "routes": [
         {
-          "route": "/api/google/*, /api/vessels, /api/tomtom/*",
+          "route": "/api/google/*, /api/tomtom/*",
           "evidence": "gev/data/route-inventory.json"
         },
         {
@@ -444,7 +430,6 @@
       "probePaths": [
         "/api/google/tiles-token",
         "/api/google/text-search",
-        "/api/vessels",
         "/api/tomtom/status",
         "/api/tomtom/flow"
       ],
@@ -691,6 +676,143 @@
         "the-space-devs-launch-library-2-v2-3"
       ],
       "reason": "exact /api/launches; owner-approved 2026-11-24"
+    },
+    "news": {
+      "basis": "enabled-source",
+      "sourceIds": [
+        "gdelt-project-doc-2-0"
+      ],
+      "reason": "GDELT only; keyed news sources forced empty (closed-routes audit 2026-11-28)"
+    },
+    "transit": {
+      "basis": "enabled-source",
+      "sourceIds": [
+        "kolumbus-farte-bysykkel-entur-mobility-api-entur-io-mobility-v2-gbfs",
+        "capmetro-data-texas-gov",
+        "metro-transit-metropolitan-council",
+        "ttc-bustime-ttc-ca",
+        "durham-region-transit-drtonline-durhamregiontransit-com",
+        "guelph-transit-glphtrpcloud-com",
+        "kingston-transit-api-cityofkingston-ca",
+        "barrie-transit-myridebarrie-ca",
+        "burlington-transit-opendata-burlington-ca",
+        "metro-north-api-endpoint-mta-info-rrgtfsfeeds-s3-amazonaws-com",
+        "lirr-api-endpoint-mta-info-rrgtfsfeeds-s3-amazonaws-com",
+        "mbta-rail-cdn-mbta-com",
+        "septa-regional-rail-www3-septa-org-github-com",
+        "marc-mdotmta-gtfs-rt-s3-amazonaws-com-feeds-mta-maryland-gov",
+        "tri-rail-gtfsr-tri-rail-com-gtfs-tri-rail-com",
+        "capmetro-metrorail-data-texas-gov",
+        "metro-light-rail-svc-metrotransit-org",
+        "lynx-gtfsrealtime-ridetransit-org",
+        "queensland-rail-citytrain-gtfsrt-api-translink-com-au",
+        "g-link-gtfsrt-api-translink-com-au",
+        "adelaide-metro-gtfs-adelaidemetro-com-au",
+        "irish-rail-api-irishrail-ie-www-transportforireland-ie",
+        "renfe-long-and-medium-distance-gtfsrt-renfe-com-ssl-renfe-com",
+        "renfe-cercan-as-gtfsrt-renfe-com-ssl-renfe-com",
+        "seattle-streetcar-s3-amazonaws-com-metro-kingcounty-gov",
+        "connector-streetcar-tmgtfsprd-sorttrpcloud-com-www-go-metro-com",
+        "many-sen-gtfs-rt-files-buscatch-jp-api-gtfs-data-jp",
+        "toyama-tram-gtfs-rt-files-buscatch-jp",
+        "bordeaux-tram-bdx-mecatran-com",
+        "montpellier-tram-gtfsproxy-e-tam-fr",
+        "carris-metropolitana-api-carrismetropolitana-pt",
+        "warsaw-buses-and-trams-mkuran-pl",
+        "sendai-city-bus-api-public-odpt-org",
+        "pozna-buses-and-trams-ztm-poznan-pl",
+        "gda-sk-buses-and-trams-ckan2-multimediagdansk-pl",
+        "edmonton-transit-service-gtfs-edmonton-ca",
+        "halifax-transit-gtfs-halifax-ca",
+        "victoria-regional-transit-bct-tmix-se",
+        "montpellier-tam-gtfsproxy-e-tam-fr",
+        "krak-w-buses-gtfs-ztp-krakow-pl",
+        "krak-w-trams-gtfs-ztp-krakow-pl",
+        "bucharest-public-transport-gtfs-tpbi-ro",
+        "venice-actv-buses-tpl-actv-it",
+        "venice-actv-waterbuses-tpl-actv-it",
+        "adelaide-metro-gtfs-adelaidemetro-com-au-2",
+        "marta-buses-gtfs-rt-itsmarta-com",
+        "cluj-napoca-ctp-cluj-rt-feed-gtfs-ro",
+        "ia-i-ctp-iasi-rt-feed-gtfs-ro",
+        "m-laga-emt-gtfs-emtmalaga-es",
+        "portland-metro-rlis-oregon-aerial-photos-portland-metro-or-utility-arcgis-com",
+        "global-power-plants-wri-wri-global-power-plants-raw-githubusercontent-com",
+        "ukraine-outline-rail-layer-no-positions-rule-1-ring-7-801-points"
+      ],
+      "reason": "GEV transit feeds, each with its own enabled row (closed-routes audit 2026-11-28)"
+    },
+    "rail": {
+      "basis": "enabled-source",
+      "sourceIds": [
+        "kolumbus-farte-bysykkel-entur-mobility-api-entur-io-mobility-v2-gbfs",
+        "capmetro-data-texas-gov",
+        "metro-transit-metropolitan-council",
+        "ttc-bustime-ttc-ca",
+        "durham-region-transit-drtonline-durhamregiontransit-com",
+        "guelph-transit-glphtrpcloud-com",
+        "kingston-transit-api-cityofkingston-ca",
+        "barrie-transit-myridebarrie-ca",
+        "burlington-transit-opendata-burlington-ca",
+        "metro-north-api-endpoint-mta-info-rrgtfsfeeds-s3-amazonaws-com",
+        "lirr-api-endpoint-mta-info-rrgtfsfeeds-s3-amazonaws-com",
+        "mbta-rail-cdn-mbta-com",
+        "septa-regional-rail-www3-septa-org-github-com",
+        "marc-mdotmta-gtfs-rt-s3-amazonaws-com-feeds-mta-maryland-gov",
+        "tri-rail-gtfsr-tri-rail-com-gtfs-tri-rail-com",
+        "capmetro-metrorail-data-texas-gov",
+        "metro-light-rail-svc-metrotransit-org",
+        "lynx-gtfsrealtime-ridetransit-org",
+        "queensland-rail-citytrain-gtfsrt-api-translink-com-au",
+        "g-link-gtfsrt-api-translink-com-au",
+        "adelaide-metro-gtfs-adelaidemetro-com-au",
+        "irish-rail-api-irishrail-ie-www-transportforireland-ie",
+        "renfe-long-and-medium-distance-gtfsrt-renfe-com-ssl-renfe-com",
+        "renfe-cercan-as-gtfsrt-renfe-com-ssl-renfe-com",
+        "seattle-streetcar-s3-amazonaws-com-metro-kingcounty-gov",
+        "connector-streetcar-tmgtfsprd-sorttrpcloud-com-www-go-metro-com",
+        "many-sen-gtfs-rt-files-buscatch-jp-api-gtfs-data-jp",
+        "toyama-tram-gtfs-rt-files-buscatch-jp",
+        "bordeaux-tram-bdx-mecatran-com",
+        "montpellier-tram-gtfsproxy-e-tam-fr",
+        "carris-metropolitana-api-carrismetropolitana-pt",
+        "warsaw-buses-and-trams-mkuran-pl",
+        "sendai-city-bus-api-public-odpt-org",
+        "pozna-buses-and-trams-ztm-poznan-pl",
+        "gda-sk-buses-and-trams-ckan2-multimediagdansk-pl",
+        "edmonton-transit-service-gtfs-edmonton-ca",
+        "halifax-transit-gtfs-halifax-ca",
+        "victoria-regional-transit-bct-tmix-se",
+        "montpellier-tam-gtfsproxy-e-tam-fr",
+        "krak-w-buses-gtfs-ztp-krakow-pl",
+        "krak-w-trams-gtfs-ztp-krakow-pl",
+        "bucharest-public-transport-gtfs-tpbi-ro",
+        "venice-actv-buses-tpl-actv-it",
+        "venice-actv-waterbuses-tpl-actv-it",
+        "adelaide-metro-gtfs-adelaidemetro-com-au-2",
+        "marta-buses-gtfs-rt-itsmarta-com",
+        "cluj-napoca-ctp-cluj-rt-feed-gtfs-ro",
+        "ia-i-ctp-iasi-rt-feed-gtfs-ro",
+        "m-laga-emt-gtfs-emtmalaga-es",
+        "portland-metro-rlis-oregon-aerial-photos-portland-metro-or-utility-arcgis-com",
+        "global-power-plants-wri-wri-global-power-plants-raw-githubusercontent-com",
+        "ukraine-outline-rail-layer-no-positions-rule-1-ring-7-801-points"
+      ],
+      "reason": "GEV rail feeds, each with its own enabled row (closed-routes audit 2026-11-28)"
+    },
+    "route": {
+      "basis": "enabled-source",
+      "sourceIds": [
+        "osrm-on-the-fossgis-routing-servers-routing-openstreetmap-de"
+      ],
+      "reason": "directions via FOSSGIS OSRM; GEV caches and rate-limits"
+    },
+    "vessels": {
+      "basis": "enabled-source",
+      "sourceIds": [
+        "aisstream-io"
+      ],
+      "reason": "live ships; key on the server only"
     }
   },
   "libraryDisabledIds": [

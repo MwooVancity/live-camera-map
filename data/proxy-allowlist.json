@@ -1,42 +1,503 @@
 {
   "doc": "Everything not listed is denied by ops/proxy/nginx.allowlist.conf. `pattern` is matched (JS RegExp, anchored) against the raw request path + query. Keep in sync with the nginx map; tests/security/methods.mjs and tests/exclusion/exclusion.test.mjs check both. Probe/expect are the unverified-until-CI expectations for the allowed-route check. `deny` is checked FIRST and beats every route (Session 4: restricted bundled assets that the open /src/ prefix would otherwise serve).",
-  "defaultMethods": ["GET", "HEAD"],
-  "neverAllowed": ["/api/setup/", "/mcp", "/api/openai/", "/api/gemini/", "/api/realtime/", "/api/weather-effects", "/api/ghostmaps", "/api/inaturalist", "/api/news", "/api/regional-brief", "/@fs/", "/api/flights", "/api/vessels", "/api/tomtom", "/api/transit", "/api/rail", "/api/gbfs", "/api/radio/click", "/api/google", "/api/military-installations", "/api/military/", "/api/cctv/frame", "/api/cctv/media", "/api/cctv/stream", "/events/", "/api/library/data/gvp-holocene-volcanoes", "/api/library/tile/", "/api/library/index/"],
+  "defaultMethods": [
+    "GET",
+    "HEAD"
+  ],
+  "neverAllowed": [
+    "/api/setup/",
+    "/mcp",
+    "/api/openai/",
+    "/api/gemini/",
+    "/api/realtime/",
+    "/api/weather-effects",
+    "/api/ghostmaps",
+    "/api/inaturalist",
+    "/api/regional-brief",
+    "/@fs/",
+    "/api/flights",
+    "/api/tomtom",
+    "/api/gbfs",
+    "/api/radio/click",
+    "/api/google",
+    "/api/military-installations",
+    "/api/military/",
+    "/api/cctv/frame",
+    "/api/cctv/media",
+    "/api/cctv/stream",
+    "/events/",
+    "/api/library/data/gvp-holocene-volcanoes",
+    "/api/library/tile/",
+    "/api/library/index/"
+  ],
   "deny": [
-    { "id": "deny-telegeography", "pattern": "^/src/data/local_data/telegeography_submarine_cables/", "probe": "/src/data/local_data/telegeography_submarine_cables/cable-geo.json", "reason": "TeleGeography CC BY-NC-SA 3.0, mustNotShip" },
-    { "id": "deny-ucs-satellites", "pattern": "^/src/data/local_data/ucs_satellites/", "probe": "/src/data/local_data/ucs_satellites/ucs_satellites.json", "reason": "UCS Satellite Database, commercial status unknown = disabled" },
-    { "id": "deny-imaging-sensors", "pattern": "^/src/data/local_data/imaging_sensors/", "probe": "/src/data/local_data/imaging_sensors/imaging_sensors.json", "reason": "imaging sensor pack, commercial status unknown = disabled" },
-    { "id": "deny-cctv-ground-heights", "pattern": "^/src/data/local_data/cctv_ground_heights/", "probe": "/src/data/local_data/cctv_ground_heights/cctv_ground_heights.json", "reason": "CCTV ground heights, commercial status unknown = disabled (read from disk by the server, never needed over HTTP)" },
-    { "id": "deny-gev-test-fixtures", "pattern": "^/src/data/fixtures/", "probe": "/src/data/fixtures/ofm-austin-12-935-1686.pbf", "reason": "GEV test fixtures (tile and feed captures, e.g. a proprietary TomTom tile); only unit tests read them, the app never fetches them (code review B15)" },
-    { "id": "deny-bhote-koshi-events", "pattern": "^/events/bhote-koshi-2026(/|\\?|$)", "probe": "/events/bhote-koshi-2026/event.json", "reason": "Bhote Koshi event pack CC BY-NC 4.0, mustNotShip (belt and braces: /events/ is no longer allowlisted at all)" },
-    { "id": "deny-built-restricted-data", "pattern": "^/assets/(cable-geo|landing-point-geo|ucs_satellites|imaging_sensors|cctv_ground_heights|ucsSatellites|imagingSensors)-[A-Za-z0-9_-]{8}[.](json|js)", "probe": "/assets/cable-geo-AAAAAAAA.json", "reason": "vite build turns the restricted local_data files (TeleGeography CC BY-NC-SA, UCS, imaging sensors, cctv ground heights) into hashed /assets/ files; the /src/ carve-outs above no longer reach them under vite preview" }
+    {
+      "id": "deny-telegeography",
+      "pattern": "^/src/data/local_data/telegeography_submarine_cables/",
+      "probe": "/src/data/local_data/telegeography_submarine_cables/cable-geo.json",
+      "reason": "TeleGeography CC BY-NC-SA 3.0, mustNotShip"
+    },
+    {
+      "id": "deny-ucs-satellites",
+      "pattern": "^/src/data/local_data/ucs_satellites/",
+      "probe": "/src/data/local_data/ucs_satellites/ucs_satellites.json",
+      "reason": "UCS Satellite Database, commercial status unknown = disabled"
+    },
+    {
+      "id": "deny-imaging-sensors",
+      "pattern": "^/src/data/local_data/imaging_sensors/",
+      "probe": "/src/data/local_data/imaging_sensors/imaging_sensors.json",
+      "reason": "imaging sensor pack, commercial status unknown = disabled"
+    },
+    {
+      "id": "deny-cctv-ground-heights",
+      "pattern": "^/src/data/local_data/cctv_ground_heights/",
+      "probe": "/src/data/local_data/cctv_ground_heights/cctv_ground_heights.json",
+      "reason": "CCTV ground heights, commercial status unknown = disabled (read from disk by the server, never needed over HTTP)"
+    },
+    {
+      "id": "deny-gev-test-fixtures",
+      "pattern": "^/src/data/fixtures/",
+      "probe": "/src/data/fixtures/ofm-austin-12-935-1686.pbf",
+      "reason": "GEV test fixtures (tile and feed captures, e.g. a proprietary TomTom tile); only unit tests read them, the app never fetches them (code review B15)"
+    },
+    {
+      "id": "deny-bhote-koshi-events",
+      "pattern": "^/events/bhote-koshi-2026(/|\\?|$)",
+      "probe": "/events/bhote-koshi-2026/event.json",
+      "reason": "Bhote Koshi event pack CC BY-NC 4.0, mustNotShip (belt and braces: /events/ is no longer allowlisted at all)"
+    },
+    {
+      "id": "deny-built-restricted-data",
+      "pattern": "^/assets/(cable-geo|landing-point-geo|ucs_satellites|imaging_sensors|cctv_ground_heights|ucsSatellites|imagingSensors)-[A-Za-z0-9_-]{8}[.](json|js)",
+      "probe": "/assets/cable-geo-AAAAAAAA.json",
+      "reason": "vite build turns the restricted local_data files (TeleGeography CC BY-NC-SA, UCS, imaging sensors, cctv ground heights) into hashed /assets/ files; the /src/ carve-outs above no longer reach them under vite preview"
+    }
   ],
   "pathCharset": "[A-Za-z0-9_@.+~=,/-]",
   "routes": [
-    { "id": "shell", "pattern": "^/(\\?.*)?$", "probe": "/", "expect": [200], "methods": ["GET", "HEAD"] },
-    { "id": "embed", "pattern": "^/(\\?.*)?$", "probe": "/?embed=1", "expect": [200], "methods": ["GET"] },
-    { "id": "share", "pattern": "^/share/[A-Za-z0-9_-]+(\\?.*)?$", "probe": "/share/AQc", "expect": [200], "methods": ["GET", "HEAD"] },
-    { "id": "root-assets", "pattern": "^(/style\\.css|/logo\\.svg|/location\\.svg|/mic\\.svg|/pin\\.svg|/visual-presets\\.svg|/manifest\\.webmanifest|/quebec-cameras\\.json|/favicon\\.ico)(\\?.*)?$", "probe": "/style.css", "expect": [200], "methods": ["GET", "HEAD"] },
-    { "id": "built-assets", "pattern": "^/(assets|cesium)/[A-Za-z0-9_@.+~=,/-]+(\\?.*)?$", "probe": "/assets/nothing-AAAAAAAA.js", "expect": [200, 404], "methods": ["GET", "HEAD"], "note": "vite build output (preview mode only); restricted data files inside /assets/ are carved out by deny-built-restricted-data" },
-    { "id": "public-dirs","pattern": "^/(icons|models)/[A-Za-z0-9_@.+~=,/-]+(\\?.*)?$", "probe": "/icons/icon-32.png", "expect": [200], "methods": ["GET", "HEAD"], "note": "Session 4: /events/ removed, it holds only the Bhote Koshi pack (CC BY-NC, mustNotShip)" },
-    { "id": "vite-modules", "pattern": "^/(@vite|@id|src|node_modules|server|build)/[A-Za-z0-9_@.+~=,/-]+(\\?.*)?$", "probe": "/@vite/client", "expect": [200], "methods": ["GET", "HEAD"], "note": "dev-server source is public by design (session3-findings #2); no secret may be in the image. Restricted bundled DATA files under /src/data/local_data/ are carved out by `deny`; restricted bundled CODE modules (bhoteKoshiFloodPath.js) cannot be, the app imports them at boot (session4 gap BK-1)" },
-    { "id": "src-boot", "pattern": "^/(@vite|@id|src|node_modules|server|build)/[A-Za-z0-9_@.+~=,/-]+(\\?.*)?$", "probe": "/src/main.js", "expect": [200], "methods": ["GET"] },
-    { "id": "cctv-sources", "pattern": "^/api/cctv/(sources|health)(\\?.*)?$", "probe": "/api/cctv/sources", "expect": [200], "methods": ["GET", "HEAD"], "note": "catalog METADATA only (name, lat/lon, sourceUrl); frame/media/stream are not allowlisted. Which packs appear is set by env (ops/deploy/gev-exclusion.env). Austin and Caltrans have no kill switch (session4 gap CCTV-NOSWITCH)" },
-    { "id": "cctv-health", "pattern": "^/api/cctv/(sources|health)(\\?.*)?$", "probe": "/api/cctv/health", "expect": [200], "methods": ["GET"] },
-    { "id": "military-aircraft", "pattern": "^/api/military(\\?.*)?$", "probe": "/api/military", "expect": [200, 429, 502, 503], "methods": ["GET"], "note": "2026-11-24 (plan item 19a): military aircraft list, served by gev/server/providers/aircraft/adsb-lol.js from api.adsb.lol/v2/mil only (line 128); adsb.lol is allowed_per_doc and enabled in data/source-permissions.json. Exact pattern: /api/military/track (tracks.js also calls OpenSky) and /api/military-installations stay denied." },
-    { "id": "fire-perimeters", "pattern": "^/api/fire-perimeters(/inciweb/(index|publication/[A-Za-z0-9_-]+))?(\\?.*)?$", "probe": "/api/fire-perimeters", "expect": [200, 429, 502, 503], "methods": ["GET"], "note": "2026-11-24 (plan item 19b): wildfire perimeters. gev/server/providers/firePerimeters.js calls only services3.arcgis.com (NIFC WFIGS) and inciweb.wildfire.gov (lines 13, 92, 108); both are US public domain, allowed_per_doc and enabled. Exact paths: the perimeter list and the two InciWeb sub-routes the client uses." },
-    { "id": "wildlife-sightings", "pattern": "^/api/acartia/sightings(\\?.*)?$", "probe": "/api/acartia/sightings", "expect": [200, 429, 502, 503], "methods": ["GET"], "note": "2026-11-24 (plan item 19c): Salish Sea marine mammal sightings. gev/server/providers/acartia.js:7 calls only acartia.io/api/v1/sightings/current and answers only /sightings (line 157). Acartia is CC BY 4.0, allowed_per_doc, enabled. iNaturalist (restricted) is a different route and stays closed." },
-    { "id": "shipwrecks", "pattern": "^/api/shipwrecks(\\?.*)?$", "probe": "/api/shipwrecks", "expect": [200, 429, 502, 503], "methods": ["GET"], "note": "2026-11-24 (plan item 19c): European shipwrecks. gev/server/providers/shipwrecks.js calls only Wikidata SPARQL (CC0, line 44) and EMODnet (CC BY 4.0); both allowed_per_doc and enabled." },
-    { "id": "terrain-heights", "pattern": "^/api/terrain/heights(\\?.*)?$", "probe": "/api/terrain/heights", "expect": [200, 400, 429, 502, 503], "methods": ["GET"], "note": "2026-11-24 (plan item 19c): elevation lookups. gev/server/providers/terrain.js:17 calls only terrain.reearth.land (Mapterhorn terrain CC BY 4.0, geoid EGM2008 public domain); allowed_per_doc, enabled. The restricted CCTV ground-heights asset stays denied by deny-cctv-ground-heights." },
-    { "id": "cyclones", "pattern": "^/api/cyclones(\\?.*)?$", "probe": "/api/cyclones", "expect": [200, 429, 502, 503], "methods": ["GET"], "note": "2026-11-23 (plan item 19): NHC and CPHC storm advisories. gev/server/providers/cyclones.js calls only nhc.noaa.gov and mapservices.weather.noaa.gov; NWS pages are public domain (weather.gov/disclaimer), allowed_per_doc, enabled." },
-    { "id": "radio-stations", "pattern": "^/api/radio/stations(\\?.*)?$", "probe": "/api/radio/stations", "expect": [200, 429, 502, 503], "methods": ["GET"], "note": "2026-11-24 (plan item 22): radio station directory (Radio Browser). gev/server/providers/radio/catalog.js answers GET /stations only on this route; /click/<id> (POST vote counter) stays closed. Licence row owner-approved 2026-11-24." },
-    { "id": "celestrak", "pattern": "^/api/celestrak(-satcat)?(\\?.*)?$", "probe": "/api/celestrak", "expect": [200, 400, 404, 429, 502, 503], "methods": ["GET"], "note": "2026-11-24 (plan item 22): satellite element sets and catalog. gev/server/providers/space/celestrak.js calls only celestrak.org. Row owner-approved 2026-11-24; CelesTrak emailed for written confirmation (plan item 20)." },
-    { "id": "adsbdb", "pattern": "^/api/adsbdb/(route|type)/[A-Za-z0-9]{2,8}(\\?.*)?$", "probe": "/api/adsbdb/route/AC123", "expect": [200, 400, 404, 429, 502, 503], "methods": ["GET"], "note": "2026-11-24 (plan item 22): callsign and aircraft lookup. gev/server/providers/aircraft/enrichment.js calls only api.adsbdb.com. Row owner-approved." },
-    { "id": "launches", "pattern": "^/api/launches(\\?.*)?$", "probe": "/api/launches", "expect": [200, 429, 502, 503], "methods": ["GET"], "note": "2026-11-24 (plan item 22): rocket launch schedule. gev/server/providers/space/launch-library.js calls only The Space Devs Launch Library 2. Row owner-approved." },
-    { "id": "weather", "pattern": "^/api/(weather|weather/manifest|weather/tile|weather/image|wind/manifest|wind/grid)(\\?.*)?$", "probe": "/api/weather", "expect": [200, 400, 404, 405], "methods": ["GET", "HEAD"], "note": "RESOLVED session4: /api/weather/tile and /image fetch only NOAA nowCOAST (gev/server/providers/weather.js:4), never ECCC GeoMet. /api/weather-effects fetches Open-Meteo (gev/server/providers/regional/weather.js:16)" },
-    { "id": "weather-manifest", "pattern": "^/api/(weather|weather/manifest|weather/tile|weather/image|wind/manifest|wind/grid)(\\?.*)?$", "probe": "/api/weather/manifest", "expect": [200, 400, 404], "methods": ["GET"] },
-    { "id": "wind-manifest", "pattern": "^/api/(weather|weather/manifest|weather/tile|weather/image|wind/manifest|wind/grid)(\\?.*)?$", "probe": "/api/wind/manifest", "expect": [200, 404], "methods": ["GET"] },
-    { "id": "library", "pattern": "^/api/library(/data/(eia-power-plants|epa-superfund-sites|epa-toxic-release-facilities|epc-england-wales|fema-usa-structures|nasa-eonet-events|noaa-tide-stations|ntad-national-bridges|nws-active-alerts|wri-global-power-plants))?(\\?.*)?$", "probe": "/api/library", "expect": [200, 404, 405], "methods": ["GET", "HEAD"], "note": "Session 4: /data/<id> limited to the 10 dataset entries whose permission is allowed_per_doc. Catalog route lists every entry (metadata) but GEV_LIBRARY_DISABLE makes GEV answer 403 operator-disabled for the rest" },
-    { "id": "library-data", "pattern": "^/api/library(/data/(eia-power-plants|epa-superfund-sites|epa-toxic-release-facilities|epc-england-wales|fema-usa-structures|nasa-eonet-events|noaa-tide-stations|ntad-national-bridges|nws-active-alerts|wri-global-power-plants))?(\\?.*)?$", "probe": "/api/library/data/eia-power-plants", "expect": [200, 403, 404, 502], "methods": ["GET"], "note": "probe was gvp-holocene-volcanoes (Smithsonian non-commercial, restricted); replaced in session 4. 502 = upstream unreachable from CI, still proves the proxy let it through" }
+    {
+      "id": "shell",
+      "pattern": "^/(\\?.*)?$",
+      "probe": "/",
+      "expect": [
+        200
+      ],
+      "methods": [
+        "GET",
+        "HEAD"
+      ]
+    },
+    {
+      "id": "embed",
+      "pattern": "^/(\\?.*)?$",
+      "probe": "/?embed=1",
+      "expect": [
+        200
+      ],
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "id": "share",
+      "pattern": "^/share/[A-Za-z0-9_-]+(\\?.*)?$",
+      "probe": "/share/AQc",
+      "expect": [
+        200
+      ],
+      "methods": [
+        "GET",
+        "HEAD"
+      ]
+    },
+    {
+      "id": "root-assets",
+      "pattern": "^(/style\\.css|/logo\\.svg|/location\\.svg|/mic\\.svg|/pin\\.svg|/visual-presets\\.svg|/manifest\\.webmanifest|/quebec-cameras\\.json|/favicon\\.ico)(\\?.*)?$",
+      "probe": "/style.css",
+      "expect": [
+        200
+      ],
+      "methods": [
+        "GET",
+        "HEAD"
+      ]
+    },
+    {
+      "id": "built-assets",
+      "pattern": "^/(assets|cesium)/[A-Za-z0-9_@.+~=,/-]+(\\?.*)?$",
+      "probe": "/assets/nothing-AAAAAAAA.js",
+      "expect": [
+        200,
+        404
+      ],
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "note": "vite build output (preview mode only); restricted data files inside /assets/ are carved out by deny-built-restricted-data"
+    },
+    {
+      "id": "public-dirs",
+      "pattern": "^/(icons|models)/[A-Za-z0-9_@.+~=,/-]+(\\?.*)?$",
+      "probe": "/icons/icon-32.png",
+      "expect": [
+        200
+      ],
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "note": "Session 4: /events/ removed, it holds only the Bhote Koshi pack (CC BY-NC, mustNotShip)"
+    },
+    {
+      "id": "vite-modules",
+      "pattern": "^/(@vite|@id|src|node_modules|server|build)/[A-Za-z0-9_@.+~=,/-]+(\\?.*)?$",
+      "probe": "/@vite/client",
+      "expect": [
+        200
+      ],
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "note": "dev-server source is public by design (session3-findings #2); no secret may be in the image. Restricted bundled DATA files under /src/data/local_data/ are carved out by `deny`; restricted bundled CODE modules (bhoteKoshiFloodPath.js) cannot be, the app imports them at boot (session4 gap BK-1)"
+    },
+    {
+      "id": "src-boot",
+      "pattern": "^/(@vite|@id|src|node_modules|server|build)/[A-Za-z0-9_@.+~=,/-]+(\\?.*)?$",
+      "probe": "/src/main.js",
+      "expect": [
+        200
+      ],
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "id": "cctv-sources",
+      "pattern": "^/api/cctv/(sources|health)(\\?.*)?$",
+      "probe": "/api/cctv/sources",
+      "expect": [
+        200
+      ],
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "note": "catalog METADATA only (name, lat/lon, sourceUrl); frame/media/stream are not allowlisted. Which packs appear is set by env (ops/deploy/gev-exclusion.env). Austin and Caltrans have no kill switch (session4 gap CCTV-NOSWITCH)"
+    },
+    {
+      "id": "cctv-health",
+      "pattern": "^/api/cctv/(sources|health)(\\?.*)?$",
+      "probe": "/api/cctv/health",
+      "expect": [
+        200
+      ],
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "id": "military-aircraft",
+      "pattern": "^/api/military(\\?.*)?$",
+      "probe": "/api/military",
+      "expect": [
+        200,
+        429,
+        502,
+        503
+      ],
+      "methods": [
+        "GET"
+      ],
+      "note": "2026-11-24 (plan item 19a): military aircraft list, served by gev/server/providers/aircraft/adsb-lol.js from api.adsb.lol/v2/mil only (line 128); adsb.lol is allowed_per_doc and enabled in data/source-permissions.json. Exact pattern: /api/military/track (tracks.js also calls OpenSky) and /api/military-installations stay denied."
+    },
+    {
+      "id": "fire-perimeters",
+      "pattern": "^/api/fire-perimeters(/inciweb/(index|publication/[A-Za-z0-9_-]+))?(\\?.*)?$",
+      "probe": "/api/fire-perimeters",
+      "expect": [
+        200,
+        429,
+        502,
+        503
+      ],
+      "methods": [
+        "GET"
+      ],
+      "note": "2026-11-24 (plan item 19b): wildfire perimeters. gev/server/providers/firePerimeters.js calls only services3.arcgis.com (NIFC WFIGS) and inciweb.wildfire.gov (lines 13, 92, 108); both are US public domain, allowed_per_doc and enabled. Exact paths: the perimeter list and the two InciWeb sub-routes the client uses."
+    },
+    {
+      "id": "wildlife-sightings",
+      "pattern": "^/api/acartia/sightings(\\?.*)?$",
+      "probe": "/api/acartia/sightings",
+      "expect": [
+        200,
+        429,
+        502,
+        503
+      ],
+      "methods": [
+        "GET"
+      ],
+      "note": "2026-11-24 (plan item 19c): Salish Sea marine mammal sightings. gev/server/providers/acartia.js:7 calls only acartia.io/api/v1/sightings/current and answers only /sightings (line 157). Acartia is CC BY 4.0, allowed_per_doc, enabled. iNaturalist (restricted) is a different route and stays closed."
+    },
+    {
+      "id": "shipwrecks",
+      "pattern": "^/api/shipwrecks(\\?.*)?$",
+      "probe": "/api/shipwrecks",
+      "expect": [
+        200,
+        429,
+        502,
+        503
+      ],
+      "methods": [
+        "GET"
+      ],
+      "note": "2026-11-24 (plan item 19c): European shipwrecks. gev/server/providers/shipwrecks.js calls only Wikidata SPARQL (CC0, line 44) and EMODnet (CC BY 4.0); both allowed_per_doc and enabled."
+    },
+    {
+      "id": "terrain-heights",
+      "pattern": "^/api/terrain/heights(\\?.*)?$",
+      "probe": "/api/terrain/heights",
+      "expect": [
+        200,
+        400,
+        429,
+        502,
+        503
+      ],
+      "methods": [
+        "GET"
+      ],
+      "note": "2026-11-24 (plan item 19c): elevation lookups. gev/server/providers/terrain.js:17 calls only terrain.reearth.land (Mapterhorn terrain CC BY 4.0, geoid EGM2008 public domain); allowed_per_doc, enabled. The restricted CCTV ground-heights asset stays denied by deny-cctv-ground-heights."
+    },
+    {
+      "id": "cyclones",
+      "pattern": "^/api/cyclones(\\?.*)?$",
+      "probe": "/api/cyclones",
+      "expect": [
+        200,
+        429,
+        502,
+        503
+      ],
+      "methods": [
+        "GET"
+      ],
+      "note": "2026-11-23 (plan item 19): NHC and CPHC storm advisories. gev/server/providers/cyclones.js calls only nhc.noaa.gov and mapservices.weather.noaa.gov; NWS pages are public domain (weather.gov/disclaimer), allowed_per_doc, enabled."
+    },
+    {
+      "id": "radio-stations",
+      "pattern": "^/api/radio/stations(\\?.*)?$",
+      "probe": "/api/radio/stations",
+      "expect": [
+        200,
+        429,
+        502,
+        503
+      ],
+      "methods": [
+        "GET"
+      ],
+      "note": "2026-11-24 (plan item 22): radio station directory (Radio Browser). gev/server/providers/radio/catalog.js answers GET /stations only on this route; /click/<id> (POST vote counter) stays closed. Licence row owner-approved 2026-11-24."
+    },
+    {
+      "id": "celestrak",
+      "pattern": "^/api/celestrak(-satcat)?(\\?.*)?$",
+      "probe": "/api/celestrak",
+      "expect": [
+        200,
+        400,
+        404,
+        429,
+        502,
+        503
+      ],
+      "methods": [
+        "GET"
+      ],
+      "note": "2026-11-24 (plan item 22): satellite element sets and catalog. gev/server/providers/space/celestrak.js calls only celestrak.org. Row owner-approved 2026-11-24; CelesTrak emailed for written confirmation (plan item 20)."
+    },
+    {
+      "id": "adsbdb",
+      "pattern": "^/api/adsbdb/(route|type)/[A-Za-z0-9]{2,8}(\\?.*)?$",
+      "probe": "/api/adsbdb/route/AC123",
+      "expect": [
+        200,
+        400,
+        404,
+        429,
+        502,
+        503
+      ],
+      "methods": [
+        "GET"
+      ],
+      "note": "2026-11-24 (plan item 22): callsign and aircraft lookup. gev/server/providers/aircraft/enrichment.js calls only api.adsbdb.com. Row owner-approved."
+    },
+    {
+      "id": "launches",
+      "pattern": "^/api/launches(\\?.*)?$",
+      "probe": "/api/launches",
+      "expect": [
+        200,
+        429,
+        502,
+        503
+      ],
+      "methods": [
+        "GET"
+      ],
+      "note": "2026-11-24 (plan item 22): rocket launch schedule. gev/server/providers/space/launch-library.js calls only The Space Devs Launch Library 2. Row owner-approved."
+    },
+    {
+      "id": "weather",
+      "pattern": "^/api/(weather|weather/manifest|weather/tile|weather/image|wind/manifest|wind/grid)(\\?.*)?$",
+      "probe": "/api/weather",
+      "expect": [
+        200,
+        400,
+        404,
+        405
+      ],
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "note": "RESOLVED session4: /api/weather/tile and /image fetch only NOAA nowCOAST (gev/server/providers/weather.js:4), never ECCC GeoMet. /api/weather-effects fetches Open-Meteo (gev/server/providers/regional/weather.js:16)"
+    },
+    {
+      "id": "weather-manifest",
+      "pattern": "^/api/(weather|weather/manifest|weather/tile|weather/image|wind/manifest|wind/grid)(\\?.*)?$",
+      "probe": "/api/weather/manifest",
+      "expect": [
+        200,
+        400,
+        404
+      ],
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "id": "wind-manifest",
+      "pattern": "^/api/(weather|weather/manifest|weather/tile|weather/image|wind/manifest|wind/grid)(\\?.*)?$",
+      "probe": "/api/wind/manifest",
+      "expect": [
+        200,
+        404
+      ],
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "id": "library",
+      "pattern": "^/api/library(/data/(eia-power-plants|epa-superfund-sites|epa-toxic-release-facilities|epc-england-wales|fema-usa-structures|nasa-eonet-events|noaa-tide-stations|ntad-national-bridges|nws-active-alerts|wri-global-power-plants))?(\\?.*)?$",
+      "probe": "/api/library",
+      "expect": [
+        200,
+        404,
+        405
+      ],
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "note": "Session 4: /data/<id> limited to the 10 dataset entries whose permission is allowed_per_doc. Catalog route lists every entry (metadata) but GEV_LIBRARY_DISABLE makes GEV answer 403 operator-disabled for the rest"
+    },
+    {
+      "id": "library-data",
+      "pattern": "^/api/library(/data/(eia-power-plants|epa-superfund-sites|epa-toxic-release-facilities|epc-england-wales|fema-usa-structures|nasa-eonet-events|noaa-tide-stations|ntad-national-bridges|nws-active-alerts|wri-global-power-plants))?(\\?.*)?$",
+      "probe": "/api/library/data/eia-power-plants",
+      "expect": [
+        200,
+        403,
+        404,
+        502
+      ],
+      "methods": [
+        "GET"
+      ],
+      "note": "probe was gvp-holocene-volcanoes (Smithsonian non-commercial, restricted); replaced in session 4. 502 = upstream unreachable from CI, still proves the proxy let it through"
+    },
+    {
+      "id": "news",
+      "pattern": "^/api/news(/(feed|hotspots|outline))?(\\?.*)?$",
+      "probe": "/api/news/feed",
+      "expect": [
+        200,
+        403,
+        502,
+        503
+      ],
+      "methods": [
+        "GET"
+      ],
+      "note": "GDELT only: LIVEUAMAP_API_KEY, WORLDNEWSAPI_KEY, GEV_NEWS_ORIGIN forced empty in gev-exclusion.env (audit docs/research/2026-11-28-closed-routes-audit.md). Client paths: gev/src news layer."
+    },
+    {
+      "id": "transit",
+      "pattern": "^/api/transit/(feeds|vehicles/[A-Za-z0-9_.-]+)(\\?.*)?$",
+      "probe": "/api/transit/feeds",
+      "expect": [
+        200,
+        404,
+        429,
+        502,
+        503
+      ],
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "id": "rail",
+      "pattern": "^/api/rail/(feeds|(trains|updates|paths)/[A-Za-z0-9_.-]+)(\\?.*)?$",
+      "probe": "/api/rail/feeds",
+      "expect": [
+        200,
+        404,
+        429,
+        502,
+        503
+      ],
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "id": "route",
+      "pattern": "^/api/route(\\?.*)?$",
+      "probe": "/api/route",
+      "expect": [
+        200,
+        400,
+        429,
+        502,
+        503
+      ],
+      "methods": [
+        "GET"
+      ],
+      "note": "FOSSGIS OSRM: one request per second, no heavy use; GEV caches and rate-limits (routes.js)"
+    },
+    {
+      "id": "vessels",
+      "pattern": "^/api/vessels(/track)?(\\?.*)?$",
+      "probe": "/api/vessels",
+      "expect": [
+        200,
+        502,
+        503
+      ],
+      "methods": [
+        "GET"
+      ],
+      "note": "AISStream via server websocket; key from server-deploy secrets"
+    }
   ]
 }

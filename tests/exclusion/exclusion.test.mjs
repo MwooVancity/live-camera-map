@@ -169,7 +169,7 @@ test('every restricted/unknown/mustNotShip permission row is classified into an 
 
 test('named restricted sources are each denied on every route we know serves them', () => {
   const must = {
-    opensky: ['/api/flights'], ghostmaps: ['/api/ghostmaps/catalog'], inaturalist: ['/api/inaturalist/grid'], 'google-news': ['/api/news/feed'],
+    opensky: ['/api/flights'], ghostmaps: ['/api/ghostmaps/catalog'], inaturalist: ['/api/inaturalist/grid'], 'google-news': ['/api/regional-brief'],
     gvp: ['/api/library/data/gvp-holocene-volcanoes'], telegeography: ['/src/data/local_data/telegeography_submarine_cables/cable-geo.json'],
     'bhote-koshi': ['/events/bhote-koshi-2026/event.json'], 'nyc-dot': ['/api/cctv/frame/nyc-1', '/api/cctv/media/nyc-1', '/api/cctv/stream/nyc-1'],
   };
