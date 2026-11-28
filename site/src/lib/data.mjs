@@ -3,6 +3,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { countsBy } from '../../../ops/importers/lib/registry.mjs';
+import { enrich } from './places-assign.mjs';
 
 export { countsBy };
 
@@ -10,7 +11,8 @@ const dir = process.env.REGISTRY_DIR || resolve(process.cwd(), '../data/camera-r
 const read = (f) => JSON.parse(readFileSync(resolve(dir, f), 'utf8'));
 const readOpt = (f) => (existsSync(resolve(dir, f)) ? read(f) : null);
 
-export const cameras = read('cameras.json');
+// cities and WA/OR roads filled from the gazetteer for lists with no city field (lib/places-assign.mjs)
+export const cameras = enrich(read('cameras.json'), JSON.parse(readFileSync(resolve(process.cwd(), '../data/places.json'), 'utf8')).places);
 export const sources = read('sources.json');
 export const report = read('import-report.json'); // Caltrans (districts)
 export const bcReport = readOpt('import-report-drivebc.json'); // DriveBC (null until the BC importer has run)

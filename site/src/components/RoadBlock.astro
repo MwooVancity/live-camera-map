@@ -2,12 +2,12 @@
 // One live block for a road page (see roadBlocks in src/lib/live.mjs). Text and plain links only, server-rendered at build.
 // Every closure, chain control and sign is an <li data-event> that must carry at least one nearest-camera link (page gate).
 import { NEAR_KM, BUILT_AT } from '../lib/live.mjs';
-import { cleanLabel } from '../lib/labels.mjs';
+import { cleanLabel, rwisVal } from '../lib/labels.mjs';
 import WildfireList from './WildfireList.astro';
 const { b } = Astro.props;
 const total = b.id === 'road-conditions' ? b.lcs.length + b.cc.length : b.items.length;
 const where = (i) => [i.direction, i.place || i.locationName].filter(Boolean).join(', ');
-const val = (v, label) => (v === null || v === undefined ? null : `${label} ${v}`);
+const val = rwisVal;
 const kmText = (km) => (km < 0.1 ? 'under 0.1' : km.toFixed(1));
 ---
 <section data-block={b.id} data-source={b.source} data-asof={b.asof} data-rows={total}>
@@ -23,7 +23,7 @@ const kmText = (km) => (km < 0.1 ? 'under 0.1' : km.toFixed(1));
   )}
   {b.id === 'road-weather' && (<>
     <ul>{b.items.map((i) => <li>{where(i)}{i.locationName && i.place ? ` (${i.locationName})` : ''}: {[val(i.airTemp, 'air temperature'), val(i.surfaceTemp, 'road surface temperature'), val(i.windAvg, 'wind'), val(i.windGust, 'gust'), val(i.visibility, 'visibility'), val(i.humidity, 'humidity %')].filter(Boolean).join(', ')}. <span class="meta">Read {i.recordedAt.slice(0, 16).replace('T', ' ')} UTC.</span></li>)}</ul>
-    <p class="meta">Caltrans does not state the units of these readings, so we show them exactly as reported.</p>
+    <p class="meta">Caltrans does not state the units of these readings in its RWIS documentation, so we show the numbers exactly as reported and do not guess a unit.</p>
   </>)}
   {b.id === 'wildfires' && <WildfireList b={b} />}
   {b.id === 'weather-alerts' && (<>

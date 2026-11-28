@@ -17,7 +17,7 @@ const { region } = Astro.params;
 const country = countryOf(region);
 const info = regionInfo(region);
 const regionCams = cameras.filter((c) => c.regionSlug === region);
-const regionName = regionCams[0].regionName;
+const regionName = info.heading || regionCams[0].regionName;
 const total = countsBy(cameras, 'region')[region];
 const byCity = countsBy(regionCams, 'city');
 const cities = curatedPlaces(cameras).filter((p) => p.region === region);

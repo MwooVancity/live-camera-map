@@ -35,9 +35,10 @@ export const cleanCity = (v) => s(v).replace(/\s+/g, ' ').toLowerCase().replace(
 // The ONE road normalizer: 'I-405', 'i 405', 'SR-91', 'US-101', 'I-5' -> 'i-405', 'sr-91', 'us-101', 'i-5'. A trailing
 // letter stays (Caltrans 'SR-99S' is kept apart from 'SR-99': what the suffix means is not documented in the feed).
 // Returns '' for anything it cannot read; callers must skip '' (never build a page or match on it).
+// A state prefix ('WA SR-520', 'OR I-405') keeps a state route or a 3-digit spur apart from the same number in another state -> 'wa-sr-520'.
 export const roadSlug = (road) => {
-  const m = s(road).toUpperCase().match(/^(I|SR|US)[\s-]*0*(\d{1,3})([A-Z]?)$/);
-  return m ? `${m[1].toLowerCase()}-${m[2]}${m[3].toLowerCase()}` : '';
+  const m = s(road).toUpperCase().match(/^(?:(WA|OR)\s+)?(I|SR|US)[\s-]*0*(\d{1,3})([A-Z]?)$/);
+  return m ? `${m[1] ? m[1].toLowerCase() + '-' : ''}${m[2].toLowerCase()}-${m[3]}${m[4].toLowerCase()}` : '';
 };
 
 // Returns a camera or null; drop reasons are counted into `drop`.

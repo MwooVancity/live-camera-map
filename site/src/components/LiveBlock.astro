@@ -2,11 +2,12 @@
 // One live-conditions block (see src/lib/live.mjs). Text only: no images, no scripts. Server-rendered at build.
 import { MAX_ROWS, BUILT_AT } from '../lib/live.mjs';
 import WildfireList from './WildfireList.astro';
+import { rwisVal } from '../lib/labels.mjs';
 const { b, city } = Astro.props;
 const total = b.id === 'road-conditions' ? b.lcs.length + b.cc.length : b.items.length;
 const km = (i) => `${i.km < 1 ? '<1' : Math.round(i.km)} km from ${city}`;
 const where = (i) => [i.road, i.direction, i.place || i.locationName].filter(Boolean).join(', ');
-const val = (v, label) => (v === null || v === undefined ? null : `${label} ${v}`);
+const val = rwisVal;
 const more = (n) => (n > MAX_ROWS ? n - MAX_ROWS : 0);
 ---
 <section data-block={b.id} data-source={b.source} data-asof={b.asof} data-rows={total}>
@@ -23,7 +24,7 @@ const more = (n) => (n > MAX_ROWS ? n - MAX_ROWS : 0);
   )}
   {b.id === 'road-weather' && (<>
     <ul>{b.items.slice(0, MAX_ROWS).map((i) => <li>{where(i)}{i.locationName && i.place ? ` (${i.locationName})` : ''}: {[val(i.airTemp, 'air temperature'), val(i.surfaceTemp, 'road surface temperature'), val(i.windAvg, 'wind'), val(i.windGust, 'gust'), val(i.visibility, 'visibility'), val(i.humidity, 'humidity %')].filter(Boolean).join(', ')}. <span class="meta">{km(i)}; read {i.recordedAt.slice(0, 16).replace('T', ' ')} UTC.</span></li>)}</ul>
-    <p class="meta">Caltrans does not state the units of these readings, so we show them exactly as reported.</p>
+    <p class="meta">Caltrans does not state the units of these readings in its RWIS documentation, so we show the numbers exactly as reported and do not guess a unit.</p>
   </>)}
   {b.id === 'bc-events' && (<>
     <ul>{b.items.slice(0, MAX_ROWS).map((i) => <li>{[i.road, i.direction, i.area].filter(Boolean).join(', ')}{i.closed ? ' (road closed)' : ''}: {i.text} <span class="meta">{km(i)}; {[i.severity && `${i.severity.toLowerCase()} severity`, i.eventType && i.eventType.toLowerCase().replace('_', ' ')].filter(Boolean).join(', ')}; since {i.start.slice(0, 16).replace('T', ' ')} UTC, {i.endIndefinite ? 'no set end' : `until ${i.end.slice(0, 16).replace('T', ' ')} UTC`}{i.updated ? `; DriveBC updated it ${i.updated.slice(0, 16).replace('T', ' ')} UTC` : ''}.</span></li>)}</ul>

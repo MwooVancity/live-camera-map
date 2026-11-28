@@ -3,7 +3,7 @@ import CameraListTools from '../../../../components/CameraListTools.astro';
 import Base from '../../../../layouts/Base.astro';
 import { SITE_NAME } from '../../../../config.mjs';
 import { cameras, countsBy, registryDateOf, sourceOf, loadedDistricts } from '../../../../lib/data.mjs';
-import { curatedPlaces, curatedRoads, creditLine, slugify, cityRoute, regionRoute, countryRoute, isIndexable, regionInfo } from '../../../../lib/pages.mjs';
+import { curatedPlaces, curatedRoads, roadCams, ROAD_REGIONS, creditLine, slugify, cityRoute, regionRoute, countryRoute, isIndexable, regionInfo } from '../../../../lib/pages.mjs';
 import { cityBlocks } from '../../../../lib/live.mjs';
 import { greaterArea } from '../../../../lib/area.mjs';
 import { cleanLabel } from '../../../../lib/labels.mjs';
@@ -41,7 +41,7 @@ const dist = (p) => { const q = centre(cameras.filter((x) => x.regionSlug === p.
 const ranked = places.map((p) => ({ p, d: dist(p), same: p.region === region })).sort((a, b) => Number(b.same) - Number(a.same) || a.d - b.d);
 const related = ranked.filter((x) => x.same).slice(0, 4).concat(ranked.filter((x) => x.same).length < 4 ? ranked.filter((x) => !x.same).slice(0, 4 - ranked.filter((x) => x.same).length) : []).map((x) => x.p);
 
-const roadsHere = curatedRoads(cameras).map((r) => [r, here.filter((c) => c.road === r).length]).filter(([, k]) => k > 0).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+const roadsHere = !ROAD_REGIONS.includes(region) ? [] : curatedRoads(cameras).map((r) => [r, here.filter((c) => c.road === r).length]).filter(([, k]) => k > 0).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 const sorted = [...here].sort((a, b) => a.road.localeCompare(b.road) || a.direction.localeCompare(b.direction) || a.name.localeCompare(b.name));
 const hres = cityHealth(here, loadHealth());
 const { block: hb, reason: hReason } = hres;
@@ -50,7 +50,7 @@ const top = roads.slice(0, 3).map(([r, k]) => `${r} (${k})`).join(', ');
 // Greater <city>: one function gives the exact-town count and the radius count (see lib/area.mjs). The towns that have their own page are linked.
 const ga = greaterArea(regionCams, city);
 const pageOf = new Set(curatedPlaces(cameras).filter((p) => p.region === region).map((p) => p.city));
-const wholeRoad = countsBy(cameras.filter((c) => c.regionSlug === 'california'), 'road'); // road pages are California-only: the same number /roads/<road>/ shows
+const wholeRoad = countsBy(roadCams(cameras), 'road'); // the same number /roads/<road>/ shows
 const unnamedShown = ga.unnamed.slice(0, 6);
 const plural = (k, w) => `${k} ${w}${k === 1 ? '' : 's'}`;
 const guides = isCA
