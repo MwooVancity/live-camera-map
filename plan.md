@@ -21,6 +21,7 @@ Done = switched on in a real browser on the live map with data showing, not just
 - [x] Canada air quality loaded live 2026-11-27. [ ] NASA recent imagery: needs a drawn box, not tested
 - [x] Wildfire outlines 39 seen live 2026-11-27. [ ] Hurricanes: no active storms in the feed, untestable today ( a red map-freshness run means they went stale)
 - [x] Satellites 11.8K; space launches 26 (seen live 2026-11-27)
+- [x] NASA FIRMS active fires live 2026-11-27: 86,536 fires (3 satellites), snapshot every 3 h with build-time key; seen ON in browser, "updated 12m ago".
 - [~] Mapillary: coverage lines live 2026-11-27 (Seattle: 4,879 sequences, credit line shown). Photos NOT reachable: lines vanish at close zoom (z14 answered empty, tiles 12 MB untrimmed) and clicking a line at z13 opens only the sequence id. Full photos need the server (trim proxy); Workers free CPU too small.
 - [ ] AISStream key: new key stored as repo secret 2026-11-27 23:14 UTC. Ships need the server (GEV SECURITY.md:27 "Server only").
 - [ ] Active fires, NASA FIRMS (3-hour copy; needs the key in CI; measure file size first)
