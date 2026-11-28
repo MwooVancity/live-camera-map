@@ -39,7 +39,7 @@ Old owner table (TfL, DGT, Quebec, Alberta, Oregon, 511NY, Open-Meteo, basemap):
 - Health: about 5,370 cameras unchecked (Cloudflare-blocked or HEAD-unsafe sources); the rest HEAD-checked by ops/health/check.mjs.
 - Not built: server stack on a host, load tests, rollback rehearsal, real-phone test.
 
-## 3. Next (after NOW)
+## Next (section 3, after NOW)
 Old numbered items 2 to 43 (share links, launch security gaps, R2 health publish, NZTA, design sweep, country hunts, Argos matrix, road data licences) are WAITING on a server, a key or owner steps; full text in the archive copy, section 3. Pull one into NOW only when its blocker clears.
 
 ## 4. STRATEGY AND EVIDENCE

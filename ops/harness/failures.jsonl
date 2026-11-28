@@ -1,0 +1,6 @@
+{"date":"2026-11-24","owner":"you never paste full questions","mistake":"ChatGPT prompts sent as short headlines without the owner's words or evidence","guard":"ops/harness/harness.test.mjs:plan.md section 9 PROMPT file must contain OWNER SAID and GAP CHECK"}
+{"date":"2026-11-24","owner":"what if your prompt was lacking","mistake":"acted on ChatGPT answers without asking what the prompt omitted","guard":"ops/harness/harness.test.mjs:section 9 rows need a labelled MISSING: line"}
+{"date":"2026-11-28","owner":"(deploy 46103432337 failed)","mistake":"weather-number check matched 'Sherwind 3,' inside agency text","guard":"site/tests/city-roads.test.mjs:word-boundary weather regex"}
+{"date":"2026-11-28","owner":"(SR-520 page review)","mistake":"road page printed 'cameras cameras'","guard":"site/tests/city-roads.test.mjs:no cameras cameras"}
+{"date":"2026-11-28","owner":"(I-5 page review)","mistake":"unit note repeated after every road weather number and humidity read '% 16'","guard":"site/tests/city-roads.test.mjs:rwisVal humidity 16%"}
+{"date":"2026-11-28","owner":"Ok trim it","mistake":"prompt hook printed ~4 KB of rules on every message","guard":"ops/harness/harness.test.mjs:hook output under 600 chars"}

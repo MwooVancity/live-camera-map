@@ -29,4 +29,5 @@ export function cleanLabel(c) {
 
 // Caltrans RWIS readings (lib conditions.mjs): the CWWP RWIS documentation states no unit for these fields (checked 2026-11-27,
 // cwwp2.dot.ca.gov/documentation/rwis/rwis.htm), so the raw number is shown with that said, never a guessed unit. Humidity keeps its % label.
-export const rwisVal = (v, label) => (v === null || v === undefined ? null : /%/.test(label) ? `${label} ${v}` : `${label} ${v} (unit not stated by Caltrans)`);
+// ponytail: unit note printed once under the list (marked *), not after every number
+export const rwisVal = (v, label) => (v === null || v === undefined ? null : /%/.test(label) ? `${label.replace(' %', '')} ${v}%` : `${label} ${v}*`);

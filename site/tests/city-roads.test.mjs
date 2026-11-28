@@ -81,10 +81,15 @@ test('search: I-5, I5 and Interstate 5 find the road page; Seattle goes to its c
 });
 
 test('road weather: a raw reading never shows as a bare number', () => {
-  assert.equal(rwisVal(154, 'air temperature'), 'air temperature 154 (unit not stated by Caltrans)');
+  assert.equal(rwisVal(154, 'air temperature'), 'air temperature 154*');
+  assert.equal(rwisVal(16, 'humidity %'), 'humidity 16%');
   assert.equal(rwisVal(null, 'wind'), null);
   // ponytail: word boundary so agency text like "Sherwind 3," is not a weather number
   for (const [route, html] of pages) { const m = html.replace(/<[^>]+>/g, '').match(/.{0,60}\b(air temperature|visibility|wind|gust) \d+[,.].{0,20}/); assert.ok(!m, `${route}: bare weather number: ${m && m[0]}`); }
+});
+
+test('no page doubles a word like "cameras cameras" (SR-520 bug 2026-11-28)', () => {
+  for (const [route, html] of pages) assert.ok(!/\bcameras cameras\b/i.test(html.replace(/<[^>]+>/g, '  ')), `${route}: "cameras cameras"`); // two spaces: text from two separate tags never joins into a match
 });
 
 test('Texas (Austin) page says City of Austin cameras only in its title and heading', () => {

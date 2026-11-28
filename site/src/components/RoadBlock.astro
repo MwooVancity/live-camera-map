@@ -23,7 +23,7 @@ const kmText = (km) => (km < 0.1 ? 'under 0.1' : km.toFixed(1));
   )}
   {b.id === 'road-weather' && (<>
     <ul>{b.items.map((i) => <li>{where(i)}{i.locationName && i.place ? ` (${i.locationName})` : ''}: {[val(i.airTemp, 'air temperature'), val(i.surfaceTemp, 'road surface temperature'), val(i.windAvg, 'wind'), val(i.windGust, 'gust'), val(i.visibility, 'visibility'), val(i.humidity, 'humidity %')].filter(Boolean).join(', ')}. <span class="meta">Read {i.recordedAt.slice(0, 16).replace('T', ' ')} UTC.</span></li>)}</ul>
-    <p class="meta">Caltrans does not state the units of these readings in its RWIS documentation, so we show the numbers exactly as reported and do not guess a unit.</p>
+    <p class="meta">* Caltrans does not state the units of these readings in its RWIS documentation, so we show the numbers exactly as reported and do not guess a unit.</p>
   </>)}
   {b.id === 'wildfires' && <WildfireList b={b} />}
   {b.id === 'weather-alerts' && (<>

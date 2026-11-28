@@ -24,7 +24,7 @@ const more = (n) => (n > MAX_ROWS ? n - MAX_ROWS : 0);
   )}
   {b.id === 'road-weather' && (<>
     <ul>{b.items.slice(0, MAX_ROWS).map((i) => <li>{where(i)}{i.locationName && i.place ? ` (${i.locationName})` : ''}: {[val(i.airTemp, 'air temperature'), val(i.surfaceTemp, 'road surface temperature'), val(i.windAvg, 'wind'), val(i.windGust, 'gust'), val(i.visibility, 'visibility'), val(i.humidity, 'humidity %')].filter(Boolean).join(', ')}. <span class="meta">{km(i)}; read {i.recordedAt.slice(0, 16).replace('T', ' ')} UTC.</span></li>)}</ul>
-    <p class="meta">Caltrans does not state the units of these readings in its RWIS documentation, so we show the numbers exactly as reported and do not guess a unit.</p>
+    <p class="meta">* Caltrans does not state the units of these readings in its RWIS documentation, so we show the numbers exactly as reported and do not guess a unit.</p>
   </>)}
   {b.id === 'bc-events' && (<>
     <ul>{b.items.slice(0, MAX_ROWS).map((i) => <li>{[i.road, i.direction, i.area].filter(Boolean).join(', ')}{i.closed ? ' (road closed)' : ''}: {i.text} <span class="meta">{km(i)}; {[i.severity && `${i.severity.toLowerCase()} severity`, i.eventType && i.eventType.toLowerCase().replace('_', ' ')].filter(Boolean).join(', ')}; since {i.start.slice(0, 16).replace('T', ' ')} UTC, {i.endIndefinite ? 'no set end' : `until ${i.end.slice(0, 16).replace('T', ' ')} UTC`}{i.updated ? `; DriveBC updated it ${i.updated.slice(0, 16).replace('T', ' ')} UTC` : ''}.</span></li>)}</ul>

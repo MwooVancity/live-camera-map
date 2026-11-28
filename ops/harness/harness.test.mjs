@@ -238,12 +238,23 @@ test('failing fixture: a search box with no <noscript> fallback to /cameras/ and
 import { execFileSync } from 'node:child_process';
 test('prompt hook prints Line 0 and the ask-ChatGPT-every-chance rule', () => {
   const out = execFileSync(process.execPath, [new URL('./hook-prompt.mjs', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')], { encoding: 'utf8' });
+  // trimmed 2026-11-28: one short line pointing at the rules (cost every request)
   assert.match(out, /LINE 0/);
-  assert.match(out, /ASK CHATGPT EVERY CHANCE/);
-  assert.match(out, /never bypass/);
+  assert.match(out, /rules\.mjs/);
+  assert.match(out, /failures\.jsonl/);
   assert.match(out, /GAP CHECK/);
-  assert.match(out, /USE IT LIKE A HUMAN/);
-  assert.match(out, /Do not fill gaps with guesses/);
+  assert.ok(out.length < 600, `hook prints ${out.length} chars`);
+});
+
+// ---- failure log (owner 2026-11-28): every owner correction is one row naming the test that now catches it ----
+test('failures.jsonl: each row has date, owner words, mistake and an existing guard file', () => {
+  const rows = readFileSync(new URL('./failures.jsonl', import.meta.url), 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l));
+  assert.ok(rows.length >= 5);
+  for (const r of rows) {
+    assert.match(r.date, /^\d{4}-\d{2}-\d{2}$/);
+    for (const k of ['owner', 'mistake', 'guard']) assert.ok(r[k] && r[k].length > 5, `${r.date}: no ${k}`);
+    assert.ok(existsSync(new URL(`../../${r.guard.split(':')[0]}`, import.meta.url)), `${r.date}: guard ${r.guard} missing`);
+  }
 });
 
 // Gap check (owner 2026-11-24): every ChatGPT row in plan.md section 9 dated 2026-11-25 or later lists what was MISSING from our prompt.
