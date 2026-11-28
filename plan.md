@@ -302,6 +302,7 @@ Conditions feeds built: Caltrans lane closures, chain controls, signs, RWIS; NWS
 - 2026-11-23 One planning file: this one. `mike-todo.md` and `session3-plan.md` folded in and deleted.
 
 ## 9. ASK-CHATGPT PROCEDURE (rule; also Gemini)
+OWNER 2026-11-28: "We'll keep debating with ChatGPT then." Info-gain debate rounds continue with ChatGPT (minimum, every round). DeepSeek dropped (needs owner sign-in and CAPTCHA). Gemini joins when its usage limit allows; a round is not skipped waiting for it. Next: round 3 to ChatGPT after the I-5 weather-text fix.
 When: before any plan-changing decision, for big research (source hunts, licence terms, teardowns, keyword and page ideas), and for a second opinion on a finished page or architecture. Not for small lookups or code edits.
 1. One batched prompt per topic: goal in one line, exact questions, "give a table", "mark UNVERIFIED anything you could not open", "say 'could not open' instead of guessing". Public URLs and generic text only: no secrets or personal details. If a site blocks bots (staging does), paste the page text.
 2. Guest chat in Chrome (chatgpt.com or gemini.google.com/app). Never log in or enter credentials for Mike. Browser blocked: say so in one line and carry on.
