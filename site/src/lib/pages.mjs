@@ -203,8 +203,8 @@ for (const slug of CITY_FROM_PLACES) {
   const base = r.placeText;
   Object.assign(r, {
     cityLimit: 20, cityMin: 10, // 3-4 camera town pages of a list with no direction or live data were near-duplicates (page gate)
-    placeText: (x) => sentence(`${base(x).replace(/,? (?:so|and) there are no city pages(?: here)?/, '')} For the city pages, each camera is filed under the nearest place in the Natural Earth populated places list (public domain) within ${ASSIGN_KM} km: ${x.named} cameras have such a place (${x.places} places) and ${x.unnamed} have none that close.`),
-    cityText: (city) => sentence(`The ${r.agency} list names no city: ${city} is the nearest place in the Natural Earth populated places list (public domain) to each of these cameras, within ${ASSIGN_KM} km in a straight line, not a municipal boundary.`),
+    placeText: (x) => sentence(`${base(x).replace(/,? (?:so|and) there are no city pages(?: here)?/, '')} For the city pages, each camera is filed under the nearest place in the same state in the Natural Earth populated places list (public domain) within ${ASSIGN_KM} km: ${x.named} cameras have such a place (${x.places} places) and ${x.unnamed} have none that close.`),
+    cityText: (city) => sentence(`The ${r.agency} list names no city: ${city} is the nearest place in the same state in the Natural Earth populated places list (public domain) to each of these cameras, within ${ASSIGN_KM} km in a straight line, not a municipal boundary.`),
   });
 }
 // The credit sentence for a source that asks for one (its attribution line from sources.json, without a leading "Source:").

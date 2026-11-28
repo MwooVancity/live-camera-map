@@ -30,7 +30,7 @@ test('roadOf: I/SR/US prefixes become the Caltrans spelling; anything else is no
 });
 
 test('enrich: a camera gets the nearest place within the radius, never one further away, and never overrides a city the source gave', () => {
-  const pl = [['Near', 47.6, -122.33], ['Far', 48.6, -122.33]];
+  const pl = [['Near', 47.6, -122.33, 'Washington', 'US'], ['Far', 48.6, -122.33, 'Washington', 'US']];
   const c = (id, lat, extra = {}) => ({ id, regionSlug: 'washington-state', name: 'I-5 at x', road: '', city: null, lat, lon: -122.33, ...extra });
   const out = enrich([c('a', 47.62), c('b', 47.6 + (ASSIGN_KM + 5) / 111), c('c', 47.6, { regionSlug: 'california', city: 'Given', road: 'SR-1' })], pl);
   assert.equal(out[0].city, 'Near');
@@ -38,6 +38,14 @@ test('enrich: a camera gets the nearest place within the radius, never one furth
   assert.equal(out[1].city, null);
   assert.equal(out[2].city, 'Given');
   assert.equal(out[2].road, 'SR-1');
+});
+
+test('a camera is only filed under a place in its own state: an Oregon camera beside Vancouver WA never gets Vancouver', () => {
+  const pl = [['Vancouver', 45.63, -122.64, 'Washington', 'US'], ['Portland', 45.52, -122.68, 'Oregon', 'US']];
+  const c = { id: 'o', regionSlug: 'oregon', name: 'x', road: '', city: null, lat: 45.62, lon: -122.65 };
+  assert.equal(enrich([c], pl)[0].city, 'Portland');
+  assert.equal(enrich([c], pl.slice(0, 1))[0].city, null);
+  for (const r of ['oregon/vancouver', 'maryland/washington-d-c', 'georgia/chattanooga', 'iowa/rock-island']) assert.ok(!pages.has(`/cameras/united-states/${r}/`), `${r} still built`);
 });
 
 test('every target region gets at least one city page with 3 or more cameras; Seattle exists', () => {
