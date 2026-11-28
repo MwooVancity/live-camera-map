@@ -196,8 +196,8 @@ test('licence row: brla-dotd-cameras passes the gate, quotes the portal tag and 
   assert.match(r.imageStatus, /^unverified/);
 });
 
-test('health config: 511la.org is never requested; every Baton Rouge camera is unknown by design', () => {
-  assert.deepEqual(CONFIG.perSource['brla-dotd'], { skip: 'host-blocks-automated-checks' });
+test('health config: 511la.org gets HEAD only, one worker, and an undated answer (made-up id) counts as unavailable', () => {
+  assert.deepEqual(CONFIG.perSource['brla-dotd'], { concurrency: 1, hostDelayMs: 250, staleHours: 6, zeroLengthHead: true, needValidators: true });
 });
 
 const REAL = join(here, '..', '..', 'data', 'camera-registry');

@@ -200,9 +200,8 @@ test('licence row: taiwan-thb-cameras passes the gate, quotes the Chinese terms 
   assert.match(r.imageStatus, /^unverified/);
 });
 
-test('health config: the Taiwan picture host is never requested (HEAD answers 404, 2,354 GETs per run is too heavy), every camera unknown by design', () => {
-  assert.equal(CONFIG.perSource['taiwan-thb'].skip, 'host-blocks-automated-checks');
-  assert.equal(CONFIG.perSource['quebec-mtmd'].skip, CONFIG.perSource['taiwan-thb'].skip);
+test('health config: the Taiwan picture host is never requested (HEAD answers 404, Range is ignored so a GET is a whole picture), every camera unknown by design', () => {
+  assert.equal(CONFIG.perSource['taiwan-thb'].skip, 'host-ignores-range-and-head');
 });
 
 const REAL = join(here, '..', '..', 'data', 'camera-registry');

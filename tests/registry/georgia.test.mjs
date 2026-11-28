@@ -258,9 +258,9 @@ test('licence row: georgia-511-cameras is open only through the owner approval f
   assert.equal(isEnabled(r, new Date('2026-11-26')), true);
 });
 
-test('health config: 511ga.org answers 200 image/png even for a made-up id, so no check is made and every Georgia camera is unknown by design', () => {
+test('health config: 511ga.org answers every HEAD 200 image/png with length 0; only a dated answer (never a made-up id) counts, HEAD only, at most 2 a second', () => {
   const c = CONFIG.perSource['georgia-511'];
-  assert.ok(c && typeof c.skip === 'string' && c.skip.length > 0);
+  assert.deepEqual(c, { concurrency: 1, hostDelayMs: 500, staleHours: 6, zeroLengthHead: true, needValidators: true });
 });
 
 const REAL = join(here, '..', '..', 'data', 'camera-registry');

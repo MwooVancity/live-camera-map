@@ -324,15 +324,13 @@ test('sample of one big group is evenly spread over the list, not its first N', 
 // ---- world sources (2026-11-23): Finland (digitraffic) and Quebec (quebec-mtmd) ----
 const REAL_CAMS = JSON.parse(readFileSync(new URL('../../data/camera-registry/cameras.json', import.meta.url), 'utf8'));
 
-test('digitraffic config: one worker, 1100 ms apart (under its 60 requests a minute), and the whole Finland list fits the time budget and the cap', () => {
+test('digitraffic config: one worker, 1100 ms apart (under its 60 requests a minute), and the whole Finland list fits the time budget (the cap: see the planned-requests test)', () => {
   const c = CONFIG.perSource.digitraffic;
   assert.equal(c.concurrency, 1);
   assert.ok(c.hostDelayMs >= 1000, 'at most 60 requests a minute');
   const n = REAL_CAMS.filter((x) => x.sourceId === 'digitraffic').length;
   assert.ok(n >= 100, 'the real registry holds the Finland list');
   assert.ok(n * c.hostDelayMs < CONFIG.budgetMs * 0.95, `${n} cameras x ${c.hostDelayMs} ms must fit the ${CONFIG.budgetMs / 60000} min budget`);
-  const probed = REAL_CAMS.filter((x) => !(CONFIG.perSource[x.sourceId] && CONFIG.perSource[x.sourceId].skip)).length;
-  assert.ok(probed * 1.2 < CONFIG.maxRequests, `${probed} probed cameras plus retries must fit the cap ${CONFIG.maxRequests}`);
 });
 
 test('the Digitraffic-User header is sent only to the weather camera host and holds no personal detail', () => {
@@ -348,6 +346,42 @@ test('needValidators: a JPEG with no Last-Modified and no ETag (Digitraffic "Ima
   assert.equal(r.rec(1).status, 'reachable');
   handler = (req, res) => sendJpeg(res, { 'Last-Modified': hoursAgo(0.1) });
   assert.equal((await go([cam(1, '/a.jpg', 'digitraffic')], { config: { perSource: { digitraffic: { needValidators: true } } } })).rec(0).status, 'reachable', 'a dated picture is fine');
+});
+
+test('placeholders: a fixed "no picture" answer (same type and size every time, e.g. King County 11,565-byte JPEG) is unavailable for that source only (failing fixture)', async () => {
+  const ph = Buffer.concat([JPEG(), Buffer.alloc(9000, 2)]);
+  handler = (req, res) => (req.url.startsWith('/ph') ? sendJpeg(res, {}, ph) : sendJpeg(res, {}, Buffer.concat([JPEG(), Buffer.alloc(9100, 3)])));
+  const conf = { perSource: { kc: { placeholders: [{ contentType: 'image/jpeg', contentLength: ph.length }] } } };
+  const r = await go([cam(1, '/ph1.jpg', 'kc'), cam(2, '/real.jpg', 'kc'), cam(3, '/ph2.jpg', 'other')], { config: conf });
+  assert.equal(r.rec(0).status, 'unavailable');
+  assert.equal(r.rec(0).reason, 'placeholder-signature');
+  assert.equal(r.rec(1).status, 'reachable', 'a picture of another size is real');
+  assert.equal(r.rec(2).status, 'reachable', 'the rule applies to its own source only');
+  // a type-only signature (MLIT answers a missing camera with a PNG, real ones are JPEG)
+  handler = (req, res) => { res.writeHead(200, { 'Content-Type': 'image/png', 'Content-Length': 30685 }); res.end(); };
+  assert.equal((await go([cam(1, '/x.jpg', 'm')], { config: { perSource: { m: { placeholders: [{ contentType: 'image/png' }] } } } })).rec(0).reason, 'placeholder-signature');
+  assert.ok(seen.every((s) => s.method === 'HEAD'), 'HEAD only, no picture GET');
+});
+
+test('zeroLengthHead + needValidators: 511 hosts answer every HEAD with Content-Length 0; a dated answer is reachable, an undated one (made-up id) is unavailable (failing fixture)', async () => {
+  handler = (req, res) => { res.writeHead(200, { 'Content-Type': 'image/png', 'Content-Length': 0, ...(req.url.startsWith('/real') ? { 'Last-Modified': hoursAgo(0.05) } : {}) }); res.end(); };
+  const conf = { perSource: { ga: { zeroLengthHead: true, needValidators: true } } };
+  const r = await go([cam(1, '/real1', 'ga'), cam(2, '/fake1', 'ga'), cam(3, '/real2', 'other')], { config: conf });
+  assert.equal(r.rec(0).status, 'reachable');
+  assert.equal(r.rec(1).status, 'unavailable');
+  assert.equal(r.rec(1).reason, 'placeholder-no-validators');
+  assert.equal(r.rec(2).reason, 'too-small', 'other sources keep the size rule');
+  assert.ok(seen.every((s) => s.method === 'HEAD'), 'HEAD only');
+});
+
+test('every probed source is checked within maxCheckAgeH and the planned requests fit the cap with retry room', () => {
+  const totals = {};
+  for (const x of REAL_CAMS) totals[x.sourceId] = (totals[x.sourceId] || 0) + 1;
+  const ps = (id) => CONFIG.perSource[id] || {};
+  const p = planRun(Object.entries(totals).map(([id, total]) => ({ id, total, delayMs: ps(id).hostDelayMs ?? CONFIG.hostDelayMs, skip: ps(id).skip })), CONFIG);
+  const planned = Object.values(p).reduce((a, o) => a + o.quota, 0);
+  assert.ok(planned * 1.1 <= CONFIG.maxRequests, `${planned} planned requests plus retries must fit the cap ${CONFIG.maxRequests}`);
+  for (const [id, o] of Object.entries(p)) if (o.quota > 0) assert.ok(o.hours <= CONFIG.maxCheckAgeH, `${id}: whole set every ${o.hours} h, limit ${CONFIG.maxCheckAgeH} h`);
 });
 
 test('skip: a source that blocks automated checks gets no request, is unknown with a reason, never unavailable, and does not make the run partial', async () => {
@@ -510,9 +544,10 @@ test('item 41: per-source history carries forward, caps at HISTORY, and a source
 });
 
 // Sources whose picture permission is unverified and whose host was never reviewed or blocks us must never be probed (no request, unknown by design, not a red on /status/).
-test('recent sources (georgia-511, maryland chart, cita-lu, medellin, taiwan-wra) are skip with a real reason, never the scaffold TODO, and get quota 0', () => {
+// georgia-511 and medellin-simm-cameras left this list on 2026-11-28: their hosts were read and tested and now get a HEAD-only check (a HEAD fetches no picture, like iowa-dot and madrid-camaras, whose image permission is also unverified).
+test('recent sources still off (maryland chart, cita-lu, taiwan-wra) are skip with a real reason, never the scaffold TODO, and get quota 0', () => {
   const perms = JSON.parse(readFileSync(new URL('../../data/source-permissions.json', import.meta.url), 'utf8')).sources;
-  for (const id of ['georgia-511', 'maryland-chart-cameras', 'cita-lu-cameras', 'medellin-simm-cameras', 'taiwan-wra-cameras']) {
+  for (const id of ['maryland-chart-cameras', 'cita-lu-cameras', 'taiwan-wra-cameras']) {
     const sk = CONFIG.perSource[id] && CONFIG.perSource[id].skip;
     assert.ok(sk && sk !== 'unreviewed-scaffold', `${id}: must be skipped with a real reason, got ${sk}`);
     const row = perms.find((p) => p.id === id || p.id === `${id}-cameras`);

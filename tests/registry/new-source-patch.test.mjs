@@ -28,7 +28,7 @@ const finish = (root, id, slug, rename = []) => { // what the agent does by hand
 
 test('clean licence: patch is emitted, applies to the real shared files, is idempotent, and the new row stays disabled', () => {
   const root = sandbox();
-  const { patch } = generate('wsdot', opts(root, fx('clean'), { sourceId: 'wsdot-cameras' }));
+  const { patch } = generate('wsdot', opts(root, fx('clean'), { sourceId: 'wsdot-scaffold' }));
   assert.equal(patch.verdict, 'READY');
   const row = patch.edits.find((e) => e.file.endsWith('source-permissions.manual.json')).value;
   assert.deepEqual([row.commercialStatus, row.metadataPermission.status, row.imagePermission.status, row.needsHumanReview, row.mustNotShip], ['unverified', 'unverified', 'unverified', true, true]);
@@ -39,23 +39,23 @@ test('clean licence: patch is emitted, applies to the real shared files, is idem
   for (const r of apply('wsdot', { root, log: () => {} })) assert.ok(/^applied|row not found/.test(r.status), `${r.file}: ${r.status}`);
   for (const r of apply('wsdot', { root, log: () => {} })) assert.ok(/already applied|row not found/.test(r.status), `second run ${r.file}: ${r.status}`);
   const rows = JSON.parse(read(root, 'data/source-permissions.manual.json')).sources;
-  const got = rows.find((r) => r.id === 'wsdot-cameras');
+  const got = rows.find((r) => r.id === 'wsdot-scaffold');
   assert.equal(isEnabled(got, new Date('2026-11-25')), false, 'generated-but-unreviewed source stays disabled');
   assert.deepEqual(evidenceProblems(got, []), []);
-  assert.equal(rows.filter((r) => r.id === 'wsdot-cameras').length, 1);
+  assert.equal(rows.filter((r) => r.id === 'wsdot-scaffold').length, 1);
   for (const f of ['ops/importers/lib/registry.mjs', 'site/src/lib/pages.mjs', 'ops/health/check.mjs']) execFileSync(process.execPath, ['--check', join(root, f)]);
   assert.match(read(root, 'ops/importers/lib/registry.mjs'), /\[WS_REGION\.slug\]: WSDOT_COUNTRY/);
-  assert.match(read(root, 'ops/health/check.mjs'), /'wsdot-cameras': \{ skip: 'unreviewed-scaffold' \}/);
+  assert.match(read(root, 'ops/health/check.mjs'), /'wsdot-scaffold': \{ skip: 'unreviewed-scaffold' \}/);
   const base = read(root, 'site/src/layouts/Base.astro');
-  assert.match(base, /src_wsdot = sourceOf\('wsdot-cameras'\); \/\/ attribution lines/);
+  assert.match(base, /src_wsdot = sourceOf\('wsdot-scaffold'\); \/\/ attribution lines/);
   assert.match(base, /\|\| src_wsdot\) && <> Credits for/);
   assert.match(base, /, src_wsdot\]\.filter\(Boolean\)/);
   assert.match(read(root, 'site/PAGES.md'), /`\/cameras\/united-states\/example-state\/` Beats Argos by: TODO\(new-source\)[\s\S]*Helpful: TODO[\s\S]*HCU: TODO/);
   assert.match(JSON.parse(read(root, 'data/world-coverage.json')).rows.find((r) => r.country === 'united-states-of-america').next, /^SCAFFOLDED 2026-11-24 \(wsdot, READY/);
   assert.ok(!/wsdot/.test(read(root, 'tests/registry/registry.test.mjs')), 'import-stage edits wait for the first import');
   apply('wsdot', { root, stage: 'import', log: () => {} });
-  assert.match(read(root, 'tests/registry/registry.test.mjs'), /'wsdot-cameras'\)\.sort\(\)/);
-  assert.match(read(root, 'tests/registry/registry.test.mjs'), /'wsdot-cameras'\]\.reduce/);
+  assert.match(read(root, 'tests/registry/registry.test.mjs'), /'wsdot-scaffold'\)\.sort\(\)/);
+  assert.match(read(root, 'tests/registry/registry.test.mjs'), /'wsdot-scaffold'\]\.reduce/);
   execFileSync(process.execPath, ['--check', join(root, 'tests/registry/registry.test.mjs')]);
   assert.ok(JSON.parse(read(root, 'ops/importers/run-all.json')).importers.some((e) => e.id === 'wsdot'));
 });

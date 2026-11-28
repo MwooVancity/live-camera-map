@@ -38,6 +38,37 @@ export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 14000, bu
   // robots.txt names no /transportation/ path; read 2026-11-23). The picture files carry Cache-Control max-age=60, so a request a second
   // or two apart is far below what a browser page of them makes: 2 workers, 500 ms between requests (at most 2 a second), HEAD only.
   perSource: {
+    // GEV camera packs default to no request; the ones whose picture host was read and tested on 2026-11-28 are overridden below.
+    ...Object.fromEntries(GEV_PACKS.map((p) => [p.sourceId, { skip: 'picture-host-not-reviewed' }])),
+    // Read and tested 2026-11-28 (UTC): robots.txt, then HEAD on 2-10 real links and one made-up id each. All: one worker, HEAD only, staleHours 6, no stated rate limit found.
+    // Cap and time (2026-11-28, 24,382 cameras, 19,012 probed): the cap stays 14000 and is NOT raised; lib/plan.mjs splits 12,600 (cap x 0.9 slack) fairly, so
+    // 921 a run for each big source: Georgia every 5 runs = 15 h, Caltrans 4 = 12 h, WSDOT/ODOT/MLIT/Iowa/BC/Hong Kong 2 = 6 h, the rest every run; all under maxCheckAgeH 48.
+    // Hosts run side by side, so the run time is the slowest host: Finland, about 15 minutes of the 18 minute budget. Test: 'every probed source is checked within maxCheckAgeH'.
+    'wsdot-cameras': { concurrency: 1, hostDelayMs: 250, staleHours: 6 }, // images.wsdot.wa.gov robots.txt disallows only /Ferries/; HEAD 200 image/jpeg with Last-Modified and ETag; made-up 005vc99999.jpg answers 404; 1,199 pictures take about 5 minutes
+    'odot-tripcheck': { concurrency: 1, hostDelayMs: 250, staleHours: 6 }, // tripcheck.com robots.txt 404 (no rules); HEAD 200 image/jpeg with Last-Modified and ETag; made-up name answers 404; 1,137 pictures take about 5 minutes
+    // mlit-river: cam.river.go.jp robots.txt 404 (no rules); HEAD 200 image/jpeg with a fresh Last-Modified, but a made-up id ALSO answers 200: a 30,685-byte image/png (same size on two made-up ids). That PNG is the "no camera" answer.
+    // 3 of 8 sampled real cameras answered exactly 32,983 bytes of JPEG: identical sizes across different cameras mean one fixed picture, not a view (a guess from sizes only; nobody has looked at that picture yet), so it is counted as a placeholder too.
+    'mlit-river': { concurrency: 1, hostDelayMs: 250, staleHours: 6, placeholders: [{ contentType: 'image/png', contentLength: 30685 }, { contentType: 'image/jpeg', contentLength: 32983 }] },
+    'vegvesen-cameras': { concurrency: 1, hostDelayMs: 250, staleHours: 6 }, // kamera.atlas.vegvesen.no robots.txt 404 (no rules); HEAD 200 image/jpeg (sizes differ per camera, no Last-Modified, so stale cannot be told); made-up 9999999_9 answers 404
+    'tallinn-ristmikud': { concurrency: 1, hostDelayMs: 250, staleHours: 6 }, // ristmikud.tallinn.ee robots.txt 404 (no rules); HEAD 200 image/jpeg with Last-Modified and ETag; made-up cam999.jpg answers 404
+    'king-county-roads': { concurrency: 1, hostDelayMs: 250, staleHours: 6, placeholders: [{ contentType: 'image/jpeg', contentLength: 11565 }] }, // info.kingcounty.gov robots.txt disallows only /about/contact; HEAD 200 image/jpeg, no Last-Modified; three made-up ids all answer the same 11,565-byte JPEG (one real camera did too): that size is the "no picture" answer
+    'medellin-simm-cameras': { concurrency: 1, hostDelayMs: 250, staleHours: 6 }, // www.medellin.gov.co robots.txt does not disallow /simm/ or /SIMM/; the link 301s to /SIMM/ (2 requests a camera), then 200 image/jpeg with Last-Modified and ETag; made-up imagen9999.jpg answers 500 (counted unavailable)
+    // Kept off after the same test: taiwan-wra-cameras (fmg.wra.gov.tw answers robots.txt with a WAF "Request Rejected" page and a HEAD of a real or made-up picture with 200 text/html, so a HEAD proves nothing);
+    // catalonia-transit (mct.gencat.cat answers a made-up camera name with 200 image/gif and no size or date, so it cannot be told from a real one by HEAD);
+    // txdot-its, delaware-deldot, montreal-osm-cameras (the link is the agency map or an HTML page, not a picture); tarktee-cameras has no cameras in the registry.
+    'taiwan-wra-cameras': { skip: 'head-proves-nothing' },
+    'catalonia-transit': { skip: 'head-proves-nothing' },
+    'txdot-its': { skip: 'link-is-a-web-page' },
+    'delaware-deldot': { skip: 'link-is-a-web-page' },
+    'montreal-osm-cameras': { skip: 'link-is-a-web-page' },
+    // 511 hosts (2026-11-28): robots.txt disallows /my511/, /map/map*/, /list/getdata/ etc., not /map/Cctv/. Every HEAD answers 200 with Content-Length 0 (zeroLengthHead),
+    // but a real camera carries a fresh Last-Modified and a made-up id (99999999, 77777777, abc; b1--9, nope) never does: needValidators counts the undated answer as unavailable. HEAD only, no picture is fetched.
+    // Georgia goes 500 ms apart (at most 2 a second): 3,829 cameras, about 1,900 a run, the whole set every 2 runs = 6 h.
+    'georgia-511': { concurrency: 1, hostDelayMs: 500, staleHours: 6, zeroLengthHead: true, needValidators: true },
+    'brla-dotd': { concurrency: 1, hostDelayMs: 250, staleHours: 6, zeroLengthHead: true, needValidators: true },
+    // taiwan-thb: cctv-ss01..08.thb.gov.tw answers a HEAD with 404. A GET with Range: bytes=0-0 was tested 2026-11-28: the host ignores Range and answers 200 with the
+    // whole JPEG (11-24 KB), a made-up camera and every robots.txt drop the connection. No tiny request exists, and 2,354 whole pictures a run is too heavy: unknown by design.
+    'taiwan-thb': { skip: 'host-ignores-range-and-head' },
     drivebc: { concurrency: 3, hostDelayMs: 300, staleHours: 4 },
     'toronto-traffic': { concurrency: 2, hostDelayMs: 500, staleHours: 6 },
     'calgary-traffic': { concurrency: 2, hostDelayMs: 500, staleHours: 6 }, // trafficcam.calgary.ca: no robots.txt (404) and no stated limit; same polite pace as Toronto, HEAD only
@@ -48,19 +79,11 @@ export const CONFIG = { concurrency: 6, hostDelayMs: 100, maxRequests: 14000, bu
     digitraffic: { concurrency: 1, hostDelayMs: 1100, staleHours: 6, needValidators: true },
     'quebec-mtmd': { skip: 'host-blocks-automated-checks' },
     'nsw-live-traffic': { skip: 'host-blocks-automated-checks' }, // webcams.transport.nsw.gov.au answers our client with an HTML placeholder (0 of 15 sampled returned an image, docs/source-audits/world-feed-audit-2026-11-23.md): no request, every NSW camera unknown by design
-    // taiwan-thb: cctv-ss01..08.thb.gov.tw answers a HEAD request with 404 (a GET returns the JPEG, about 15 KB), so the usual HEAD check would mark every camera down. 2,354 GETs of about 15 KB each per run is too heavy for the free CI budget: no request, every Taiwan camera unknown by design (the page says live status is not checked). Revisit with a GET-based sampled check.
-    'taiwan-thb': { skip: 'host-blocks-automated-checks' },
     'a22-brennero': { skip: 'host-blocks-automated-checks' }, // www.autobrennero.it answers a HEAD or robots.txt request with a Cloudflare challenge (HTTP 403, Cf-Mitigated: challenge, 2026-11-24): no request, every A22 camera unknown by design; not worked around
-    'brla-dotd': { skip: 'host-blocks-automated-checks' }, // reason code reused, the real reason is below: 511la.org robots.txt does not disallow /map/Cctv/, but a HEAD answers 200 with an empty body for any code, even a made-up one (200 image/png, Content-Length 0, 2026-11-24), so a status check proves nothing; no request, every Baton Rouge camera unknown by design
     'madrid-camaras': { concurrency: 1, hostDelayMs: 250, staleHours: 6 }, // informo.madrid.es/cameras: robots.txt answers 404 (no rules), no stated limit, a HEAD answers 200 image/jpeg with a Last-Modified a few minutes old and a made-up camera number answers 404 (read 2026-11-24), so a status check proves something; one worker, 250 ms apart (at most 4 a second), HEAD only; 357 pictures take about 1.5 minutes beside the other hosts
-    'georgia-511': { skip: 'host-blocks-automated-checks' }, // reason code reused, the real reason: 511ga.org robots.txt does not disallow /map/Cctv/ and a HEAD or GET answers 200 image/png, but a made-up id (99999999) also answers 200 image/png (15,136 bytes) with a fresh Last-Modified, so a status check proves nothing (2026-11-25), and 3,829 GETs of about 150 KB each per run is too heavy for the free CI budget; no request, every Georgia camera unknown by design
     'iowa-dot': { concurrency: 1, hostDelayMs: 250, staleHours: 6 }, // atmsqf.iowadot.gov: robots.txt 404 (no rules), no stated limit, a HEAD answers 200 image/jpeg (read 2026-11-24); one worker, 250 ms apart (at most 4 a second), HEAD only; 1,253 pictures take about 5 minutes (they run beside the other hosts, so the run time is still set by Finland, about 15 minutes of the 18 minute budget). The request cap was raised from 12000 to 14000 on 2026-11-24 when this list took the planned requests to 10,037: the health test needs 1.2 x the probed cameras under the cap for retries; cycling (a source checked every 2nd or 3rd run) is the next lever, not another raise
     'cita-lu-cameras': { skip: 'link-is-a-web-page' }, // the link is an HTML page (cita.lu/webcam/map/<n>) that wraps the picture, so a 200 proves nothing about the camera; reading the picture address behind it would fetch the picture, which stays unverified (footer: all rights reserved). Unknown by design, like Quebec (read 2026-11-25)
-    'medellin-simm-cameras': { skip: 'picture-host-not-reviewed' }, // www.medellin.gov.co: robots.txt does not disallow /simm/, a picture address answers 301 to /SIMM/ (case change) then 200 image/jpeg (read 2026-11-25), but no stated limit and no picture terms were read, so no request is sent: unknown by design until a human sets a pace (picture links stay unverified)
     'maryland-chart-cameras': { skip: 'host-blocks-automated-checks' }, // chart.maryland.gov answers automated requests with a Cloudflare challenge (hunt batch 4, 2026-11-25): no request is sent, every Maryland camera is unknown by design
-    'taiwan-wra-cameras': { skip: 'picture-host-not-reviewed' }, // fmg.wra.gov.tw (picture host): no robots.txt, rate or picture terms read, imagePermission unverified (the agency footer claims the pictures), so no request is sent: every river camera unknown by design until a human sets a pace
-    // GEV camera packs: no picture host here has had its limits or picture terms reviewed, so no request is sent: every camera unknown by design
-    ...Object.fromEntries(GEV_PACKS.map((p) => [p.sourceId, { skip: 'picture-host-not-reviewed' }])),
   } };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const STATUSES = ['reachable', 'stale', 'unavailable', 'unknown'];
@@ -148,7 +171,7 @@ export async function run(opts) {
     let o;
     try { new URL(c.officialUrl); } catch { return { ...unknownRec(c, 'bad-url'), status: 'unavailable', reason: 'bad-url', unknownReason: undefined, lastChecked: stamp }; }
     try { o = await observe(c.officialUrl, ctx); } catch (e) { if (e instanceof Limit) { if (e.reason === 'cap') state.hit = state.hit || 'cap'; else src.timedOut = true; src.skipped++; return unknownRec(c, e.reason === 'cap' ? 'request-cap' : 'time-budget'); } throw e; }
-    const k = classify(c.officialUrl, o, { staleHours: src.staleHours, minBytes: cfg.minBytes, needValidators: src.needValidators }, now());
+    const k = classify(c.officialUrl, o, { staleHours: src.staleHours, minBytes: cfg.minBytes, needValidators: src.needValidators, zeroLengthHead: ps(src.id).zeroLengthHead, placeholders: ps(src.id).placeholders }, now());
     if (k.transient) { if (++src.consec >= cfg.breakerAt) src.open = true; } else src.consec = 0;
     const p = prev[c.id] || {}, ok = k.status === 'reachable' || k.status === 'stale';
     const changed = ok && k.fingerprint && k.fingerprint !== p.fingerprint;

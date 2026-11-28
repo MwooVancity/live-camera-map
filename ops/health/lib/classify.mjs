@@ -44,7 +44,11 @@ export function classify(url, o, cfg = {}, now = new Date()) {
   const ct = String(o.contentType || '').toLowerCase();
   if (feedKind === 'still') {
     if (!ct.startsWith('image/')) return out('unavailable', 'not-an-image');
-    if (o.contentLength !== null && o.contentLength < minBytes) return out('unavailable', 'too-small');
+    // zeroLengthHead: the 511 hosts (511ga.org, 511la.org) answer every HEAD with Content-Length 0, so a 0 there says nothing about the size.
+    const len = cfg.zeroLengthHead && o.method === 'HEAD' && o.contentLength === 0 ? null : o.contentLength;
+    if (len !== null && len !== undefined && len < minBytes) return out('unavailable', 'too-small');
+    // placeholders: a source's fixed "no picture" answer (same type, and size when given, every time), measured against a made-up camera id.
+    if ((cfg.placeholders || []).some((p) => ct.startsWith(p.contentType) && (p.contentLength === undefined || p.contentLength === o.contentLength))) return out('unavailable', 'placeholder-signature');
     if (!sigOk(feedKind, ct, o.signature)) return out('unavailable', 'bad-signature');
     // A source that always dates a real picture (Last-Modified or ETag) and sends neither for its "Image not available" placeholder (Digitraffic).
     if (cfg.needValidators && !o.lastModified && !o.etag) return out('unavailable', 'placeholder-no-validators');
